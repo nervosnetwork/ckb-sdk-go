@@ -16,3 +16,5 @@
 
 # Dependency directories
 /vendor
+
+/test.go
