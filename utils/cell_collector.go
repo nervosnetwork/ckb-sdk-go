@@ -37,20 +37,22 @@ func (p *CapacityCellProcessor) Process(cell *types.Cell, result *CollectResult)
 }
 
 type CellCollector struct {
-	Client     rpc.Client
-	LockScript *types.Script
-	TypeScript *types.Script
-	Processor  CellProcessor
-	UseIndex   bool
-	EmptyData  bool
+	Client          rpc.Client
+	LockScript      *types.Script
+	TypeScript      *types.Script
+	Processor       CellProcessor
+	UseIndex        bool
+	EmptyData       bool
+	FromBlockNumber uint64
 }
 
-func NewCellCollector(client rpc.Client, lockScript *types.Script, processor CellProcessor) *CellCollector {
+func NewCellCollector(client rpc.Client, lockScript *types.Script, processor CellProcessor, fromBlockNumber uint64) *CellCollector {
 	return &CellCollector{
-		Client:     client,
-		LockScript: lockScript,
-		Processor:  processor,
-		EmptyData:  true,
+		Client:          client,
+		LockScript:      lockScript,
+		Processor:       processor,
+		EmptyData:       true,
+		FromBlockNumber: fromBlockNumber,
 	}
 }
 
@@ -69,7 +71,7 @@ func (c *CellCollector) collectFromBlocks(lockHash types.Hash) (*CollectResult, 
 	}
 	var result CollectResult
 	result.Options = make(map[string]interface{})
-	var start uint64
+	start := c.FromBlockNumber
 	var stop bool
 	for {
 		end := start + 100
