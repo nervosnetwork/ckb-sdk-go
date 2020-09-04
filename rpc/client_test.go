@@ -7,14 +7,14 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 
-	mock_rpc "github.com/nervosnetwork/ckb-sdk-go/test/mock/rpc"
+	mockRpc "github.com/nervosnetwork/ckb-sdk-go/test/mock/rpc"
 )
 
 func TestGetTipBlockNumber(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	mc := mock_rpc.NewMockClient(ctrl)
+	mc := mockRpc.NewMockClient(ctrl)
 
 	mc.
 		EXPECT().

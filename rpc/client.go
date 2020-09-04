@@ -120,6 +120,9 @@ type Client interface {
 	////// Batch
 	BatchTransactions(ctx context.Context, batch []types.BatchTransactionItem) error
 
+	// Batch Live cells
+	BatchLiveCells(ctx context.Context, batch []types.BatchLiveCellItem) error
+
 	// Close close client
 	Close()
 }
@@ -261,7 +264,7 @@ func (cli *client) GetLiveCell(ctx context.Context, point *types.OutPoint, withD
 	err := cli.c.CallContext(ctx, &result, "get_live_cell", outPoint{
 		TxHash: point.TxHash,
 		Index:  hexutil.Uint(point.Index),
-	}, true)
+	}, withData)
 	if err != nil {
 		return nil, err
 	}
@@ -619,5 +622,39 @@ func (cli *client) BatchTransactions(ctx context.Context, batch []types.BatchTra
 		}
 	}
 
+	return nil
+}
+
+func (cli *client) BatchLiveCells(ctx context.Context, batch []types.BatchLiveCellItem) error {
+	req := make([]rpc.BatchElem, len(batch))
+
+	for i, item := range batch {
+		args := make([]interface{}, 2)
+		args[0] = outPoint{
+			TxHash: item.OutPoint.TxHash,
+			Index:  hexutil.Uint(item.OutPoint.Index),
+		}
+		args[1] = item.WithData
+		req[i] = rpc.BatchElem{
+			Method: "get_live_cell",
+			Result: &cellWithStatus{},
+			Args:   args,
+		}
+	}
+
+	err := cli.c.BatchCallContext(ctx, req)
+	if err != nil {
+		return err
+	}
+
+	for i, item := range req {
+		batch[i].Error = item.Error
+		if batch[i].Error == nil {
+			result := item.Result.(*cellWithStatus)
+			batch[i].Result = toCellWithStatus(cellWithStatus{
+				Cell: result.Cell, Status: result.Status,
+			})
+		}
+	}
 	return nil
 }
