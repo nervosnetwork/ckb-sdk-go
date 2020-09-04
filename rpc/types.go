@@ -359,14 +359,17 @@ func toCellWithStatus(status cellWithStatus) *types.CellWithStatus {
 		Cell: &types.CellInfo{
 			Output: &types.CellOutput{
 				Capacity: uint64(status.Cell.Output.Capacity),
-				Lock: &types.Script{
-					CodeHash: status.Cell.Output.Lock.CodeHash,
-					HashType: status.Cell.Output.Lock.HashType,
-					Args:     status.Cell.Output.Lock.Args,
-				},
 			},
 		},
 		Status: status.Status,
+	}
+
+	if status.Cell.Output.Lock != nil {
+		result.Cell.Output.Lock = &types.Script{
+			CodeHash: status.Cell.Output.Lock.CodeHash,
+			HashType: status.Cell.Output.Lock.HashType,
+			Args:     status.Cell.Output.Lock.Args,
+		}
 	}
 
 	if status.Cell.Data != nil {
