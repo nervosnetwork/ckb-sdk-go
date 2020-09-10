@@ -13,16 +13,17 @@ import (
 )
 
 type Payment struct {
-	From        *types.Script
-	To          *types.Script
-	Amount      uint64
-	Fee         uint64
-	group       []int
-	witnessArgs *types.WitnessArgs
-	tx          *types.Transaction
+	From            *types.Script
+	To              *types.Script
+	Amount          uint64
+	Fee             uint64
+	group           []int
+	witnessArgs     *types.WitnessArgs
+	tx              *types.Transaction
+	fromBlockNumber uint64
 }
 
-func NewPayment(from, to string, amount, fee uint64) (*Payment, error) {
+func NewPayment(from, to string, amount, fee uint64, fromBlockNumber uint64) (*Payment, error) {
 	fromAddress, err := address.Parse(from)
 	if err != nil {
 		return nil, fmt.Errorf("parse from address %s error: %v", from, err)
@@ -41,11 +42,12 @@ func NewPayment(from, to string, amount, fee uint64) (*Payment, error) {
 		To:     toAddress.Script,
 		Amount: amount,
 		Fee:    fee,
+		fromBlockNumber: fromBlockNumber,
 	}, nil
 }
 
 func (p *Payment) GenerateTx(client rpc.Client) (*types.Transaction, error) {
-	collector := utils.NewCellCollector(client, p.From, utils.NewCapacityCellProcessor(p.Amount+p.Fee))
+	collector := utils.NewCellCollector(client, p.From, utils.NewCapacityCellProcessor(p.Amount+p.Fee), p.fromBlockNumber)
 
 	result, err := collector.Collect()
 	if err != nil {
