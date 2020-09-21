@@ -253,18 +253,21 @@ func SingleSegmentSignTransaction(transaction *types.Transaction, start int, end
 }
 
 func CalculateTransactionFee(tx *types.Transaction, feeRate uint64) (uint64, error) {
-	bytes, err := tx.Serialize()
+	// raw tx serialize
+	rawTxBytes, err := tx.Serialize()
 	if err != nil {
 		return 0, err
 	}
 
-	// raw tx serialize
-	txSize := uint64(len(bytes))
-	// witness serialize
-	txSize += uint64(len(types.SerializeDynVec(tx.Witnesses)))
-	// raw tx + witness offset
-	txSize += 12
-	// tx offset
+	var witnessBytes [][]byte
+	for _, witness := range tx.Witnesses {
+		witnessBytes = append(witnessBytes, types.SerializeBytes(witness))
+	}
+	witnessesBytes := types.SerializeDynVec(witnessBytes)
+	//tx serialize
+	txBytes := types.SerializeTable([][]byte{rawTxBytes, witnessesBytes})
+	txSize := uint64(len(txBytes))
+	// tx offset cost
 	txSize += 4
 	fee := txSize * feeRate / 1000
 	if fee*1000 < txSize*feeRate {
