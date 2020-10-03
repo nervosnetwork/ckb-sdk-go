@@ -64,21 +64,14 @@ func NewSecp256k1HybirdSigTx(scripts *utils.SystemScripts) *types.Transaction {
 	}
 }
 
-func AddInputsForTransaction(transaction *types.Transaction, cells []*types.Cell) ([]int, *types.WitnessArgs, error) {
-	if len(cells) == 0 {
+func AddInputsForTransaction(transaction *types.Transaction, inputs []*types.CellInput) ([]int, *types.WitnessArgs, error) {
+	if len(inputs) == 0 {
 		return nil, nil, errors.New("input cells empty")
 	}
-	group := make([]int, len(cells))
+	group := make([]int, len(inputs))
 	start := len(transaction.Witnesses)
-	for i := 0; i < len(cells); i++ {
-		cell := cells[i]
-		input := &types.CellInput{
-			Since: 0,
-			PreviousOutput: &types.OutPoint{
-				TxHash: cell.OutPoint.TxHash,
-				Index:  cell.OutPoint.Index,
-			},
-		}
+	for i := 0; i < len(inputs); i++ {
+		input := inputs[i]
 		transaction.Inputs = append(transaction.Inputs, input)
 		transaction.Witnesses = append(transaction.Witnesses, []byte{})
 		group[i] = start + i
