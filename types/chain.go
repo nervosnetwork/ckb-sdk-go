@@ -60,6 +60,10 @@ type Script struct {
 	Args     []byte         `json:"args"`
 }
 
+func (script *Script) OccupiedCapacity() uint64 {
+	return uint64(len(script.Args)) + uint64(len(script.CodeHash.Bytes())) + 1
+}
+
 func (script *Script) Hash() (Hash, error) {
 	data, err := script.Serialize()
 	if err != nil {
@@ -93,6 +97,14 @@ type CellOutput struct {
 	Capacity uint64  `json:"capacity"`
 	Lock     *Script `json:"lock"`
 	Type     *Script `json:"type"`
+}
+
+func (o CellOutput) OccupiedCapacity(outputData []byte) uint64 {
+	occupiedCapacity := 8 + uint64(len(outputData)) + o.Lock.OccupiedCapacity()
+	if o.Type != nil {
+		occupiedCapacity += o.Type.OccupiedCapacity()
+	}
+	return occupiedCapacity
 }
 
 type Transaction struct {
