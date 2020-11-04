@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/nervosnetwork/ckb-sdk-go/indexer"
 	"github.com/nervosnetwork/ckb-sdk-go/rpc"
+	"github.com/nervosnetwork/ckb-sdk-go/types"
 )
 
 type LiveCellCollectResult struct {
@@ -43,6 +44,8 @@ type LiveCellCollector struct {
 	Limit       uint64
 	AfterCursor string
 	Processor   LiveCellProcessor
+	EmptyData   bool
+	TypeScript  *types.Script
 }
 
 func (c *LiveCellCollector) collectFromCkbIndexer() (*LiveCellCollectResult, error) {
@@ -55,15 +58,25 @@ func (c *LiveCellCollector) collectFromCkbIndexer() (*LiveCellCollectResult, err
 			return nil, err
 		}
 		for _, cell := range liveCells.Objects {
-			if cell.Output.Type == nil && len(cell.OutputData) == 0 {
-				s, err := c.Processor.Process(cell, &result)
-				if err != nil {
-					return nil, err
+			if c.TypeScript != nil {
+				if !c.TypeScript.Equals(cell.Output.Type) {
+					continue
 				}
-				if s {
-					stop = s
-					break
+			} else {
+				if cell.Output.Type != nil {
+					continue
 				}
+			}
+			if c.EmptyData && len(cell.OutputData) > 0 {
+				continue
+			}
+			s, err := c.Processor.Process(cell, &result)
+			if err != nil {
+				return nil, err
+			}
+			if s {
+				stop = s
+				break
 			}
 		}
 		if stop || len(liveCells.Objects) < int(c.Limit) || liveCells.LastCursor == "" {
