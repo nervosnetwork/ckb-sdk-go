@@ -6,10 +6,12 @@ import (
 )
 
 func ParseSudtAmount(outputData []byte) (*big.Int, error) {
-	if len(outputData) < 16 {
+	tmpData := make([]byte, len(outputData))
+	copy(tmpData, outputData)
+	if len(tmpData) < 16 {
 		return nil, errors.New("invalid sUDT amount")
 	}
-	b := outputData[0:16]
+	b := tmpData[0:16]
 	b = reverse(b)
 
 	return big.NewInt(0).SetBytes(b), nil
