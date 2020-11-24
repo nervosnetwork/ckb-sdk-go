@@ -114,6 +114,16 @@ func Parse(address string) (*ParsedAddress, error) {
 				HashType: types.HashTypeType,
 				Args:     common.Hex2Bytes(payload[4:]),
 			}
+		} else if CodeHashIndexAnyoneCanPay == payload[2:4] {
+			script = types.Script{
+				HashType: types.HashTypeType,
+				Args:     common.Hex2Bytes(payload[4:]),
+			}
+			if hrp == (string)(Testnet) {
+				script.CodeHash = types.HexToHash(utils.AnyoneCanPayCodeHashOnAggron)
+			} else {
+				script.CodeHash = types.HexToHash(utils.AnyoneCanPayCodeHashOnLina)
+			}
 		} else {
 			script = types.Script{
 				CodeHash: types.HexToHash(transaction.SECP256K1_BLAKE160_MULTISIG_ALL_TYPE_HASH),
