@@ -1,6 +1,7 @@
 package address
 
 import (
+	"github.com/nervosnetwork/ckb-sdk-go/utils"
 	"testing"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -24,6 +25,91 @@ func TestGenerate(t *testing.T) {
 	tnAddress, err := Generate(Testnet, script)
 	assert.Nil(t, err)
 	assert.Equal(t, "ckt1qyqwmndf2yl6qvxwgvyw9yj95gkqytgygwasdjf6hm", tnAddress)
+
+	t.Run("generate short payload acp address without minimum limit", func(t *testing.T) {
+		mAcpLock := &types.Script{
+			CodeHash: types.HexToHash(utils.AnyoneCanPayCodeHashOnLina),
+			HashType: types.HashTypeType,
+			Args:     common.FromHex("0x4fb2be2e5d0c1a3b8694f832350a33c1685d477a"),
+		}
+
+		mAddress, err := Generate(Mainnet, mAcpLock)
+		assert.Nil(t, err)
+		assert.Equal(t, "ckb1qypylv479ewscx3ms620sv34pgeuz6zagaaqvrugu7", mAddress)
+
+		tAcpLock := &types.Script{
+			CodeHash: types.HexToHash(utils.AnyoneCanPayCodeHashOnAggron),
+			HashType: types.HashTypeType,
+			Args:     common.FromHex("0x4fb2be2e5d0c1a3b8694f832350a33c1685d477a"),
+		}
+		tAddress, err := Generate(Testnet, tAcpLock)
+		assert.Nil(t, err)
+		assert.Equal(t, "ckt1qypylv479ewscx3ms620sv34pgeuz6zagaaq3xzhsz", tAddress)
+	})
+
+	t.Run("generate short payload acp address with ckb minimum limit", func(t *testing.T) {
+		mAcpLock := &types.Script{
+			CodeHash: types.HexToHash(utils.AnyoneCanPayCodeHashOnLina),
+			HashType: types.HashTypeType,
+			Args:     common.FromHex("0x4fb2be2e5d0c1a3b8694f832350a33c1685d477a0c"),
+		}
+
+		mAddress, err := Generate(Mainnet, mAcpLock)
+		assert.Nil(t, err)
+		assert.Equal(t, "ckb1qypylv479ewscx3ms620sv34pgeuz6zagaaqcehzz9g", mAddress)
+
+		tAcpLock := &types.Script{
+			CodeHash: types.HexToHash(utils.AnyoneCanPayCodeHashOnAggron),
+			HashType: types.HashTypeType,
+			Args:     common.FromHex("0x4fb2be2e5d0c1a3b8694f832350a33c1685d477a0c"),
+		}
+		tAddress, err := Generate(Testnet, tAcpLock)
+		assert.Nil(t, err)
+		assert.Equal(t, "ckt1qypylv479ewscx3ms620sv34pgeuz6zagaaqc9q8fqw", tAddress)
+	})
+
+	t.Run("generate short payload acp address with ckb and udt minimum limit", func(t *testing.T) {
+		mAcpLock := &types.Script{
+			CodeHash: types.HexToHash(utils.AnyoneCanPayCodeHashOnLina),
+			HashType: types.HashTypeType,
+			Args:     common.FromHex("0x4fb2be2e5d0c1a3b8694f832350a33c1685d477a0c01"),
+		}
+
+		mAddress, err := Generate(Mainnet, mAcpLock)
+		assert.Nil(t, err)
+		assert.Equal(t, "ckb1qypylv479ewscx3ms620sv34pgeuz6zagaaqcqgzc5xlw", mAddress)
+
+		tAcpLock := &types.Script{
+			CodeHash: types.HexToHash(utils.AnyoneCanPayCodeHashOnAggron),
+			HashType: types.HashTypeType,
+			Args:     common.FromHex("0x4fb2be2e5d0c1a3b8694f832350a33c1685d477a0c01"),
+		}
+		tAddress, err := Generate(Testnet, tAcpLock)
+		assert.Nil(t, err)
+		assert.Equal(t, "ckt1qypylv479ewscx3ms620sv34pgeuz6zagaaqcqgr072sz", tAddress)
+	})
+
+	t.Run("generate full payload address when acp lock args is more than 22 bytes", func(t *testing.T) {
+		mAcpLock := &types.Script{
+			CodeHash: types.HexToHash(utils.AnyoneCanPayCodeHashOnLina),
+			HashType: types.HashTypeType,
+			Args:     common.FromHex("0x4fb2be2e5d0c1a3b8694f832350a33c1685d477a0c0101"),
+		}
+
+		mAddress, err := Generate(Mainnet, mAcpLock)
+		assert.Nil(t, err)
+		assert.Equal(t, "ckb1qnfkjktl73ljn77q637judm4xux3y59c29qvvu8ywx90wy5c8g34gnajhch96rq68wrff7pjx59r8stgt4rh5rqpqy532xj3", mAddress)
+
+		tAcpLock := &types.Script{
+			CodeHash: types.HexToHash(utils.AnyoneCanPayCodeHashOnAggron),
+			HashType: types.HashTypeType,
+			Args:     common.FromHex("0x4fb2be2e5d0c1a3b8694f832350a33c1685d477a0c0101"),
+		}
+
+		tAddress, err := Generate(Testnet, tAcpLock)
+		assert.Nil(t, err)
+		assert.Equal(t, "ckt1qs6pngwqn6e9vlm92th84rk0l4jp2h8lurchjmnwv8kq3rt5psf4vnajhch96rq68wrff7pjx59r8stgt4rh5rqpqy2a9ak4", tAddress)
+	})
 }
 
 func TestParse(t *testing.T) {
