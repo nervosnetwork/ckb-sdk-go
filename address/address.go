@@ -3,6 +3,7 @@ package address
 import (
 	"encoding/hex"
 	"errors"
+	"github.com/nervosnetwork/ckb-sdk-go/utils"
 	"strings"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -22,12 +23,15 @@ const (
 	TypeFull  Type = "Full"
 	TypeShort Type = "Short"
 
-	SHORT_FORMAT                 = "01"
-	FULL_DATA_FORMAT             = "02"
-	FULL_TYPE_FORMAT             = "04"
-	CODE_HASH_INDEX_SINGLESIG    = "00"
-	CODE_HASH_INDEX_MULTISIG_SIG = "01"
+	ShortFormat               = "01"
+	FullDataFormat            = "02"
+	FullTypeFormat            = "04"
+	CodeHashIndexSingleSig    = "00"
+	CodeHashIndexMultisigSig  = "01"
+	CodeHashIndexAnyoneCanPay = "02"
 )
+
+var shortPayloadSupportedArgsLens = [2]int{20, 22}
 
 type ParsedAddress struct {
 	Mode   Mode
@@ -36,10 +40,10 @@ type ParsedAddress struct {
 }
 
 func Generate(mode Mode, script *types.Script) (string, error) {
-	if script.HashType == types.HashTypeType && len(script.Args) == 20 {
+	if script.HashType == types.HashTypeType && isShortPayloadSupportedArgsLen(len(script.Args)) {
 		if transaction.SECP256K1_BLAKE160_SIGHASH_ALL_TYPE_HASH == script.CodeHash.String() {
-			// generate_short_payload_singlesig_address
-			payload := SHORT_FORMAT + CODE_HASH_INDEX_SINGLESIG + hex.EncodeToString(script.Args)
+			// generate_short_payload_singleSig_address
+			payload := ShortFormat + CodeHashIndexSingleSig + hex.EncodeToString(script.Args)
 			data, err := bech32.ConvertBits(common.FromHex(payload), 8, 5, true)
 			if err != nil {
 				return "", err
@@ -47,7 +51,14 @@ func Generate(mode Mode, script *types.Script) (string, error) {
 			return bech32.Encode((string)(mode), data)
 		} else if transaction.SECP256K1_BLAKE160_MULTISIG_ALL_TYPE_HASH == script.CodeHash.String() {
 			// generate_short_payload_multisig_address
-			payload := SHORT_FORMAT + CODE_HASH_INDEX_MULTISIG_SIG + hex.EncodeToString(script.Args)
+			payload := ShortFormat + CodeHashIndexMultisigSig + hex.EncodeToString(script.Args)
+			data, err := bech32.ConvertBits(common.FromHex(payload), 8, 5, true)
+			if err != nil {
+				return "", err
+			}
+			return bech32.Encode((string)(mode), data)
+		} else if utils.AnyoneCanPayCodeHashOnLina == script.CodeHash.String() || utils.AnyoneCanPayCodeHashOnAggron == script.CodeHash.String() {
+			payload := ShortFormat + CodeHashIndexAnyoneCanPay + hex.EncodeToString(script.Args)
 			data, err := bech32.ConvertBits(common.FromHex(payload), 8, 5, true)
 			if err != nil {
 				return "", err
@@ -56,12 +67,19 @@ func Generate(mode Mode, script *types.Script) (string, error) {
 		}
 	}
 
-	hashType := FULL_TYPE_FORMAT
+	hashType := FullTypeFormat
 	if script.HashType == types.HashTypeData {
-		hashType = FULL_DATA_FORMAT
+		hashType = FullDataFormat
 	}
 
 	return generateFullPayloadAddress(hashType, mode, script)
+}
+
+func isShortPayloadSupportedArgsLen(argLen int) bool {
+	if argLen >= shortPayloadSupportedArgsLens[0] && argLen <= shortPayloadSupportedArgsLens[1] {
+		return true
+	}
+	return false
 }
 
 func generateFullPayloadAddress(hashType string, mode Mode, script *types.Script) (string, error) {
@@ -88,11 +106,21 @@ func Parse(address string) (*ParsedAddress, error) {
 	var script types.Script
 	if strings.HasPrefix(payload, "01") {
 		addressType = TypeShort
-		if CODE_HASH_INDEX_SINGLESIG == payload[2:4] {
+		if CodeHashIndexSingleSig == payload[2:4] {
 			script = types.Script{
 				CodeHash: types.HexToHash(transaction.SECP256K1_BLAKE160_SIGHASH_ALL_TYPE_HASH),
 				HashType: types.HashTypeType,
 				Args:     common.Hex2Bytes(payload[4:]),
+			}
+		} else if CodeHashIndexAnyoneCanPay == payload[2:4] {
+			script = types.Script{
+				HashType: types.HashTypeType,
+				Args:     common.Hex2Bytes(payload[4:]),
+			}
+			if hrp == (string)(Testnet) {
+				script.CodeHash = types.HexToHash(utils.AnyoneCanPayCodeHashOnAggron)
+			} else {
+				script.CodeHash = types.HexToHash(utils.AnyoneCanPayCodeHashOnLina)
 			}
 		} else {
 			script = types.Script{

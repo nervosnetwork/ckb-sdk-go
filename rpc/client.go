@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"github.com/nervosnetwork/ckb-sdk-go/indexer"
 	"math/big"
 
 	"github.com/ethereum/go-ethereum/common/hexutil"
@@ -120,11 +121,28 @@ type Client interface {
 	////// Batch
 	BatchTransactions(ctx context.Context, batch []types.BatchTransactionItem) error
 
+	// Batch Live cells
+	BatchLiveCells(ctx context.Context, batch []types.BatchLiveCellItem) error
+
+	///// ckb-indexer
+	//GetTip returns the latest height processed by indexer
+	GetTip(ctx context.Context) (*indexer.TipHeader, error)
+
+	//GetCellsCapacity returns the live cells capacity by the lock or type script.
+	GetCellsCapacity(ctx context.Context, searchKey *indexer.SearchKey) (*indexer.Capacity, error)
+
+	// GetCells returns the live cells collection by the lock or type script.
+	GetCells(ctx context.Context, searchKey *indexer.SearchKey, order indexer.SearchOrder, limit uint64, afterCursor string) (*indexer.LiveCells, error)
+
+	// GetTransactions returns the transactions collection by the lock or type script.
+	GetTransactions(ctx context.Context, searchKey *indexer.SearchKey, order indexer.SearchOrder, limit uint64, afterCursor string) (*indexer.Transactions, error)
+
 	// Close close client
 	Close()
 }
 type client struct {
-	c *rpc.Client
+	c       *rpc.Client
+	indexer indexer.Client
 }
 
 func Dial(url string) (Client, error) {
@@ -139,8 +157,28 @@ func DialContext(ctx context.Context, url string) (Client, error) {
 	return NewClient(c), nil
 }
 
+func DialWithIndexer(ckbUrl string, indexerUrl string) (Client, error) {
+	return DialWithIndexerContext(context.Background(), ckbUrl, indexerUrl)
+}
+
+func DialWithIndexerContext(ctx context.Context, ckbUrl string, indexerUrl string) (Client, error) {
+	ckb, err := rpc.DialContext(ctx, ckbUrl)
+	if err != nil {
+		return nil, err
+	}
+	index, err := indexer.DialContext(ctx, indexerUrl)
+	if err != nil {
+		return nil, err
+	}
+	return NewClientWithIndexer(ckb, index), nil
+}
+
 func NewClient(c *rpc.Client) Client {
-	return &client{c}
+	return &client{c, nil}
+}
+
+func NewClientWithIndexer(c *rpc.Client, indexer indexer.Client) Client {
+	return &client{c, indexer}
 }
 
 func (cli *client) Close() {
@@ -261,7 +299,7 @@ func (cli *client) GetLiveCell(ctx context.Context, point *types.OutPoint, withD
 	err := cli.c.CallContext(ctx, &result, "get_live_cell", outPoint{
 		TxHash: point.TxHash,
 		Index:  hexutil.Uint(point.Index),
-	}, true)
+	}, withData)
 	if err != nil {
 		return nil, err
 	}
@@ -620,4 +658,66 @@ func (cli *client) BatchTransactions(ctx context.Context, batch []types.BatchTra
 	}
 
 	return nil
+}
+
+func (cli *client) BatchLiveCells(ctx context.Context, batch []types.BatchLiveCellItem) error {
+	req := make([]rpc.BatchElem, len(batch))
+
+	for i, item := range batch {
+		args := make([]interface{}, 2)
+		args[0] = outPoint{
+			TxHash: item.OutPoint.TxHash,
+			Index:  hexutil.Uint(item.OutPoint.Index),
+		}
+		args[1] = item.WithData
+		req[i] = rpc.BatchElem{
+			Method: "get_live_cell",
+			Result: &cellWithStatus{},
+			Args:   args,
+		}
+	}
+
+	err := cli.c.BatchCallContext(ctx, req)
+	if err != nil {
+		return err
+	}
+
+	for i, item := range req {
+		batch[i].Error = item.Error
+		if batch[i].Error == nil {
+			result := item.Result.(*cellWithStatus)
+			batch[i].Result = toCellWithStatus(cellWithStatus{
+				Cell: result.Cell, Status: result.Status,
+			})
+		}
+	}
+	return nil
+}
+
+func (cli *client) GetTip(ctx context.Context) (*indexer.TipHeader, error) {
+	if cli.indexer == nil {
+		return nil, errors.New("please set indexer client")
+	}
+	return cli.indexer.GetTip(ctx)
+}
+
+func (cli *client) GetCellsCapacity(ctx context.Context, searchKey *indexer.SearchKey) (*indexer.Capacity, error) {
+	if cli.indexer == nil {
+		return nil, errors.New("please set indexer client")
+	}
+	return cli.indexer.GetCellsCapacity(ctx, searchKey)
+}
+
+func (cli *client) GetCells(ctx context.Context, searchKey *indexer.SearchKey, order indexer.SearchOrder, limit uint64, afterCursor string) (*indexer.LiveCells, error) {
+	if cli.indexer == nil {
+		return nil, errors.New("please set indexer client")
+	}
+	return cli.indexer.GetCells(ctx, searchKey, order, limit, afterCursor)
+}
+
+func (cli *client) GetTransactions(ctx context.Context, searchKey *indexer.SearchKey, order indexer.SearchOrder, limit uint64, afterCursor string) (*indexer.Transactions, error) {
+	if cli.indexer == nil {
+		return nil, errors.New("please set indexer client")
+	}
+	return cli.indexer.GetTransactions(ctx, searchKey, order, limit, afterCursor)
 }

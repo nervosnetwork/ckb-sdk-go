@@ -7,6 +7,11 @@ import (
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 )
 
+const (
+	AnyoneCanPayCodeHashOnLina   = "0xd369597ff47f29fbc0d47d2e3775370d1250b85140c670e4718af712983a2354"
+	AnyoneCanPayCodeHashOnAggron = "0x3419a1c09eb2567f6552ee7a8ecffd64155cffe0f1796e6e61ec088d740c1356"
+)
+
 type SystemScriptCell struct {
 	CellHash types.Hash
 	OutPoint *types.OutPoint

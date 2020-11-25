@@ -78,14 +78,16 @@ func main() {
 	})
 	tx.OutputsData = [][]byte{{}, {}}
 
-	group, witnessArgs, err := transaction.AddInputsForTransaction(tx, []*types.Cell{
+	group, witnessArgs, err := transaction.AddInputsForTransaction(tx, []*types.CellInput{
 		{
-			OutPoint: &types.OutPoint{
-				TxHash: types.HexToHash("0x8e6d818c6e07e6cbd9fca51294030494ee23dc388d7f5276ba50b938d02cc015"),
-				Index:  1,
-			},
-		},
+            Since: 0,
+            PreviousOutput: &types.OutPoint{
+                TxHash: types.HexToHash("0x8e6d818c6e07e6cbd9fca51294030494ee23dc388d7f5276ba50b938d02cc015"),
+                Index: 1,
+            },
+        },
 	})
+
 	if err != nil {
 		log.Fatalf("add inputs to transaction error: %v", err)
 	}
@@ -156,15 +158,17 @@ func main() {
 	})
 	tx.OutputsData = [][]byte{{}}
 
-	groupB, witnessArgsB, err := transaction.AddInputsForTransaction(tx, []*types.Cell{
+	groupB, witnessArgsB, err := transaction.AddInputsForTransaction(tx, []*types.CellInput{
 		{
-			OutPoint: &types.OutPoint{
+			Since: 0,
+			PreviousOutput: &types.OutPoint{
 				TxHash: types.HexToHash("0xf56d73acbe235889e726366aa4fa09b3f0b51138c294645bb30912fb872837a5"),
 				Index:  0,
 			},
 		},
-		{
-			OutPoint: &types.OutPoint{
+		{   
+			Since: 0,
+			PreviousOutput: &types.OutPoint{
 				TxHash: types.HexToHash("0x8e6d818c6e07e6cbd9fca51294030494ee23dc388d7f5276ba50b938d02cc015"),
 				Index:  0,
 			},
@@ -174,9 +178,10 @@ func main() {
 		log.Fatalf("add inputs to transaction error: %v", err)
 	}
 
-	groupA, witnessArgsA, err := transaction.AddInputsForTransaction(tx, []*types.Cell{
-		{
-			OutPoint: &types.OutPoint{
+	groupA, witnessArgsA, err := transaction.AddInputsForTransaction(tx, []*types.CellInput{
+		{ 
+			Since: 0,
+			PreviousOutput: &types.OutPoint{
 				TxHash: types.HexToHash("0xf56d73acbe235889e726366aa4fa09b3f0b51138c294645bb30912fb872837a5"),
 				Index:  1,
 			},
@@ -260,15 +265,17 @@ func main() {
 	})
 	tx.OutputsData = [][]byte{{}, {}}
 
-	group, witnessArgs, err := transaction.AddInputsForTransaction(tx, []*types.Cell{
-		{
-			OutPoint: &types.OutPoint{
+	group, witnessArgs, err := transaction.AddInputsForTransaction(tx, []*types.CellInput{
+		{   
+			Since: 0,
+			PreviousOutput: &types.OutPoint{
 				TxHash: types.HexToHash("0xccb33a76b5322ff2841511ef10606b6bb207f6eef5a687f14f8c7fa5da8a7cb2"),
 				Index:  0,
 			},
 		},
-		{
-			OutPoint: &types.OutPoint{
+		{   
+            Since: 0,
+			PreviousOutput: &types.OutPoint{
 				TxHash: types.HexToHash("0x06a49393423c1be0a48d422fa60951bdb847d56753915f321c26906a6ba1dd8a"),
 				Index:  0,
 			},
@@ -349,9 +356,10 @@ func main() {
 	})
 	tx.OutputsData = [][]byte{{}, {}}
 
-	group, witnessArgs, err := transaction.AddInputsForTransaction(tx, []*types.Cell{
-		{
-			OutPoint: &types.OutPoint{
+	group, witnessArgs, err := transaction.AddInputsForTransaction(tx, []*types.CellInput{
+		{   
+            Since: 0,
+			PreviousOutput: &types.OutPoint{
 				TxHash: types.HexToHash("0xcb905a3b304b23200225def794c4ce165d93eead77197724680b4ec067b43803"),
 				Index:  0,
 			},
@@ -362,8 +370,9 @@ func main() {
 	}
 
 	group1, witnessArgs1, err := transaction.AddInputsForTransaction(tx, []*types.Cell{
-		{
-			OutPoint: &types.OutPoint{
+		{   
+            Since: 0,
+			PreviousOutput: &types.OutPoint{
 				TxHash: types.HexToHash("0xcb905a3b304b23200225def794c4ce165d93eead77197724680b4ec067b43803"),
 				Index:  1,
 			},
@@ -454,7 +463,7 @@ import (
 )
 
 func main() {
-	client, err := rpc.Dial("http://127.0.0.1:8114")
+	client, err := rpc.DialWithIndexer("http://localhost:8114", "http://localhost:8116")
 	if err != nil {
 		log.Fatalf("create rpc client error: %v", err)
 	}
@@ -465,7 +474,7 @@ func main() {
 	}
 
 	pay, err := payment.NewPayment("ckt1qyqwmndf2yl6qvxwgvyw9yj95gkqytgygwasdjf6hm",
-		"ckt1qyqt705jmfy3r7jlvg88k87j0sksmhgduazq7x5l8k", 100000000000, 1000)
+		"ckt1qyqt705jmfy3r7jlvg88k87j0sksmhgduazq7x5l8k", 100000000000, 1000, true)
 	if err != nil {
 		log.Fatalf("create payment error: %v", err)
 	}
@@ -535,9 +544,10 @@ func main() {
 		log.Fatalf("add output error: %v", err)
 	}
 
-	group, witnessArgs, err := transaction.AddInputsForTransaction(deposit.Transaction, []*types.Cell{
-		{
-			OutPoint: &types.OutPoint{
+	group, witnessArgs, err := transaction.AddInputsForTransaction(deposit.Transaction, []*types.CellInput{
+		{   
+            Since: 0,
+			PreviousOutput: &types.OutPoint{
 				TxHash: types.HexToHash("0xaa10f51bc6ee60e851d17e3fffefc950d6dc1d2cd77e15699c3da5e837219764"),
 				Index:  1,
 			},
@@ -623,9 +633,10 @@ func main() {
 		log.Fatalf("add output error: %v", err)
 	}
 
-	group, witnessArgs, err := transaction.AddInputsForTransaction(withdraw.Transaction, []*types.Cell{
-		{
-			OutPoint: &types.OutPoint{
+	group, witnessArgs, err := transaction.AddInputsForTransaction(withdraw.Transaction, []*types.CellInput{
+		{   
+            Since: 0,
+			PreviousOutput: &types.OutPoint{
 				TxHash: types.HexToHash("0xc8cfe3d09b0a50fd2df3bd79dbadca23b7eb1f58087942d7266abea93459fce1"),
 				Index:  1,
 			},

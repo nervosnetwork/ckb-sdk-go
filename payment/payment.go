@@ -3,6 +3,7 @@ package payment
 import (
 	"context"
 	"fmt"
+	"github.com/nervosnetwork/ckb-sdk-go/indexer"
 
 	"github.com/nervosnetwork/ckb-sdk-go/address"
 	"github.com/nervosnetwork/ckb-sdk-go/crypto"
@@ -45,8 +46,15 @@ func NewPayment(from, to string, amount, fee uint64) (*Payment, error) {
 }
 
 func (p *Payment) GenerateTx(client rpc.Client) (*types.Transaction, error) {
-	collector := utils.NewCellCollector(client, p.From, utils.NewCapacityCellProcessor(p.Amount+p.Fee))
+	return generateTxWithIndexer(client, p)
+}
 
+func generateTxWithIndexer(client rpc.Client, p *Payment) (*types.Transaction, error) {
+	searchKey := &indexer.SearchKey{
+		Script:     p.From,
+		ScriptType: indexer.ScriptTypeLock,
+	}
+	collector := utils.NewLiveCellCollector(client, searchKey, indexer.SearchOrderAsc, 1000, "", utils.NewCapacityLiveCellProcessor(p.Amount+p.Fee))
 	result, err := collector.Collect()
 	if err != nil {
 		return nil, fmt.Errorf("collect cell error: %v", err)
@@ -79,8 +87,18 @@ func (p *Payment) GenerateTx(client rpc.Client) (*types.Transaction, error) {
 			tx.Outputs[0].Capacity = result.Capacity - p.Fee
 		}
 	}
-
-	group, witnessArgs, err := transaction.AddInputsForTransaction(tx, result.Cells)
+	var inputs []*types.CellInput
+	for _, cell := range result.LiveCells {
+		input := &types.CellInput{
+			Since: 0,
+			PreviousOutput: &types.OutPoint{
+				TxHash: cell.OutPoint.TxHash,
+				Index:  cell.OutPoint.Index,
+			},
+		}
+		inputs = append(inputs, input)
+	}
+	group, witnessArgs, err := transaction.AddInputsForTransaction(tx, inputs)
 	if err != nil {
 		return nil, fmt.Errorf("add inputs to transaction error: %v", err)
 	}

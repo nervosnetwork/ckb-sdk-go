@@ -64,21 +64,14 @@ func NewSecp256k1HybirdSigTx(scripts *utils.SystemScripts) *types.Transaction {
 	}
 }
 
-func AddInputsForTransaction(transaction *types.Transaction, cells []*types.Cell) ([]int, *types.WitnessArgs, error) {
-	if len(cells) == 0 {
+func AddInputsForTransaction(transaction *types.Transaction, inputs []*types.CellInput) ([]int, *types.WitnessArgs, error) {
+	if len(inputs) == 0 {
 		return nil, nil, errors.New("input cells empty")
 	}
-	group := make([]int, len(cells))
+	group := make([]int, len(inputs))
 	start := len(transaction.Witnesses)
-	for i := 0; i < len(cells); i++ {
-		cell := cells[i]
-		input := &types.CellInput{
-			Since: 0,
-			PreviousOutput: &types.OutPoint{
-				TxHash: cell.OutPoint.TxHash,
-				Index:  cell.OutPoint.Index,
-			},
-		}
+	for i := 0; i < len(inputs); i++ {
+		input := inputs[i]
 		transaction.Inputs = append(transaction.Inputs, input)
 		transaction.Witnesses = append(transaction.Witnesses, []byte{})
 		group[i] = start + i
@@ -253,18 +246,21 @@ func SingleSegmentSignTransaction(transaction *types.Transaction, start int, end
 }
 
 func CalculateTransactionFee(tx *types.Transaction, feeRate uint64) (uint64, error) {
-	bytes, err := tx.Serialize()
+	// raw tx serialize
+	rawTxBytes, err := tx.Serialize()
 	if err != nil {
 		return 0, err
 	}
 
-	// raw tx serialize
-	txSize := uint64(len(bytes))
-	// witness serialize
-	txSize += uint64(len(types.SerializeDynVec(tx.Witnesses)))
-	// raw tx + witness offset
-	txSize += 12
-	// tx offset
+	var witnessBytes [][]byte
+	for _, witness := range tx.Witnesses {
+		witnessBytes = append(witnessBytes, types.SerializeBytes(witness))
+	}
+	witnessesBytes := types.SerializeDynVec(witnessBytes)
+	//tx serialize
+	txBytes := types.SerializeTable([][]byte{rawTxBytes, witnessesBytes})
+	txSize := uint64(len(txBytes))
+	// tx offset cost
 	txSize += 4
 	fee := txSize * feeRate / 1000
 	if fee*1000 < txSize*feeRate {
