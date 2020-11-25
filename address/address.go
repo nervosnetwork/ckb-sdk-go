@@ -31,7 +31,7 @@ const (
 	CodeHashIndexAnyoneCanPay = "02"
 )
 
-var shortPayloadSupportedArgsLens = [3]int{20, 21, 22}
+var shortPayloadSupportedArgsLens = [2]int{20, 22}
 
 type ParsedAddress struct {
 	Mode   Mode
@@ -76,10 +76,8 @@ func Generate(mode Mode, script *types.Script) (string, error) {
 }
 
 func isShortPayloadSupportedArgsLen(argLen int) bool {
-	for _, l := range shortPayloadSupportedArgsLens {
-		if l == argLen {
-			return true
-		}
+	if argLen >= shortPayloadSupportedArgsLens[0] && argLen <= shortPayloadSupportedArgsLens[1] {
+		return true
 	}
 	return false
 }
