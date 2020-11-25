@@ -72,7 +72,7 @@ func Generate(mode Mode, script *types.Script) (string, error) {
 		hashType = FullDataFormat
 	}
 
-	return generateFullPayloadAddress(hashType, mode, script)
+	return GenerateFullPayloadAddress(hashType, mode, script)
 }
 
 func isShortPayloadSupportedArgsLen(argLen int) bool {
@@ -82,7 +82,7 @@ func isShortPayloadSupportedArgsLen(argLen int) bool {
 	return false
 }
 
-func generateFullPayloadAddress(hashType string, mode Mode, script *types.Script) (string, error) {
+func GenerateFullPayloadAddress(hashType string, mode Mode, script *types.Script) (string, error) {
 	payload := hashType + hex.EncodeToString(script.CodeHash.Bytes()) + hex.EncodeToString(script.Args)
 	data, err := bech32.ConvertBits(common.FromHex(payload), 8, 5, true)
 	if err != nil {
