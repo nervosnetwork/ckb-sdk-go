@@ -457,19 +457,17 @@ import (
 	"fmt"
 	"log"
 
-
-"github.com/nervosnetwork/ckb-sdk-go/indexer"
-"github.com/nervosnetwork/ckb-sdk-go/rpc"
-"github.com/nervosnetwork/ckb-sdk-go/types"
-"github.com/nervosnetwork/ckb-sdk-go/utils"
+    "github.com/nervosnetwork/ckb-sdk-go/indexer"
+    "github.com/nervosnetwork/ckb-sdk-go/rpc"
+    "github.com/nervosnetwork/ckb-sdk-go/types"
+    "github.com/nervosnetwork/ckb-sdk-go/utils"
 )
 
 func main() {
 	client, err := rpc.DialWithIndexer("http://localhost:8114", "http://localhost:8116")
 	if err != nil {
 		log.Fatalf("create rpc client error: %v", err)
-	}
-
+	}	
 	args, _ := hex.DecodeString("edcda9513fa030ce4308e29245a22c022d0443bb")
     searchKey := &indexer.SearchKey{
         Script: &types.Script{
