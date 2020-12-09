@@ -504,7 +504,8 @@ package main
 
 import (
 	"fmt"
-	"log"
+	"github.com/nervosnetwork/ckb-sdk-go/utils"
+"log"
 
 	"github.com/nervosnetwork/ckb-sdk-go/crypto/secp256k1"
 	"github.com/nervosnetwork/ckb-sdk-go/payment"
@@ -527,8 +528,9 @@ func main() {
 	if err != nil {
 		log.Fatalf("create payment error: %v", err)
 	}
-
-	_, err = pay.GenerateTx(client)
+    
+    systemScripts, _ := utils.NewSystemScripts(client)
+	_, err = pay.GenerateTx(client, systemScripts)
 	if err != nil {
 		log.Fatalf("create transaction error: %v", err)
 	}

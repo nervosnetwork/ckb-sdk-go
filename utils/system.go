@@ -117,6 +117,27 @@ func NewSystemScripts(client rpc.Client, options ...Option) (*SystemScripts, err
 	return scripts, nil
 }
 
+// SecpSingleSigCell set a custom secp single sig cell to SystemScripts
+func SecpSingleSigCell(secpSingleSigCell *SystemScriptCell) Option {
+	return func(s *SystemScripts) {
+		s.SecpSingleSigCell = secpSingleSigCell
+	}
+}
+
+// SecpMultiSigCell set a custom secp mutisig cell to SystemScripts
+func SecpMultiSigCell(secpMultiSigCell *SystemScriptCell) Option {
+	return func(s *SystemScripts) {
+		s.SecpMultiSigCell = secpMultiSigCell
+	}
+}
+
+// DaoCell set a custom dao cell to SystemScripts
+func DaoCell(daoCell *SystemScriptCell) Option {
+	return func(s *SystemScripts) {
+		s.DaoCell = daoCell
+	}
+}
+
 // ACPCell set a custom acp system script cell to SystemScripts
 func ACPCell(acpCell *SystemScriptCell) Option {
 	return func(s *SystemScripts) {
