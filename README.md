@@ -6,6 +6,52 @@
 
 Golang SDK for Nervos [CKB](https://github.com/nervosnetwork/ckb).
 
+The ckb-sdk-go is still under development and **NOT** production ready. You should get familiar with CKB transaction structure and RPC before using it.
+
+## WARNING
+Module Indexer deprecated since [ckb_v0.36.0](https://github.com/nervosnetwork/ckb/releases/tag/v0.36.0): Please use [ckb-indexer](https://github.com/nervosnetwork/ckb-indexer) as an alternate solution.
+
+The following RPCs deprecated since [ckb_v0.36.0](https://github.com/nervosnetwork/ckb/releases/tag/v0.36.0):
+* `get_live_cells_by_lock_hash`
+* `get_transactions_by_lock_hash`
+* `index_lock_hash`
+* `deindex_lock_hash`
+* `get_lock_hash_index_states`
+* `get_capacity_by_lock_hash`
+
+If you want to use `Module Indexer` RPCs, as a temporary solution, you can set `enable_deprecated_rpc = true` in file `ckb.toml`. 
+This configuration may not be able to be modified in future versions. Please use [ckb-indexer](https://github.com/nervosnetwork/ckb-indexer) as an alternate solution as soon as possible.
+```toml
+# ...
+
+[rpc]
+# By default RPC only binds to localhost, thus it only allows accessing from the same machine.
+#
+# Allowing arbitrary machines to access the JSON-RPC port is dangerous and strongly discouraged.
+# Please strictly limit the access to only trusted machines.
+listen_address = "127.0.0.1:8114"
+
+# Default is 10MiB = 10 * 1024 * 1024
+max_request_body_size = 10485760
+
+# List of API modules: ["Net", "Pool", "Miner", "Chain", "Stats", "Subscription", "Indexer", "Experiment", "Debug"]
+modules = ["Net", "Pool", "Miner", "Chain", "Stats", "Subscription", "Experiment", "Debug", "Indexer"]
+
+# By default RPC only binds to HTTP service, you can bind it to TCP and WebSocket.
+tcp_listen_address = "127.0.0.1:18114"
+ws_listen_address = "127.0.0.1:28114"
+reject_ill_transactions = true
+
+# By default deprecated rpc methods are disabled.
+enable_deprecated_rpc = true
+
+# ...
+```
+
+
+Since [ckb_v0.36.0](https://github.com/nervosnetwork/ckb/releases/tag/v0.36.0) SDK use [ckb-indexer](https://github.com/nervosnetwork/ckb-indexer) to collect cells, please see [Collect cells](#5-collect-cells) for examples.
+
+
 ## Get started
 
 ### Minimum requirements
@@ -411,24 +457,29 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/nervosnetwork/ckb-sdk-go/rpc"
-	"github.com/nervosnetwork/ckb-sdk-go/types"
-	"github.com/nervosnetwork/ckb-sdk-go/utils"
+
+"github.com/nervosnetwork/ckb-sdk-go/indexer"
+"github.com/nervosnetwork/ckb-sdk-go/rpc"
+"github.com/nervosnetwork/ckb-sdk-go/types"
+"github.com/nervosnetwork/ckb-sdk-go/utils"
 )
 
 func main() {
-	client, err := rpc.Dial("http://127.0.0.1:8114")
+	client, err := rpc.DialWithIndexer("http://localhost:8114", "http://localhost:8116")
 	if err != nil {
 		log.Fatalf("create rpc client error: %v", err)
 	}
 
 	args, _ := hex.DecodeString("edcda9513fa030ce4308e29245a22c022d0443bb")
-
-	collector := utils.NewCellCollector(client, &types.Script{
-		CodeHash: types.HexToHash("0x9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8"),
-		HashType: types.HashTypeType,
-		Args:     args,
-	}, utils.NewCapacityCellProcessor(10000000000000000))
+    searchKey := &indexer.SearchKey{
+        Script: &types.Script{
+            CodeHash: types.HexToHash("0x9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8"),
+            HashType: types.HashTypeType,
+            Args:     args,
+        },
+        ScriptType: indexer.ScriptTypeLock,
+    }
+	collector := utils.NewLiveCellCollector(client, searchKey, indexer.SearchOrderAsc, 1000, "", utils.NewCapacityLiveCellProcessor(10000000000000000))
 
 	// default collect null type script
 	fmt.Println(collector.Collect())
@@ -474,7 +525,7 @@ func main() {
 	}
 
 	pay, err := payment.NewPayment("ckt1qyqwmndf2yl6qvxwgvyw9yj95gkqytgygwasdjf6hm",
-		"ckt1qyqt705jmfy3r7jlvg88k87j0sksmhgduazq7x5l8k", 100000000000, 1000, true)
+		"ckt1qyqt705jmfy3r7jlvg88k87j0sksmhgduazq7x5l8k", 100000000000, 1000)
 	if err != nil {
 		log.Fatalf("create payment error: %v", err)
 	}
