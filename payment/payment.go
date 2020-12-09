@@ -45,11 +45,11 @@ func NewPayment(from, to string, amount, fee uint64) (*Payment, error) {
 	}, nil
 }
 
-func (p *Payment) GenerateTx(client rpc.Client) (*types.Transaction, error) {
-	return generateTxWithIndexer(client, p)
+func (p *Payment) GenerateTx(client rpc.Client, systemScripts *utils.SystemScripts) (*types.Transaction, error) {
+	return generateTxWithIndexer(client, p, systemScripts)
 }
 
-func generateTxWithIndexer(client rpc.Client, p *Payment) (*types.Transaction, error) {
+func generateTxWithIndexer(client rpc.Client, p *Payment, systemScripts *utils.SystemScripts) (*types.Transaction, error) {
 	searchKey := &indexer.SearchKey{
 		Script:     p.From,
 		ScriptType: indexer.ScriptTypeLock,
@@ -62,11 +62,6 @@ func generateTxWithIndexer(client rpc.Client, p *Payment) (*types.Transaction, e
 
 	if result.Capacity < p.Amount+p.Fee {
 		return nil, fmt.Errorf("insufficient balance: %d", result.Capacity)
-	}
-
-	systemScripts, err := utils.NewSystemScripts(client)
-	if err != nil {
-		return nil, fmt.Errorf("load system script error: %v", err)
 	}
 
 	tx := transaction.NewSecp256k1SingleSigTx(systemScripts)
