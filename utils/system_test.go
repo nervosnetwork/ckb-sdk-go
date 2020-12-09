@@ -222,3 +222,177 @@ func TestSUDTCell(t *testing.T) {
 		})
 	}
 }
+
+func TestSecpSingleSigCell(t *testing.T) {
+	type args struct {
+		secpSingleSigCell *SystemScriptCell
+	}
+
+	tests := []struct {
+		name  string
+		args  args
+		chain string
+		want  *SystemScriptCell
+	}{
+		{
+			"set custom secp single sig cell on mainnet",
+			args{&SystemScriptCell{
+				CellHash: types.HexToHash("0x683574c1275eb5cfe6f8745faa375b08bf773223fd8d2b4db28dbd90a27f1586"),
+				OutPoint: &types.OutPoint{
+					TxHash: types.HexToHash("0x7d0ecdb8bad4064788b67dfafe71757e7caa2ad2cbe5597a02df95f8792bdb21"),
+					Index:  0,
+				},
+			}},
+			"ckb",
+			&SystemScriptCell{
+				CellHash: types.HexToHash("0x683574c1275eb5cfe6f8745faa375b08bf773223fd8d2b4db28dbd90a27f1586"),
+				OutPoint: &types.OutPoint{
+					TxHash: types.HexToHash("0x7d0ecdb8bad4064788b67dfafe71757e7caa2ad2cbe5597a02df95f8792bdb21"),
+					Index:  0,
+				},
+			},
+		},
+		{
+			"set custom secp single sig cell on testnet",
+			args{&SystemScriptCell{
+				CellHash: types.HexToHash("0x683574c1275eb5cfe6f8745faa375b08bf773223fd8d2b4db28dbd90a27f1586"),
+				OutPoint: &types.OutPoint{
+					TxHash: types.HexToHash("0x7d0ecdb8bad4064788b67dfafe71757e7caa2ad2cbe5597a02df95f8792bdb21"),
+					Index:  0,
+				},
+			}},
+			"ckb_testnet",
+			&SystemScriptCell{
+				CellHash: types.HexToHash("0x683574c1275eb5cfe6f8745faa375b08bf773223fd8d2b4db28dbd90a27f1586"),
+				OutPoint: &types.OutPoint{
+					TxHash: types.HexToHash("0x7d0ecdb8bad4064788b67dfafe71757e7caa2ad2cbe5597a02df95f8792bdb21"),
+					Index:  0,
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			mockClient := &mocks.Client{}
+			mockClient.On("GetBlockchainInfo", context.Background()).Return(&types.BlockchainInfo{Chain: tt.chain}, nil)
+			s, _ := NewSystemScripts(mockClient, SecpSingleSigCell(tt.args.secpSingleSigCell))
+			assert.Equal(t, tt.want, s.SecpSingleSigCell)
+		})
+	}
+}
+
+func TestSecpMultiSigCell(t *testing.T) {
+	type args struct {
+		secpMultiSigCell *SystemScriptCell
+	}
+
+	tests := []struct {
+		name  string
+		args  args
+		chain string
+		want  *SystemScriptCell
+	}{
+		{
+			"set custom secp mutisig cell on mainnet",
+			args{&SystemScriptCell{
+				CellHash: types.HexToHash("0x683574c1275eb5cfe6f8745faa375b08bf773223fd8d2b4db28dbd90a27f1586"),
+				OutPoint: &types.OutPoint{
+					TxHash: types.HexToHash("0x7d0ecdb8bad4064788b67dfafe71757e7caa2ad2cbe5597a02df95f8792bdb21"),
+					Index:  0,
+				},
+			}},
+			"ckb",
+			&SystemScriptCell{
+				CellHash: types.HexToHash("0x683574c1275eb5cfe6f8745faa375b08bf773223fd8d2b4db28dbd90a27f1586"),
+				OutPoint: &types.OutPoint{
+					TxHash: types.HexToHash("0x7d0ecdb8bad4064788b67dfafe71757e7caa2ad2cbe5597a02df95f8792bdb21"),
+					Index:  0,
+				},
+			},
+		},
+		{
+			"set custom secp mutisig cell on testnet",
+			args{&SystemScriptCell{
+				CellHash: types.HexToHash("0x683574c1275eb5cfe6f8745faa375b08bf773223fd8d2b4db28dbd90a27f1586"),
+				OutPoint: &types.OutPoint{
+					TxHash: types.HexToHash("0x7d0ecdb8bad4064788b67dfafe71757e7caa2ad2cbe5597a02df95f8792bdb21"),
+					Index:  0,
+				},
+			}},
+			"ckb_testnet",
+			&SystemScriptCell{
+				CellHash: types.HexToHash("0x683574c1275eb5cfe6f8745faa375b08bf773223fd8d2b4db28dbd90a27f1586"),
+				OutPoint: &types.OutPoint{
+					TxHash: types.HexToHash("0x7d0ecdb8bad4064788b67dfafe71757e7caa2ad2cbe5597a02df95f8792bdb21"),
+					Index:  0,
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			mockClient := &mocks.Client{}
+			mockClient.On("GetBlockchainInfo", context.Background()).Return(&types.BlockchainInfo{Chain: tt.chain}, nil)
+			s, _ := NewSystemScripts(mockClient, SecpMultiSigCell(tt.args.secpMultiSigCell))
+			assert.Equal(t, tt.want, s.SecpMultiSigCell)
+		})
+	}
+}
+
+func TestDaoCell(t *testing.T) {
+	type args struct {
+		daoCell *SystemScriptCell
+	}
+
+	tests := []struct {
+		name  string
+		args  args
+		chain string
+		want  *SystemScriptCell
+	}{
+		{
+			"set custom dao cell on mainnet",
+			args{&SystemScriptCell{
+				CellHash: types.HexToHash("0x683574c1275eb5cfe6f8745faa375b08bf773223fd8d2b4db28dbd90a27f1586"),
+				OutPoint: &types.OutPoint{
+					TxHash: types.HexToHash("0x7d0ecdb8bad4064788b67dfafe71757e7caa2ad2cbe5597a02df95f8792bdb21"),
+					Index:  0,
+				},
+			}},
+			"ckb",
+			&SystemScriptCell{
+				CellHash: types.HexToHash("0x683574c1275eb5cfe6f8745faa375b08bf773223fd8d2b4db28dbd90a27f1586"),
+				OutPoint: &types.OutPoint{
+					TxHash: types.HexToHash("0x7d0ecdb8bad4064788b67dfafe71757e7caa2ad2cbe5597a02df95f8792bdb21"),
+					Index:  0,
+				},
+			},
+		},
+		{
+			"set custom dao cell on testnet",
+			args{&SystemScriptCell{
+				CellHash: types.HexToHash("0x683574c1275eb5cfe6f8745faa375b08bf773223fd8d2b4db28dbd90a27f1586"),
+				OutPoint: &types.OutPoint{
+					TxHash: types.HexToHash("0x7d0ecdb8bad4064788b67dfafe71757e7caa2ad2cbe5597a02df95f8792bdb21"),
+					Index:  0,
+				},
+			}},
+			"ckb_testnet",
+			&SystemScriptCell{
+				CellHash: types.HexToHash("0x683574c1275eb5cfe6f8745faa375b08bf773223fd8d2b4db28dbd90a27f1586"),
+				OutPoint: &types.OutPoint{
+					TxHash: types.HexToHash("0x7d0ecdb8bad4064788b67dfafe71757e7caa2ad2cbe5597a02df95f8792bdb21"),
+					Index:  0,
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			mockClient := &mocks.Client{}
+			mockClient.On("GetBlockchainInfo", context.Background()).Return(&types.BlockchainInfo{Chain: tt.chain}, nil)
+			s, _ := NewSystemScripts(mockClient, DaoCell(tt.args.daoCell))
+			assert.Equal(t, tt.want, s.DaoCell)
+		})
+	}
+}
