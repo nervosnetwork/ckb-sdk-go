@@ -16,6 +16,8 @@ type Option func(*SystemScripts)
 type SystemScriptCell struct {
 	CellHash types.Hash
 	OutPoint *types.OutPoint
+	HashType types.ScriptHashType
+	DepType  types.DepType
 }
 
 type SystemScripts struct {
@@ -24,6 +26,7 @@ type SystemScripts struct {
 	DaoCell           *SystemScriptCell
 	ACPCell           *SystemScriptCell
 	SUDTCell          *SystemScriptCell
+	ChequeCell        *SystemScriptCell
 }
 
 func secpSingleSigCell() *SystemScriptCell {
@@ -33,6 +36,8 @@ func secpSingleSigCell() *SystemScriptCell {
 			TxHash: types.HexToHash("0x71a7ba8fc96349fea0ed3a5c47992e3b4084b031a42264a018e0072e8172e46c"),
 			Index:  0,
 		},
+		HashType: types.HashTypeType,
+		DepType:  types.DepTypeDepGroup,
 	}
 }
 
@@ -43,6 +48,8 @@ func secpMultiSigCell() *SystemScriptCell {
 			TxHash: types.HexToHash("0x71a7ba8fc96349fea0ed3a5c47992e3b4084b031a42264a018e0072e8172e46c"),
 			Index:  1,
 		},
+		HashType: types.HashTypeType,
+		DepType:  types.DepTypeDepGroup,
 	}
 }
 
@@ -53,6 +60,8 @@ func daoCell() *SystemScriptCell {
 			TxHash: types.HexToHash("0xe2fb199810d49a4d8beec56718ba2593b665db9d52299a0f9e6e75416d73ff5c"),
 			Index:  2,
 		},
+		HashType: types.HashTypeType,
+		DepType:  types.DepTypeCode,
 	}
 }
 
@@ -64,6 +73,8 @@ func acpCell(chain string) *SystemScriptCell {
 				TxHash: types.HexToHash("0x4153a2014952d7cac45f285ce9a7c5c0c0e1b21f2d378b82ac1433cb11c25c4d"),
 				Index:  0,
 			},
+			HashType: types.HashTypeType,
+			DepType:  types.DepTypeDepGroup,
 		}
 	} else {
 		return &SystemScriptCell{
@@ -72,6 +83,8 @@ func acpCell(chain string) *SystemScriptCell {
 				TxHash: types.HexToHash("0xec26b0f85ed839ece5f11c4c4e837ec359f5adc4420410f6453b1f6b60fb96a6"),
 				Index:  0,
 			},
+			HashType: types.HashTypeType,
+			DepType:  types.DepTypeDepGroup,
 		}
 	}
 }
@@ -84,6 +97,8 @@ func sudtCell(chain string) *SystemScriptCell {
 				TxHash: types.HexToHash("0xc7813f6a415144643970c2e88e0bb6ca6a8edc5dd7c1022746f628284a9936d5"),
 				Index:  0,
 			},
+			HashType: types.HashTypeType,
+			DepType:  types.DepTypeCode,
 		}
 	} else {
 		return &SystemScriptCell{
@@ -92,6 +107,33 @@ func sudtCell(chain string) *SystemScriptCell {
 				TxHash: types.HexToHash("0xc1b2ae129fad7465aaa9acc9785f842ba3e6e8b8051d899defa89f5508a77958"),
 				Index:  0,
 			},
+			HashType: types.HashTypeData,
+			DepType:  types.DepTypeCode,
+		}
+	}
+}
+
+// mock data
+func chequeCell(chain string) *SystemScriptCell {
+	if chain == "ckb" {
+		return &SystemScriptCell{
+			CellHash: types.HexToHash("0x5e7a36a77e68eecc013dfa2fe6a23f3b6c344b04005808694ae6dd45eea4cfd5"),
+			OutPoint: &types.OutPoint{
+				TxHash: types.HexToHash("0xc7813f6a415144643970c2e88e0bb6ca6a8edc5dd7c1022746f628284a9936d5"),
+				Index:  0,
+			},
+			HashType: types.HashTypeType,
+			DepType:  types.DepTypeDepGroup,
+		}
+	} else {
+		return &SystemScriptCell{
+			CellHash: types.HexToHash("0x48dbf59b4c7ee1547238021b4869bceedf4eea6b43772e5d66ef8865b6ae7212"),
+			OutPoint: &types.OutPoint{
+				TxHash: types.HexToHash("0xc1b2ae129fad7465aaa9acc9785f842ba3e6e8b8051d899defa89f5508a77958"),
+				Index:  0,
+			},
+			HashType: types.HashTypeType,
+			DepType:  types.DepTypeDepGroup,
 		}
 	}
 }
@@ -108,6 +150,7 @@ func NewSystemScripts(client rpc.Client, options ...Option) (*SystemScripts, err
 		DaoCell:           daoCell(),
 		ACPCell:           acpCell(info.Chain),
 		SUDTCell:          sudtCell(info.Chain),
+		ChequeCell:        chequeCell(info.Chain),
 	}
 
 	for _, option := range options {
@@ -149,5 +192,12 @@ func ACPCell(acpCell *SystemScriptCell) Option {
 func SUDTCell(sudtCell *SystemScriptCell) Option {
 	return func(s *SystemScripts) {
 		s.SUDTCell = sudtCell
+	}
+}
+
+// ChequeCell set a custom cheque script cell to SystemScripts
+func ChequeCell(chequeCell *SystemScriptCell) Option {
+	return func(s *SystemScripts) {
+		s.ChequeCell = chequeCell
 	}
 }
