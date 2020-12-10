@@ -6,6 +6,9 @@ import (
 )
 
 func ParseSudtAmount(outputData []byte) (*big.Int, error) {
+	if len(outputData) == 0 {
+		return big.NewInt(0), nil
+	}
 	tmpData := make([]byte, len(outputData))
 	copy(tmpData, outputData)
 	if len(tmpData) < 16 {
