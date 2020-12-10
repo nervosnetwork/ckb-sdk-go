@@ -1,10 +1,12 @@
 package payment
 
 import (
+	"context"
 	"fmt"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/nervosnetwork/ckb-sdk-go/address"
 	"github.com/nervosnetwork/ckb-sdk-go/collector"
+	"github.com/nervosnetwork/ckb-sdk-go/crypto"
 	"github.com/nervosnetwork/ckb-sdk-go/indexer"
 	"github.com/nervosnetwork/ckb-sdk-go/rpc"
 	"github.com/nervosnetwork/ckb-sdk-go/transaction"
@@ -51,6 +53,7 @@ func NewCheque(senderAddr, receiverAddr, uuid, amount string, feeRate uint64) (*
 	}, nil
 }
 
+// GenerateIssueChequeTx generate an unsigned transaction for issuing a cheque cell
 func (c *Cheque) GenerateIssueChequeTx(client rpc.Client) (*types.Transaction, error) {
 	systemScripts, err := utils.NewSystemScripts(client)
 	if err != nil {
@@ -126,4 +129,17 @@ func (c *Cheque) GenerateIssueChequeTx(client rpc.Client) (*types.Transaction, e
 	c.tx = tx
 
 	return tx, nil
+}
+
+// SignIssueChequeTx sign an unsigned issuing cheque transaction and return an signed transaction
+func (c *Cheque) SignIssueChequeTx(key crypto.Key) (*types.Transaction, error) {
+	err := transaction.SingleSegmentSignTransaction(c.tx, 0, len(c.tx.Witnesses), transaction.EmptyWitnessArg, key)
+	if err != nil {
+		return nil, fmt.Errorf("sign transaction error: %v", err)
+	}
+	return c.tx, nil
+}
+
+func (c *Cheque) Send(client rpc.Client) (*types.Hash, error) {
+	return client.SendTransaction(context.Background(), c.tx)
 }
