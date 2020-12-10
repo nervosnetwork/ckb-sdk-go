@@ -70,7 +70,8 @@ func TestIssuingCheque(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			tx, err := c.GenerateIssueChequeTx(mockClient)
+			systemScripts, _ := utils.NewSystemScripts(mockClient)
+			tx, err := c.GenerateIssueChequeTx(mockClient, systemScripts)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -113,9 +114,6 @@ func mockUnsignedIssuingChequeTx(senderAddr, receiverAddr, totalAmount, transfer
 	tx.CellDeps = append(tx.CellDeps, &types.CellDep{
 		OutPoint: systemScripts.SUDTCell.OutPoint,
 		DepType:  systemScripts.SUDTCell.DepType,
-	}, &types.CellDep{
-		OutPoint: systemScripts.ChequeCell.OutPoint,
-		DepType:  systemScripts.ChequeCell.DepType,
 	})
 	args, err := utils.ChequeCellArgs(getLock(senderAddr), getLock(receiverAddr))
 	if err != nil {
