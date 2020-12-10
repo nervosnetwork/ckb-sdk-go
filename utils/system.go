@@ -2,6 +2,7 @@ package utils
 
 import (
 	"context"
+	"github.com/pkg/errors"
 
 	"github.com/nervosnetwork/ckb-sdk-go/rpc"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
@@ -142,7 +143,7 @@ func chequeCell(chain string) *SystemScriptCell {
 func NewSystemScripts(client rpc.Client, options ...Option) (*SystemScripts, error) {
 	info, err := client.GetBlockchainInfo(context.Background())
 	if err != nil {
-		return nil, err
+		return nil, errors.WithMessage(err, "RPC get_blockchain_info error")
 	}
 	scripts := &SystemScripts{
 		SecpSingleSigCell: secpSingleSigCell(),
