@@ -2,10 +2,10 @@ package utils
 
 import (
 	"context"
-	"errors"
 	"github.com/nervosnetwork/ckb-sdk-go/indexer"
 	"github.com/nervosnetwork/ckb-sdk-go/rpc"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
+	"github.com/pkg/errors"
 )
 
 type LiveCellCollectResult struct {
@@ -19,7 +19,9 @@ type LiveCellProcessor interface {
 }
 
 type CapacityLiveCellProcessor struct {
-	Max uint64
+	Max        uint64
+	EmptyData  bool
+	TypeScript *types.Script
 }
 
 func NewCapacityLiveCellProcessor(capacity uint64) *CapacityLiveCellProcessor {
@@ -29,6 +31,18 @@ func NewCapacityLiveCellProcessor(capacity uint64) *CapacityLiveCellProcessor {
 }
 
 func (p *CapacityLiveCellProcessor) Process(liveCell *indexer.LiveCell, result *LiveCellCollectResult) (bool, error) {
+	if p.TypeScript != nil {
+		if !p.TypeScript.Equals(liveCell.Output.Type) {
+			return false, nil
+		}
+	} else {
+		if liveCell.Output.Type != nil {
+			return false, nil
+		}
+	}
+	if p.EmptyData && len(liveCell.OutputData) > 0 {
+		return false, nil
+	}
 	result.Capacity = result.Capacity + liveCell.Output.Capacity
 	result.LiveCells = append(result.LiveCells, liveCell)
 	if p.Max > 0 && result.Capacity >= p.Max {
@@ -44,8 +58,6 @@ type LiveCellCollector struct {
 	Limit       uint64
 	AfterCursor string
 	Processor   LiveCellProcessor
-	EmptyData   bool
-	TypeScript  *types.Script
 }
 
 func (c *LiveCellCollector) collectFromCkbIndexer() (*LiveCellCollectResult, error) {
@@ -58,18 +70,6 @@ func (c *LiveCellCollector) collectFromCkbIndexer() (*LiveCellCollectResult, err
 			return nil, err
 		}
 		for _, cell := range liveCells.Objects {
-			if c.TypeScript != nil {
-				if !c.TypeScript.Equals(cell.Output.Type) {
-					continue
-				}
-			} else {
-				if cell.Output.Type != nil {
-					continue
-				}
-			}
-			if c.EmptyData && len(cell.OutputData) > 0 {
-				continue
-			}
 			s, err := c.Processor.Process(cell, &result)
 			if err != nil {
 				return nil, err

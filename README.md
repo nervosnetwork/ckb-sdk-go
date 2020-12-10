@@ -477,18 +477,19 @@ func main() {
         },
         ScriptType: indexer.ScriptTypeLock,
     }
-	collector := utils.NewLiveCellCollector(client, searchKey, indexer.SearchOrderAsc, 1000, "", utils.NewCapacityLiveCellProcessor(10000000000000000))
+    processor := utils.NewCapacityLiveCellProcessor(10000000000000000)
 
-	// default collect null type script
-	fmt.Println(collector.Collect())
-
-	// collect by type script
-	collector.EmptyData = false
-	collector.TypeScript = &types.Script{
+    // collect by type script
+	processor.EmptyData = false
+	processor.TypeScript = &types.Script{
 		CodeHash: types.HexToHash("0x48dbf59b4c7ee1547238021b4869bceedf4eea6b43772e5d66ef8865b6ae7212"),
 		HashType: types.HashTypeData,
 		Args:     types.HexToHash("0x6a242b57227484e904b4e08ba96f19a623c367dcbd18675ec6f2a71a0ff4ec26").Bytes(),
 	}
+	collector := utils.NewLiveCellCollector(client, searchKey, indexer.SearchOrderAsc, 1000, "", processor)
+
+	// default collect null type script
+	fmt.Println(collector.Collect())
 
 	cells, err := collector.Collect()
 

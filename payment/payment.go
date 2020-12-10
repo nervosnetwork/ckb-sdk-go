@@ -54,7 +54,9 @@ func generateTxWithIndexer(client rpc.Client, p *Payment, systemScripts *utils.S
 		Script:     p.From,
 		ScriptType: indexer.ScriptTypeLock,
 	}
-	collector := utils.NewLiveCellCollector(client, searchKey, indexer.SearchOrderAsc, 1000, "", utils.NewCapacityLiveCellProcessor(p.Amount+p.Fee))
+	processor := utils.NewCapacityLiveCellProcessor(p.Amount + p.Fee)
+	processor.EmptyData = true
+	collector := utils.NewLiveCellCollector(client, searchKey, indexer.SearchOrderAsc, indexer.SearchLimit, "", processor)
 	result, err := collector.Collect()
 	if err != nil {
 		return nil, fmt.Errorf("collect cell error: %v", err)
