@@ -14,7 +14,6 @@ var DataPlaceHolder = make([]byte, 16)
 
 type UDTLiveCellProcessor struct {
 	Max                        *big.Int
-	EmptyData                  bool
 	TypeScript                 *types.Script
 	Tx                         *types.Transaction
 	FeeRate                    uint64
@@ -78,17 +77,11 @@ func (p *UDTLiveCellProcessor) Process(liveCell *indexer.LiveCell, result *utils
 		totalAmount = result.Options["totalAmount"].(*big.Int)
 	}
 	if totalAmount.Cmp(p.Max) < 0 {
+		cellType := liveCell.Output.Type
 		if p.TypeScript != nil {
-			if !p.TypeScript.Equals(liveCell.Output.Type) {
+			if cellType != nil && !p.TypeScript.Equals(liveCell.Output.Type) {
 				return false, nil
 			}
-		} else {
-			if liveCell.Output.Type != nil {
-				return false, nil
-			}
-		}
-		if p.EmptyData && len(liveCell.OutputData) > 0 {
-			return false, nil
 		}
 		amount, err := utils.ParseSudtAmount(liveCell.OutputData)
 		if err != nil {
@@ -96,7 +89,8 @@ func (p *UDTLiveCellProcessor) Process(liveCell *indexer.LiveCell, result *utils
 		}
 		total, ok := result.Options["totalAmount"]
 		if ok {
-			result.Options["totalAmount"] = big.NewInt(0).Add(total.(*big.Int), amount)
+			totalAmount = big.NewInt(0).Add(total.(*big.Int), amount)
+			result.Options["totalAmount"] = totalAmount
 		} else {
 			result.Options = make(map[string]interface{})
 			result.Options["totalAmount"] = amount
@@ -115,6 +109,7 @@ func (p *UDTLiveCellProcessor) Process(liveCell *indexer.LiveCell, result *utils
 		p.Tx.OutputsData = RemoveCellOutputData(p.Tx.OutputsData, p.SUDTChangeOutputIndex.Value)
 	}
 	result.Capacity = result.Capacity + liveCell.Output.Capacity
+	result.LiveCells = append(result.LiveCells, liveCell)
 	input := &types.CellInput{
 		Since: 0,
 		PreviousOutput: &types.OutPoint{
@@ -122,7 +117,6 @@ func (p *UDTLiveCellProcessor) Process(liveCell *indexer.LiveCell, result *utils
 			Index:  liveCell.OutPoint.Index,
 		},
 	}
-	result.LiveCells = append(result.LiveCells, liveCell)
 	p.Tx.Inputs = append(p.Tx.Inputs, input)
 	p.Tx.Witnesses = append(p.Tx.Witnesses, []byte{})
 	if len(p.Tx.Witnesses[0]) == 0 {
