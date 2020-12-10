@@ -30,39 +30,75 @@ type SystemScripts struct {
 	ChequeCell        *SystemScriptCell
 }
 
-func secpSingleSigCell() *SystemScriptCell {
-	return &SystemScriptCell{
-		CellHash: types.HexToHash("0x9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8"),
-		OutPoint: &types.OutPoint{
-			TxHash: types.HexToHash("0x71a7ba8fc96349fea0ed3a5c47992e3b4084b031a42264a018e0072e8172e46c"),
-			Index:  0,
-		},
-		HashType: types.HashTypeType,
-		DepType:  types.DepTypeDepGroup,
+func secpSingleSigCell(chain string) *SystemScriptCell {
+	if chain == "ckb" {
+		return &SystemScriptCell{
+			CellHash: types.HexToHash("0x9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8"),
+			OutPoint: &types.OutPoint{
+				TxHash: types.HexToHash("0x71a7ba8fc96349fea0ed3a5c47992e3b4084b031a42264a018e0072e8172e46c"),
+				Index:  0,
+			},
+			HashType: types.HashTypeType,
+			DepType:  types.DepTypeDepGroup,
+		}
+	} else {
+		return &SystemScriptCell{
+			CellHash: types.HexToHash("0x9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8"),
+			OutPoint: &types.OutPoint{
+				TxHash: types.HexToHash("0xf8de3bb47d055cdf460d93a2a6e1b05f7432f9777c8c474abf4eec1d4aee5d37"),
+				Index:  0,
+			},
+			HashType: types.HashTypeType,
+			DepType:  types.DepTypeDepGroup,
+		}
 	}
 }
 
-func secpMultiSigCell() *SystemScriptCell {
-	return &SystemScriptCell{
-		CellHash: types.HexToHash("0x5c5069eb0857efc65e1bca0c07df34c31663b3622fd3876c876320fc9634e2a8"),
-		OutPoint: &types.OutPoint{
-			TxHash: types.HexToHash("0x71a7ba8fc96349fea0ed3a5c47992e3b4084b031a42264a018e0072e8172e46c"),
-			Index:  1,
-		},
-		HashType: types.HashTypeType,
-		DepType:  types.DepTypeDepGroup,
+func secpMultiSigCell(chain string) *SystemScriptCell {
+	if chain == "ckb" {
+		return &SystemScriptCell{
+			CellHash: types.HexToHash("0x5c5069eb0857efc65e1bca0c07df34c31663b3622fd3876c876320fc9634e2a8"),
+			OutPoint: &types.OutPoint{
+				TxHash: types.HexToHash("0x71a7ba8fc96349fea0ed3a5c47992e3b4084b031a42264a018e0072e8172e46c"),
+				Index:  1,
+			},
+			HashType: types.HashTypeType,
+			DepType:  types.DepTypeDepGroup,
+		}
+	} else {
+		return &SystemScriptCell{
+			CellHash: types.HexToHash("0x5c5069eb0857efc65e1bca0c07df34c31663b3622fd3876c876320fc9634e2a8"),
+			OutPoint: &types.OutPoint{
+				TxHash: types.HexToHash("0xf8de3bb47d055cdf460d93a2a6e1b05f7432f9777c8c474abf4eec1d4aee5d37"),
+				Index:  1,
+			},
+			HashType: types.HashTypeType,
+			DepType:  types.DepTypeDepGroup,
+		}
 	}
 }
 
-func daoCell() *SystemScriptCell {
-	return &SystemScriptCell{
-		CellHash: types.HexToHash("0x82d76d1b75fe2fd9a27dfbaa65a039221a380d76c926f378d3f81cf3e7e13f2e"),
-		OutPoint: &types.OutPoint{
-			TxHash: types.HexToHash("0xe2fb199810d49a4d8beec56718ba2593b665db9d52299a0f9e6e75416d73ff5c"),
-			Index:  2,
-		},
-		HashType: types.HashTypeType,
-		DepType:  types.DepTypeCode,
+func daoCell(chain string) *SystemScriptCell {
+	if chain == "ckb" {
+		return &SystemScriptCell{
+			CellHash: types.HexToHash("0x82d76d1b75fe2fd9a27dfbaa65a039221a380d76c926f378d3f81cf3e7e13f2e"),
+			OutPoint: &types.OutPoint{
+				TxHash: types.HexToHash("0xe2fb199810d49a4d8beec56718ba2593b665db9d52299a0f9e6e75416d73ff5c"),
+				Index:  2,
+			},
+			HashType: types.HashTypeType,
+			DepType:  types.DepTypeCode,
+		}
+	} else {
+		return &SystemScriptCell{
+			CellHash: types.HexToHash("0x82d76d1b75fe2fd9a27dfbaa65a039221a380d76c926f378d3f81cf3e7e13f2e"),
+			OutPoint: &types.OutPoint{
+				TxHash: types.HexToHash("0x8f8c79eb6671709633fe6a46de93c0fedc9c1b8a6527a18d3983879542635c9f"),
+				Index:  2,
+			},
+			HashType: types.HashTypeType,
+			DepType:  types.DepTypeCode,
+		}
 	}
 }
 
@@ -128,9 +164,9 @@ func chequeCell(chain string) *SystemScriptCell {
 		}
 	} else {
 		return &SystemScriptCell{
-			CellHash: types.HexToHash("0x48dbf59b4c7ee1547238021b4869bceedf4eea6b43772e5d66ef8865b6ae7212"),
+			CellHash: types.HexToHash("0xb426782094d5aa6ecafd692bc397292aab3a77739d3978adcf26f2943477db1d"),
 			OutPoint: &types.OutPoint{
-				TxHash: types.HexToHash("0xc1b2ae129fad7465aaa9acc9785f842ba3e6e8b8051d899defa89f5508a77958"),
+				TxHash: types.HexToHash("0x93bc5f26c9d00c92d41c8021eb910c041a0de275e2448b95afda1b2f3a2c19fc"),
 				Index:  0,
 			},
 			HashType: types.HashTypeType,
@@ -146,9 +182,9 @@ func NewSystemScripts(client rpc.Client, options ...Option) (*SystemScripts, err
 		return nil, errors.WithMessage(err, "RPC get_blockchain_info error")
 	}
 	scripts := &SystemScripts{
-		SecpSingleSigCell: secpSingleSigCell(),
-		SecpMultiSigCell:  secpMultiSigCell(),
-		DaoCell:           daoCell(),
+		SecpSingleSigCell: secpSingleSigCell(info.Chain),
+		SecpMultiSigCell:  secpMultiSigCell(info.Chain),
+		DaoCell:           daoCell(info.Chain),
 		ACPCell:           acpCell(info.Chain),
 		SUDTCell:          sudtCell(info.Chain),
 		ChequeCell:        chequeCell(info.Chain),
