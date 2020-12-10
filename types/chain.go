@@ -132,6 +132,26 @@ func (t *Transaction) ComputeHash() (Hash, error) {
 	return BytesToHash(hash), nil
 }
 
+func (t *Transaction) SizeInBlock() (uint64, error) {
+	// raw tx serialize
+	rawTxBytes, err := t.Serialize()
+	if err != nil {
+		return 0, err
+	}
+
+	var witnessBytes [][]byte
+	for _, witness := range t.Witnesses {
+		witnessBytes = append(witnessBytes, SerializeBytes(witness))
+	}
+	witnessesBytes := SerializeDynVec(witnessBytes)
+	//tx serialize
+	txBytes := SerializeTable([][]byte{rawTxBytes, witnessesBytes})
+	txSize := uint64(len(txBytes))
+	// tx offset cost
+	txSize += 4
+	return txSize, nil
+}
+
 type WitnessArgs struct {
 	Lock       []byte `json:"lock"`
 	InputType  []byte `json:"input_type"`
