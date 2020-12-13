@@ -24,55 +24,55 @@ type CkbTransferUnsignedTxBuilder struct {
 	ckbChangeOutputIndex *collector.ChangeOutputIndex
 }
 
-func (c *CkbTransferUnsignedTxBuilder) NewTransaction() {
-	c.tx = new(types.Transaction)
+func (b *CkbTransferUnsignedTxBuilder) NewTransaction() {
+	b.tx = new(types.Transaction)
 }
 
-func (c *CkbTransferUnsignedTxBuilder) BuildVersion() {
-	c.tx.Version = 0
+func (b *CkbTransferUnsignedTxBuilder) BuildVersion() {
+	b.tx.Version = 0
 }
 
-func (c *CkbTransferUnsignedTxBuilder) BuildHeaderDeps() {
-	c.tx.HeaderDeps = []types.Hash{}
+func (b *CkbTransferUnsignedTxBuilder) BuildHeaderDeps() {
+	b.tx.HeaderDeps = []types.Hash{}
 }
 
-func (c *CkbTransferUnsignedTxBuilder) BuildCellDeps() {
-	c.tx.CellDeps = []*types.CellDep{
+func (b *CkbTransferUnsignedTxBuilder) BuildCellDeps() {
+	b.tx.CellDeps = []*types.CellDep{
 		{
-			OutPoint: c.SystemScripts.SecpSingleSigCell.OutPoint,
+			OutPoint: b.SystemScripts.SecpSingleSigCell.OutPoint,
 			DepType:  types.DepTypeDepGroup,
 		},
 	}
 }
 
-func (c *CkbTransferUnsignedTxBuilder) BuildOutputsAndOutputsData() error {
+func (b *CkbTransferUnsignedTxBuilder) BuildOutputsAndOutputsData() error {
 	// set transfer output
-	c.tx.Outputs = append(c.tx.Outputs, &types.CellOutput{
-		Capacity: c.TransferCapacity,
-		Lock:     c.To,
+	b.tx.Outputs = append(b.tx.Outputs, &types.CellOutput{
+		Capacity: b.TransferCapacity,
+		Lock:     b.To,
 	})
-	c.tx.OutputsData = [][]byte{{}}
+	b.tx.OutputsData = [][]byte{{}}
 	// set change output
-	if !c.TransferAll {
-		c.tx.Outputs = append(c.tx.Outputs, &types.CellOutput{
+	if !b.TransferAll {
+		b.tx.Outputs = append(b.tx.Outputs, &types.CellOutput{
 			Capacity: 0,
-			Lock:     c.From,
+			Lock:     b.From,
 		})
-		c.tx.OutputsData = append(c.tx.OutputsData, []byte{})
+		b.tx.OutputsData = append(b.tx.OutputsData, []byte{})
 		// set change output index
-		c.ckbChangeOutputIndex = &collector.ChangeOutputIndex{Value: 1}
+		b.ckbChangeOutputIndex = &collector.ChangeOutputIndex{Value: 1}
 	}
 	return nil
 }
 
-func (c *CkbTransferUnsignedTxBuilder) BuildInputsAndWitnesses() error {
-	for ; c.Iterator.HasNext(); c.Iterator.Next() {
-		liveCell, err := c.Iterator.CurrentItem()
+func (b *CkbTransferUnsignedTxBuilder) BuildInputsAndWitnesses() error {
+	for ; b.Iterator.HasNext(); b.Iterator.Next() {
+		liveCell, err := b.Iterator.CurrentItem()
 		if err != nil {
 			return err
 		}
-		c.result.LiveCells = append(c.result.LiveCells, liveCell)
-		c.result.Capacity = liveCell.Output.Capacity
+		b.result.LiveCells = append(b.result.LiveCells, liveCell)
+		b.result.Capacity = liveCell.Output.Capacity
 		input := &types.CellInput{
 			Since: 0,
 			PreviousOutput: &types.OutPoint{
@@ -80,12 +80,12 @@ func (c *CkbTransferUnsignedTxBuilder) BuildInputsAndWitnesses() error {
 				Index:  liveCell.OutPoint.Index,
 			},
 		}
-		c.tx.Inputs = append(c.tx.Inputs, input)
-		c.tx.Witnesses = append(c.tx.Witnesses, []byte{})
-		if len(c.tx.Witnesses[0]) == 0 {
-			c.tx.Witnesses[0] = transaction.EmptyWitnessArgPlaceholder
+		b.tx.Inputs = append(b.tx.Inputs, input)
+		b.tx.Witnesses = append(b.tx.Witnesses, []byte{})
+		if len(b.tx.Witnesses[0]) == 0 {
+			b.tx.Witnesses[0] = transaction.EmptyWitnessArgPlaceholder
 		}
-		ok, err := c.isEnough()
+		ok, err := b.isEnough()
 		if err != nil {
 			return err
 		}
@@ -97,33 +97,33 @@ func (c *CkbTransferUnsignedTxBuilder) BuildInputsAndWitnesses() error {
 	return errors.New("insufficient ckb balance")
 }
 
-func (c *CkbTransferUnsignedTxBuilder) UpdateChangeOutput() error {
-	if !c.TransferAll {
-		fee, err := transaction.CalculateTransactionFee(c.tx, c.FeeRate)
+func (b *CkbTransferUnsignedTxBuilder) UpdateChangeOutput() error {
+	if !b.TransferAll {
+		fee, err := transaction.CalculateTransactionFee(b.tx, b.FeeRate)
 		if err != nil {
 			return err
 		}
-		changeCapacity := c.result.Capacity - c.tx.OutputsCapacity() - fee
-		c.tx.Outputs[c.ckbChangeOutputIndex.Value].Capacity = changeCapacity
+		changeCapacity := b.result.Capacity - b.tx.OutputsCapacity() - fee
+		b.tx.Outputs[b.ckbChangeOutputIndex.Value].Capacity = changeCapacity
 	}
 	return nil
 }
 
-func (c *CkbTransferUnsignedTxBuilder) GetResult() *types.Transaction {
-	return c.tx
+func (b *CkbTransferUnsignedTxBuilder) GetResult() *types.Transaction {
+	return b.tx
 }
 
-func (c *CkbTransferUnsignedTxBuilder) isEnough() (bool, error) {
-	changeCapacity := c.result.Capacity - c.tx.OutputsCapacity()
+func (b *CkbTransferUnsignedTxBuilder) isEnough() (bool, error) {
+	changeCapacity := b.result.Capacity - b.tx.OutputsCapacity()
 	if changeCapacity > 0 {
-		fee, err := transaction.CalculateTransactionFee(c.tx, c.FeeRate)
+		fee, err := transaction.CalculateTransactionFee(b.tx, b.FeeRate)
 		if err != nil {
 			return false, err
 		}
 		changeCapacity -= fee
-		if !c.TransferAll {
-			changeOutput := c.tx.Outputs[c.ckbChangeOutputIndex.Value]
-			changeOutputData := c.tx.OutputsData[c.ckbChangeOutputIndex.Value]
+		if !b.TransferAll {
+			changeOutput := b.tx.Outputs[b.ckbChangeOutputIndex.Value]
+			changeOutputData := b.tx.OutputsData[b.ckbChangeOutputIndex.Value]
 			changeOutputCapacity := changeOutput.OccupiedCapacity(changeOutputData)
 			if changeCapacity >= changeOutputCapacity {
 				return true, nil
