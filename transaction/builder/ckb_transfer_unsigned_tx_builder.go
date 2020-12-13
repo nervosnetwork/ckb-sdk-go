@@ -45,7 +45,7 @@ func (c *CkbTransferUnsignedTxBuilder) BuildCellDeps() {
 	}
 }
 
-func (c *CkbTransferUnsignedTxBuilder) BuildOutputsAndOutputsData() {
+func (c *CkbTransferUnsignedTxBuilder) BuildOutputsAndOutputsData() error {
 	// set transfer output
 	c.tx.Outputs = append(c.tx.Outputs, &types.CellOutput{
 		Capacity: c.TransferCapacity,
@@ -62,6 +62,7 @@ func (c *CkbTransferUnsignedTxBuilder) BuildOutputsAndOutputsData() {
 		// set change output index
 		c.ckbChangeOutputIndex = &collector.ChangeOutputIndex{Value: 1}
 	}
+	return nil
 }
 
 func (c *CkbTransferUnsignedTxBuilder) BuildInputsAndWitnesses() error {

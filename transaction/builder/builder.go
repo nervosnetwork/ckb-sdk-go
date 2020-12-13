@@ -9,7 +9,7 @@ type UnsignedTxBuilder interface {
 	BuildVersion()
 	BuildHeaderDeps()
 	BuildCellDeps()
-	BuildOutputsAndOutputsData()
+	BuildOutputsAndOutputsData() error
 	BuildInputsAndWitnesses() error
 	UpdateChangeOutput() error
 	GetResult() *types.Transaction
@@ -28,8 +28,11 @@ func (d *Director) Generate() (*types.Transaction, error) {
 	d.builder.BuildVersion()
 	d.builder.BuildHeaderDeps()
 	d.builder.BuildCellDeps()
-	d.builder.BuildOutputsAndOutputsData()
-	err := d.builder.BuildInputsAndWitnesses()
+	err := d.builder.BuildOutputsAndOutputsData()
+	if err != nil {
+		return nil, err
+	}
+	err = d.builder.BuildInputsAndWitnesses()
 	if err != nil {
 		return nil, err
 	}
