@@ -8,6 +8,10 @@ import (
 	"github.com/pkg/errors"
 )
 
+type ChangeOutputIndex struct {
+	Value int
+}
+
 type LiveCellCollectResult struct {
 	LiveCells []*indexer.LiveCell
 	Capacity  uint64
@@ -16,7 +20,7 @@ type LiveCellCollectResult struct {
 
 type CellCollectionIterator interface {
 	HasNext() bool
-	Next()
+	Next() error
 	CurrentItem() (*indexer.LiveCell, error)
 	Iterator() (CellCollectionIterator, error)
 }
@@ -34,21 +38,25 @@ type LiveCellCollector struct {
 }
 
 func (c *LiveCellCollector) HasNext() bool {
-	return c.itemIndex < len(c.result) || c.LastCursor != ""
+	return c.itemIndex < len(c.result)
 }
 
-func (c *LiveCellCollector) Next() {
+func (c *LiveCellCollector) Next() error {
 	c.itemIndex++
+	if c.itemIndex >= len(c.result) && c.LastCursor != "" {
+		c.itemIndex = 0
+		var err error
+		c.result, c.LastCursor, err = c.collect()
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func (c *LiveCellCollector) CurrentItem() (*indexer.LiveCell, error) {
 	if c.itemIndex >= len(c.result) {
-		if c.LastCursor != "" {
-			c.itemIndex = 0
-			c.result = []*indexer.LiveCell{}
-		} else {
-			return nil, errors.New("no such element")
-		}
+		return nil, errors.New("no such element")
 	}
 	return c.result[c.itemIndex], nil
 }
