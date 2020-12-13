@@ -3,7 +3,9 @@ package payment
 import (
 	"context"
 	"fmt"
+	"github.com/nervosnetwork/ckb-sdk-go/collector"
 	"github.com/nervosnetwork/ckb-sdk-go/indexer"
+	"github.com/nervosnetwork/ckb-sdk-go/transaction/builder"
 
 	"github.com/nervosnetwork/ckb-sdk-go/address"
 	"github.com/nervosnetwork/ckb-sdk-go/crypto"
@@ -17,13 +19,14 @@ type Payment struct {
 	From        *types.Script
 	To          *types.Script
 	Amount      uint64
-	Fee         uint64
+	FeeRate     uint64
 	group       []int
 	witnessArgs *types.WitnessArgs
 	tx          *types.Transaction
 }
 
-func NewPayment(from, to string, amount, fee uint64) (*Payment, error) {
+// NewPayment returns a Payment object, amount's unit is shannon
+func NewPayment(from, to string, amount, feeRate uint64) (*Payment, error) {
 	fromAddress, err := address.Parse(from)
 	if err != nil {
 		return nil, fmt.Errorf("parse from address %s error: %v", from, err)
@@ -38,10 +41,10 @@ func NewPayment(from, to string, amount, fee uint64) (*Payment, error) {
 	}
 
 	return &Payment{
-		From:   fromAddress.Script,
-		To:     toAddress.Script,
-		Amount: amount,
-		Fee:    fee,
+		From:    fromAddress.Script,
+		To:      toAddress.Script,
+		Amount:  amount,
+		FeeRate: feeRate,
 	}, nil
 }
 
@@ -54,60 +57,31 @@ func generateTxWithIndexer(client rpc.Client, p *Payment, systemScripts *utils.S
 		Script:     p.From,
 		ScriptType: indexer.ScriptTypeLock,
 	}
-	processor := utils.NewCapacityLiveCellProcessor(p.Amount + p.Fee)
-	processor.EmptyData = true
-	collector := utils.NewLiveCellCollector(client, searchKey, indexer.SearchOrderAsc, indexer.SearchLimit, "", processor)
-	result, err := collector.Collect()
+	c := collector.NewLiveCellCollector(client, searchKey, indexer.SearchOrderAsc, indexer.SearchLimit, "")
+	c.EmptyData = true
+
+	iterator, err := c.Iterator()
 	if err != nil {
 		return nil, fmt.Errorf("collect cell error: %v", err)
 	}
-
-	if result.Capacity < p.Amount+p.Fee {
-		return nil, fmt.Errorf("insufficient balance: %d", result.Capacity)
+	director := builder.Director{}
+	txBuilder := &builder.CkbTransferTxBuilder{
+		From:             p.From,
+		To:               p.To,
+		FeeRate:          p.FeeRate,
+		Iterator:         iterator,
+		SystemScripts:    systemScripts,
+		TransferCapacity: p.Amount,
 	}
-
-	tx := transaction.NewSecp256k1SingleSigTx(systemScripts)
-	tx.Outputs = append(tx.Outputs, &types.CellOutput{
-		Capacity: p.Amount,
-		Lock:     p.To,
-	})
-	tx.OutputsData = [][]byte{{}}
-
-	if result.Capacity-p.Amount-p.Fee > 0 {
-		if result.Capacity-p.Amount-p.Fee >= 6100000000 {
-			tx.Outputs = append(tx.Outputs, &types.CellOutput{
-				Capacity: result.Capacity - p.Amount - p.Fee,
-				Lock:     p.From,
-			})
-			tx.OutputsData = [][]byte{{}, {}}
-		} else {
-			tx.Outputs[0].Capacity = result.Capacity - p.Fee
-		}
-	}
-	var inputs []*types.CellInput
-	for _, cell := range result.LiveCells {
-		input := &types.CellInput{
-			Since: 0,
-			PreviousOutput: &types.OutPoint{
-				TxHash: cell.OutPoint.TxHash,
-				Index:  cell.OutPoint.Index,
-			},
-		}
-		inputs = append(inputs, input)
-	}
-	group, witnessArgs, err := transaction.AddInputsForTransaction(tx, inputs)
-	if err != nil {
-		return nil, fmt.Errorf("add inputs to transaction error: %v", err)
-	}
-
-	p.group = group
-	p.witnessArgs = witnessArgs
+	director.SetBuilder(txBuilder)
+	tx, err := director.Generate()
 	p.tx = tx
+
 	return tx, err
 }
 
 func (p *Payment) Sign(key crypto.Key) (*types.Transaction, error) {
-	err := transaction.SingleSignTransaction(p.tx, p.group, p.witnessArgs, key)
+	err := transaction.SingleSegmentSignTransaction(p.tx, 0, len(p.tx.Witnesses), transaction.EmptyWitnessArg, key)
 	if err != nil {
 		return nil, fmt.Errorf("sign transaction error: %v", err)
 	}
