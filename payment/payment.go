@@ -65,7 +65,7 @@ func generateTxWithIndexer(client rpc.Client, p *Payment, systemScripts *utils.S
 		return nil, fmt.Errorf("collect cell error: %v", err)
 	}
 	director := builder.Director{}
-	txBuilder := &builder.CkbTransferTxBuilder{
+	txBuilder := &builder.CkbTransferUnsignedTxBuilder{
 		From:             p.From,
 		To:               p.To,
 		FeeRate:          p.FeeRate,

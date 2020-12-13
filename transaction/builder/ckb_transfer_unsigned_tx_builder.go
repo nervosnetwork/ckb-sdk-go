@@ -66,13 +66,13 @@ func (b *CkbTransferUnsignedTxBuilder) BuildOutputsAndOutputsData() error {
 }
 
 func (b *CkbTransferUnsignedTxBuilder) BuildInputsAndWitnesses() error {
-	for ; b.Iterator.HasNext(); b.Iterator.Next() {
+	for b.Iterator.HasNext() {
 		liveCell, err := b.Iterator.CurrentItem()
 		if err != nil {
 			return err
 		}
+		b.result.Capacity += liveCell.Output.Capacity
 		b.result.LiveCells = append(b.result.LiveCells, liveCell)
-		b.result.Capacity = liveCell.Output.Capacity
 		input := &types.CellInput{
 			Since: 0,
 			PreviousOutput: &types.OutPoint{
@@ -91,6 +91,10 @@ func (b *CkbTransferUnsignedTxBuilder) BuildInputsAndWitnesses() error {
 		}
 		if ok {
 			return nil
+		}
+		err = b.Iterator.Next()
+		if err != nil {
+			return err
 		}
 	}
 
