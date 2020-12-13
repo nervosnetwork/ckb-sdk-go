@@ -10,16 +10,11 @@ import (
 	"github.com/nervosnetwork/ckb-sdk-go/indexer"
 	"github.com/nervosnetwork/ckb-sdk-go/rpc"
 	"github.com/nervosnetwork/ckb-sdk-go/transaction"
+	"github.com/nervosnetwork/ckb-sdk-go/transaction/builder"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 	"github.com/nervosnetwork/ckb-sdk-go/utils"
 	"github.com/pkg/errors"
-	"math"
 	"math/big"
-)
-
-var (
-	chequeCellCapacity = uint64(162 * math.Pow10(8))
-	udtCellCapacity    = uint64(142 * math.Pow10(8))
 )
 
 type Cheque struct {
@@ -55,73 +50,48 @@ func NewCheque(senderAddr, receiverAddr, uuid, amount string, feeRate uint64) (*
 
 // GenerateIssueChequeTx generate an unsigned transaction for issuing a cheque cell
 func (c *Cheque) GenerateIssueChequeTx(client rpc.Client, systemScripts *utils.SystemScripts) (*types.Transaction, error) {
+	// collect udt cells
 	udtType := &types.Script{
 		CodeHash: systemScripts.SUDTCell.CellHash,
 		HashType: systemScripts.SUDTCell.HashType,
 		Args:     common.FromHex(c.UUID),
 	}
-
-	tx := transaction.NewSecp256k1SingleSigTx(systemScripts)
-	// set sudt scripts cell deps
-	tx.CellDeps = append(tx.CellDeps, &types.CellDep{
-		OutPoint: systemScripts.SUDTCell.OutPoint,
-		DepType:  systemScripts.SUDTCell.DepType,
-	})
-
-	// cheque output
-	chequeCellArgs, err := utils.ChequeCellArgs(c.Sender, c.Receiver)
-	if err != nil {
-		return nil, err
-	}
-	tx.Outputs = append(tx.Outputs, &types.CellOutput{
-		Capacity: chequeCellCapacity,
-		Lock: &types.Script{
-			CodeHash: systemScripts.ChequeCell.CellHash,
-			HashType: systemScripts.ChequeCell.HashType,
-			Args:     chequeCellArgs,
-		},
-		Type: udtType,
-	})
-	tx.OutputsData = append(tx.OutputsData, utils.GenerateSudtAmount(c.Amount))
-
-	// ckb change output
-	tx.Outputs = append(tx.Outputs, &types.CellOutput{
-		Capacity: 0,
-		Lock:     c.Sender,
-	})
-	tx.OutputsData = append(tx.OutputsData, []byte{})
-
-	// sudt change output
-	tx.Outputs = append(tx.Outputs, &types.CellOutput{
-		Capacity: udtCellCapacity,
-		Lock:     c.Sender,
-		Type:     udtType,
-	})
-	tx.OutputsData = append(tx.OutputsData, utils.GenerateSudtAmount(big.NewInt(0)))
-
-	// collect udt cells
 	searchKey := &indexer.SearchKey{
 		Script:     c.Sender,
 		ScriptType: indexer.ScriptTypeLock,
 	}
-	processor := collector.NewUDTLiveCellProcessor(c.Amount)
-	processor.CkbChangeOutputIndex = &collector.ChangeOutputIndex{Value: 1}
-	processor.SUDTChangeOutputIndex = &collector.ChangeOutputIndex{Value: 2}
-	processor.TypeScript = udtType
-	processor.Tx = tx
-	processor.FeeRate = c.FeeRate
-	nCollector := utils.NewLiveCellCollector(client, searchKey, indexer.SearchOrderAsc, indexer.SearchLimit, "", processor)
-	cells, err := nCollector.Collect()
+
+	// sudt Iterator
+	sudtCollector := collector.NewLiveCellCollector(client, searchKey, indexer.SearchOrderAsc, indexer.SearchLimit, "")
+	sudtCollector.TypeScript = udtType
+	sudtIterator, err := sudtCollector.Iterator()
 	if err != nil {
-		return nil, fmt.Errorf("collect cell error: %v", err)
+		return nil, fmt.Errorf("collect sudt cells error: %v", err)
 	}
-	totalAmount := cells.Options["totalAmount"].(*big.Int)
-	if totalAmount.Cmp(c.Amount) < 0 {
-		return nil, errors.New("insufficient udt balance")
+	// ckb Iterator
+	ckbCollector := collector.NewLiveCellCollector(client, searchKey, indexer.SearchOrderAsc, indexer.SearchLimit, "")
+	ckbCollector.EmptyData = true
+	ckbIterator, err := ckbCollector.Iterator()
+	if err != nil {
+		return nil, fmt.Errorf("collect ckb cells error: %v", err)
 	}
+
+	director := builder.Director{}
+	txBuilder := &builder.IssuingChequeUnsignedTxBuilder{
+		Sender:         c.Sender,
+		Receiver:       c.Receiver,
+		FeeRate:        c.FeeRate,
+		CkbIterator:    ckbIterator,
+		SUDTIterator:   sudtIterator,
+		SystemScripts:  systemScripts,
+		TransferAmount: c.Amount,
+		UUID:           c.UUID,
+	}
+	director.SetBuilder(txBuilder)
+	tx, err := director.Generate()
 	c.tx = tx
 
-	return tx, nil
+	return tx, err
 }
 
 //func GenerateClaimChequeUnsignedTx(client rpc.Client, receiverAddr string, systemScripts *utils.SystemScripts) (*types.Transaction, error) {
