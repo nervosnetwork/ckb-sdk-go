@@ -152,6 +152,13 @@ func (t *Transaction) SizeInBlock() (uint64, error) {
 	return txSize, nil
 }
 
+func (t *Transaction) OutputsCapacity() (totalCapacity uint64) {
+	for _, output := range t.Outputs {
+		totalCapacity += output.Capacity
+	}
+	return
+}
+
 type WitnessArgs struct {
 	Lock       []byte `json:"lock"`
 	InputType  []byte `json:"input_type"`
