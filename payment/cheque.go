@@ -54,11 +54,7 @@ func NewCheque(senderAddr, receiverAddr, uuid, amount string, feeRate uint64) (*
 }
 
 // GenerateIssueChequeTx generate an unsigned transaction for issuing a cheque cell
-func (c *Cheque) GenerateIssueChequeTx(client rpc.Client) (*types.Transaction, error) {
-	systemScripts, err := utils.NewSystemScripts(client)
-	if err != nil {
-		return nil, err
-	}
+func (c *Cheque) GenerateIssueChequeTx(client rpc.Client, systemScripts *utils.SystemScripts) (*types.Transaction, error) {
 	udtType := &types.Script{
 		CodeHash: systemScripts.SUDTCell.CellHash,
 		HashType: systemScripts.SUDTCell.HashType,
@@ -66,13 +62,10 @@ func (c *Cheque) GenerateIssueChequeTx(client rpc.Client) (*types.Transaction, e
 	}
 
 	tx := transaction.NewSecp256k1SingleSigTx(systemScripts)
-	// set sudt and cheque scripts cell deps
+	// set sudt scripts cell deps
 	tx.CellDeps = append(tx.CellDeps, &types.CellDep{
 		OutPoint: systemScripts.SUDTCell.OutPoint,
 		DepType:  systemScripts.SUDTCell.DepType,
-	}, &types.CellDep{
-		OutPoint: systemScripts.ChequeCell.OutPoint,
-		DepType:  systemScripts.ChequeCell.DepType,
 	})
 
 	// cheque output
@@ -130,6 +123,25 @@ func (c *Cheque) GenerateIssueChequeTx(client rpc.Client) (*types.Transaction, e
 
 	return tx, nil
 }
+
+//func GenerateClaimChequeUnsignedTx(client rpc.Client, receiverAddr string, systemScripts *utils.SystemScripts) (*types.Transaction, error) {
+//	parsedReceiverAddr, err := address.Parse(receiverAddr)
+//	if err != nil {
+//		return nil, errors.WithMessage(err, "invalid receiver address")
+//	}
+//	tx := transaction.NewSecp256k1SingleSigTx(systemScripts)
+//	// set sudt and cheque scripts cell deps
+//	tx.CellDeps = append(tx.CellDeps, &types.CellDep{
+//		OutPoint: systemScripts.SUDTCell.OutPoint,
+//		DepType:  systemScripts.SUDTCell.DepType,
+//	}, &types.CellDep{
+//		OutPoint: systemScripts.ChequeCell.OutPoint,
+//		DepType:  systemScripts.ChequeCell.DepType,
+//	})
+//
+//
+//	return tx, nil
+//}
 
 // SignIssueChequeTx sign an unsigned issuing cheque transaction and return an signed transaction
 func (c *Cheque) SignIssueChequeTx(key crypto.Key) (*types.Transaction, error) {
