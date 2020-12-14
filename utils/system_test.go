@@ -126,7 +126,7 @@ func TestNewSystemScripts(t *testing.T) {
 				ChequeCell: &SystemScriptCell{
 					CellHash: types.HexToHash("0xb426782094d5aa6ecafd692bc397292aab3a77739d3978adcf26f2943477db1d"),
 					OutPoint: &types.OutPoint{
-						TxHash: types.HexToHash("0x93bc5f26c9d00c92d41c8021eb910c041a0de275e2448b95afda1b2f3a2c19fc"),
+						TxHash: types.HexToHash("0x51683c39075fdf7e47697b6f039aaca030a2265f131a51623fa49a884f07bee2"),
 						Index:  0,
 					},
 					HashType: types.HashTypeType,
