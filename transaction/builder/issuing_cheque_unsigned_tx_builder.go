@@ -98,7 +98,7 @@ func (b *IssuingChequeUnsignedTxBuilder) BuildOutputsAndOutputsData() error {
 		Type:     udtType,
 	})
 	b.tx.OutputsData = append(b.tx.OutputsData, sudtDataPlaceHolder)
-	// set ckb change output index
+	// set sudt change output index
 	b.sUDTChangeOutputIndex = &collector.ChangeOutputIndex{Value: 2}
 
 	return nil

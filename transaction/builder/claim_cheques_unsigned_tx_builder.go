@@ -95,7 +95,7 @@ func (b *ClaimChequesUnsignedTxBuilder) BuildOutputsAndOutputsData() error {
 }
 
 func (b *ClaimChequesUnsignedTxBuilder) BuildInputsAndWitnesses() error {
-	// collect sudt cells first
+	// collect cheque cells first
 	err := b.collectChequeCells()
 	if err != nil {
 		return err

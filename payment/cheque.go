@@ -41,6 +41,7 @@ func NewCheque(senderAddr, receiverAddr, uuid, amount string, feeRate uint64) (*
 	if !b {
 		return nil, errors.WithMessage(err, "invalid amount")
 	}
+
 	return &Cheque{
 		Sender:   parsedSenderAddr.Script,
 		Receiver: parsedReceiverAddr.Script,
