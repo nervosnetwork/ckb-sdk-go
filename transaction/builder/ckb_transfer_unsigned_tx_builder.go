@@ -113,8 +113,8 @@ func (b *CkbTransferUnsignedTxBuilder) UpdateChangeOutput() error {
 	return nil
 }
 
-func (b *CkbTransferUnsignedTxBuilder) GetResult() *types.Transaction {
-	return b.tx
+func (b *CkbTransferUnsignedTxBuilder) GetResult() (*types.Transaction, [][]int) {
+	return b.tx, nil
 }
 
 func (b *CkbTransferUnsignedTxBuilder) isEnough() (bool, error) {

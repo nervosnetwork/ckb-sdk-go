@@ -80,7 +80,6 @@ func (c *LiveCellCollector) collect() ([]*indexer.LiveCell, string, error) {
 		return nil, "", errors.New("missing SearchOrder error")
 	}
 	var result []*indexer.LiveCell
-	var lastCursor string
 	liveCells, err := c.Client.GetCells(context.Background(), c.SearchKey, c.SearchOrder, c.Limit, c.LastCursor)
 	if err != nil {
 		return nil, "", err
@@ -100,8 +99,7 @@ func (c *LiveCellCollector) collect() ([]*indexer.LiveCell, string, error) {
 		}
 		result = append(result, cell)
 	}
-	lastCursor = liveCells.LastCursor
-	return result, lastCursor, nil
+	return result, liveCells.LastCursor, nil
 }
 
 func NewLiveCellCollector(client rpc.Client, searchKey *indexer.SearchKey, searchOrder indexer.SearchOrder, limit uint64, afterCursor string) *LiveCellCollector {

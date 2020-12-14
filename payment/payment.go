@@ -74,7 +74,7 @@ func generateTxWithIndexer(client rpc.Client, p *Payment, systemScripts *utils.S
 		TransferCapacity: p.Amount,
 	}
 	director.SetBuilder(txBuilder)
-	tx, err := director.Generate()
+	tx, _, err := director.Generate()
 	p.tx = tx
 
 	return tx, err
