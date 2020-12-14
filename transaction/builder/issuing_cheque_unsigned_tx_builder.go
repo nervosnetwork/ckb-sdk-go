@@ -110,7 +110,6 @@ func (b *IssuingChequeUnsignedTxBuilder) BuildInputsAndWitnesses() error {
 	}
 	// collect sudt cells first
 	err := b.collectSUDTCells()
-
 	if err != nil {
 		return err
 	}
@@ -221,8 +220,8 @@ func (b *IssuingChequeUnsignedTxBuilder) UpdateChangeOutput() error {
 	return nil
 }
 
-func (b *IssuingChequeUnsignedTxBuilder) GetResult() *types.Transaction {
-	return b.tx
+func (b *IssuingChequeUnsignedTxBuilder) GetResult() (*types.Transaction, [][]int) {
+	return b.tx, nil
 }
 
 func (b *IssuingChequeUnsignedTxBuilder) isSUDTEnough() bool {
