@@ -2,13 +2,11 @@ package payment
 
 import (
 	"context"
-	"fmt"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/google/go-cmp/cmp"
 	"github.com/nervosnetwork/ckb-sdk-go/address"
 	"github.com/nervosnetwork/ckb-sdk-go/indexer"
 	"github.com/nervosnetwork/ckb-sdk-go/mocks"
-	"github.com/nervosnetwork/ckb-sdk-go/rpc"
 	"github.com/nervosnetwork/ckb-sdk-go/transaction"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 	"github.com/nervosnetwork/ckb-sdk-go/utils"
@@ -75,10 +73,6 @@ func TestIssuingCheque(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			eTx, _ := rpc.TransactionString(test.expectedTx)
-			aTx, _ := rpc.TransactionString(tx)
-			fmt.Println("expected: ", eTx)
-			fmt.Println("actual: ", aTx)
 			if !compareTransaction(test.expectedTx, tx) {
 				t.Fatalf("want %+v but got %+v", test.expectedTx, tx)
 			}

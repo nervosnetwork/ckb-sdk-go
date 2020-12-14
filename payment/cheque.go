@@ -17,6 +17,7 @@ import (
 	"math/big"
 )
 
+// Cheque object
 type Cheque struct {
 	Sender   *types.Script
 	Receiver *types.Script
@@ -26,6 +27,7 @@ type Cheque struct {
 	tx       *types.Transaction
 }
 
+// NewCheque returns a new Cheque object
 func NewCheque(senderAddr, receiverAddr, uuid, amount string, feeRate uint64) (*Cheque, error) {
 	parsedSenderAddr, err := address.Parse(senderAddr)
 	if err != nil {
@@ -88,33 +90,14 @@ func (c *Cheque) GenerateIssueChequeTx(client rpc.Client, systemScripts *utils.S
 		UUID:           c.UUID,
 	}
 	director.SetBuilder(txBuilder)
-	tx, err := director.Generate()
+	tx, _, err := director.Generate()
 	c.tx = tx
 
 	return tx, err
 }
 
-//func GenerateClaimChequeUnsignedTx(client rpc.Client, receiverAddr string, systemScripts *utils.SystemScripts) (*types.Transaction, error) {
-//	parsedReceiverAddr, err := address.Parse(receiverAddr)
-//	if err != nil {
-//		return nil, errors.WithMessage(err, "invalid receiver address")
-//	}
-//	tx := transaction.NewSecp256k1SingleSigTx(systemScripts)
-//	// set sudt and cheque scripts cell deps
-//	tx.CellDeps = append(tx.CellDeps, &types.CellDep{
-//		OutPoint: systemScripts.SUDTCell.OutPoint,
-//		DepType:  systemScripts.SUDTCell.DepType,
-//	}, &types.CellDep{
-//		OutPoint: systemScripts.ChequeCell.OutPoint,
-//		DepType:  systemScripts.ChequeCell.DepType,
-//	})
-//
-//
-//	return tx, nil
-//}
-
-// SignIssueChequeTx sign an unsigned issuing cheque transaction and return an signed transaction
-func (c *Cheque) SignIssueChequeTx(key crypto.Key) (*types.Transaction, error) {
+// SignTx sign an unsigned issuing cheque transaction and return an signed transaction
+func (c *Cheque) SignTx(key crypto.Key) (*types.Transaction, error) {
 	err := transaction.SingleSegmentSignTransaction(c.tx, 0, len(c.tx.Witnesses), transaction.EmptyWitnessArg, key)
 	if err != nil {
 		return nil, fmt.Errorf("sign transaction error: %v", err)
@@ -122,6 +105,7 @@ func (c *Cheque) SignIssueChequeTx(key crypto.Key) (*types.Transaction, error) {
 	return c.tx, nil
 }
 
+// Send can send a tx to tx pool
 func (c *Cheque) Send(client rpc.Client) (*types.Hash, error) {
 	return client.SendTransaction(context.Background(), c.tx)
 }
