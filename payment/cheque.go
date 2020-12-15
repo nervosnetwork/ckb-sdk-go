@@ -51,8 +51,8 @@ func NewCheque(senderAddr, receiverAddr, uuid, amount string, feeRate uint64) (*
 	}, nil
 }
 
-// GenerateIssueChequeTx generate an unsigned transaction for issuing a cheque cell
-func (c *Cheque) GenerateIssueChequeTx(client rpc.Client, systemScripts *utils.SystemScripts) (*types.Transaction, error) {
+// GenerateIssuingChequeUnsignedTx generate an unsigned transaction for issuing a cheque cell
+func (c *Cheque) GenerateIssuingChequeUnsignedTx(client rpc.Client, systemScripts *utils.SystemScripts) (*types.Transaction, error) {
 	// collect udt cells
 	udtType := &types.Script{
 		CodeHash: systemScripts.SUDTCell.CellHash,

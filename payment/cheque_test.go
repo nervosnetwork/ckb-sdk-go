@@ -69,7 +69,7 @@ func TestIssuingCheque(t *testing.T) {
 				t.Fatal(err)
 			}
 			systemScripts, _ := utils.NewSystemScripts(mockClient)
-			tx, err := c.GenerateIssueChequeTx(mockClient, systemScripts)
+			tx, err := c.GenerateIssuingChequeUnsignedTx(mockClient, systemScripts)
 			if err != nil {
 				t.Fatal(err)
 			}
