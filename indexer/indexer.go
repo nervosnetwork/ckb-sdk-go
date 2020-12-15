@@ -7,6 +7,8 @@ import (
 	"github.com/ethereum/go-ethereum/rpc"
 )
 
+const SearchLimit uint64 = 1000
+
 type Client interface {
 	// GetCells returns the live cells collection by the lock or type script.
 	GetCells(ctx context.Context, searchKey *SearchKey, order SearchOrder, limit uint64, afterCursor string) (*LiveCells, error)
