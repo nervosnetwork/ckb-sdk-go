@@ -345,7 +345,7 @@ func main() {
 }
 ```
 
-### 3. Multiple inputs and hybirdsig transaction
+### 4. Multiple inputs and hybirdsig transaction
 
 ```go
 package main
@@ -512,38 +512,36 @@ import (
 	"github.com/nervosnetwork/ckb-sdk-go/payment"
 	"github.com/nervosnetwork/ckb-sdk-go/rpc"
 )
-
-func main() {
-	client, err := rpc.DialWithIndexer("http://localhost:8114", "http://localhost:8116")
-	if err != nil {
-		log.Fatalf("create rpc client error: %v", err)
-	}
-
-	key, err := secp256k1.HexToKey(PRIVATE_KEY)
-	if err != nil {
-		log.Fatalf("import private key error: %v", err)
-	}
-
-	pay, err := payment.NewPayment("ckt1qyqwmndf2yl6qvxwgvyw9yj95gkqytgygwasdjf6hm",
-		"ckt1qyqt705jmfy3r7jlvg88k87j0sksmhgduazq7x5l8k", 100000000000, 1000)
-	if err != nil {
-		log.Fatalf("create payment error: %v", err)
-	}
+func main(){
+    client, err := rpc.DialWithIndexer("http://localhost:8114", "http://localhost:8116")
+    if err != nil {
+        log.Fatalf("create rpc client error: %v", err)
+    }
     
+    key, err := secp256k1.HexToKey(PRIVATE_KEY)
+    if err != nil {
+        log.Fatalf("import private key error: %v", err)
+    }
+    
+    pay, err := payment.NewPayment("ckt1qyqwmndf2yl6qvxwgvyw9yj95gkqytgygwasdjf6hm",
+        "ckt1qyqt705jmfy3r7jlvg88k87j0sksmhgduazq7x5l8k", 100000000000, 1000)
+    if err != nil {
+        log.Fatalf("create payment error: %v", err)
+    }
     systemScripts, _ := utils.NewSystemScripts(client)
-	_, err = pay.GenerateTx(client, systemScripts)
-	if err != nil {
-		log.Fatalf("create transaction error: %v", err)
-	}
-
-	_, err = pay.Sign(key)
-	if err != nil {
-		log.Fatalf("sign transaction error: %v", err)
-	}
-
-	hash, err := pay.Send(client)
-
-	fmt.Println(hash)
+    _, err = pay.GenerateTx(client, systemScripts)
+    if err != nil {
+        log.Fatalf("create transaction error: %v", err)
+    }
+    
+    _, err = pay.Sign(key)
+    if err != nil {
+        log.Fatalf("sign transaction error: %v", err)
+    }
+    
+    hash, err := pay.Send(client)
+    
+    fmt.Println(hash)
 }
 ```
 
@@ -797,5 +795,137 @@ func main() {
 		log.Fatalf("send transaction error: %v", err)
 	}
 	fmt.Println(hash.String())
+}
+```
+### 10. Issuing cheque cell
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/nervosnetwork/ckb-sdk-go/crypto/secp256k1"
+	"github.com/nervosnetwork/ckb-sdk-go/payment"
+	"github.com/nervosnetwork/ckb-sdk-go/rpc"
+	"github.com/nervosnetwork/ckb-sdk-go/types"
+	"github.com/nervosnetwork/ckb-sdk-go/utils"
+	"log"
+)
+
+func main() {
+    client, err := rpc.DialWithIndexer("http://localhost:8114", "http://localhost:8116")
+    if err != nil {
+        log.Fatal(err)
+    }
+    c, err := payment.NewCheque("ckt1qyqrhmy67jcn7rvft3d2em3sc78pzn02ha4s728fvg", "ckt1qyqrd7cglncpwfzn73qwhed5mvjnrl8v6nvq2cpmd8", "TOKEN_ID", "10000000000000", 1000)
+    if err != nil {
+        fmt.Println(err)
+    }
+    systemScripts, _ := utils.NewSystemScripts(client)
+    _, err = c.GenerateIssuingChequeUnsignedTx(client, systemScripts)
+    if err != nil {
+        log.Fatal(err)
+    }
+    key, err := secp256k1.HexToKey(PRIVATE_KEY)
+    if err != nil {
+        log.Fatalf("import private key error: %v", err)
+    }
+    _, err = c.SignTx(key)
+    if err != nil {
+        log.Fatal(err)
+    }
+    hash, err := c.Send(client)
+    if err != nil {
+        log.Fatal(err)
+    }
+    fmt.Println(hash)
+}
+``` 
+
+### 11. Claim cheque cells
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/nervosnetwork/ckb-sdk-go/crypto/secp256k1"
+	"github.com/nervosnetwork/ckb-sdk-go/payment"
+	"github.com/nervosnetwork/ckb-sdk-go/rpc"
+	"github.com/nervosnetwork/ckb-sdk-go/types"
+	"github.com/nervosnetwork/ckb-sdk-go/utils"
+	"log"
+)
+
+func main() {
+    client, err := rpc.DialWithIndexer("http://localhost:8114", "http://localhost:8116")
+    if err != nil {
+        log.Fatal(err)
+    }
+    c, err := payment.NewClaimCheque("ckt1qyqrd7cglncpwfzn73qwhed5mvjnrl8v6nvq2cpmd8", "TOKEN_ID", 1000)
+    if err != nil {
+        fmt.Println(err)
+    }
+    systemScripts, _ := utils.NewSystemScripts(client)
+    _, err = c.GenerateClaimChequeUnsignedTx(client, systemScripts)
+    if err != nil {
+        log.Fatal(err)
+    }
+    key, err := secp256k1.HexToKey(PRIVATE_KEY)
+    if err != nil {
+        log.Fatalf("import private key error: %v", err)
+    }
+    _, err = c.SignTx(key)
+    if err != nil {
+        log.Fatal(err)
+    }
+    hash, err := c.Send(client)
+    if err != nil {
+        log.Fatal(err)
+    }
+    fmt.Println(hash)
+}
+```
+
+### 12. Withdraw cheque cells
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/nervosnetwork/ckb-sdk-go/crypto/secp256k1"
+	"github.com/nervosnetwork/ckb-sdk-go/payment"
+	"github.com/nervosnetwork/ckb-sdk-go/rpc"
+	"github.com/nervosnetwork/ckb-sdk-go/types"
+	"github.com/nervosnetwork/ckb-sdk-go/utils"
+	"log"
+)
+
+func main() {
+    client, err := rpc.DialWithIndexer("http://localhost:8114", "http://localhost:8116")
+    if err != nil {
+        log.Fatal(err)
+    }
+    c, err := payment.NewWithdrawCheque("ckt1qyqrhmy67jcn7rvft3d2em3sc78pzn02ha4s728fvg", "ckt1qyqrd7cglncpwfzn73qwhed5mvjnrl8v6nvq2cpmd8", "TOKEN_ID","10000000000000",1000)
+    if err != nil {
+        fmt.Println(err)
+    }
+    systemScripts, _ := utils.NewSystemScripts(client)
+    _, err = c.GenerateWithdrawChequeUnsignedTx(client, systemScripts)
+    if err != nil {
+        log.Fatal(err)
+    }
+    key, err := secp256k1.HexToKey(PRIVATE_KEY)
+    if err != nil {
+        log.Fatalf("import private key error: %v", err)
+    }
+    _, err = c.SignTx(key)
+    if err != nil {
+        log.Fatal(err)
+    }
+    hash, err := c.Send(client)
+    if err != nil {
+        log.Fatal(err)
+    }
+    fmt.Println(hash)
 }
 ```
