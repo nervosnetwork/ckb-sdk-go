@@ -72,7 +72,7 @@ func (b *WithdrawChequesUnsignedTxBuilder) BuildOutputsAndOutputsData() error {
 	// set ckb change output, default capacity is 100 ckb, withdraw cheque cell need consume sender's live cell.
 	b.tx.Outputs = append(b.tx.Outputs, &types.CellOutput{
 		Capacity: uint64(100 * math.Pow10(8)),
-		Lock:     b.Receiver,
+		Lock:     b.Sender,
 	})
 	b.tx.OutputsData = append(b.tx.OutputsData, []byte{})
 	// set ckb change output index
@@ -81,7 +81,7 @@ func (b *WithdrawChequesUnsignedTxBuilder) BuildOutputsAndOutputsData() error {
 	// set sudt change output
 	b.tx.Outputs = append(b.tx.Outputs, &types.CellOutput{
 		Capacity: udtCellCapacity,
-		Lock:     b.Receiver,
+		Lock:     b.Sender,
 		Type:     udtType,
 	})
 	b.tx.OutputsData = append(b.tx.OutputsData, sudtDataPlaceHolder)
