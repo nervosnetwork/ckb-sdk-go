@@ -7,5 +7,9 @@ func ChequeCellArgs(senderLock, receiverLock *types.Script) ([]byte, error) {
 	if err != nil {
 		return []byte{}, err
 	}
-	return append(receiverLock.Args, senderLockHash.Bytes()[0:20]...), nil
+	receiverLockHash, err := receiverLock.Hash()
+	if err != nil {
+		return []byte{}, err
+	}
+	return append(receiverLockHash.Bytes()[0:20], senderLockHash.Bytes()[0:20]...), nil
 }
