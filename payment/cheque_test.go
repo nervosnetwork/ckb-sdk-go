@@ -64,12 +64,12 @@ func TestIssuingCheque(t *testing.T) {
 			mockClient := &mocks.Client{}
 			mockClient.On("GetCells", context.Background(), test.searchKey, test.searchOrder, test.limit, test.cursor).Return(test.expectedLiveCells, nil)
 			mockClient.On("GetBlockchainInfo", context.Background()).Return(&types.BlockchainInfo{Chain: test.chain}, nil)
-			c, err := NewCheque(test.senderAddr, test.receiverAddr, test.uuid, test.amount, test.feeRate)
+			systemScripts, _ := utils.NewSystemScripts(mockClient)
+			c, err := NewCheque(test.senderAddr, test.receiverAddr, test.uuid, test.amount, test.feeRate, systemScripts)
 			if err != nil {
 				t.Fatal(err)
 			}
-			systemScripts, _ := utils.NewSystemScripts(mockClient)
-			tx, err := c.GenerateIssuingChequeUnsignedTx(mockClient, systemScripts)
+			tx, err := c.GenerateIssuingChequeUnsignedTx(mockClient)
 			if err != nil {
 				t.Fatal(err)
 			}
