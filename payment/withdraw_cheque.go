@@ -29,14 +29,14 @@ type WithdrawCheque struct {
 }
 
 // NewWithdrawCheque returns a new WithdrawCheque object
-func NewWithdrawCheque(senderAddr, receiverAddr, uuid, amount string, feeRate uint64) (*WithdrawCheque, error) {
-	parsedSenderAddr, err := address.Parse(senderAddr)
+func NewWithdrawCheque(senderAddr, receiverAddr, uuid, amount string, feeRate uint64, systemScripts *utils.SystemScripts) (*WithdrawCheque, error) {
+	parsedSenderAddr, err := address.ValidateChequeAddress(senderAddr, systemScripts)
 	if err != nil {
-		return nil, errors.WithMessage(err, "invalid sender address")
+		return nil, err
 	}
-	parsedReceiverAddr, err := address.Parse(receiverAddr)
+	parsedReceiverAddr, err := address.ValidateChequeAddress(receiverAddr, systemScripts)
 	if err != nil {
-		return nil, errors.WithMessage(err, "invalid receiver address")
+		return nil, err
 	}
 	n, b := big.NewInt(0).SetString(amount, 10)
 	if !b {
