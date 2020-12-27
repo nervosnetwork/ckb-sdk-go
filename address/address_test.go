@@ -1,7 +1,11 @@
 package address
 
 import (
+	"context"
+	"github.com/nervosnetwork/ckb-sdk-go/mocks"
 	"github.com/nervosnetwork/ckb-sdk-go/utils"
+	"github.com/pkg/errors"
+	"reflect"
 	"testing"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -247,4 +251,85 @@ func TestParse(t *testing.T) {
 		assert.Equal(t, tAcpLock.HashType, tParsedAddress.Script.HashType)
 		assert.Equal(t, tAcpLock.Args, tParsedAddress.Script.Args)
 	})
+}
+
+func TestValidateChequeAddress(t *testing.T) {
+	type args struct {
+		addr string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    *ParsedAddress
+		wantErr error
+		chain   string
+	}{
+		{
+			"invalid address for testnet",
+			args{
+				addr: "ckt1q3085d480e5wanqp8hazle4z8uakcdztqsq9szrfftnd630w5n8ath08sqwqw00mx3jv0v0stwqxhv4mhp8fjcjtac0",
+			},
+			nil,
+			errors.Errorf("address %s is not an SECP256K1 short format address", "ckt1q3085d480e5wanqp8hazle4z8uakcdztqsq9szrfftnd630w5n8ath08sqwqw00mx3jv0v0stwqxhv4mhp8fjcjtac0"),
+			"ckt",
+		},
+		{
+			"invalid address for miannet",
+			args{
+				addr: "ckb1q3085d480e5wanqp8hazle4z8uakcdztqsq9szrfftnd630w5n8ath08sqwqw00mx3jv0v0stwqxhv4mhp8fj43jsls",
+			},
+			nil,
+			errors.Errorf("address %s is not an SECP256K1 short format address", "ckb1q3085d480e5wanqp8hazle4z8uakcdztqsq9szrfftnd630w5n8ath08sqwqw00mx3jv0v0stwqxhv4mhp8fj43jsls"),
+			"ckb",
+		},
+		{
+			"valid address for testnet",
+			args{
+				addr: "ckt1qyqdmeuqrsrnm7e5vnrmruzmsp4m9wacf6vsmcwugu",
+			},
+			&ParsedAddress{
+				Mode: Testnet,
+				Type: TypeShort,
+				Script: &types.Script{
+					CodeHash: types.HexToHash("0x9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8"),
+					HashType: types.HashTypeType,
+					Args:     common.FromHex("0xdde7801c073dfb3464c7b1f05b806bb2bbb84e99"),
+				},
+			},
+			nil,
+			"ckt",
+		},
+		{
+			"valid address for miannet",
+			args{
+				addr: "ckb1qyqdmeuqrsrnm7e5vnrmruzmsp4m9wacf6vsxasryq",
+			},
+			&ParsedAddress{
+				Mode: Mainnet,
+				Type: TypeShort,
+				Script: &types.Script{
+					CodeHash: types.HexToHash("0x9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8"),
+					HashType: types.HashTypeType,
+					Args:     common.FromHex("0xdde7801c073dfb3464c7b1f05b806bb2bbb84e99"),
+				},
+			},
+			nil,
+			"ckb",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			mockClient := &mocks.Client{}
+			mockClient.On("GetBlockchainInfo", context.Background()).Return(&types.BlockchainInfo{Chain: tt.chain}, nil)
+			systemScripts, _ := utils.NewSystemScripts(mockClient)
+			got, err := ValidateChequeAddress(tt.args.addr, systemScripts)
+			if (err != nil) && err.Error() != tt.wantErr.Error() {
+				t.Errorf("ValidateAddress() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("ValidateAddress() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
 }
