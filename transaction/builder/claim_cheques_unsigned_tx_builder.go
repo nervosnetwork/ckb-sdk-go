@@ -192,9 +192,6 @@ func (b *ClaimChequesUnsignedTxBuilder) collectChequeCells() error {
 		}
 		b.tx.Inputs = append(b.tx.Inputs, input)
 		b.tx.Witnesses = append(b.tx.Witnesses, []byte{})
-		if len(b.tx.Witnesses[0]) == 0 {
-			b.tx.Witnesses[0] = transaction.EmptyWitnessArgPlaceholder
-		}
 		err = b.ChequeIterator.Next()
 		if err != nil {
 			return err
@@ -308,12 +305,19 @@ func (b *ClaimChequesUnsignedTxBuilder) isCkbEnough() (bool, error) {
 
 func (b *ClaimChequesUnsignedTxBuilder) generateGroups() error {
 	groupInfo := make(map[string][]int)
+	receiverLockHash, err := b.Receiver.Hash()
+	if err != nil {
+		return err
+	}
 	for i, liveCell := range b.result.LiveCells {
 		lockHash, err := liveCell.Output.Lock.Hash()
 		if err != nil {
 			return err
 		}
 		key := lockHash.String()
+		if key != receiverLockHash.String() {
+			continue
+		}
 		if v, ok := groupInfo[key]; ok {
 			v = append(v, i)
 			groupInfo[key] = v
