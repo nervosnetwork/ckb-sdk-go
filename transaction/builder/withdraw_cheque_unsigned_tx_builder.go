@@ -25,6 +25,7 @@ type WithdrawChequesUnsignedTxBuilder struct {
 	ChequeIterator collector.CellCollectionIterator
 	SystemScripts  *utils.SystemScripts
 	UUID           string
+	Amount         *big.Int
 	Client         rpc.Client
 
 	tx                    *types.Transaction
@@ -69,9 +70,9 @@ func (b *WithdrawChequesUnsignedTxBuilder) BuildOutputsAndOutputsData() error {
 		HashType: b.SystemScripts.SUDTCell.HashType,
 		Args:     common.FromHex(b.UUID),
 	}
-	// set ckb change output, default capacity is 100 ckb, withdraw cheque cell need consume sender's live cell.
+	// set ckb change output
 	b.tx.Outputs = append(b.tx.Outputs, &types.CellOutput{
-		Capacity: uint64(100 * math.Pow10(8)),
+		Capacity: 0,
 		Lock:     b.Sender,
 	})
 	b.tx.OutputsData = append(b.tx.OutputsData, []byte{})
@@ -148,32 +149,50 @@ func (b *WithdrawChequesUnsignedTxBuilder) collectOneChequeCell() error {
 	if !b.ChequeIterator.HasNext() {
 		return errors.New("no cheque cells to claim")
 	}
-	liveCell, err := b.ChequeIterator.CurrentItem()
-	if err != nil {
-		return err
+	for b.ChequeIterator.HasNext() {
+		liveCell, err := b.ChequeIterator.CurrentItem()
+		if err != nil {
+			return err
+		}
+		udtAmount, err := utils.ParseSudtAmount(liveCell.OutputData)
+		if err != nil {
+			return err
+		}
+		if udtAmount.Cmp(b.Amount) != 0 {
+			err = b.ChequeIterator.Next()
+			if err != nil {
+				return err
+			}
+			continue
+		}
+		b.result.Capacity += liveCell.Output.Capacity
+		b.result.LiveCells = append(b.result.LiveCells, liveCell)
+		// init totalAmount
+		if _, ok := b.result.Options["totalAmount"]; !ok {
+			b.result.Options = make(map[string]interface{})
+			b.result.Options["totalAmount"] = big.NewInt(0)
+		}
+		// update sudt total Amount
+		err = b.updateTotalAmount(err, liveCell)
+		if err != nil {
+			return err
+		}
+		input := &types.CellInput{
+			Since: utils.SinceFromRelativeEpochNumber(relativeEpochNumber),
+			PreviousOutput: &types.OutPoint{
+				TxHash: liveCell.OutPoint.TxHash,
+				Index:  liveCell.OutPoint.Index,
+			},
+		}
+		b.tx.Inputs = append(b.tx.Inputs, input)
+		b.tx.Witnesses = append(b.tx.Witnesses, []byte{})
+		err = b.ChequeIterator.Next()
+		if err != nil {
+			return err
+		}
+		return nil
 	}
-	b.result.Capacity += liveCell.Output.Capacity
-	b.result.LiveCells = append(b.result.LiveCells, liveCell)
-	// init totalAmount
-	if _, ok := b.result.Options["totalAmount"]; !ok {
-		b.result.Options = make(map[string]interface{})
-		b.result.Options["totalAmount"] = big.NewInt(0)
-	}
-	// update sudt total Amount
-	err = b.updateTotalAmount(err, liveCell)
-	if err != nil {
-		return err
-	}
-	input := &types.CellInput{
-		Since: utils.SinceFromRelativeEpochNumber(relativeEpochNumber),
-		PreviousOutput: &types.OutPoint{
-			TxHash: liveCell.OutPoint.TxHash,
-			Index:  liveCell.OutPoint.Index,
-		},
-	}
-	b.tx.Inputs = append(b.tx.Inputs, input)
-	b.tx.Witnesses = append(b.tx.Witnesses, []byte{})
-	return nil
+	return errors.Errorf("there are no amount is %s cheque cells", b.Amount)
 }
 
 func (b *WithdrawChequesUnsignedTxBuilder) updateTotalAmount(err error, liveCell *indexer.LiveCell) error {

@@ -102,6 +102,7 @@ func (c *WithdrawCheque) GenerateWithdrawChequeUnsignedTx(client rpc.Client, sys
 		ChequeIterator: chequeIterator,
 		SystemScripts:  systemScripts,
 		UUID:           c.UUID,
+		Amount:         c.Amount,
 		Client:         client,
 	}
 	director.SetBuilder(txBuilder)
