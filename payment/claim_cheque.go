@@ -48,11 +48,15 @@ func (c *ClaimCheque) GenerateClaimChequeUnsignedTx(client rpc.Client, systemScr
 		HashType: systemScripts.SUDTCell.HashType,
 		Args:     common.FromHex(c.UUID),
 	}
+	receiverLockHash, err := c.Receiver.Hash()
+	if err != nil {
+		return nil, err
+	}
 	chequeSearchKey := &indexer.SearchKey{
 		Script: &types.Script{
 			CodeHash: systemScripts.ChequeCell.CellHash,
 			HashType: systemScripts.ChequeCell.HashType,
-			Args:     c.Receiver.Args,
+			Args:     receiverLockHash.Bytes()[0:20],
 		},
 		ScriptType: indexer.ScriptTypeLock,
 		ArgsLen:    chequeScriptArgsLength,
