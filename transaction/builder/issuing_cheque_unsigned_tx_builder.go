@@ -233,17 +233,20 @@ func (b *IssuingChequeUnsignedTxBuilder) isSUDTEnough() bool {
 }
 
 func (b *IssuingChequeUnsignedTxBuilder) isCkbEnough() (bool, error) {
-	changeCapacity := b.result.Capacity - b.tx.OutputsCapacity()
-	if changeCapacity > 0 {
+	inputsCapacity := big.NewInt(0).SetUint64(b.result.Capacity)
+	outputsCapacity := big.NewInt(0).SetUint64(b.tx.OutputsCapacity())
+	changeCapacity := big.NewInt(0).Sub(inputsCapacity, outputsCapacity)
+	if changeCapacity.Cmp(big.NewInt(0)) > 0 {
 		fee, err := transaction.CalculateTransactionFee(b.tx, b.FeeRate)
 		if err != nil {
 			return false, err
 		}
-		changeCapacity -= fee
+		changeCapacity = big.NewInt(0).Sub(changeCapacity, big.NewInt(0).SetUint64(fee))
 		changeOutput := b.tx.Outputs[b.ckbChangeOutputIndex.Value]
 		changeOutputData := b.tx.OutputsData[b.ckbChangeOutputIndex.Value]
-		changeOutputCapacity := changeOutput.OccupiedCapacity(changeOutputData) * uint64(math.Pow10(8))
-		if changeCapacity >= changeOutputCapacity {
+
+		changeOutputCapacity := big.NewInt(0).SetUint64(changeOutput.OccupiedCapacity(changeOutputData) * uint64(math.Pow10(8)))
+		if changeCapacity.Cmp(changeOutputCapacity) >= 0 {
 			return true, nil
 		} else {
 			return false, nil
