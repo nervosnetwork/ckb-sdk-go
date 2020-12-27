@@ -23,7 +23,11 @@ func TestChequeCellArgs(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	expectedArgs := append(receiverLock.Args, senderLockHash.Bytes()[0:20]...)
+	receiverLockHash, err := receiverLock.Hash()
+	if err != nil {
+		t.Fatal(err)
+	}
+	expectedArgs := append(receiverLockHash.Bytes()[0:20], senderLockHash.Bytes()[0:20]...)
 	actualArgs, err := ChequeCellArgs(senderLock, receiverLock)
 	if err != nil {
 		t.Fatal(err)
