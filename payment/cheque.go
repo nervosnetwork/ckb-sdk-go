@@ -19,23 +19,24 @@ import (
 
 // Cheque object
 type Cheque struct {
-	Sender   *types.Script
-	Receiver *types.Script
-	UUID     string
-	Amount   *big.Int
-	FeeRate  uint64
-	tx       *types.Transaction
+	Sender        *types.Script
+	Receiver      *types.Script
+	UUID          string
+	Amount        *big.Int
+	FeeRate       uint64
+	tx            *types.Transaction
+	systemScripts *utils.SystemScripts
 }
 
 // NewCheque returns a new Cheque object
-func NewCheque(senderAddr, receiverAddr, uuid, amount string, feeRate uint64) (*Cheque, error) {
-	parsedSenderAddr, err := address.Parse(senderAddr)
+func NewCheque(senderAddr, receiverAddr, uuid, amount string, feeRate uint64, systemScripts *utils.SystemScripts) (*Cheque, error) {
+	parsedSenderAddr, err := address.ValidateChequeAddress(senderAddr, systemScripts)
 	if err != nil {
-		return nil, errors.WithMessage(err, "invalid sender address")
+		return nil, err
 	}
-	parsedReceiverAddr, err := address.Parse(receiverAddr)
+	parsedReceiverAddr, err := address.ValidateChequeAddress(receiverAddr, systemScripts)
 	if err != nil {
-		return nil, errors.WithMessage(err, "invalid receiver address")
+		return nil, err
 	}
 	n, b := big.NewInt(0).SetString(amount, 10)
 	if !b {
@@ -43,20 +44,21 @@ func NewCheque(senderAddr, receiverAddr, uuid, amount string, feeRate uint64) (*
 	}
 
 	return &Cheque{
-		Sender:   parsedSenderAddr.Script,
-		Receiver: parsedReceiverAddr.Script,
-		UUID:     uuid,
-		Amount:   n,
-		FeeRate:  feeRate,
+		Sender:        parsedSenderAddr.Script,
+		Receiver:      parsedReceiverAddr.Script,
+		UUID:          uuid,
+		Amount:        n,
+		FeeRate:       feeRate,
+		systemScripts: systemScripts,
 	}, nil
 }
 
 // GenerateIssuingChequeUnsignedTx generate an unsigned transaction for issuing a cheque cell
-func (c *Cheque) GenerateIssuingChequeUnsignedTx(client rpc.Client, systemScripts *utils.SystemScripts) (*types.Transaction, error) {
+func (c *Cheque) GenerateIssuingChequeUnsignedTx(client rpc.Client) (*types.Transaction, error) {
 	// collect udt cells
 	udtType := &types.Script{
-		CodeHash: systemScripts.SUDTCell.CellHash,
-		HashType: systemScripts.SUDTCell.HashType,
+		CodeHash: c.systemScripts.SUDTCell.CellHash,
+		HashType: c.systemScripts.SUDTCell.HashType,
 		Args:     common.FromHex(c.UUID),
 	}
 	searchKey := &indexer.SearchKey{
@@ -86,7 +88,7 @@ func (c *Cheque) GenerateIssuingChequeUnsignedTx(client rpc.Client, systemScript
 		FeeRate:        c.FeeRate,
 		CkbIterator:    ckbIterator,
 		SUDTIterator:   sudtIterator,
-		SystemScripts:  systemScripts,
+		SystemScripts:  c.systemScripts,
 		TransferAmount: c.Amount,
 		UUID:           c.UUID,
 	}
