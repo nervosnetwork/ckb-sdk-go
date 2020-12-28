@@ -13,7 +13,6 @@ import (
 	"github.com/nervosnetwork/ckb-sdk-go/transaction/builder"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 	"github.com/nervosnetwork/ckb-sdk-go/utils"
-	"github.com/pkg/errors"
 )
 
 const chequeScriptArgsLength = 40
@@ -28,10 +27,10 @@ type ClaimCheque struct {
 }
 
 // NewClaimCheque returns a new ClaimCheque object
-func NewClaimCheque(receiverAddr, uuid string, feeRate uint64) (*ClaimCheque, error) {
-	parsedReceiverAddr, err := address.Parse(receiverAddr)
+func NewClaimCheque(receiverAddr, uuid string, feeRate uint64, systemScripts *utils.SystemScripts) (*ClaimCheque, error) {
+	parsedReceiverAddr, err := address.ValidateChequeAddress(receiverAddr, systemScripts)
 	if err != nil {
-		return nil, errors.WithMessage(err, "invalid receiver address")
+		return nil, err
 	}
 	return &ClaimCheque{
 		Receiver: parsedReceiverAddr.Script,
@@ -48,11 +47,15 @@ func (c *ClaimCheque) GenerateClaimChequeUnsignedTx(client rpc.Client, systemScr
 		HashType: systemScripts.SUDTCell.HashType,
 		Args:     common.FromHex(c.UUID),
 	}
+	receiverLockHash, err := c.Receiver.Hash()
+	if err != nil {
+		return nil, err
+	}
 	chequeSearchKey := &indexer.SearchKey{
 		Script: &types.Script{
 			CodeHash: systemScripts.ChequeCell.CellHash,
 			HashType: systemScripts.ChequeCell.HashType,
-			Args:     c.Receiver.Args,
+			Args:     receiverLockHash.Bytes()[0:20],
 		},
 		ScriptType: indexer.ScriptTypeLock,
 		ArgsLen:    chequeScriptArgsLength,

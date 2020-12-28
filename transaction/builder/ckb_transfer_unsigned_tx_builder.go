@@ -6,6 +6,7 @@ import (
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 	"github.com/nervosnetwork/ckb-sdk-go/utils"
 	"github.com/pkg/errors"
+	"math"
 )
 
 var _ UnsignedTxBuilder = (*CkbTransferUnsignedTxBuilder)(nil)
@@ -128,7 +129,7 @@ func (b *CkbTransferUnsignedTxBuilder) isEnough() (bool, error) {
 		if !b.TransferAll {
 			changeOutput := b.tx.Outputs[b.ckbChangeOutputIndex.Value]
 			changeOutputData := b.tx.OutputsData[b.ckbChangeOutputIndex.Value]
-			changeOutputCapacity := changeOutput.OccupiedCapacity(changeOutputData)
+			changeOutputCapacity := changeOutput.OccupiedCapacity(changeOutputData) * uint64(math.Pow10(8))
 			if changeCapacity >= changeOutputCapacity {
 				return true, nil
 			} else {

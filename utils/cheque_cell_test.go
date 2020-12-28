@@ -16,14 +16,18 @@ func TestChequeCellArgs(t *testing.T) {
 	receiverLock := &types.Script{
 		CodeHash: types.HexToHash("0x9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8"),
 		HashType: "type",
-		Args:     common.FromHex("0xedcda9513fa030ce4308e29245a22c022d0443bb"),
+		Args:     common.FromHex("0xedcda9513fa030ce4308e29245a22c022d0212ab"),
 	}
 
 	senderLockHash, err := senderLock.Hash()
 	if err != nil {
 		t.Fatal(err)
 	}
-	expectedArgs := append(receiverLock.Args, senderLockHash.Bytes()[0:20]...)
+	receiverLockHash, err := receiverLock.Hash()
+	if err != nil {
+		t.Fatal(err)
+	}
+	expectedArgs := append(receiverLockHash.Bytes()[0:20], senderLockHash.Bytes()[0:20]...)
 	actualArgs, err := ChequeCellArgs(senderLock, receiverLock)
 	if err != nil {
 		t.Fatal(err)

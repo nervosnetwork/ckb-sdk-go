@@ -11,6 +11,7 @@ import (
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 	"github.com/nervosnetwork/ckb-sdk-go/utils"
 	"github.com/pkg/errors"
+	"math"
 	"math/big"
 )
 
@@ -191,9 +192,6 @@ func (b *ClaimChequesUnsignedTxBuilder) collectChequeCells() error {
 		}
 		b.tx.Inputs = append(b.tx.Inputs, input)
 		b.tx.Witnesses = append(b.tx.Witnesses, []byte{})
-		if len(b.tx.Witnesses[0]) == 0 {
-			b.tx.Witnesses[0] = transaction.EmptyWitnessArgPlaceholder
-		}
 		err = b.ChequeIterator.Next()
 		if err != nil {
 			return err
@@ -282,17 +280,20 @@ func (b *ClaimChequesUnsignedTxBuilder) GetResult() (*types.Transaction, [][]int
 }
 
 func (b *ClaimChequesUnsignedTxBuilder) isCkbEnough() (bool, error) {
-	changeCapacity := b.result.Capacity - b.tx.OutputsCapacity()
-	if changeCapacity > 0 {
+	inputsCapacity := big.NewInt(0).SetUint64(b.result.Capacity)
+	outputsCapacity := big.NewInt(0).SetUint64(b.tx.OutputsCapacity())
+	changeCapacity := big.NewInt(0).Sub(inputsCapacity, outputsCapacity)
+
+	if changeCapacity.Cmp(big.NewInt(0)) > 0 {
 		fee, err := transaction.CalculateTransactionFee(b.tx, b.FeeRate)
 		if err != nil {
 			return false, err
 		}
-		changeCapacity -= fee
+		changeCapacity = big.NewInt(0).Sub(changeCapacity, big.NewInt(0).SetUint64(fee))
 		changeOutput := b.tx.Outputs[b.ckbChangeOutputIndex.Value]
 		changeOutputData := b.tx.OutputsData[b.ckbChangeOutputIndex.Value]
-		changeOutputCapacity := changeOutput.OccupiedCapacity(changeOutputData)
-		if changeCapacity >= changeOutputCapacity {
+		changeOutputCapacity := big.NewInt(0).SetUint64(changeOutput.OccupiedCapacity(changeOutputData) * uint64(math.Pow10(8)))
+		if changeCapacity.Cmp(changeOutputCapacity) >= 0 {
 			return true, nil
 		} else {
 			return false, nil
@@ -304,12 +305,19 @@ func (b *ClaimChequesUnsignedTxBuilder) isCkbEnough() (bool, error) {
 
 func (b *ClaimChequesUnsignedTxBuilder) generateGroups() error {
 	groupInfo := make(map[string][]int)
+	receiverLockHash, err := b.Receiver.Hash()
+	if err != nil {
+		return err
+	}
 	for i, liveCell := range b.result.LiveCells {
 		lockHash, err := liveCell.Output.Lock.Hash()
 		if err != nil {
 			return err
 		}
 		key := lockHash.String()
+		if key != receiverLockHash.String() {
+			continue
+		}
 		if v, ok := groupInfo[key]; ok {
 			v = append(v, i)
 			groupInfo[key] = v
