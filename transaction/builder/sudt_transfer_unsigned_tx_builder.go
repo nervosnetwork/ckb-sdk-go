@@ -15,19 +15,22 @@ import (
 var _ UnsignedTxBuilder = (*SudtTransferUnsignedTxBuilder)(nil)
 
 type SudtTransferUnsignedTxBuilder struct {
-	Sender         *types.Script
-	Receiver       *types.Script
-	FeeRate        uint64
+	CkbChanger     *types.Script
+	SudtChanger    *types.Script
+	Senders        []*types.Script
+	ReceiverInfo   []types.ReceiverInfo
 	CkbIterator    collector.CellCollectionIterator
-	SUDTIterator   collector.CellCollectionIterator
+	SUDTIterators  []collector.CellCollectionIterator
 	SystemScripts  *utils.SystemScripts
 	TransferAmount *big.Int
 	UUID           string
+	FeeRate        uint64
 
 	tx                    *types.Transaction
 	result                *collector.LiveCellCollectResult
 	ckbChangeOutputIndex  *collector.ChangeOutputIndex
 	sUDTChangeOutputIndex *collector.ChangeOutputIndex
+	groups                [][]int
 }
 
 func (s *SudtTransferUnsignedTxBuilder) NewTransaction() {
@@ -61,36 +64,38 @@ func (s *SudtTransferUnsignedTxBuilder) BuildOutputsAndOutputsData() error {
 		HashType: s.SystemScripts.SUDTCell.HashType,
 		Args:     common.FromHex(s.UUID),
 	}
-	// set receiver sudt output
-	s.tx.Outputs = append(s.tx.Outputs, &types.CellOutput{
-		Capacity: udtCellCapacity,
-		Lock: &types.Script{
-			CodeHash: s.Receiver.CodeHash,
-			HashType: s.Receiver.HashType,
-			Args:     s.Receiver.Args,
-		},
-		Type: udtType,
-	})
-	s.tx.OutputsData = append(s.tx.OutputsData, utils.GenerateSudtAmount(s.TransferAmount))
+	// set receivers sudt output
+	for _, r := range s.ReceiverInfo {
+		s.tx.Outputs = append(s.tx.Outputs, &types.CellOutput{
+			Capacity: udtCellCapacity,
+			Lock: &types.Script{
+				CodeHash: r.Receiver.CodeHash,
+				HashType: r.Receiver.HashType,
+				Args:     r.Receiver.Args,
+			},
+			Type: udtType,
+		})
+		s.tx.OutputsData = append(s.tx.OutputsData, utils.GenerateSudtAmount(r.Amount))
+	}
 
 	// set ckb change output
 	s.tx.Outputs = append(s.tx.Outputs, &types.CellOutput{
 		Capacity: 0,
-		Lock:     s.Sender,
+		Lock:     s.CkbChanger,
 	})
 	s.tx.OutputsData = append(s.tx.OutputsData, []byte{})
 	// set ckb change output index
-	s.ckbChangeOutputIndex = &collector.ChangeOutputIndex{Value: 1}
+	s.ckbChangeOutputIndex = &collector.ChangeOutputIndex{Value: len(s.tx.Outputs) - 1}
 
 	// set sudt change output
 	s.tx.Outputs = append(s.tx.Outputs, &types.CellOutput{
 		Capacity: udtCellCapacity,
-		Lock:     s.Sender,
+		Lock:     s.SudtChanger,
 		Type:     udtType,
 	})
 	s.tx.OutputsData = append(s.tx.OutputsData, sudtDataPlaceHolder)
 	// set sudt change output index
-	s.sUDTChangeOutputIndex = &collector.ChangeOutputIndex{Value: 2}
+	s.sUDTChangeOutputIndex = &collector.ChangeOutputIndex{Value: len(s.tx.Outputs) - 1}
 
 	return nil
 }
@@ -131,12 +136,16 @@ func (s *SudtTransferUnsignedTxBuilder) UpdateChangeOutput() error {
 	}
 	changeCapacity := s.result.Capacity - s.tx.OutputsCapacity() - fee
 	s.tx.Outputs[s.ckbChangeOutputIndex.Value].Capacity = changeCapacity
+	err = s.generateGroups()
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
 
 func (s *SudtTransferUnsignedTxBuilder) GetResult() (*types.Transaction, [][]int) {
-	return s.tx, nil
+	return s.tx, s.groups
 }
 
 func (s *SudtTransferUnsignedTxBuilder) collectCkbCells() error {
@@ -173,43 +182,45 @@ func (s *SudtTransferUnsignedTxBuilder) collectCkbCells() error {
 
 func (s *SudtTransferUnsignedTxBuilder) collectSUDTCells() error {
 	s.result = &collector.LiveCellCollectResult{}
-	for s.SUDTIterator.HasNext() {
-		liveCell, err := s.SUDTIterator.CurrentItem()
-		if err != nil {
-			return err
-		}
-		s.result.Capacity += liveCell.Output.Capacity
-		s.result.LiveCells = append(s.result.LiveCells, liveCell)
-		// init totalAmount
-		if _, ok := s.result.Options["totalAmount"]; !ok {
-			s.result.Options = make(map[string]interface{})
-			s.result.Options["totalAmount"] = big.NewInt(0)
-		}
-		amount, err := utils.ParseSudtAmount(liveCell.OutputData)
-		if err != nil {
-			return errors.WithMessage(err, "sudt amount parse error")
-		}
-		totalAmount := s.result.Options["totalAmount"].(*big.Int)
-		s.result.Options["totalAmount"] = big.NewInt(0).Add(totalAmount, amount)
-		input := &types.CellInput{
-			Since: 0,
-			PreviousOutput: &types.OutPoint{
-				TxHash: liveCell.OutPoint.TxHash,
-				Index:  liveCell.OutPoint.Index,
-			},
-		}
-		s.tx.Inputs = append(s.tx.Inputs, input)
-		s.tx.Witnesses = append(s.tx.Witnesses, []byte{})
-		if len(s.tx.Witnesses[0]) == 0 {
-			s.tx.Witnesses[0] = transaction.EmptyWitnessArgPlaceholder
-		}
-		// stop collect
-		if s.isSUDTEnough() {
-			return nil
-		}
-		err = s.SUDTIterator.Next()
-		if err != nil {
-			return err
+	for _, iterator := range s.SUDTIterators {
+		for iterator.HasNext() {
+			liveCell, err := iterator.CurrentItem()
+			if err != nil {
+				return err
+			}
+			s.result.Capacity += liveCell.Output.Capacity
+			s.result.LiveCells = append(s.result.LiveCells, liveCell)
+			// init totalAmount
+			if _, ok := s.result.Options["totalAmount"]; !ok {
+				s.result.Options = make(map[string]interface{})
+				s.result.Options["totalAmount"] = big.NewInt(0)
+			}
+			amount, err := utils.ParseSudtAmount(liveCell.OutputData)
+			if err != nil {
+				return errors.WithMessage(err, "sudt amount parse error")
+			}
+			totalAmount := s.result.Options["totalAmount"].(*big.Int)
+			s.result.Options["totalAmount"] = big.NewInt(0).Add(totalAmount, amount)
+			input := &types.CellInput{
+				Since: 0,
+				PreviousOutput: &types.OutPoint{
+					TxHash: liveCell.OutPoint.TxHash,
+					Index:  liveCell.OutPoint.Index,
+				},
+			}
+			s.tx.Inputs = append(s.tx.Inputs, input)
+			s.tx.Witnesses = append(s.tx.Witnesses, []byte{})
+			if len(s.tx.Witnesses[0]) == 0 {
+				s.tx.Witnesses[0] = transaction.EmptyWitnessArgPlaceholder
+			}
+			// stop collect
+			if s.isSUDTEnough() {
+				return nil
+			}
+			err = iterator.Next()
+			if err != nil {
+				return err
+			}
 		}
 	}
 	return errors.New("insufficient sudt balance")
@@ -245,4 +256,32 @@ func (s *SudtTransferUnsignedTxBuilder) isCkbEnough() (bool, error) {
 	} else {
 		return false, nil
 	}
+}
+
+func (s *SudtTransferUnsignedTxBuilder) generateGroups() error {
+	groupInfo := make(map[string][]int)
+	for _, sender := range s.Senders {
+		senderLockHash, err := sender.Hash()
+		if err != nil {
+			return err
+		}
+		groupInfo[senderLockHash.String()] = []int{}
+	}
+	for i, liveCell := range s.result.LiveCells {
+		lockHash, err := liveCell.Output.Lock.Hash()
+		if err != nil {
+			return err
+		}
+		key := lockHash.String()
+		if v, ok := groupInfo[key]; ok {
+			v = append(v, i)
+			groupInfo[key] = v
+		}
+	}
+	var groups [][]int
+	for _, group := range groupInfo {
+		groups = append(groups, group)
+	}
+	s.groups = groups
+	return nil
 }
