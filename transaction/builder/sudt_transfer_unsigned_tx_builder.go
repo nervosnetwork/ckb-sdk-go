@@ -30,7 +30,7 @@ type SudtTransferUnsignedTxBuilder struct {
 	result                *collector.LiveCellCollectResult
 	ckbChangeOutputIndex  *collector.ChangeOutputIndex
 	sUDTChangeOutputIndex *collector.ChangeOutputIndex
-	groups                [][]int
+	groups                map[string][]int
 }
 
 func (s *SudtTransferUnsignedTxBuilder) NewTransaction() {
@@ -144,11 +144,27 @@ func (s *SudtTransferUnsignedTxBuilder) UpdateChangeOutput() error {
 	return nil
 }
 
-func (s *SudtTransferUnsignedTxBuilder) GetResult() (*types.Transaction, [][]int) {
+func (s *SudtTransferUnsignedTxBuilder) GetResult() (*types.Transaction, map[string][]int) {
 	return s.tx, s.groups
 }
 
 func (s *SudtTransferUnsignedTxBuilder) collectCkbCells() error {
+	var isUniqueLock bool
+	for _, sender := range s.Senders {
+		senderLockHash, err := sender.Hash()
+		if err != nil {
+			return err
+		}
+		ckbChangerLockHash, err := s.CkbChanger.Hash()
+		if err != nil {
+			return err
+		}
+
+		if senderLockHash != ckbChangerLockHash {
+			isUniqueLock = true
+		}
+	}
+	currentGroupFirstIndex := len(s.tx.Witnesses)
 	for s.CkbIterator.HasNext() {
 		liveCell, err := s.CkbIterator.CurrentItem()
 		if err != nil {
@@ -165,6 +181,9 @@ func (s *SudtTransferUnsignedTxBuilder) collectCkbCells() error {
 		}
 		s.tx.Inputs = append(s.tx.Inputs, input)
 		s.tx.Witnesses = append(s.tx.Witnesses, []byte{})
+		if isUniqueLock && len(s.tx.Witnesses[currentGroupFirstIndex]) == 0 {
+			s.tx.Witnesses[currentGroupFirstIndex] = transaction.EmptyWitnessArgPlaceholder
+		}
 		ok, err := s.isCkbEnough()
 		if err != nil {
 			return err
@@ -183,6 +202,7 @@ func (s *SudtTransferUnsignedTxBuilder) collectCkbCells() error {
 func (s *SudtTransferUnsignedTxBuilder) collectSUDTCells() error {
 	s.result = &collector.LiveCellCollectResult{}
 	for _, iterator := range s.SUDTIterators {
+		currentGroupFirstIndex := len(s.tx.Witnesses)
 		for iterator.HasNext() {
 			liveCell, err := iterator.CurrentItem()
 			if err != nil {
@@ -210,8 +230,8 @@ func (s *SudtTransferUnsignedTxBuilder) collectSUDTCells() error {
 			}
 			s.tx.Inputs = append(s.tx.Inputs, input)
 			s.tx.Witnesses = append(s.tx.Witnesses, []byte{})
-			if len(s.tx.Witnesses[0]) == 0 {
-				s.tx.Witnesses[0] = transaction.EmptyWitnessArgPlaceholder
+			if len(s.tx.Witnesses[currentGroupFirstIndex]) == 0 {
+				s.tx.Witnesses[currentGroupFirstIndex] = transaction.EmptyWitnessArgPlaceholder
 			}
 			// stop collect
 			if s.isSUDTEnough() {
@@ -260,13 +280,6 @@ func (s *SudtTransferUnsignedTxBuilder) isCkbEnough() (bool, error) {
 
 func (s *SudtTransferUnsignedTxBuilder) generateGroups() error {
 	groupInfo := make(map[string][]int)
-	for _, sender := range s.Senders {
-		senderLockHash, err := sender.Hash()
-		if err != nil {
-			return err
-		}
-		groupInfo[senderLockHash.String()] = []int{}
-	}
 	for i, liveCell := range s.result.LiveCells {
 		lockHash, err := liveCell.Output.Lock.Hash()
 		if err != nil {
@@ -276,12 +289,11 @@ func (s *SudtTransferUnsignedTxBuilder) generateGroups() error {
 		if v, ok := groupInfo[key]; ok {
 			v = append(v, i)
 			groupInfo[key] = v
+		} else {
+			groupInfo[key] = []int{i}
 		}
 	}
-	var groups [][]int
-	for _, group := range groupInfo {
-		groups = append(groups, group)
-	}
-	s.groups = groups
+
+	s.groups = groupInfo
 	return nil
 }

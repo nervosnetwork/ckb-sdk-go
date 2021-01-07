@@ -29,7 +29,7 @@ type Sudt struct {
 
 	tx            *types.Transaction
 	systemScripts *utils.SystemScripts
-	groups        [][]int
+	groups        map[string][]int
 }
 
 // NewSudt returns a new NewSudt object
@@ -146,9 +146,9 @@ func (s *Sudt) GenerateTransferSudtUnsignedTx(client rpc.Client) (*types.Transac
 
 // SignTx sign an unsigned sudt transfer transaction and return an signed transaction
 // The order of keys must be consistent with the order of locks in senders
-func (s *Sudt) SignTx(keys []crypto.Key) (*types.Transaction, error) {
-	for i, group := range s.groups {
-		err := transaction.SingleSignTransaction(s.tx, group, transaction.EmptyWitnessArg, keys[i])
+func (s *Sudt) SignTx(keys map[string]crypto.Key) (*types.Transaction, error) {
+	for lockHash, group := range s.groups {
+		err := transaction.SingleSignTransaction(s.tx, group, transaction.EmptyWitnessArg, keys[lockHash])
 		if err != nil {
 			return nil, fmt.Errorf("sign transaction error: %v", err)
 		}
