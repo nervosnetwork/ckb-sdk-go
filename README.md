@@ -816,12 +816,12 @@ func main() {
     if err != nil {
         log.Fatal(err)
     }
-    c, err := payment.NewCheque("ckt1qyqrhmy67jcn7rvft3d2em3sc78pzn02ha4s728fvg", "ckt1qyqrd7cglncpwfzn73qwhed5mvjnrl8v6nvq2cpmd8", "TOKEN_ID", "10000000000000", 1000)
+    systemScripts, _ := utils.NewSystemScripts(client)
+    c, err := payment.NewCheque("ckt1qyqrhmy67jcn7rvft3d2em3sc78pzn02ha4s728fvg", "ckt1qyqrd7cglncpwfzn73qwhed5mvjnrl8v6nvq2cpmd8", "TOKEN_ID", "10000000000000", 1000, systemScripts)
     if err != nil {
         fmt.Println(err)
     }
-    systemScripts, _ := utils.NewSystemScripts(client)
-    _, err = c.GenerateIssuingChequeUnsignedTx(client, systemScripts)
+    _, err = c.GenerateIssuingChequeUnsignedTx(client)
     if err != nil {
         log.Fatal(err)
     }
@@ -860,12 +860,12 @@ func main() {
     if err != nil {
         log.Fatal(err)
     }
-    c, err := payment.NewClaimCheque("ckt1qyqrd7cglncpwfzn73qwhed5mvjnrl8v6nvq2cpmd8", "TOKEN_ID", 1000)
+    systemScripts, _ := utils.NewSystemScripts(client)
+    c, err := payment.NewClaimCheque("ckt1qyqrd7cglncpwfzn73qwhed5mvjnrl8v6nvq2cpmd8", "TOKEN_ID", 1000, systemScripts)
     if err != nil {
         fmt.Println(err)
     }
-    systemScripts, _ := utils.NewSystemScripts(client)
-    _, err = c.GenerateClaimChequeUnsignedTx(client, systemScripts)
+    _, err = c.GenerateClaimChequeUnsignedTx(client)
     if err != nil {
         log.Fatal(err)
     }
@@ -905,12 +905,12 @@ func main() {
     if err != nil {
         log.Fatal(err)
     }
-    c, err := payment.NewWithdrawCheque("ckt1qyqrhmy67jcn7rvft3d2em3sc78pzn02ha4s728fvg", "ckt1qyqrd7cglncpwfzn73qwhed5mvjnrl8v6nvq2cpmd8", "TOKEN_ID","10000000000000",1000)
+    systemScripts, _ := utils.NewSystemScripts(client)
+    c, err := payment.NewWithdrawCheque("ckt1qyqrhmy67jcn7rvft3d2em3sc78pzn02ha4s728fvg", "ckt1qyqrd7cglncpwfzn73qwhed5mvjnrl8v6nvq2cpmd8", "TOKEN_ID", "10000000000000", 1000, systemScripts)
     if err != nil {
         fmt.Println(err)
     }
-    systemScripts, _ := utils.NewSystemScripts(client)
-    _, err = c.GenerateWithdrawChequeUnsignedTx(client, systemScripts)
+    _, err = c.GenerateWithdrawChequeUnsignedTx(client)
     if err != nil {
         log.Fatal(err)
     }
@@ -928,4 +928,75 @@ func main() {
     }
     fmt.Println(hash)
 }
+```
+
+### 13. Transfer sUDT
+```go
+package main
+import (
+    "github.com/nervosnetwork/ckb-sdk-go/address"
+    "github.com/nervosnetwork/ckb-sdk-go/crypto"
+    "github.com/nervosnetwork/ckb-sdk-go/crypto/secp256k1"
+    "github.com/nervosnetwork/ckb-sdk-go/payment"
+    "github.com/nervosnetwork/ckb-sdk-go/rpc"
+    "log"
+)
+
+func main() {
+    uuid := "0x683574c1275eb5cfe6f8745faa375b08bf773223fd8d2b4db28dbd90a27f1586"
+    receiverInfo := make(map[string]string)
+    receiverInfo["ckt1qyqrhmy67jcn7rvft3d2em3sc78pzn02ha4s728fvg"] = "10000000000000"
+    receiverInfo["ckt1qyqr4s293mq0f0rhtejta5drx66a95c5wc6sl2dsmk"] = "10000000000000"
+    receiverInfo["ckt1qyqxpe0qj6qxk95zla6v06adej9enmnzqvaqvc07gr"] = "10000000000000"
+    senderAddresses := []string{"ckt1qyqvgpevpyh45a7a4t0l5n7apqduw7y9y99qpyrsd5", "ckt1qyqrd7cglncpwfzn73qwhed5mvjnrl8v6nvq2cpmd8"}
+    ckbPayerAddress := "ckt1qyqrhmy67jcn7rvft3d2em3sc78pzn02ha4s728fvg"
+    ckbChangeAddress := "ckt1qyqrhmy67jcn7rvft3d2em3sc78pzn02ha4s728fvg"
+    sudtChangeAddress := "ckt1qyqrhmy67jcn7rvft3d2em3sc78pzn02ha4s728fvg"
+    keyInfo := map[string]string{
+        "ckt1qyqvgpevpyh45a7a4t0l5n7apqduw7y9y99qpyrsd5": "PRIVATE KEY",
+        "ckt1qyqrd7cglncpwfzn73qwhed5mvjnrl8v6nvq2cpmd8": "PRIVATE KEY",
+        "ckt1qyqrhmy67jcn7rvft3d2em3sc78pzn02ha4s728fvg": "PRIVATE KEY",
+    }
+    client, err := rpc.DialWithIndexer("http://localhost:8114", "http://localhost:8116")
+  	if err != nil {
+  		log.Fatal(err)
+  	}
+    systemScripts, _ := utils.NewSystemScripts(client)
+  	sudt, err := payment.NewSudt(senderAddresses, receiverInfo, ckbPayerAddress, ckbChangeAddress, sudtChangeAddress, uuid, 1000, systemScripts)
+  	if err != nil {
+  		log.Println(err)
+  	}
+  	_, err = sudt.GenerateTransferSudtUnsignedTx(client)
+  	if err != nil {
+  		log.Fatal(err)
+  	}
+  	//fmt.Println(rpc.TransactionString(tx))
+  	keys := make(map[string]crypto.Key)
+  	for addr, sk := range keyInfo {
+  		parsedAddr, err := address.Parse(addr)
+  		if err != nil {
+  			log.Fatal(err)
+  		}
+  		lockHash, err := parsedAddr.Script.Hash()
+  		if err != nil {
+  			log.Fatal(err)
+  		}
+  		key, err := secp256k1.HexToKey(sk)
+  		if err != nil {
+  			log.Fatal(err)
+  		}
+  		keys[lockHash.String()] = key
+  	}
+  	tx, err := sudt.SignTx(keys)
+  	log.Println(rpc.TransactionString(tx))
+  	if err != nil {
+  		log.Fatal(err)
+  	}
+  	hash, err := sudt.Send(client)
+  	if err != nil {
+  		log.Fatal(err)
+  	}
+  	log.Println(hash)
+}
+
 ```
