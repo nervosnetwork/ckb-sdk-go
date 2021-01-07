@@ -19,13 +19,14 @@ import (
 
 // WithdrawCheque object
 type WithdrawCheque struct {
-	Sender   *types.Script
-	Receiver *types.Script
-	UUID     string
-	FeeRate  uint64
-	Amount   *big.Int
-	tx       *types.Transaction
-	groups   map[string][]int
+	Sender        *types.Script
+	Receiver      *types.Script
+	UUID          string
+	FeeRate       uint64
+	Amount        *big.Int
+	tx            *types.Transaction
+	systemScripts *utils.SystemScripts
+	groups        map[string][]int
 }
 
 // NewWithdrawCheque returns a new WithdrawCheque object
@@ -44,20 +45,21 @@ func NewWithdrawCheque(senderAddr, receiverAddr, uuid, amount string, feeRate ui
 	}
 
 	return &WithdrawCheque{
-		Sender:   parsedSenderAddr.Script,
-		Receiver: parsedReceiverAddr.Script,
-		UUID:     uuid,
-		Amount:   n,
-		FeeRate:  feeRate,
+		Sender:        parsedSenderAddr.Script,
+		Receiver:      parsedReceiverAddr.Script,
+		UUID:          uuid,
+		Amount:        n,
+		FeeRate:       feeRate,
+		systemScripts: systemScripts,
 	}, nil
 }
 
 // GenerateWithdrawChequeUnsignedTx generate an unsigned transaction for withdraw the cheque cell
-func (c *WithdrawCheque) GenerateWithdrawChequeUnsignedTx(client rpc.Client, systemScripts *utils.SystemScripts) (*types.Transaction, error) {
+func (c *WithdrawCheque) GenerateWithdrawChequeUnsignedTx(client rpc.Client) (*types.Transaction, error) {
 	// collect udt cells
 	udtType := &types.Script{
-		CodeHash: systemScripts.SUDTCell.CellHash,
-		HashType: systemScripts.SUDTCell.HashType,
+		CodeHash: c.systemScripts.SUDTCell.CellHash,
+		HashType: c.systemScripts.SUDTCell.HashType,
 		Args:     common.FromHex(c.UUID),
 	}
 	chequeCellArgs, err := utils.ChequeCellArgs(c.Sender, c.Receiver)
@@ -67,8 +69,8 @@ func (c *WithdrawCheque) GenerateWithdrawChequeUnsignedTx(client rpc.Client, sys
 
 	chequeSearchKey := &indexer.SearchKey{
 		Script: &types.Script{
-			CodeHash: systemScripts.ChequeCell.CellHash,
-			HashType: systemScripts.ChequeCell.HashType,
+			CodeHash: c.systemScripts.ChequeCell.CellHash,
+			HashType: c.systemScripts.ChequeCell.HashType,
 			Args:     chequeCellArgs,
 		},
 		ScriptType: indexer.ScriptTypeLock,
@@ -100,7 +102,7 @@ func (c *WithdrawCheque) GenerateWithdrawChequeUnsignedTx(client rpc.Client, sys
 		FeeRate:        c.FeeRate,
 		CkbIterator:    ckbIterator,
 		ChequeIterator: chequeIterator,
-		SystemScripts:  systemScripts,
+		SystemScripts:  c.systemScripts,
 		UUID:           c.UUID,
 		Amount:         c.Amount,
 		Client:         client,
