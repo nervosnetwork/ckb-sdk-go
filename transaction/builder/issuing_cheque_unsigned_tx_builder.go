@@ -220,7 +220,7 @@ func (b *IssuingChequeUnsignedTxBuilder) UpdateChangeOutput() error {
 	return nil
 }
 
-func (b *IssuingChequeUnsignedTxBuilder) GetResult() (*types.Transaction, [][]int) {
+func (b *IssuingChequeUnsignedTxBuilder) GetResult() (*types.Transaction, map[string][]int) {
 	return b.tx, nil
 }
 

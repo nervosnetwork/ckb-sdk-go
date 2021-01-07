@@ -25,7 +25,7 @@ type WithdrawCheque struct {
 	FeeRate  uint64
 	Amount   *big.Int
 	tx       *types.Transaction
-	groups   [][]int
+	groups   map[string][]int
 }
 
 // NewWithdrawCheque returns a new WithdrawCheque object

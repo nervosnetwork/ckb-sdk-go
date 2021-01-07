@@ -32,7 +32,7 @@ type WithdrawChequesUnsignedTxBuilder struct {
 	result                *collector.LiveCellCollectResult
 	ckbChangeOutputIndex  *collector.ChangeOutputIndex
 	sUDTChangeOutputIndex *collector.ChangeOutputIndex
-	groups                [][]int
+	groups                map[string][]int
 }
 
 func (b *WithdrawChequesUnsignedTxBuilder) NewTransaction() {
@@ -224,7 +224,7 @@ func (b *WithdrawChequesUnsignedTxBuilder) UpdateChangeOutput() error {
 	return nil
 }
 
-func (b *WithdrawChequesUnsignedTxBuilder) GetResult() (*types.Transaction, [][]int) {
+func (b *WithdrawChequesUnsignedTxBuilder) GetResult() (*types.Transaction, map[string][]int) {
 	return b.tx, b.groups
 }
 
@@ -273,10 +273,7 @@ func (b *WithdrawChequesUnsignedTxBuilder) generateGroups() error {
 			groupInfo[key] = []int{i}
 		}
 	}
-	var groups [][]int
-	for _, group := range groupInfo {
-		groups = append(groups, group)
-	}
-	b.groups = groups
+
+	b.groups = groupInfo
 	return nil
 }

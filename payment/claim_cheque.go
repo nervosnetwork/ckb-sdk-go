@@ -23,7 +23,7 @@ type ClaimCheque struct {
 	UUID     string
 	FeeRate  uint64
 	tx       *types.Transaction
-	groups   [][]int
+	groups   map[string][]int
 }
 
 // NewClaimCheque returns a new ClaimCheque object
