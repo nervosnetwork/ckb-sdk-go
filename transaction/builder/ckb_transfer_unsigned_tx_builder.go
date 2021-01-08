@@ -114,7 +114,7 @@ func (b *CkbTransferUnsignedTxBuilder) UpdateChangeOutput() error {
 	return nil
 }
 
-func (b *CkbTransferUnsignedTxBuilder) GetResult() (*types.Transaction, [][]int) {
+func (b *CkbTransferUnsignedTxBuilder) GetResult() (*types.Transaction, map[string][]int) {
 	return b.tx, nil
 }
 

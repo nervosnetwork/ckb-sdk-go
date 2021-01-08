@@ -14,6 +14,6 @@ func ChequeCellArgs(senderLock, receiverLock *types.Script) ([]byte, error) {
 	return append(receiverLockHash.Bytes()[0:20], senderLockHash.Bytes()[0:20]...), nil
 }
 
-func IsChequeCell(o *types.CellOutput, systemScripts SystemScripts) bool {
+func IsChequeCell(o *types.CellOutput, systemScripts *SystemScripts) bool {
 	return o.Lock.CodeHash == systemScripts.ChequeCell.CellHash
 }

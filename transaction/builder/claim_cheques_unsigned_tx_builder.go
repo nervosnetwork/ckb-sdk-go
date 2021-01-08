@@ -35,7 +35,7 @@ type ClaimChequesUnsignedTxBuilder struct {
 	result                *collector.LiveCellCollectResult
 	ckbChangeOutputIndex  *collector.ChangeOutputIndex
 	sUDTChangeOutputIndex *collector.ChangeOutputIndex
-	groups                [][]int
+	groups                map[string][]int
 }
 
 func (b *ClaimChequesUnsignedTxBuilder) NewTransaction() {
@@ -275,7 +275,7 @@ func (b *ClaimChequesUnsignedTxBuilder) UpdateChangeOutput() error {
 	return nil
 }
 
-func (b *ClaimChequesUnsignedTxBuilder) GetResult() (*types.Transaction, [][]int) {
+func (b *ClaimChequesUnsignedTxBuilder) GetResult() (*types.Transaction, map[string][]int) {
 	return b.tx, b.groups
 }
 
@@ -325,10 +325,6 @@ func (b *ClaimChequesUnsignedTxBuilder) generateGroups() error {
 			groupInfo[key] = []int{i}
 		}
 	}
-	var groups [][]int
-	for _, group := range groupInfo {
-		groups = append(groups, group)
-	}
-	b.groups = groups
+	b.groups = groupInfo
 	return nil
 }

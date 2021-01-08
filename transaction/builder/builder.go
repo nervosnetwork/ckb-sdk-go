@@ -12,7 +12,7 @@ type UnsignedTxBuilder interface {
 	BuildOutputsAndOutputsData() error
 	BuildInputsAndWitnesses() error
 	UpdateChangeOutput() error
-	GetResult() (*types.Transaction, [][]int)
+	GetResult() (*types.Transaction, map[string][]int)
 }
 
 type Director struct {
@@ -23,7 +23,7 @@ func (d *Director) SetBuilder(builder UnsignedTxBuilder) {
 	d.builder = builder
 }
 
-func (d *Director) Generate() (*types.Transaction, [][]int, error) {
+func (d *Director) Generate() (*types.Transaction, map[string][]int, error) {
 	d.builder.NewTransaction()
 	d.builder.BuildVersion()
 	d.builder.BuildHeaderDeps()

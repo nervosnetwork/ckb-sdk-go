@@ -19,11 +19,12 @@ const chequeScriptArgsLength = 40
 
 // ClaimCheque object
 type ClaimCheque struct {
-	Receiver *types.Script
-	UUID     string
-	FeeRate  uint64
-	tx       *types.Transaction
-	groups   [][]int
+	Receiver      *types.Script
+	UUID          string
+	FeeRate       uint64
+	tx            *types.Transaction
+	systemScripts *utils.SystemScripts
+	groups        map[string][]int
 }
 
 // NewClaimCheque returns a new ClaimCheque object
@@ -33,18 +34,19 @@ func NewClaimCheque(receiverAddr, uuid string, feeRate uint64, systemScripts *ut
 		return nil, err
 	}
 	return &ClaimCheque{
-		Receiver: parsedReceiverAddr.Script,
-		UUID:     uuid,
-		FeeRate:  feeRate,
+		Receiver:      parsedReceiverAddr.Script,
+		UUID:          uuid,
+		FeeRate:       feeRate,
+		systemScripts: systemScripts,
 	}, nil
 }
 
 // GenerateClaimChequeUnsignedTx generate an unsigned transaction for claim cheque cells
-func (c *ClaimCheque) GenerateClaimChequeUnsignedTx(client rpc.Client, systemScripts *utils.SystemScripts) (*types.Transaction, error) {
+func (c *ClaimCheque) GenerateClaimChequeUnsignedTx(client rpc.Client) (*types.Transaction, error) {
 	// collect udt cells
 	udtType := &types.Script{
-		CodeHash: systemScripts.SUDTCell.CellHash,
-		HashType: systemScripts.SUDTCell.HashType,
+		CodeHash: c.systemScripts.SUDTCell.CellHash,
+		HashType: c.systemScripts.SUDTCell.HashType,
 		Args:     common.FromHex(c.UUID),
 	}
 	receiverLockHash, err := c.Receiver.Hash()
@@ -53,8 +55,8 @@ func (c *ClaimCheque) GenerateClaimChequeUnsignedTx(client rpc.Client, systemScr
 	}
 	chequeSearchKey := &indexer.SearchKey{
 		Script: &types.Script{
-			CodeHash: systemScripts.ChequeCell.CellHash,
-			HashType: systemScripts.ChequeCell.HashType,
+			CodeHash: c.systemScripts.ChequeCell.CellHash,
+			HashType: c.systemScripts.ChequeCell.HashType,
 			Args:     receiverLockHash.Bytes()[0:20],
 		},
 		ScriptType: indexer.ScriptTypeLock,
@@ -86,7 +88,7 @@ func (c *ClaimCheque) GenerateClaimChequeUnsignedTx(client rpc.Client, systemScr
 		FeeRate:        c.FeeRate,
 		CkbIterator:    ckbIterator,
 		ChequeIterator: chequeIterator,
-		SystemScripts:  systemScripts,
+		SystemScripts:  c.systemScripts,
 		UUID:           c.UUID,
 		Client:         client,
 	}
