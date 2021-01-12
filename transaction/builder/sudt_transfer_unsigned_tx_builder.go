@@ -15,6 +15,7 @@ import (
 var _ UnsignedTxBuilder = (*SudtTransferUnsignedTxBuilder)(nil)
 
 type SudtTransferUnsignedTxBuilder struct {
+	CkbPayer       *types.Script
 	CkbChanger     *types.Script
 	SudtChanger    *types.Script
 	Senders        []*types.Script
@@ -149,19 +150,19 @@ func (s *SudtTransferUnsignedTxBuilder) GetResult() (*types.Transaction, map[str
 }
 
 func (s *SudtTransferUnsignedTxBuilder) collectCkbCells() error {
-	var isUniqueLock bool
+	isUniqueLock := true
 	for _, sender := range s.Senders {
 		senderLockHash, err := sender.Hash()
 		if err != nil {
 			return err
 		}
-		ckbChangerLockHash, err := s.CkbChanger.Hash()
+		ckbPayerLockHash, err := s.CkbPayer.Hash()
 		if err != nil {
 			return err
 		}
 
-		if senderLockHash != ckbChangerLockHash {
-			isUniqueLock = true
+		if senderLockHash == ckbPayerLockHash {
+			isUniqueLock = false
 		}
 	}
 	currentGroupFirstIndex := len(s.tx.Witnesses)

@@ -124,6 +124,7 @@ func (s *Sudt) GenerateTransferSudtUnsignedTx(client rpc.Client) (*types.Transac
 	}
 	director := builder.Director{}
 	txBuilder := &builder.SudtTransferUnsignedTxBuilder{
+		CkbPayer:       s.CkbPayer,
 		CkbChanger:     s.CkbChanger,
 		SudtChanger:    s.SudtChanger,
 		Senders:        s.Senders,
