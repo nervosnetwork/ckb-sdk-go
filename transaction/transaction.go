@@ -68,7 +68,7 @@ func AddInputsForTransaction(transaction *types.Transaction, inputs []*types.Cel
 		return nil, nil, errors.New("input cells empty")
 	}
 	group := make([]int, len(inputs))
-	start := len(transaction.Witnesses)
+	start := len(transaction.Inputs)
 	for i := 0; i < len(inputs); i++ {
 		input := inputs[i]
 		transaction.Inputs = append(transaction.Inputs, input)
