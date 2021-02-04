@@ -3,7 +3,6 @@ package transaction
 import (
 	"encoding/binary"
 	"errors"
-
 	"github.com/nervosnetwork/ckb-sdk-go/crypto"
 	"github.com/nervosnetwork/ckb-sdk-go/crypto/blake2b"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
@@ -69,7 +68,7 @@ func AddInputsForTransaction(transaction *types.Transaction, inputs []*types.Cel
 		return nil, nil, errors.New("input cells empty")
 	}
 	group := make([]int, len(inputs))
-	start := len(transaction.Witnesses)
+	start := len(transaction.Inputs)
 	for i := 0; i < len(inputs); i++ {
 		input := inputs[i]
 		transaction.Inputs = append(transaction.Inputs, input)
@@ -95,15 +94,22 @@ func SingleSignTransaction(transaction *types.Transaction, group []int, witnessA
 
 	message := append(hash.Bytes(), length...)
 	message = append(message, data...)
-
+	// hash the other witnesses in the group
 	if len(group) > 1 {
 		for i := 1; i < len(group); i++ {
-			var data []byte
+			data = transaction.Witnesses[i]
 			length := make([]byte, 8)
 			binary.LittleEndian.PutUint64(length, uint64(len(data)))
 			message = append(message, length...)
 			message = append(message, data...)
 		}
+	}
+	// hash witnesses which do not in any input group
+	for _, witness := range transaction.Witnesses[len(transaction.Inputs):] {
+		length := make([]byte, 8)
+		binary.LittleEndian.PutUint64(length, uint64(len(witness)))
+		message = append(message, length...)
+		message = append(message, witness...)
 	}
 
 	message, err = blake2b.Blake256(message)
