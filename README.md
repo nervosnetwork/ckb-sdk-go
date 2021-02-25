@@ -498,6 +498,69 @@ func main() {
 }
 ```
 
+#### 5.1 Collect cells with filter
+
+```go
+package main
+
+import (
+	"encoding/hex"
+	"fmt"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/nervosnetwork/ckb-sdk-go/indexer"
+	"github.com/nervosnetwork/ckb-sdk-go/rpc"
+	"github.com/nervosnetwork/ckb-sdk-go/types"
+	"github.com/nervosnetwork/ckb-sdk-go/utils"
+	"log"
+)
+
+func main() {
+	client, err := rpc.DialWithIndexer("http://localhost:8114", "http://localhost:8116")
+	if err != nil {
+		log.Fatalf("create rpc client error: %v", err)
+	}
+	args, _ := hex.DecodeString("edcda9513fa030ce4308e29245a22c022d0443bb")
+	systemScripts, _ := utils.NewSystemScripts(client)
+	searchKey := &indexer.SearchKey{
+		Script: &types.Script{
+			CodeHash: types.HexToHash("0x9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8"),
+			HashType: types.HashTypeType,
+			Args:     args,
+		},
+		ScriptType: indexer.ScriptTypeLock,
+		Filter: &indexer.CellsFilter{
+			Script: &types.Script{
+				CodeHash: systemScripts.SUDTCell.CellHash,
+				HashType: systemScripts.SUDTCell.HashType,
+				Args:     common.FromHex("0x683574c1275eb5cfe6f8745faa375b08bf773223fd8d2b4db28dbd90a27f1586"),
+			},
+			OutputDataLenRange:  &[2]uint64{0, 14200000001},
+			OutputCapacityRange: &[2]uint64{0, 14200000001},
+			BlockRange:          &[2]uint64{46843, 46844},
+		},
+	}
+	processor := utils.NewCapacityLiveCellProcessor(10000000000000000)
+
+	// collect by type script
+	processor.EmptyData = false
+	processor.TypeScript = &types.Script{
+		CodeHash: types.HexToHash("0x48dbf59b4c7ee1547238021b4869bceedf4eea6b43772e5d66ef8865b6ae7212"),
+		HashType: types.HashTypeData,
+		Args:     types.HexToHash("0x6a242b57227484e904b4e08ba96f19a623c367dcbd18675ec6f2a71a0ff4ec26").Bytes(),
+	}
+	collector := utils.NewLiveCellCollector(client, searchKey, indexer.SearchOrderAsc, 1000, "", processor)
+
+	// default collect null type script
+	fmt.Println(collector.Collect())
+
+	cells, err := collector.Collect()
+
+	fmt.Println(err)
+	fmt.Println(cells)
+}
+```
+
+
 ### 6. Payment
 
 ```go

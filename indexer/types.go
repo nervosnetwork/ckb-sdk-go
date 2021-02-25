@@ -24,6 +24,14 @@ type SearchKey struct {
 	Script     *types.Script `json:"script"`
 	ScriptType ScriptType    `json:"script_type"`
 	ArgsLen    uint          `json:"args_len,omitempty"`
+	Filter     *CellsFilter  `json:"filter,omitempty"`
+}
+
+type CellsFilter struct {
+	Script              *types.Script `json:"script"`
+	OutputDataLenRange  *[2]uint64    `json:"output_data_len_range"`
+	OutputCapacityRange *[2]uint64    `json:"output_capacity_range"`
+	BlockRange          *[2]uint64    `json:"block_range"`
 }
 
 type LiveCell struct {
@@ -78,6 +86,14 @@ type searchKey struct {
 	Script     *script      `json:"script"`
 	ScriptType ScriptType   `json:"script_type"`
 	ArgsLen    hexutil.Uint `json:"args_len,omitempty"`
+	Filter     *cellsFilter `json:"filter,omitempty"`
+}
+
+type cellsFilter struct {
+	Script              *script            `json:"script"`
+	OutputDataLenRange  *[2]hexutil.Uint64 `json:"output_data_len_range"`
+	OutputCapacityRange *[2]hexutil.Uint64 `json:"output_capacity_range"`
+	BlockRange          *[2]hexutil.Uint64 `json:"block_range"`
 }
 
 type outPoint struct {
@@ -184,6 +200,27 @@ func fromSearchKey(key *SearchKey) *searchKey {
 
 	if key.ArgsLen > 0 {
 		result.ArgsLen = hexutil.Uint(key.ArgsLen)
+	}
+
+	if key.Filter != nil {
+		filter := &cellsFilter{}
+		if key.Filter.Script != nil {
+			filter.Script = &script{
+				CodeHash: key.Filter.Script.CodeHash,
+				HashType: key.Filter.Script.HashType,
+				Args:     key.Filter.Script.Args,
+			}
+		}
+		if key.Filter.OutputDataLenRange != nil {
+			filter.OutputDataLenRange = &[2]hexutil.Uint64{hexutil.Uint64(key.Filter.OutputDataLenRange[0]), hexutil.Uint64(key.Filter.OutputDataLenRange[1])}
+		}
+		if key.Filter.OutputCapacityRange != nil {
+			filter.OutputCapacityRange = &[2]hexutil.Uint64{hexutil.Uint64(key.Filter.OutputCapacityRange[0]), hexutil.Uint64(key.Filter.OutputCapacityRange[1])}
+		}
+		if key.Filter.BlockRange != nil {
+			filter.BlockRange = &[2]hexutil.Uint64{hexutil.Uint64(key.Filter.BlockRange[0]), hexutil.Uint64(key.Filter.BlockRange[1])}
+		}
+		result.Filter = filter
 	}
 
 	return result
