@@ -219,3 +219,22 @@ type BlockReward struct {
 	Total          *big.Int `json:"total"`
 	TxFee          *big.Int `json:"tx_fee"`
 }
+
+type BlockEconomicState struct {
+	Issuance    BlockIssuance `json:"issuance"`
+	MinerReward MinerReward   `json:"miner_reward"`
+	TxsFee      *big.Int      `json:"txs_fee"`
+	FinalizedAt Hash          `json:"finalized_at"`
+}
+
+type BlockIssuance struct {
+	Primary   *big.Int `json:"primary"`
+	Secondary *big.Int `json:"secondary"`
+}
+
+type MinerReward struct {
+	Primary   *big.Int `json:"primary"`
+	Secondary *big.Int `json:"secondary"`
+	Committed *big.Int `json:"committed"`
+	Proposal  *big.Int `json:"proposal"`
+}

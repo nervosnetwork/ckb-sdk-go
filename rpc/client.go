@@ -53,7 +53,11 @@ type Client interface {
 
 	// GetCellbaseOutputCapacityDetails returns each component of the created CKB in this block's cellbase,
 	// which is issued to a block N - 1 - ProposalWindow.farthest, where this block's height is N.
+	// Deprecated: This method will be disabled by default from v0.40.0 and will be removed from v0.41.0,Please use the method GetBlockEconomicState instead.
 	GetCellbaseOutputCapacityDetails(ctx context.Context, hash types.Hash) (*types.BlockReward, error)
+
+	// GetBlockEconomicState return block economic state, It includes the rewards details and when it is finalized.
+	GetBlockEconomicState(ctx context.Context, hash types.Hash) (*types.BlockEconomicState, error)
 
 	// GetBlockByNumber get block by number
 	GetBlockByNumber(ctx context.Context, number uint64) (*types.Block, error)
@@ -292,6 +296,7 @@ func (cli *client) GetTransaction(ctx context.Context, hash types.Hash) (*types.
 	}, err
 }
 
+// Deprecated: This method will be disabled by default from v0.40.0 and will be removed from v0.41.0,Please use the method GetBlockEconomicState instead.
 func (cli *client) GetCellbaseOutputCapacityDetails(ctx context.Context, hash types.Hash) (*types.BlockReward, error) {
 	var result blockReward
 	err := cli.c.CallContext(ctx, &result, "get_cellbase_output_capacity_details", hash)
@@ -691,4 +696,32 @@ func (cli *client) GetTransactions(ctx context.Context, searchKey *indexer.Searc
 		return nil, errors.New("please set indexer client")
 	}
 	return cli.indexer.GetTransactions(ctx, searchKey, order, limit, afterCursor)
+}
+
+func (cli *client) GetBlockEconomicState(ctx context.Context, blockHash types.Hash) (*types.BlockEconomicState, error) {
+	var result blockEconomicState
+	err := cli.c.CallContext(ctx, &result, "get_block_economic_state", blockHash)
+	if err != nil {
+		return nil, err
+	}
+
+	// if FinalizedAt is equal to "0x0000000000000000000000000000000000000000000000000000000000000000" means block economic state is empty
+	if result.FinalizedAt == types.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000000") {
+		return nil, nil
+	}
+
+	return &types.BlockEconomicState{
+		Issuance: types.BlockIssuance{
+			Primary:   (*big.Int)(&result.Issuance.Primary),
+			Secondary: (*big.Int)(&result.Issuance.Secondary),
+		},
+		MinerReward: types.MinerReward{
+			Primary:   (*big.Int)(&result.MinerReward.Primary),
+			Secondary: (*big.Int)(&result.MinerReward.Secondary),
+			Committed: (*big.Int)(&result.MinerReward.Committed),
+			Proposal:  (*big.Int)(&result.MinerReward.Proposal),
+		},
+		TxsFee:      (*big.Int)(&result.TxsFee),
+		FinalizedAt: result.FinalizedAt,
+	}, err
 }
