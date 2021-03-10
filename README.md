@@ -9,45 +9,15 @@ Golang SDK for Nervos [CKB](https://github.com/nervosnetwork/ckb).
 The ckb-sdk-go is still under development and **NOT** production ready. You should get familiar with CKB transaction structure and RPC before using it.
 
 ## WARNING
-Module Indexer deprecated since [ckb_v0.36.0](https://github.com/nervosnetwork/ckb/releases/tag/v0.36.0): Please use [ckb-indexer](https://github.com/nervosnetwork/ckb-indexer) as an alternate solution.
+Module Indexer has been removed from [ckb_v0.40.0](https://github.com/nervosnetwork/ckb/releases/tag/v0.40.0): Please use [ckb-indexer](https://github.com/nervosnetwork/ckb-indexer) as an alternate solution.
 
-The following RPCs deprecated since [ckb_v0.36.0](https://github.com/nervosnetwork/ckb/releases/tag/v0.36.0):
+The following RPCs hash been removed from [ckb_v0.40.0](https://github.com/nervosnetwork/ckb/releases/tag/v0.40.0):
 * `get_live_cells_by_lock_hash`
 * `get_transactions_by_lock_hash`
 * `index_lock_hash`
 * `deindex_lock_hash`
 * `get_lock_hash_index_states`
 * `get_capacity_by_lock_hash`
-
-If you want to use `Module Indexer` RPCs, as a temporary solution, you can set `enable_deprecated_rpc = true` in file `ckb.toml`. 
-This configuration may not be able to be modified in future versions. Please use [ckb-indexer](https://github.com/nervosnetwork/ckb-indexer) as an alternate solution as soon as possible.
-```toml
-# ...
-
-[rpc]
-# By default RPC only binds to localhost, thus it only allows accessing from the same machine.
-#
-# Allowing arbitrary machines to access the JSON-RPC port is dangerous and strongly discouraged.
-# Please strictly limit the access to only trusted machines.
-listen_address = "127.0.0.1:8114"
-
-# Default is 10MiB = 10 * 1024 * 1024
-max_request_body_size = 10485760
-
-# List of API modules: ["Net", "Pool", "Miner", "Chain", "Stats", "Subscription", "Indexer", "Experiment", "Debug"]
-modules = ["Net", "Pool", "Miner", "Chain", "Stats", "Subscription", "Experiment", "Debug", "Indexer"]
-
-# By default RPC only binds to HTTP service, you can bind it to TCP and WebSocket.
-tcp_listen_address = "127.0.0.1:18114"
-ws_listen_address = "127.0.0.1:28114"
-reject_ill_transactions = true
-
-# By default deprecated rpc methods are disabled.
-enable_deprecated_rpc = true
-
-# ...
-```
-
 
 Since [ckb_v0.36.0](https://github.com/nervosnetwork/ckb/releases/tag/v0.36.0) SDK use [ckb-indexer](https://github.com/nervosnetwork/ckb-indexer) to collect cells, please see [Collect cells](#5-collect-cells) for examples.
 
