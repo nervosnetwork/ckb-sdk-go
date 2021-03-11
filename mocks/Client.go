@@ -70,20 +70,6 @@ func (_m *Client) Close() {
 	_m.Called()
 }
 
-// DeindexLockHash provides a mock function with given fields: ctx, lockHash
-func (_m *Client) DeindexLockHash(ctx context.Context, lockHash types.Hash) error {
-	ret := _m.Called(ctx, lockHash)
-
-	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, types.Hash) error); ok {
-		r0 = rf(ctx, lockHash)
-	} else {
-		r0 = ret.Error(0)
-	}
-
-	return r0
-}
-
 // DryRunTransaction provides a mock function with given fields: ctx, transaction
 func (_m *Client) DryRunTransaction(ctx context.Context, transaction *types.Transaction) (*types.DryRunTransactionResult, error) {
 	ret := _m.Called(ctx, transaction)
@@ -199,6 +185,29 @@ func (_m *Client) GetBlockByNumber(ctx context.Context, number uint64) (*types.B
 	return r0, r1
 }
 
+// GetBlockEconomicState provides a mock function with given fields: ctx, hash
+func (_m *Client) GetBlockEconomicState(ctx context.Context, hash types.Hash) (*types.BlockEconomicState, error) {
+	ret := _m.Called(ctx, hash)
+
+	var r0 *types.BlockEconomicState
+	if rf, ok := ret.Get(0).(func(context.Context, types.Hash) *types.BlockEconomicState); ok {
+		r0 = rf(ctx, hash)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*types.BlockEconomicState)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context, types.Hash) error); ok {
+		r1 = rf(ctx, hash)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // GetBlockHash provides a mock function with given fields: ctx, number
 func (_m *Client) GetBlockHash(ctx context.Context, number uint64) (*types.Hash, error) {
 	ret := _m.Called(ctx, number)
@@ -284,29 +293,6 @@ func (_m *Client) GetCells(ctx context.Context, searchKey *indexer.SearchKey, or
 	var r1 error
 	if rf, ok := ret.Get(1).(func(context.Context, *indexer.SearchKey, indexer.SearchOrder, uint64, string) error); ok {
 		r1 = rf(ctx, searchKey, order, limit, afterCursor)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
-
-// GetCellsByLockHash provides a mock function with given fields: ctx, hash, from, to
-func (_m *Client) GetCellsByLockHash(ctx context.Context, hash types.Hash, from uint64, to uint64) ([]*types.Cell, error) {
-	ret := _m.Called(ctx, hash, from, to)
-
-	var r0 []*types.Cell
-	if rf, ok := ret.Get(0).(func(context.Context, types.Hash, uint64, uint64) []*types.Cell); ok {
-		r0 = rf(ctx, hash, from, to)
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]*types.Cell)
-		}
-	}
-
-	var r1 error
-	if rf, ok := ret.Get(1).(func(context.Context, types.Hash, uint64, uint64) error); ok {
-		r1 = rf(ctx, hash, from, to)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -452,52 +438,6 @@ func (_m *Client) GetLiveCell(ctx context.Context, outPoint *types.OutPoint, wit
 	return r0, r1
 }
 
-// GetLiveCellsByLockHash provides a mock function with given fields: ctx, lockHash, page, per, reverseOrder
-func (_m *Client) GetLiveCellsByLockHash(ctx context.Context, lockHash types.Hash, page uint, per uint, reverseOrder bool) ([]*types.LiveCell, error) {
-	ret := _m.Called(ctx, lockHash, page, per, reverseOrder)
-
-	var r0 []*types.LiveCell
-	if rf, ok := ret.Get(0).(func(context.Context, types.Hash, uint, uint, bool) []*types.LiveCell); ok {
-		r0 = rf(ctx, lockHash, page, per, reverseOrder)
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]*types.LiveCell)
-		}
-	}
-
-	var r1 error
-	if rf, ok := ret.Get(1).(func(context.Context, types.Hash, uint, uint, bool) error); ok {
-		r1 = rf(ctx, lockHash, page, per, reverseOrder)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
-
-// GetLockHashIndexStates provides a mock function with given fields: ctx
-func (_m *Client) GetLockHashIndexStates(ctx context.Context) ([]*types.LockHashIndexState, error) {
-	ret := _m.Called(ctx)
-
-	var r0 []*types.LockHashIndexState
-	if rf, ok := ret.Get(0).(func(context.Context) []*types.LockHashIndexState); ok {
-		r0 = rf(ctx)
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]*types.LockHashIndexState)
-		}
-	}
-
-	var r1 error
-	if rf, ok := ret.Get(1).(func(context.Context) error); ok {
-		r1 = rf(ctx)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
-
 // GetPeers provides a mock function with given fields: ctx
 func (_m *Client) GetPeers(ctx context.Context) ([]*types.Node, error) {
 	ret := _m.Called(ctx)
@@ -627,52 +567,6 @@ func (_m *Client) GetTransactions(ctx context.Context, searchKey *indexer.Search
 	var r1 error
 	if rf, ok := ret.Get(1).(func(context.Context, *indexer.SearchKey, indexer.SearchOrder, uint64, string) error); ok {
 		r1 = rf(ctx, searchKey, order, limit, afterCursor)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
-
-// GetTransactionsByLockHash provides a mock function with given fields: ctx, lockHash, page, per, reverseOrder
-func (_m *Client) GetTransactionsByLockHash(ctx context.Context, lockHash types.Hash, page uint, per uint, reverseOrder bool) ([]*types.CellTransaction, error) {
-	ret := _m.Called(ctx, lockHash, page, per, reverseOrder)
-
-	var r0 []*types.CellTransaction
-	if rf, ok := ret.Get(0).(func(context.Context, types.Hash, uint, uint, bool) []*types.CellTransaction); ok {
-		r0 = rf(ctx, lockHash, page, per, reverseOrder)
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]*types.CellTransaction)
-		}
-	}
-
-	var r1 error
-	if rf, ok := ret.Get(1).(func(context.Context, types.Hash, uint, uint, bool) error); ok {
-		r1 = rf(ctx, lockHash, page, per, reverseOrder)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
-
-// IndexLockHash provides a mock function with given fields: ctx, lockHash, indexFrom
-func (_m *Client) IndexLockHash(ctx context.Context, lockHash types.Hash, indexFrom uint64) (*types.LockHashIndexState, error) {
-	ret := _m.Called(ctx, lockHash, indexFrom)
-
-	var r0 *types.LockHashIndexState
-	if rf, ok := ret.Get(0).(func(context.Context, types.Hash, uint64) *types.LockHashIndexState); ok {
-		r0 = rf(ctx, lockHash, indexFrom)
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*types.LockHashIndexState)
-		}
-	}
-
-	var r1 error
-	if rf, ok := ret.Get(1).(func(context.Context, types.Hash, uint64) error); ok {
-		r1 = rf(ctx, lockHash, indexFrom)
 	} else {
 		r1 = ret.Error(1)
 	}

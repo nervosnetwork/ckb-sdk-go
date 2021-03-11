@@ -44,9 +44,6 @@ type Client interface {
 	// GetHeaderByNumber returns the information about a block header by block number.
 	GetHeaderByNumber(ctx context.Context, number uint64) (*types.Header, error)
 
-	// GetCellsByLockHash returns the information about cells collection by the hash of lock script.
-	GetCellsByLockHash(ctx context.Context, hash types.Hash, from uint64, to uint64) ([]*types.Cell, error)
-
 	// GetLiveCell returns the information about a cell by out_point if it is live.
 	// If second with_data argument set to true, will return cell data and data_hash if it is live.
 	GetLiveCell(ctx context.Context, outPoint *types.OutPoint, withData bool) (*types.CellWithStatus, error)
@@ -56,7 +53,11 @@ type Client interface {
 
 	// GetCellbaseOutputCapacityDetails returns each component of the created CKB in this block's cellbase,
 	// which is issued to a block N - 1 - ProposalWindow.farthest, where this block's height is N.
+	// Deprecated: This method will be disabled by default from v0.40.0 and will be removed from v0.41.0,Please use the method GetBlockEconomicState instead.
 	GetCellbaseOutputCapacityDetails(ctx context.Context, hash types.Hash) (*types.BlockReward, error)
+
+	// GetBlockEconomicState return block economic state, It includes the rewards details and when it is finalized.
+	GetBlockEconomicState(ctx context.Context, hash types.Hash) (*types.BlockEconomicState, error)
 
 	// GetBlockByNumber get block by number
 	GetBlockByNumber(ctx context.Context, number uint64) (*types.Block, error)
@@ -73,23 +74,6 @@ type Client interface {
 
 	// EstimateFeeRate Estimate a fee rate (capacity/KB) for a transaction that to be committed in expect blocks.
 	EstimateFeeRate(ctx context.Context, blocks uint64) (*types.EstimateFeeRateResult, error)
-
-	////// Indexer
-	// IndexLockHash create index for live cells and transactions by the hash of lock script.
-	IndexLockHash(ctx context.Context, lockHash types.Hash, indexFrom uint64) (*types.LockHashIndexState, error)
-
-	// GetLockHashIndexStates Get lock hash index states.
-	GetLockHashIndexStates(ctx context.Context) ([]*types.LockHashIndexState, error)
-
-	// GetLiveCellsByLockHash returns the live cells collection by the hash of lock script.
-	GetLiveCellsByLockHash(ctx context.Context, lockHash types.Hash, page uint, per uint, reverseOrder bool) ([]*types.LiveCell, error)
-
-	// GetTransactionsByLockHash returns the transactions collection by the hash of lock script.
-	// Returns empty array when the lock_hash has not been indexed yet.
-	GetTransactionsByLockHash(ctx context.Context, lockHash types.Hash, page uint, per uint, reverseOrder bool) ([]*types.CellTransaction, error)
-
-	// DeindexLockHash Remove index for live cells and transactions by the hash of lock script.
-	DeindexLockHash(ctx context.Context, lockHash types.Hash) error
 
 	////// Net
 	// LocalNodeInfo returns the local node information.
@@ -285,15 +269,6 @@ func (cli *client) GetHeaderByNumber(ctx context.Context, number uint64) (*types
 	return toHeader(result), err
 }
 
-func (cli *client) GetCellsByLockHash(ctx context.Context, hash types.Hash, from uint64, to uint64) ([]*types.Cell, error) {
-	var result []cell
-	err := cli.c.CallContext(ctx, &result, "get_cells_by_lock_hash", hash, hexutil.Uint64(from), hexutil.Uint64(to))
-	if err != nil {
-		return nil, err
-	}
-	return toCells(result), err
-}
-
 func (cli *client) GetLiveCell(ctx context.Context, point *types.OutPoint, withData bool) (*types.CellWithStatus, error) {
 	var result cellWithStatus
 	err := cli.c.CallContext(ctx, &result, "get_live_cell", outPoint{
@@ -321,6 +296,7 @@ func (cli *client) GetTransaction(ctx context.Context, hash types.Hash) (*types.
 	}, err
 }
 
+// Deprecated: This method will be disabled by default from v0.40.0 and will be removed from v0.41.0,Please use the method GetBlockEconomicState instead.
 func (cli *client) GetCellbaseOutputCapacityDetails(ctx context.Context, hash types.Hash) (*types.BlockReward, error) {
 	var result blockReward
 	err := cli.c.CallContext(ctx, &result, "get_cellbase_output_capacity_details", hash)
@@ -720,4 +696,32 @@ func (cli *client) GetTransactions(ctx context.Context, searchKey *indexer.Searc
 		return nil, errors.New("please set indexer client")
 	}
 	return cli.indexer.GetTransactions(ctx, searchKey, order, limit, afterCursor)
+}
+
+func (cli *client) GetBlockEconomicState(ctx context.Context, blockHash types.Hash) (*types.BlockEconomicState, error) {
+	var result blockEconomicState
+	err := cli.c.CallContext(ctx, &result, "get_block_economic_state", blockHash)
+	if err != nil {
+		return nil, err
+	}
+
+	// if FinalizedAt is equal to "0x0000000000000000000000000000000000000000000000000000000000000000" means block economic state is empty
+	if result.FinalizedAt == types.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000000") {
+		return nil, nil
+	}
+
+	return &types.BlockEconomicState{
+		Issuance: types.BlockIssuance{
+			Primary:   (*big.Int)(&result.Issuance.Primary),
+			Secondary: (*big.Int)(&result.Issuance.Secondary),
+		},
+		MinerReward: types.MinerReward{
+			Primary:   (*big.Int)(&result.MinerReward.Primary),
+			Secondary: (*big.Int)(&result.MinerReward.Secondary),
+			Committed: (*big.Int)(&result.MinerReward.Committed),
+			Proposal:  (*big.Int)(&result.MinerReward.Proposal),
+		},
+		TxsFee:      (*big.Int)(&result.TxsFee),
+		FinalizedAt: result.FinalizedAt,
+	}, err
 }

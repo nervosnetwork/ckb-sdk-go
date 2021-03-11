@@ -205,6 +205,25 @@ type blockchainInfo struct {
 	MedianTime             hexutil.Uint64  `json:"median_time"`
 }
 
+type blockEconomicState struct {
+	Issuance    blockIssuance `json:"issuance"`
+	MinerReward minerReward   `json:"miner_reward"`
+	TxsFee      hexutil.Big   `json:"txs_fee"`
+	FinalizedAt types.Hash    `json:"finalized_at"`
+}
+
+type blockIssuance struct {
+	Primary   hexutil.Big `json:"primary"`
+	Secondary hexutil.Big `json:"secondary"`
+}
+
+type minerReward struct {
+	Primary   hexutil.Big `json:"primary"`
+	Secondary hexutil.Big `json:"secondary"`
+	Committed hexutil.Big `json:"committed"`
+	Proposal  hexutil.Big `json:"proposal"`
+}
+
 func toHeader(head header) *types.Header {
 	return &types.Header{
 		CompactTarget:    uint(head.CompactTarget),
