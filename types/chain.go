@@ -132,6 +132,33 @@ func (t *Transaction) ComputeHash() (Hash, error) {
 	return BytesToHash(hash), nil
 }
 
+func (t *Transaction) SizeInBlock() (uint64, error) {
+	// raw tx serialize
+	rawTxBytes, err := t.Serialize()
+	if err != nil {
+		return 0, err
+	}
+
+	var witnessBytes [][]byte
+	for _, witness := range t.Witnesses {
+		witnessBytes = append(witnessBytes, SerializeBytes(witness))
+	}
+	witnessesBytes := SerializeDynVec(witnessBytes)
+	//tx serialize
+	txBytes := SerializeTable([][]byte{rawTxBytes, witnessesBytes})
+	txSize := uint64(len(txBytes))
+	// tx offset cost
+	txSize += 4
+	return txSize, nil
+}
+
+func (t *Transaction) OutputsCapacity() (totalCapacity uint64) {
+	for _, output := range t.Outputs {
+		totalCapacity += output.Capacity
+	}
+	return
+}
+
 type WitnessArgs struct {
 	Lock       []byte `json:"lock"`
 	InputType  []byte `json:"input_type"`
@@ -191,4 +218,23 @@ type BlockReward struct {
 	Secondary      *big.Int `json:"secondary"`
 	Total          *big.Int `json:"total"`
 	TxFee          *big.Int `json:"tx_fee"`
+}
+
+type BlockEconomicState struct {
+	Issuance    BlockIssuance `json:"issuance"`
+	MinerReward MinerReward   `json:"miner_reward"`
+	TxsFee      *big.Int      `json:"txs_fee"`
+	FinalizedAt Hash          `json:"finalized_at"`
+}
+
+type BlockIssuance struct {
+	Primary   *big.Int `json:"primary"`
+	Secondary *big.Int `json:"secondary"`
+}
+
+type MinerReward struct {
+	Primary   *big.Int `json:"primary"`
+	Secondary *big.Int `json:"secondary"`
+	Committed *big.Int `json:"committed"`
+	Proposal  *big.Int `json:"proposal"`
 }

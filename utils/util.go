@@ -2,10 +2,14 @@ package utils
 
 import (
 	"errors"
+	"github.com/nervosnetwork/ckb-sdk-go/types"
 	"math/big"
 )
 
 func ParseSudtAmount(outputData []byte) (*big.Int, error) {
+	if len(outputData) == 0 {
+		return big.NewInt(0), nil
+	}
 	tmpData := make([]byte, len(outputData))
 	copy(tmpData, outputData)
 	if len(tmpData) < 16 {
@@ -34,4 +38,16 @@ func reverse(b []byte) []byte {
 		b[i], b[len(b)-i-1] = b[len(b)-i-1], b[i]
 	}
 	return b
+}
+
+func RemoveCellOutput(cellOutputs []*types.CellOutput, index int) []*types.CellOutput {
+	ret := make([]*types.CellOutput, 0)
+	ret = append(ret, cellOutputs[:index]...)
+	return append(ret, cellOutputs[index+1:]...)
+}
+
+func RemoveCellOutputData(cellOutputData [][]byte, index int) [][]byte {
+	ret := make([][]byte, 0)
+	ret = append(ret, cellOutputData[:index]...)
+	return append(ret, cellOutputData[index+1:]...)
 }
