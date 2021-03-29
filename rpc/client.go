@@ -123,10 +123,20 @@ type Client interface {
 
 	// Close close client
 	Close()
+
+	CallContext(ctx context.Context, result interface{}, method string, args ...interface{}) error
 }
 type client struct {
 	c       *rpc.Client
 	indexer indexer.Client
+}
+
+func (cli *client) CallContext(ctx context.Context, result interface{}, method string, args ...interface{}) error {
+	err := cli.c.CallContext(ctx, result, method, args...)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func Dial(url string) (Client, error) {

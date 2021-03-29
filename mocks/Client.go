@@ -65,6 +65,23 @@ func (_m *Client) CalculateDaoMaximumWithdraw(ctx context.Context, point *types.
 	return r0, r1
 }
 
+// CallContext provides a mock function with given fields: ctx, result, method, args
+func (_m *Client) CallContext(ctx context.Context, result interface{}, method string, args ...interface{}) error {
+	var _ca []interface{}
+	_ca = append(_ca, ctx, result, method)
+	_ca = append(_ca, args...)
+	ret := _m.Called(_ca...)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, interface{}, string, ...interface{}) error); ok {
+		r0 = rf(ctx, result, method, args...)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // Close provides a mock function with given fields:
 func (_m *Client) Close() {
 	_m.Called()
