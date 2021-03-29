@@ -79,6 +79,7 @@ func AddInputsForTransaction(transaction *types.Transaction, inputs []*types.Cel
 	return group, EmptyWitnessArg, nil
 }
 
+// group is an array, which content is the index of input after grouping
 func SingleSignTransaction(transaction *types.Transaction, group []int, witnessArgs *types.WitnessArgs, key crypto.Key) error {
 	data, err := witnessArgs.Serialize()
 	if err != nil {
@@ -97,7 +98,7 @@ func SingleSignTransaction(transaction *types.Transaction, group []int, witnessA
 	// hash the other witnesses in the group
 	if len(group) > 1 {
 		for i := 1; i < len(group); i++ {
-			data = transaction.Witnesses[i]
+			data = transaction.Witnesses[group[i]]
 			length := make([]byte, 8)
 			binary.LittleEndian.PutUint64(length, uint64(len(data)))
 			message = append(message, length...)
