@@ -427,43 +427,44 @@ import (
 	"fmt"
 	"log"
 
-    "github.com/nervosnetwork/ckb-sdk-go/indexer"
-    "github.com/nervosnetwork/ckb-sdk-go/rpc"
-    "github.com/nervosnetwork/ckb-sdk-go/types"
-    "github.com/nervosnetwork/ckb-sdk-go/utils"
+	"github.com/nervosnetwork/ckb-sdk-go/collector"
+	"github.com/nervosnetwork/ckb-sdk-go/indexer"
+	"github.com/nervosnetwork/ckb-sdk-go/rpc"
+	"github.com/nervosnetwork/ckb-sdk-go/types"
+	"github.com/nervosnetwork/ckb-sdk-go/utils"
 )
 
 func main() {
 	client, err := rpc.DialWithIndexer("http://localhost:8114", "http://localhost:8116")
 	if err != nil {
 		log.Fatalf("create rpc client error: %v", err)
-	}	
-	args, _ := hex.DecodeString("edcda9513fa030ce4308e29245a22c022d0443bb")
-    searchKey := &indexer.SearchKey{
-        Script: &types.Script{
-            CodeHash: types.HexToHash("0x9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8"),
-            HashType: types.HashTypeType,
-            Args:     args,
-        },
-        ScriptType: indexer.ScriptTypeLock,
-    }
-    processor := utils.NewCapacityLiveCellProcessor(10000000000000000)
-
-    // collect by type script
-	processor.EmptyData = false
-	processor.TypeScript = &types.Script{
-		CodeHash: types.HexToHash("0x48dbf59b4c7ee1547238021b4869bceedf4eea6b43772e5d66ef8865b6ae7212"),
-		HashType: types.HashTypeData,
-		Args:     types.HexToHash("0x6a242b57227484e904b4e08ba96f19a623c367dcbd18675ec6f2a71a0ff4ec26").Bytes(),
 	}
-	collector := utils.NewLiveCellCollector(client, searchKey, indexer.SearchOrderAsc, 1000, "", processor)
-
-	// default collect null type script
-	fmt.Println(collector.Collect())
-
-	cells, err := collector.Collect()
-
-	fmt.Println(err)
+	args, _ := hex.DecodeString("edcda9513fa030ce4308e29245a22c022d0443bb")
+	searchKey := &indexer.SearchKey{
+		Script: &types.Script{
+			CodeHash: types.HexToHash("0x9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8"),
+			HashType: types.HashTypeType,
+			Args:     args,
+		},
+		ScriptType: indexer.ScriptTypeLock,
+	}
+	c := collector.NewLiveCellCollector(client, searchKey, indexer.SearchOrderAsc, indexer.SearchLimit, "")
+	iterator, err := c.Iterator()
+	if err != nil {
+		log.Fatalf("collect cell error: %v", err)
+	}
+	var cells []*indexer.LiveCell
+	for iterator.HasNext() {
+		liveCell, err := iterator.CurrentItem()
+		if err != nil {
+			log.Fatalf("get cell error: %v", err)
+		}
+		cells = append(cells, liveCell)
+		err = iterator.Next()
+		if err != nil {
+			log.Fatalf("iterat error: %v", err)
+		}
+	}
 	fmt.Println(cells)
 }
 ```
@@ -477,6 +478,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/nervosnetwork/ckb-sdk-go/collector"
 	"github.com/nervosnetwork/ckb-sdk-go/indexer"
 	"github.com/nervosnetwork/ckb-sdk-go/rpc"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
@@ -509,24 +511,81 @@ func main() {
 			BlockRange:          &[2]uint64{46843, 46844},
 		},
 	}
-	processor := utils.NewCapacityLiveCellProcessor(10000000000000000)
-
-	// collect by type script
-	processor.EmptyData = false
-	processor.TypeScript = &types.Script{
-		CodeHash: types.HexToHash("0x48dbf59b4c7ee1547238021b4869bceedf4eea6b43772e5d66ef8865b6ae7212"),
-		HashType: types.HashTypeData,
-		Args:     types.HexToHash("0x6a242b57227484e904b4e08ba96f19a623c367dcbd18675ec6f2a71a0ff4ec26").Bytes(),
+	c := collector.NewLiveCellCollector(client, searchKey, indexer.SearchOrderAsc, indexer.SearchLimit, "")
+	iterator, err := c.Iterator()
+	if err != nil {
+		log.Fatalf("collect cell error: %v", err)
 	}
-	collector := utils.NewLiveCellCollector(client, searchKey, indexer.SearchOrderAsc, 1000, "", processor)
-
-	// default collect null type script
-	fmt.Println(collector.Collect())
-
-	cells, err := collector.Collect()
-
-	fmt.Println(err)
+	var cells []*indexer.LiveCell
+	for iterator.HasNext() {
+		liveCell, err := iterator.CurrentItem()
+		if err != nil {
+			log.Fatalf("get cell error: %v", err)
+		}
+		cells = append(cells, liveCell)
+		err = iterator.Next()
+		if err != nil {
+			log.Fatalf("iterat error: %v", err)
+		}
+	}
 	fmt.Println(cells)
+}
+```
+
+#### 5.2 Collect cells and filter out immature cells
+
+```go
+package main
+
+import (
+	"context"
+	"encoding/hex"
+	"fmt"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/nervosnetwork/ckb-sdk-go/collector"
+	"github.com/nervosnetwork/ckb-sdk-go/indexer"
+	"github.com/nervosnetwork/ckb-sdk-go/rpc"
+	"github.com/nervosnetwork/ckb-sdk-go/types"
+	"github.com/nervosnetwork/ckb-sdk-go/utils"
+	"log"
+)
+
+func main() {
+	client, err := rpc.DialWithIndexer("http://localhost:8114", "http://localhost:8116")
+	if err != nil {
+		log.Fatalf("create rpc client error: %v", err)
+	}
+	args, _ := hex.DecodeString("edcda9513fa030ce4308e29245a22c022d0443bb")
+	maxMatureBlockNumber, err := utils.GetMaxMatureBlockNumber(client, context.Background())
+	searchKey := &indexer.SearchKey{
+		Script: &types.Script{
+			CodeHash: types.HexToHash("0x9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8"),
+			HashType: types.HashTypeType,
+			Args:     args,
+		},
+		ScriptType: indexer.ScriptTypeLock,
+		Filter: &indexer.CellsFilter{
+			BlockRange: &[2]uint64{0, maxMatureBlockNumber},
+		},
+	}
+	c := collector.NewLiveCellCollector(client, searchKey, indexer.SearchOrderAsc, indexer.SearchLimit, "")
+	iterator, err := c.Iterator()
+	if err != nil {
+		log.Fatalf("collect cell error: %v", err)
+	}
+	var cells []*indexer.LiveCell
+	for iterator.HasNext() {
+		liveCell, err := iterator.CurrentItem()
+		if err != nil {
+			log.Fatalf("get cell error: %v", err)
+		}
+		cells = append(cells, liveCell)
+		err = iterator.Next()
+		if err != nil {
+			log.Fatalf("iterat error: %v", err)
+		}
+	}
+	fmt.Println(len(cells))
 }
 ```
 
