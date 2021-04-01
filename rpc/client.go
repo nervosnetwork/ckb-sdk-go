@@ -62,6 +62,8 @@ type Client interface {
 	// GetBlockByNumber get block by number
 	GetBlockByNumber(ctx context.Context, number uint64) (*types.Block, error)
 
+	GetConsensus(ctx context.Context) (*types.Consensus, error)
+
 	////// Experiment
 	// DryRunTransaction dry run transaction and return the execution cycles.
 	// This method will not check the transaction validity,
@@ -379,6 +381,15 @@ func (cli *client) EstimateFeeRate(ctx context.Context, blocks uint64) (*types.E
 	return &types.EstimateFeeRateResult{
 		FeeRate: uint64(result.FeeRate),
 	}, err
+}
+
+func (cli *client) GetConsensus(ctx context.Context) (*types.Consensus, error) {
+	var result consensus
+	err := cli.c.CallContext(ctx, &result, "get_consensus")
+	if err != nil {
+		return nil, nil
+	}
+	return toConsensus(result), nil
 }
 
 func (cli *client) IndexLockHash(ctx context.Context, lockHash types.Hash, indexFrom uint64) (*types.LockHashIndexState, error) {

@@ -238,3 +238,37 @@ type MinerReward struct {
 	Committed *big.Int `json:"committed"`
 	Proposal  *big.Int `json:"proposal"`
 }
+
+type RationalU256 struct {
+	Denom *big.Int `json:"denom"`
+	Numer *big.Int `json:"numer"`
+}
+
+type ProposalWindow struct {
+	Closest  uint64 `json:"closest"`
+	Farthest uint64 `json:"farthest"`
+}
+
+type Consensus struct {
+	Id                                   string         `json:"ID"`
+	GenesisHash                          Hash           `json:"genesis_hash"`
+	DaoTypeHash                          Hash           `json:"dao_type_hash"`
+	Secp256k1Blake160SighashAllTypeHash  Hash           `json:"secp256k1_blake160_sighash_all_type_hash"`
+	Secp256k1Blake160MultisigAllTypeHash Hash           `json:"secp256k1_blake160_multisig_all_type_hash"`
+	InitialPrimaryEpochReward            uint64         `json:"initial_primary_epoch_reward"`
+	SecondaryEpochReward                 uint64         `json:"secondary_epoch_reward"`
+	MaxUnclesNum                         uint64         `json:"max_uncles_num"`
+	OrphanRateTarget                     RationalU256   `json:"orphan_rate_target"`
+	EpochDurationTarget                  uint64         `json:"epoch_duration_target"`
+	TxProposalWindow                     ProposalWindow `json:"tx_proposal_window"`
+	ProposerRewardRatio                  RationalU256   `json:"proposer_reward_ratio"`
+	CellbaseMaturity                     uint64         `json:"cellbase_maturity"`
+	MedianTimeBlockCount                 uint64         `json:"median_time_block_count"`
+	MaxBlockCycles                       uint64         `json:"max_block_cycles"`
+	BlockVersion                         uint           `json:"block_version"`
+	TxVersion                            uint           `json:"tx_version"`
+	TypeIdCodeHash                       Hash           `json:"type_id_code_hash"`
+	MaxBlockProposalsLimit               uint64         `json:"max_block_proposals_limit"`
+	PrimaryEpochRewardHalvingInterval    uint64         `json:"primary_epoch_reward_halving_interval"`
+	PermanentDifficultyInDummy           bool           `json:"permanent_difficulty_in_dummy"`
+}
