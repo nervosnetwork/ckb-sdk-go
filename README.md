@@ -564,9 +564,6 @@ func main() {
 			Args:     args,
 		},
 		ScriptType: indexer.ScriptTypeLock,
-		Filter: &indexer.CellsFilter{
-			BlockRange: &[2]uint64{0, maxMatureBlockNumber},
-		},
 	}
 	c := collector.NewLiveCellCollector(client, searchKey, indexer.SearchOrderAsc, indexer.SearchLimit, "")
 	iterator, err := c.Iterator()
@@ -579,7 +576,10 @@ func main() {
 		if err != nil {
 			log.Fatalf("get cell error: %v", err)
 		}
-		cells = append(cells, liveCell)
+		if utils.IsMature(liveCell, maxMatureBlockNumber) {
+			cells = append(cells, liveCell)
+		}
+
 		err = iterator.Next()
 		if err != nil {
 			log.Fatalf("iterat error: %v", err)
