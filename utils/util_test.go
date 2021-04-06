@@ -122,7 +122,7 @@ func Test_calcMaxMatureBlockNumber(t *testing.T) {
 	}
 }
 
-func TestParseNodeVersion(t *testing.T) {
+func Test_parseNodeVersion(t *testing.T) {
 	type args struct {
 		nodeVersion string
 	}
@@ -161,19 +161,19 @@ func TestParseNodeVersion(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, got1, got2, err := ParseNodeVersion(tt.args.nodeVersion)
+			got, got1, got2, err := parseNodeVersion(tt.args.nodeVersion)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("ParseNodeVersion() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("parseNodeVersion() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if got != tt.want {
-				t.Errorf("ParseNodeVersion() got = %v, want %v", got, tt.want)
+				t.Errorf("parseNodeVersion() got = %v, want %v", got, tt.want)
 			}
 			if got1 != tt.want1 {
-				t.Errorf("ParseNodeVersion() got1 = %v, want %v", got1, tt.want1)
+				t.Errorf("parseNodeVersion() got1 = %v, want %v", got1, tt.want1)
 			}
 			if got2 != tt.want2 {
-				t.Errorf("ParseNodeVersion() got2 = %v, want %v", got2, tt.want2)
+				t.Errorf("parseNodeVersion() got2 = %v, want %v", got2, tt.want2)
 			}
 		})
 	}

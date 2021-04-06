@@ -3,6 +3,7 @@ package utils
 import (
 	"context"
 	"errors"
+	"github.com/nervosnetwork/ckb-sdk-go/indexer"
 	"github.com/nervosnetwork/ckb-sdk-go/rpc"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 	"math/big"
@@ -89,7 +90,7 @@ func getCellbaseMaturity(client rpc.Client, ctx context.Context, cellbaseMaturit
 	if err != nil {
 		return nil, err
 	}
-	major, minor, _, err := ParseNodeVersion(nodeInfo.Version)
+	major, minor, _, err := parseNodeVersion(nodeInfo.Version)
 	if err != nil {
 		return nil, err
 	}
@@ -141,8 +142,7 @@ func isTipEpochLessThanCellbaseMaturity(tipEpochR, cellbaseMaturityR *big.Rat) b
 	return false
 }
 
-// ParseNodeVersion return ckb node version number
-func ParseNodeVersion(nodeVersion string) (int, int, int, error) {
+func parseNodeVersion(nodeVersion string) (int, int, int, error) {
 	reg, err := regexp.Compile("\\d+(\\.\\d+){0,2}")
 	if err != nil {
 		return 0, 0, 0, err
@@ -163,4 +163,9 @@ func ParseNodeVersion(nodeVersion string) (int, int, int, error) {
 		return 0, 0, 0, err
 	}
 	return major, minor, patch, nil
+}
+
+// IsMature check if a cellbase live cell is mature
+func IsMature(cell *indexer.LiveCell, maxMatureBlockNumber uint64) bool {
+	return cell.TxIndex > 0 || cell.BlockNumber == 0 || cell.BlockNumber <= maxMatureBlockNumber
 }
