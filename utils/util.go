@@ -6,6 +6,7 @@ import (
 	"github.com/nervosnetwork/ckb-sdk-go/rpc"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 	"math/big"
+	"regexp"
 	"strconv"
 	"strings"
 )
@@ -84,7 +85,11 @@ func GetMaxMatureBlockNumber(client rpc.Client, ctx context.Context) (uint64, er
 }
 
 func getCellbaseMaturity(client rpc.Client, ctx context.Context, cellbaseMaturity *types.EpochParams) (*types.EpochParams, error) {
-	major, minor, _, err := ParseNodeVersion(client, ctx)
+	nodeInfo, err := client.LocalNodeInfo(ctx)
+	if err != nil {
+		return nil, err
+	}
+	major, minor, _, err := ParseNodeVersion(nodeInfo.Version)
 	if err != nil {
 		return nil, err
 	}
@@ -107,11 +112,11 @@ func getCellbaseMaturity(client rpc.Client, ctx context.Context, cellbaseMaturit
 // startNumber is maxMatureEpoch.StartNumber, length is maxMatureEpoch.Length
 func calcMaxMatureBlockNumber(tipEpoch *types.EpochParams, startNumber, length uint64, cellbaseMaturity *types.EpochParams) (uint64, error) {
 	tipEpochR := big.NewRat(
-		int64(tipEpoch.Number*tipEpoch.Length + tipEpoch.Index),
+		int64(tipEpoch.Number*tipEpoch.Length+tipEpoch.Index),
 		int64(tipEpoch.Length),
 	)
 	cellbaseMaturityR := big.NewRat(
-		int64(cellbaseMaturity.Number * cellbaseMaturity.Length + cellbaseMaturity.Index),
+		int64(cellbaseMaturity.Number*cellbaseMaturity.Length+cellbaseMaturity.Index),
 		int64(cellbaseMaturity.Length),
 	)
 
@@ -137,15 +142,25 @@ func isTipEpochLessThanCellbaseMaturity(tipEpochR, cellbaseMaturityR *big.Rat) b
 }
 
 // ParseNodeVersion return ckb node version number
-func ParseNodeVersion(client rpc.Client, ctx context.Context) (int, int, int, error) {
-	nodeInfo, err := client.LocalNodeInfo(ctx)
+func ParseNodeVersion(nodeVersion string) (int, int, int, error) {
+	reg, err := regexp.Compile("\\d+(\\.\\d+){0,2}")
 	if err != nil {
 		return 0, 0, 0, err
 	}
-	nodeVersion := strings.Split(nodeInfo.Version, " (")
-	versionArr := strings.Split(nodeVersion[0], ".")
+	parts := reg.FindString(nodeVersion)
+	//parts := strings.Split(nodeVersion, " (")
+	versionArr := strings.Split(parts, ".")
 	major, err := strconv.Atoi(versionArr[0])
+	if err != nil {
+		return 0, 0, 0, err
+	}
 	minor, err := strconv.Atoi(versionArr[1])
+	if err != nil {
+		return 0, 0, 0, err
+	}
 	patch, err := strconv.Atoi(versionArr[2])
+	if err != nil {
+		return 0, 0, 0, err
+	}
 	return major, minor, patch, nil
 }
