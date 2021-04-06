@@ -106,57 +106,31 @@ func getCellbaseMaturity(client rpc.Client, ctx context.Context, cellbaseMaturit
 
 // startNumber is maxMatureEpoch.StartNumber, length is maxMatureEpoch.Length
 func calcMaxMatureBlockNumber(tipEpoch *types.EpochParams, startNumber, length uint64, cellbaseMaturity *types.EpochParams) (uint64, error) {
-	a := isTipEpochLessThanCellbaseMaturity(tipEpoch, cellbaseMaturity)
-	if a {
+	tipEpochR := big.NewRat(
+		int64(tipEpoch.Number*tipEpoch.Length + tipEpoch.Index),
+		int64(tipEpoch.Length),
+	)
+	cellbaseMaturityR := big.NewRat(
+		int64(cellbaseMaturity.Number * cellbaseMaturity.Length + cellbaseMaturity.Index),
+		int64(cellbaseMaturity.Length),
+	)
+
+	if isTipEpochLessThanCellbaseMaturity(tipEpochR, cellbaseMaturityR) {
 		return 0, nil
 	} else {
-		tipEpochRN, cellbaseMaturityRN := epochRationalNum(tipEpoch, cellbaseMaturity)
-		epochDelta := rationalNumber{
-			numer: tipEpochRN.numer - cellbaseMaturityRN.numer,
-			denom: tipEpochRN.denom,
-		}
-		iNum := epochDelta.numer / epochDelta.denom
-		index := (epochDelta.numer - iNum*epochDelta.denom) * length / epochDelta.denom
-		blockNumber := index + startNumber
+		epochDeltaR := big.NewRat(0, 1).Sub(tipEpochR, cellbaseMaturityR)
+		num := new(big.Int).SetInt64(0).Div(epochDeltaR.Num(), epochDeltaR.Denom()).Int64()
+		decimalR := big.NewRat(0, 1).Sub(epochDeltaR, big.NewRat(num, 1))
+		indexR := big.NewRat(0, 1).Mul(decimalR, big.NewRat(int64(length), 1))
+		iNum := new(big.Int).SetInt64(0).Div(indexR.Num(), indexR.Denom()).Uint64()
+		blockNumber := iNum + startNumber
 
 		return blockNumber, nil
 	}
 }
 
-type rationalNumber struct {
-	// Numerator.
-	numer uint64
-	// Denominator.
-	denom uint64
-}
-
-func epochRationalNum(tipEpoch, cellbaseMaturity *types.EpochParams) (rationalNumber, rationalNumber) {
-	if tipEpoch.Length != cellbaseMaturity.Length {
-		tipEpochMN := rationalNumber{
-			numer: tipEpoch.Number*tipEpoch.Length + tipEpoch.Index,
-			denom: tipEpoch.Length,
-		}
-		cellbaseMaturityMN := rationalNumber{
-			numer: (cellbaseMaturity.Number*cellbaseMaturity.Length + cellbaseMaturity.Index) * tipEpoch.Length,
-			denom: cellbaseMaturity.Length * cellbaseMaturity.Length * tipEpoch.Length,
-		}
-		return tipEpochMN, cellbaseMaturityMN
-	} else {
-		tipEpochMN := rationalNumber{
-			numer: tipEpoch.Number*tipEpoch.Length + tipEpoch.Index,
-			denom: tipEpoch.Length,
-		}
-		cellbaseMaturityMN := rationalNumber{
-			numer: cellbaseMaturity.Number*cellbaseMaturity.Length + cellbaseMaturity.Index,
-			denom: cellbaseMaturity.Length,
-		}
-		return tipEpochMN, cellbaseMaturityMN
-	}
-}
-
-func isTipEpochLessThanCellbaseMaturity(tipEpoch *types.EpochParams, cellbaseMaturity *types.EpochParams) bool {
-	tipEpochRN, cellbaseMaturityRN := epochRationalNum(tipEpoch, cellbaseMaturity)
-	if tipEpochRN.numer-cellbaseMaturityRN.numer < 0 {
+func isTipEpochLessThanCellbaseMaturity(tipEpochR, cellbaseMaturityR *big.Rat) bool {
+	if tipEpochR.Cmp(cellbaseMaturityR) < 0 {
 		return true
 	}
 	return false
