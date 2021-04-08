@@ -340,6 +340,29 @@ func (_m *Client) GetCellsCapacity(ctx context.Context, searchKey *indexer.Searc
 	return r0, r1
 }
 
+// GetConsensus provides a mock function with given fields: ctx
+func (_m *Client) GetConsensus(ctx context.Context) (*types.Consensus, error) {
+	ret := _m.Called(ctx)
+
+	var r0 *types.Consensus
+	if rf, ok := ret.Get(0).(func(context.Context) *types.Consensus); ok {
+		r0 = rf(ctx)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*types.Consensus)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context) error); ok {
+		r1 = rf(ctx)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // GetCurrentEpoch provides a mock function with given fields: ctx
 func (_m *Client) GetCurrentEpoch(ctx context.Context) (*types.Epoch, error) {
 	ret := _m.Called(ctx)

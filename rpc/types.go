@@ -224,6 +224,40 @@ type minerReward struct {
 	Proposal  hexutil.Big `json:"proposal"`
 }
 
+type rationalU256 struct {
+	Denom hexutil.Big `json:"denom"`
+	Numer hexutil.Big `json:"numer"`
+}
+
+type proposalWindow struct {
+	Closest  hexutil.Uint64 `json:"closest"`
+	Farthest hexutil.Uint64 `json:"farthest"`
+}
+
+type consensus struct {
+	Id                                   string         `json:"ID"`
+	GenesisHash                          types.Hash     `json:"genesis_hash"`
+	DaoTypeHash                          types.Hash     `json:"dao_type_hash"`
+	Secp256k1Blake160SighashAllTypeHash  types.Hash     `json:"secp256k1_blake160_sighash_all_type_hash"`
+	Secp256k1Blake160MultisigAllTypeHash types.Hash     `json:"secp256k1_blake160_multisig_all_type_hash"`
+	InitialPrimaryEpochReward            hexutil.Uint64 `json:"initial_primary_epoch_reward"`
+	SecondaryEpochReward                 hexutil.Uint64 `json:"secondary_epoch_reward"`
+	MaxUnclesNum                         hexutil.Uint64 `json:"max_uncles_num"`
+	OrphanRateTarget                     rationalU256   `json:"orphan_rate_target"`
+	EpochDurationTarget                  hexutil.Uint64 `json:"epoch_duration_target"`
+	TxProposalWindow                     proposalWindow `json:"tx_proposal_window"`
+	ProposerRewardRatio                  rationalU256   `json:"proposer_reward_ratio"`
+	CellbaseMaturity                     hexutil.Uint64 `json:"cellbase_maturity"`
+	MedianTimeBlockCount                 hexutil.Uint64 `json:"median_time_block_count"`
+	MaxBlockCycles                       hexutil.Uint64 `json:"max_block_cycles"`
+	BlockVersion                         hexutil.Uint   `json:"block_version"`
+	TxVersion                            hexutil.Uint   `json:"tx_version"`
+	TypeIdCodeHash                       types.Hash     `json:"type_id_code_hash"`
+	MaxBlockProposalsLimit               hexutil.Uint64 `json:"max_block_proposals_limit"`
+	PrimaryEpochRewardHalvingInterval    hexutil.Uint64 `json:"primary_epoch_reward_halving_interval"`
+	PermanentDifficultyInDummy           bool           `json:"permanent_difficulty_in_dummy"`
+}
+
 func toHeader(head header) *types.Header {
 	return &types.Header{
 		CompactTarget:    uint(head.CompactTarget),
@@ -498,4 +532,40 @@ func toNode(result node) *types.Node {
 		}
 	}
 	return ret
+}
+
+func toConsensus(c consensus) *types.Consensus {
+	result := &types.Consensus{
+		Id:                                   c.Id,
+		GenesisHash:                          c.GenesisHash,
+		DaoTypeHash:                          c.DaoTypeHash,
+		Secp256k1Blake160SighashAllTypeHash:  c.Secp256k1Blake160SighashAllTypeHash,
+		Secp256k1Blake160MultisigAllTypeHash: c.Secp256k1Blake160MultisigAllTypeHash,
+		InitialPrimaryEpochReward:            uint64(c.InitialPrimaryEpochReward),
+		SecondaryEpochReward:                 uint64(c.SecondaryEpochReward),
+		MaxUnclesNum:                         uint64(c.MaxUnclesNum),
+		OrphanRateTarget: types.RationalU256{
+			Denom: (*big.Int)(&c.OrphanRateTarget.Denom),
+			Numer: (*big.Int)(&c.OrphanRateTarget.Numer),
+		},
+		EpochDurationTarget: uint64(c.EpochDurationTarget),
+		TxProposalWindow: types.ProposalWindow{
+			Closest:  uint64(c.TxProposalWindow.Closest),
+			Farthest: uint64(c.TxProposalWindow.Farthest),
+		},
+		ProposerRewardRatio: types.RationalU256{
+			Denom: (*big.Int)(&c.ProposerRewardRatio.Denom),
+			Numer: (*big.Int)(&c.ProposerRewardRatio.Numer),
+		},
+		CellbaseMaturity:                  uint64(c.CellbaseMaturity),
+		MedianTimeBlockCount:              uint64(c.MedianTimeBlockCount),
+		MaxBlockCycles:                    uint64(c.MaxBlockCycles),
+		BlockVersion:                      uint(c.BlockVersion),
+		TxVersion:                         uint(c.TxVersion),
+		TypeIdCodeHash:                    c.TypeIdCodeHash,
+		MaxBlockProposalsLimit:            uint64(c.MaxBlockProposalsLimit),
+		PrimaryEpochRewardHalvingInterval: uint64(c.PrimaryEpochRewardHalvingInterval),
+		PermanentDifficultyInDummy:        c.PermanentDifficultyInDummy,
+	}
+	return result
 }
