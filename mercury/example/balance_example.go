@@ -2,7 +2,7 @@ package test
 
 import (
 	"fmt"
-	"github.com/nervosnetwork/ckb-sdk-go/mercury/test/constant"
+	"github.com/nervosnetwork/ckb-sdk-go/mercury/example/constant"
 	"testing"
 )
 

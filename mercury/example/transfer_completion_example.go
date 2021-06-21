@@ -3,10 +3,10 @@ package test
 import (
 	"context"
 	"fmt"
+	"github.com/nervosnetwork/ckb-sdk-go/mercury/example/constant"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/action"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/source"
-	"github.com/nervosnetwork/ckb-sdk-go/mercury/test/constant"
 	"testing"
 )
 

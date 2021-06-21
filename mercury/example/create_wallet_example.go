@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 	"github.com/nervosnetwork/ckb-sdk-go/crypto/secp256k1"
+	"github.com/nervosnetwork/ckb-sdk-go/mercury/example/constant"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model"
-	"github.com/nervosnetwork/ckb-sdk-go/mercury/test/constant"
 	"github.com/nervosnetwork/ckb-sdk-go/transaction"
 	"testing"
 )

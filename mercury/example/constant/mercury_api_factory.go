@@ -2,7 +2,7 @@ package constant
 
 import "github.com/nervosnetwork/ckb-sdk-go/mercury"
 
-const MERCURY_URL = "http://8.210.169.63:8116"
+const MERCURY_URL = "http://localhost:8116"
 
 type MercuryApiFactory struct {
 	clent mercury.MercuryApi
