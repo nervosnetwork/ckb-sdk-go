@@ -1,11 +1,17 @@
-# [v0.3.0](https://github.com/nervosnetwork/ckb-sdk-go/compare/v0.2.1...v0.3.0) (2021-03-11)
+# [v0.41.0](https://github.com/nervosnetwork/ckb-sdk-go/compare/v0.3.0...v0.41.0) (2021-06-21)
 
+### Features
+
+* Implement Mercury
+  SDK ([75d6e34](https://github.com/nervosnetwork/ckb-sdk-go/commit/2b2978252036d264b9a1d92368b57222e75d6e34))
+* SDK version follows CKB version
+
+# [v0.3.0](https://github.com/nervosnetwork/ckb-sdk-go/compare/v0.2.1...v0.3.0) (2021-03-11)
 
 ### Bug Fixes
 
 * wrong change target ([0706e68](https://github.com/nervosnetwork/ckb-sdk-go/commit/0706e68))
 * wrong witness ([184145b](https://github.com/nervosnetwork/ckb-sdk-go/commit/184145b))
-
 
 ### Features
 
@@ -28,32 +34,28 @@
 * hash witnesses which do not in any input group ([e3a293f](https://github.com/nervosnetwork/ckb-sdk-go/commit/e3a293f))
 * implement generate unsigned issuing cheque tx ([d2d09d7](https://github.com/nervosnetwork/ckb-sdk-go/commit/d2d09d7))
 * more set function on SystemScript ([129dec1](https://github.com/nervosnetwork/ckb-sdk-go/commit/129dec1))
-* remove get_cells_by_lock_hash RPC and RPCs under indexer module ([fc920d4](https://github.com/nervosnetwork/ckb-sdk-go/commit/fc920d4))
+* remove get_cells_by_lock_hash RPC and RPCs under indexer
+  module ([fc920d4](https://github.com/nervosnetwork/ckb-sdk-go/commit/fc920d4))
 * support custom SystemScripts ([f851553](https://github.com/nervosnetwork/ckb-sdk-go/commit/f851553))
 * support filter on ckb-indexer searchKey ([aebf2f7](https://github.com/nervosnetwork/ckb-sdk-go/commit/aebf2f7))
-
 
 ### BREAKING CHANGES
 
 * Remove RPCs under indexer module
 * need send a SystemScripts to `GenerateTx` method manually
 
-
-
 # [v0.2.1](https://github.com/nervosnetwork/ckb-sdk-go/compare/v0.2.0...v0.2.1) (2020-11-25)
 
 ### Features
 
-* [#13](https://github.com/nervosnetwork/ckb-sdk-go/pull/13): expose GenerateFullPayloadAddress function 
+* [#13](https://github.com/nervosnetwork/ckb-sdk-go/pull/13): expose GenerateFullPayloadAddress function
 
 # [v0.2.0](https://github.com/nervosnetwork/ckb-bitpie-sdk/compare/v0.1.0...v0.2.0) (2020-11-25)
-
 
 ### Bug Fixes
 
 * [#5](https://github.com/nervosnetwork/ckb-sdk-go/pull/5): fix nil pointer dereference on toCellWithStatus function
 * [#7](https://github.com/nervosnetwork/ckb-sdk-go/pull/7): fix tx fee calculation bug
-
 
 ### Features
 
