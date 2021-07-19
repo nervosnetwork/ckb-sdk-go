@@ -39,14 +39,14 @@ func TestGetSudtBalance(t *testing.T) {
 func TestAllBalance(t *testing.T) {
 	builder := model.GetGetBalancePayloadBuilder()
 	builder.AddAddress(constant.TEST_ADDRESS0)
-	builder.AddAllUdtHash()
+	builder.AllBalance()
 
 	payload, err := builder.Build()
 	if err != nil {
 		panic(err)
 	}
 	balance, _ := constant.GetMercuryApiInstance().GetBalance(payload)
-	
+
 	marshal, _ := json.Marshal(balance)
 	fmt.Println(string(marshal))
 

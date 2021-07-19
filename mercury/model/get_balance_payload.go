@@ -54,7 +54,7 @@ func (builder *getBalancePayloadBuilder) AddAddress(addr string) {
 	builder.Address = addr
 }
 
-func (builder *getBalancePayloadBuilder) AddAllUdtHash() {
+func (builder *getBalancePayloadBuilder) AllBalance() {
 	//var udtHashes []interface{}
 	builder.UdtHashes = make([]interface{}, 0)
 }
