@@ -116,11 +116,10 @@ func TestTransferCompletionSudtWithPayByTo(t *testing.T) {
 }
 
 func getTransferPayload(from, to, udtHash, action string) *model.TransferPayload {
-	builder := new(model.TransferBuilder)
+	builder := model.NewTransferBuilder()
 	builder.AddUdtHash(udtHash)
 	builder.AddFrom([]string{from}, source.Unconstrained)
 	builder.AddItem(to, action, 100)
-	builder.AddFee(10000000)
 
 	return builder.Build()
 }

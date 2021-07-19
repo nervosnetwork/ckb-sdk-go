@@ -5,7 +5,7 @@ type TransferPayload struct {
 	From    *FromAccount    `json:"from"`
 	Items   []*TransferItem `json:"items"`
 	Change  string          `json:"change,omitempty"`
-	Fee     uint            `json:"fee"`
+	FeeRate uint            `json:"fee_rate"`
 }
 
 type FromAccount struct {
@@ -23,19 +23,26 @@ type ToAccount struct {
 	Action string `json:"action"`
 }
 
-type TransferBuilder struct {
+type transferBuilder struct {
 	UdtHash string          `json:"udt_hash,omitempty"`
 	From    *FromAccount    `json:"from"`
 	Items   []*TransferItem `json:"items"`
 	Change  string          `json:"change,omitempty"`
-	Fee     uint            `json:"fee"`
+	FeeRate uint            `json:"fee_rate"`
 }
 
-func (builder *TransferBuilder) AddUdtHash(udtHash string) {
+func NewTransferBuilder() *transferBuilder {
+	// default fee rate
+	return &transferBuilder{
+		FeeRate: 1000,
+	}
+}
+
+func (builder *transferBuilder) AddUdtHash(udtHash string) {
 	builder.UdtHash = udtHash
 }
 
-func (builder *TransferBuilder) AddFrom(idents []string, source string) {
+func (builder *transferBuilder) AddFrom(idents []string, source string) {
 	form := &FromAccount{
 		Idents: idents,
 		Source: source,
@@ -43,7 +50,7 @@ func (builder *TransferBuilder) AddFrom(idents []string, source string) {
 	builder.From = form
 }
 
-func (builder *TransferBuilder) AddItem(ident, action string, amount uint) {
+func (builder *transferBuilder) AddItem(ident, action string, amount uint) {
 	to := &ToAccount{
 		Ident:  ident,
 		Action: action}
@@ -52,21 +59,21 @@ func (builder *TransferBuilder) AddItem(ident, action string, amount uint) {
 	builder.Items = append(builder.Items, item)
 }
 
-func (builder *TransferBuilder) AddChange(change string) {
+func (builder *transferBuilder) AddChange(change string) {
 	builder.Change = change
 }
 
-func (builder *TransferBuilder) AddFee(fee uint) {
-	builder.Fee = fee
+func (builder *transferBuilder) AddFeeRate(feeRate uint) {
+	builder.FeeRate = feeRate
 }
 
-func (builder *TransferBuilder) Build() *TransferPayload {
+func (builder *transferBuilder) Build() *TransferPayload {
 	return &TransferPayload{
 		builder.UdtHash,
 		builder.From,
 		builder.Items,
 		builder.Change,
-		builder.Fee,
+		builder.FeeRate,
 	}
 
 }
