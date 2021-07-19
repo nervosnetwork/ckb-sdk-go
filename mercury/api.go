@@ -9,7 +9,7 @@ import (
 )
 
 type MercuryApi interface {
-	GetBalance(udthash interface{}, ident string) (*resp.Balance, error)
+	GetBalance(payload *model.GetBalancePayload) (*resp.GetBalanceResponse, error)
 	BuildTransferTransaction(payload *model.TransferPayload) (*resp.TransferCompletionResponse, error)
 	BuildWalletCreationTransaction(payload *model.CreateWalletPayload) (*resp.TransferCompletionResponse, error)
 }
@@ -18,9 +18,9 @@ type DefaultMercuryApi struct {
 	c *rpc.Client
 }
 
-func (cli *DefaultMercuryApi) GetBalance(udthash interface{}, ident string) (*resp.Balance, error) {
-	var balance resp.Balance
-	err := cli.c.Call(&balance, "get_balance", udthash, ident)
+func (cli *DefaultMercuryApi) GetBalance(payload *model.GetBalancePayload) (*resp.GetBalanceResponse, error) {
+	var balance resp.GetBalanceResponse
+	err := cli.c.Call(&balance, "get_balance", payload)
 	if err != nil {
 		return &balance, err
 	}

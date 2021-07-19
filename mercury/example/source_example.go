@@ -2,10 +2,12 @@ package test
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/example/constant"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/action"
+	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/resp"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/source"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 	"testing"
@@ -99,16 +101,45 @@ func claimChequeCell() {
 }
 
 func printBalance() {
-	mercuryApi := constant.GetMercuryApiInstance()
-	ckbBalanceA, _ := mercuryApi.GetBalance(nil, senderAddress)
-	udtBalanceA, _ := mercuryApi.GetBalance(udtHash, senderAddress)
+	ckbBalanceA := getCkbBalance(senderAddress)
+	udtBalanceA := getUdtBalance(senderAddress, udtHash)
 
-	fmt.Printf("sender ckb balance: %+v\n", *ckbBalanceA)
-	fmt.Printf("sender udt balance: %+v\n", *udtBalanceA)
+	fmt.Printf("sender ckb balance: %s\n", getJsonStr(ckbBalanceA))
+	fmt.Printf("sender udt balance: %s\n", getJsonStr(udtBalanceA))
 
-	ckbBalanceB, _ := mercuryApi.GetBalance(nil, chequeCellReceiverAddress)
-	udtBalanceB, _ := mercuryApi.GetBalance(udtHash, chequeCellReceiverAddress)
+	ckbBalanceB := getCkbBalance(chequeCellReceiverAddress)
+	udtBalanceB := getUdtBalance(chequeCellReceiverAddress, udtHash)
 
-	fmt.Printf("sender ckb balance: %+v\n", *ckbBalanceB)
-	fmt.Printf("sender udt balance: %+v\n", *udtBalanceB)
+	fmt.Printf("sender ckb balance: %s\n", getJsonStr(ckbBalanceB))
+	fmt.Printf("sender udt balance: %s\n", getJsonStr(udtBalanceB))
+}
+
+func getCkbBalance(addr string) *resp.GetBalanceResponse {
+	builder := model.GetGetBalancePayloadBuilder()
+	builder.AddAddress(addr)
+	payload, err := builder.Build()
+	if err != nil {
+		panic(err)
+	}
+	balance, _ := constant.GetMercuryApiInstance().GetBalance(payload)
+
+	return balance
+}
+
+func getUdtBalance(addr, udtHash string) *resp.GetBalanceResponse {
+	builder := model.GetGetBalancePayloadBuilder()
+	builder.AddAddress(addr)
+	builder.AddUdtHash(udtHash)
+	payload, err := builder.Build()
+	if err != nil {
+		panic(err)
+	}
+	balance, _ := constant.GetMercuryApiInstance().GetBalance(payload)
+
+	return balance
+}
+
+func getJsonStr(balance *resp.GetBalanceResponse) string {
+	jsonStr, _ := json.Marshal(balance)
+	return string(jsonStr)
 }
