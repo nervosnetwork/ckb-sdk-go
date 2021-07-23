@@ -12,10 +12,21 @@ type MercuryApi interface {
 	GetBalance(payload *model.GetBalancePayload) (*resp.GetBalanceResponse, error)
 	BuildTransferTransaction(payload *model.TransferPayload) (*resp.TransferCompletionResponse, error)
 	BuildWalletCreationTransaction(payload *model.CreateWalletPayload) (*resp.TransferCompletionResponse, error)
+	RegisterAddresses(normalAddresses []string) ([]string, error)
 }
 
 type DefaultMercuryApi struct {
 	c *rpc.Client
+}
+
+func (cli *DefaultMercuryApi) RegisterAddresses(normalAddresses []string) ([]string, error) {
+	var scriptHash []string
+	err := cli.c.Call(&scriptHash, "register_addresses", normalAddresses)
+	if err != nil {
+		return scriptHash, err
+	}
+
+	return scriptHash, err
 }
 
 func (cli *DefaultMercuryApi) GetBalance(payload *model.GetBalancePayload) (*resp.GetBalanceResponse, error) {
