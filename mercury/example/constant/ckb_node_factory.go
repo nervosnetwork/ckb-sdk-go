@@ -2,7 +2,7 @@ package constant
 
 import "github.com/nervosnetwork/ckb-sdk-go/rpc"
 
-const NODE_URL = "http://localhost:8114"
+const NODE_URL = "http://127.0.0.1:8114"
 
 type CkbNodeFactory struct {
 	clent rpc.Client

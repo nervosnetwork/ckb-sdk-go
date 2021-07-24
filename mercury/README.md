@@ -135,4 +135,4 @@ type WalletInfo struct {
 1. [查询账户余额](./example/balance_example.go)
 2. [Action](./example/action_example.go)
 3. [转账](./example/transfer_completion_example.go)
-4. [创建资产账户](./example/create_wallet_example.go)
+4. [创建资产账户](./example/create_asset_account_example.go)

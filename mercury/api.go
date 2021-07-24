@@ -2,19 +2,18 @@ package mercury
 
 import (
 	"context"
+	"errors"
 	"github.com/ethereum/go-ethereum/rpc"
 	"github.com/nervosnetwork/ckb-sdk-go/indexer"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model"
-	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/action"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/resp"
-	"github.com/pkg/errors"
 )
 
 type MercuryApi interface {
 	indexer.Client
 	GetBalance(payload *model.GetBalancePayload) (*resp.GetBalanceResponse, error)
 	BuildTransferTransaction(payload *model.TransferPayload) (*resp.TransferCompletionResponse, error)
-	BuildWalletCreationTransaction(payload *model.CreateWalletPayload) (*resp.TransferCompletionResponse, error)
+	BuildAssetAccountCreationTransaction(payload *model.CreateAssetAccountPayload) (*resp.TransferCompletionResponse, error)
 	RegisterAddresses(normalAddresses []string) ([]string, error)
 	GetGenericTransaction(txHash string) (*resp.GetGenericTransactionResponse, error)
 	GetGenericBlock(payload *model.GetGenericBlockPayload) (*resp.GenericBlockResponse, error)
@@ -88,7 +87,7 @@ func (cli *DefaultMercuryApi) BuildTransferTransaction(payload *model.TransferPa
 	var resp resp.TransferCompletionResponse
 	if payload.UdtHash == "" {
 		for _, item := range payload.Items {
-			if item.To.Action == action.Lend_by_from || item.To.Action == action.Pay_by_to {
+			if !item.To.IsPayBayFrom() || !item.To.IsPayBayFrom() {
 				return &resp, errors.New("The transaction does not support ckb")
 			}
 		}
@@ -102,9 +101,9 @@ func (cli *DefaultMercuryApi) BuildTransferTransaction(payload *model.TransferPa
 	return &resp, err
 }
 
-func (cli *DefaultMercuryApi) BuildWalletCreationTransaction(payload *model.CreateWalletPayload) (*resp.TransferCompletionResponse, error) {
+func (cli *DefaultMercuryApi) BuildAssetAccountCreationTransaction(payload *model.CreateAssetAccountPayload) (*resp.TransferCompletionResponse, error) {
 	var resp resp.TransferCompletionResponse
-	err := cli.c.Call(&resp, "build_wallet_creation_transaction", payload)
+	err := cli.c.Call(&resp, "build_asset_account_creation_transaction", payload)
 	if err != nil {
 		return &resp, err
 	}
