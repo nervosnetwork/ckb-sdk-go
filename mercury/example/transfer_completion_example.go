@@ -15,8 +15,8 @@ func TestSingleFromSingleTo(t *testing.T) {
 	ckbNode := constant.GetCkbNodeInstance()
 
 	builder := model.NewTransferBuilder()
-	builder.AddFrom([]string{constant.TEST_ADDRESS1}, source.Unconstrained)
-	builder.AddItem(constant.TEST_ADDRESS2, action.Pay_by_from, 100)
+	builder.AddFromKeyAddresses([]string{constant.TEST_ADDRESS1}, source.Unconstrained)
+	builder.AddKeyAddressItem(constant.TEST_ADDRESS2, action.Pay_by_from, 100)
 
 	transferCompletion, err := mercuryApi.BuildTransferTransaction(builder.Build())
 	if err != nil {
@@ -38,9 +38,9 @@ func TestSingleFromMultiTo(t *testing.T) {
 	ckbNode := constant.GetCkbNodeInstance()
 
 	builder := model.NewTransferBuilder()
-	builder.AddFrom([]string{constant.TEST_ADDRESS1}, source.Unconstrained)
-	builder.AddItem(constant.TEST_ADDRESS2, action.Pay_by_from, 100)
-	builder.AddItem(constant.TEST_ADDRESS3, action.Pay_by_from, 100)
+	builder.AddFromKeyAddresses([]string{constant.TEST_ADDRESS1}, source.Unconstrained)
+	builder.AddKeyAddressItem(constant.TEST_ADDRESS2, action.Pay_by_from, 100)
+	builder.AddKeyAddressItem(constant.TEST_ADDRESS3, action.Pay_by_from, 100)
 
 	transferCompletion, err := mercuryApi.BuildTransferTransaction(builder.Build())
 	if err != nil {
@@ -62,8 +62,8 @@ func TestMultiFromSingleTo(t *testing.T) {
 	ckbNode := constant.GetCkbNodeInstance()
 
 	builder := model.NewTransferBuilder()
-	builder.AddFrom([]string{constant.TEST_ADDRESS1, constant.TEST_ADDRESS2}, source.Unconstrained)
-	builder.AddItem(constant.TEST_ADDRESS3, action.Pay_by_from, 100)
+	builder.AddFromKeyAddresses([]string{constant.TEST_ADDRESS1, constant.TEST_ADDRESS2}, source.Unconstrained)
+	builder.AddKeyAddressItem(constant.TEST_ADDRESS3, action.Pay_by_from, 100)
 
 	transferCompletion, err := mercuryApi.BuildTransferTransaction(builder.Build())
 	if err != nil {
@@ -85,9 +85,9 @@ func TestMultiFromMultiTo(t *testing.T) {
 	ckbNode := constant.GetCkbNodeInstance()
 
 	builder := model.NewTransferBuilder()
-	builder.AddFrom([]string{constant.TEST_ADDRESS1, constant.TEST_ADDRESS2}, source.Unconstrained)
-	builder.AddItem(constant.TEST_ADDRESS3, action.Pay_by_from, 100)
-	builder.AddItem(constant.TEST_ADDRESS4, action.Pay_by_from, 100)
+	builder.AddFromKeyAddresses([]string{constant.TEST_ADDRESS1, constant.TEST_ADDRESS2}, source.Unconstrained)
+	builder.AddKeyAddressItem(constant.TEST_ADDRESS3, action.Pay_by_from, 100)
+	builder.AddKeyAddressItem(constant.TEST_ADDRESS4, action.Pay_by_from, 100)
 
 	transferCompletion, err := mercuryApi.BuildTransferTransaction(builder.Build())
 	if err != nil {

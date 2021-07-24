@@ -10,15 +10,15 @@ import (
 	"testing"
 )
 
-func TestCreateWallet(t *testing.T) {
+func TestAssetAccountCreationTransaction(t *testing.T) {
 	mercuryApi := constant.GetMercuryApiInstance()
 	ckbNode := constant.GetCkbNodeInstance()
 
 	builder := model.NewCreateWalletPayloadBuilder()
-	builder.AddIdent(constant.TEST_ADDRESS3)
-	builder.AddInfo("0xf21e7350fa9518ed3cbb008e0e8c941d7e01a12181931d5608aa366ee22228bd")
+	builder.AddKeyAddress(constant.TEST_ADDRESS3)
+	builder.AddUdtHash("0xf21e7350fa9518ed3cbb008e0e8c941d7e01a12181931d5608aa366ee22228bd")
 
-	creationTransaction, err := mercuryApi.BuildWalletCreationTransaction(builder.Build())
+	creationTransaction, err := mercuryApi.BuildAssetAccountCreationTransaction(builder.Build())
 	if err != nil {
 		t.Error(err)
 	}

@@ -2,6 +2,7 @@ package test
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/nervosnetwork/ckb-sdk-go/crypto/secp256k1"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/example/constant"
@@ -118,8 +119,11 @@ func TestTransferCompletionSudtWithPayByTo(t *testing.T) {
 func getTransferPayload(from, to, udtHash, action string) *model.TransferPayload {
 	builder := model.NewTransferBuilder()
 	builder.AddUdtHash(udtHash)
-	builder.AddFrom([]string{from}, source.Unconstrained)
-	builder.AddItem(to, action, 100)
+	builder.AddFromKeyAddresses([]string{from}, source.Unconstrained)
+	builder.AddKeyAddressItem(to, action, 100)
+
+	marshal, _ := json.Marshal(builder.Build())
+	fmt.Println(string(marshal))
 
 	return builder.Build()
 }
