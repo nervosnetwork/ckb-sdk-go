@@ -1,7 +1,9 @@
 package mercury
 
 import (
+	"context"
 	"github.com/ethereum/go-ethereum/rpc"
+	"github.com/nervosnetwork/ckb-sdk-go/indexer"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/action"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/resp"
@@ -9,6 +11,7 @@ import (
 )
 
 type MercuryApi interface {
+	indexer.Client
 	GetBalance(payload *model.GetBalancePayload) (*resp.GetBalanceResponse, error)
 	BuildTransferTransaction(payload *model.TransferPayload) (*resp.TransferCompletionResponse, error)
 	BuildWalletCreationTransaction(payload *model.CreateWalletPayload) (*resp.TransferCompletionResponse, error)
@@ -16,7 +19,8 @@ type MercuryApi interface {
 }
 
 type DefaultMercuryApi struct {
-	c *rpc.Client
+	indexer indexer.Client
+	c       *rpc.Client
 }
 
 func (cli *DefaultMercuryApi) RegisterAddresses(normalAddresses []string) ([]string, error) {
@@ -37,6 +41,26 @@ func (cli *DefaultMercuryApi) GetBalance(payload *model.GetBalancePayload) (*res
 	}
 
 	return &balance, err
+}
+
+func (cli *DefaultMercuryApi) GetCells(ctx context.Context, searchKey *indexer.SearchKey, order indexer.SearchOrder, limit uint64, afterCursor string) (*indexer.LiveCells, error) {
+	return cli.indexer.GetCells(ctx, searchKey, order, limit, afterCursor)
+}
+
+func (cli *DefaultMercuryApi) GetTransactions(ctx context.Context, searchKey *indexer.SearchKey, order indexer.SearchOrder, limit uint64, afterCursor string) (*indexer.Transactions, error) {
+	return cli.indexer.GetTransactions(ctx, searchKey, order, limit, afterCursor)
+}
+
+func (cli *DefaultMercuryApi) GetTip(ctx context.Context) (*indexer.TipHeader, error) {
+	return cli.indexer.GetTip(ctx)
+}
+
+func (cli *DefaultMercuryApi) GetCellsCapacity(ctx context.Context, searchKey *indexer.SearchKey) (*indexer.Capacity, error) {
+	return cli.indexer.GetCellsCapacity(ctx, searchKey)
+}
+
+func (cli *DefaultMercuryApi) Close() {
+	cli.indexer.Close()
 }
 
 func (cli *DefaultMercuryApi) BuildTransferTransaction(payload *model.TransferPayload) (*resp.TransferCompletionResponse, error) {
@@ -69,9 +93,12 @@ func (cli *DefaultMercuryApi) BuildWalletCreationTransaction(payload *model.Crea
 
 func NewMercuryApi(address string) (MercuryApi, error) {
 	dial, err := rpc.Dial(address)
+	client, err := indexer.Dial(address)
 	if err != nil {
-		return &DefaultMercuryApi{}, err
+		return nil, err
 	}
 
-	return &DefaultMercuryApi{dial}, err
+	return &DefaultMercuryApi{
+		indexer: client,
+		c:       dial}, err
 }
