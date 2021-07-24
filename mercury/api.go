@@ -11,8 +11,8 @@ import (
 )
 
 type MercuryApi interface {
+	indexer.Client
 	GetBalance(payload *model.GetBalancePayload) (*resp.GetBalanceResponse, error)
-
 	BuildTransferTransaction(payload *model.TransferPayload) (*resp.TransferCompletionResponse, error)
 	BuildWalletCreationTransaction(payload *model.CreateWalletPayload) (*resp.TransferCompletionResponse, error)
 	RegisterAddresses(normalAddresses []string) ([]string, error)
