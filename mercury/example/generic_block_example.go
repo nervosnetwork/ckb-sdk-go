@@ -114,6 +114,7 @@ func TestBlockHashAndBlockNumberDoNotMatch(t *testing.T) {
 	if getErr != nil && getErr.Error() != "block number and hash mismatch" {
 		t.Error(err)
 	}
+
 }
 
 func TestCannotFind(t *testing.T) {
@@ -126,7 +127,7 @@ func TestCannotFind(t *testing.T) {
 	}
 
 	_, getErr := constant.GetMercuryApiInstance().GetGenericBlock(payload)
-	if getErr != nil && strings.HasPrefix(getErr.Error(), "Cannot get block by hash H256") {
+	if getErr != nil && !strings.HasPrefix(getErr.Error(), "Cannot get block by hash H256") {
 		t.Error(err)
 	}
 }
