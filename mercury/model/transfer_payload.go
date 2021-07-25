@@ -67,13 +67,6 @@ type transferBuilder struct {
 	FeeRate uint            `json:"fee_rate"`
 }
 
-func NewTransferBuilder() *transferBuilder {
-	// default fee rate
-	return &transferBuilder{
-		FeeRate: 1000,
-	}
-}
-
 func (builder *transferBuilder) AddUdtHash(udtHash string) {
 	builder.UdtHash = udtHash
 }
@@ -93,7 +86,7 @@ func (builder *transferBuilder) AddFromNormalAddresses(normalAddress []string) {
 	}
 }
 
-func (builder *transferBuilder) AddKeyAddressItem(addr, action string, amount uint) {
+func (builder *transferBuilder) AddToKeyAddressItem(addr, action string, amount uint) {
 	builder.Items = append(builder.Items, &TransferItem{Amount: amount, To: &ToKeyAddress{
 		KeyAddress: &keyAddress{
 			KeyAddress: addr,
@@ -124,5 +117,11 @@ func (builder *transferBuilder) Build() *TransferPayload {
 		builder.Change,
 		builder.FeeRate,
 	}
+}
 
+func NewTransferBuilder() *transferBuilder {
+	// default fee rate
+	return &transferBuilder{
+		FeeRate: 1000,
+	}
 }

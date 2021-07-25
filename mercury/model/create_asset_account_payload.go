@@ -12,13 +12,6 @@ type createAssetAccountPayloadBuilder struct {
 	FeeRate    uint     `json:"fee_rate"`
 }
 
-func NewCreateWalletPayloadBuilder() *createAssetAccountPayloadBuilder {
-	// default fee rate
-	return &createAssetAccountPayloadBuilder{
-		FeeRate: 1000,
-	}
-}
-
 func (walletPayload *createAssetAccountPayloadBuilder) AddKeyAddress(keyAddress string) {
 	walletPayload.KeyAddress = keyAddress
 }
@@ -36,5 +29,12 @@ func (walletPayload *createAssetAccountPayloadBuilder) Build() *CreateAssetAccou
 		KeyAddress: walletPayload.KeyAddress,
 		UdtHashes:  walletPayload.UdtHashes,
 		FeeRate:    walletPayload.FeeRate,
+	}
+}
+
+func NewCreateWalletPayloadBuilder() *createAssetAccountPayloadBuilder {
+	// default fee rate
+	return &createAssetAccountPayloadBuilder{
+		FeeRate: 1000,
 	}
 }

@@ -39,7 +39,7 @@ func issuingChequeCell() {
 	builder := model.NewTransferBuilder()
 	builder.AddUdtHash(udtHash)
 	builder.AddFromKeyAddresses([]string{senderAddress}, source.Unconstrained)
-	builder.AddKeyAddressItem(chequeCellReceiverAddress, action.Lend_by_from, 100)
+	builder.AddToKeyAddressItem(chequeCellReceiverAddress, action.Lend_by_from, 100)
 	transferPayload := builder.Build()
 	transferCompletion, err := mercuryApi.BuildTransferTransaction(transferPayload)
 	if err != nil {
@@ -75,7 +75,7 @@ func claimChequeCell() {
 	builder := model.NewTransferBuilder()
 	builder.AddUdtHash(udtHash)
 	builder.AddFromNormalAddresses([]string{getChequeAddress()})
-	builder.AddKeyAddressItem(receiverAddress, action.Pay_by_from, 100)
+	builder.AddToKeyAddressItem(receiverAddress, action.Pay_by_from, 100)
 	transferPayload := builder.Build()
 	transferCompletion, err := mercuryApi.BuildTransferTransaction(transferPayload)
 	if err != nil {
@@ -118,7 +118,7 @@ func printBalance() {
 }
 
 func getCkbBalance(addr string) *resp.GetBalanceResponse {
-	builder := model.GetGetBalancePayloadBuilder()
+	builder := model.NewGetBalancePayloadBuilder()
 	builder.AddAddress(addr)
 	payload, err := builder.Build()
 	if err != nil {
@@ -130,7 +130,7 @@ func getCkbBalance(addr string) *resp.GetBalanceResponse {
 }
 
 func getUdtBalance(addr, udtHash string) *resp.GetBalanceResponse {
-	builder := model.GetGetBalancePayloadBuilder()
+	builder := model.NewGetBalancePayloadBuilder()
 	builder.AddAddress(addr)
 	builder.AddUdtHash(udtHash)
 	payload, err := builder.Build()

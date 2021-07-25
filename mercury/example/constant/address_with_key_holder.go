@@ -11,6 +11,8 @@ const (
 	TEST_KEY2     = "88a09e06735d89452552e359a052315ab5130dc2e4d864ae3eed21d6505b2f67"
 	TEST_KEY3     = "2d4cf0546a1dc93092ad56f2e18fbe6e41ee477d9dec0575cf43b69740ce9f74"
 	TEST_KEY4     = "5e46fdbb6ffd86d232080dc71f24b60df2a119e0102ca45a7c165472de14c104"
+	CEX_ADDRESS   = "ckt1qyqg03ul48cpvd3wzlqu2t5qpe80hdv3nqpq4hswge"
+	CEX_KEY       = "6d88a2eab95e8546ee9b33160e941837625a40c77202cef35d9e3a1ae6f4edf1"
 )
 
 func GetKey(address string) string {
@@ -25,6 +27,8 @@ func GetKey(address string) string {
 		return TEST_KEY3
 	case TEST_ADDRESS4:
 		return TEST_KEY4
+	case CEX_ADDRESS:
+		return CEX_KEY
 	default:
 		return ""
 	}

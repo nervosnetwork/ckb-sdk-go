@@ -14,6 +14,7 @@ type MercuryApi interface {
 	GetBalance(payload *model.GetBalancePayload) (*resp.GetBalanceResponse, error)
 	BuildTransferTransaction(payload *model.TransferPayload) (*resp.TransferCompletionResponse, error)
 	BuildAssetAccountCreationTransaction(payload *model.CreateAssetAccountPayload) (*resp.TransferCompletionResponse, error)
+	BuildAssetCollectionTransaction(payload *model.CollectAssetPayload) (*resp.TransferCompletionResponse, error)
 	RegisterAddresses(normalAddresses []string) ([]string, error)
 	GetGenericTransaction(txHash string) (*resp.GetGenericTransactionResponse, error)
 	GetGenericBlock(payload *model.GetGenericBlockPayload) (*resp.GenericBlockResponse, error)
@@ -21,6 +22,17 @@ type MercuryApi interface {
 type DefaultMercuryApi struct {
 	indexer indexer.Client
 	c       *rpc.Client
+}
+
+func (cli *DefaultMercuryApi) BuildAssetCollectionTransaction(payload *model.CollectAssetPayload) (*resp.TransferCompletionResponse, error) {
+	var resp resp.TransferCompletionResponse
+
+	err := cli.c.Call(&resp, "build_asset_collection_transaction", payload)
+	if err != nil {
+		return &resp, err
+	}
+
+	return &resp, err
 }
 
 func (cli *DefaultMercuryApi) RegisterAddresses(normalAddresses []string) ([]string, error) {

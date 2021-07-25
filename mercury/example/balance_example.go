@@ -9,7 +9,7 @@ import (
 )
 
 func TestGetBalance(t *testing.T) {
-	builder := model.GetGetBalancePayloadBuilder()
+	builder := model.NewGetBalancePayloadBuilder()
 	builder.AddAddress(constant.TEST_ADDRESS0)
 	payload, err := builder.Build()
 	if err != nil {
@@ -22,7 +22,7 @@ func TestGetBalance(t *testing.T) {
 }
 
 func TestGetSudtBalance(t *testing.T) {
-	builder := model.GetGetBalancePayloadBuilder()
+	builder := model.NewGetBalancePayloadBuilder()
 	builder.AddAddress(constant.TEST_ADDRESS0)
 	builder.AddUdtHash("0xf21e7350fa9518ed3cbb008e0e8c941d7e01a12181931d5608aa366ee22228bd")
 
@@ -37,7 +37,7 @@ func TestGetSudtBalance(t *testing.T) {
 }
 
 func TestAllBalance(t *testing.T) {
-	builder := model.GetGetBalancePayloadBuilder()
+	builder := model.NewGetBalancePayloadBuilder()
 	builder.AddAddress(constant.TEST_ADDRESS0)
 	builder.AllBalance()
 

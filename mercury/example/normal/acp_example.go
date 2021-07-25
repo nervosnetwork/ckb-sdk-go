@@ -20,7 +20,7 @@ func TestFromAcp(t *testing.T) {
 	builder := model.NewTransferBuilder()
 	builder.AddUdtHash(constant.UdtHash)
 	builder.AddFromNormalAddresses([]string{acpAddress})
-	builder.AddKeyAddressItem(constant.TEST_ADDRESS2, action.Lend_by_from, 100)
+	builder.AddToKeyAddressItem(constant.TEST_ADDRESS2, action.Lend_by_from, 100)
 
 	marshal, _ := json.Marshal(builder.Build())
 	fmt.Println(string(marshal))

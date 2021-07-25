@@ -120,7 +120,7 @@ func getTransferPayload(from, to, udtHash, action string) *model.TransferPayload
 	builder := model.NewTransferBuilder()
 	builder.AddUdtHash(udtHash)
 	builder.AddFromKeyAddresses([]string{from}, source.Unconstrained)
-	builder.AddKeyAddressItem(to, action, 100)
+	builder.AddToKeyAddressItem(to, action, 100)
 
 	marshal, _ := json.Marshal(builder.Build())
 	fmt.Println(string(marshal))

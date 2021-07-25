@@ -6,6 +6,18 @@ import (
 	"github.com/nervosnetwork/ckb-sdk-go/crypto/bech32"
 )
 
+type GetBalancePayload struct {
+	UdtHashes []interface{} `json:"udt_hashes"`
+	BlockNum  uint          `json:"block_num,omitempty"`
+	Address   QueryAddress  `json:"address"`
+}
+
+type getBalancePayloadBuilder struct {
+	UdtHashes []interface{}
+	BlockNum  uint
+	Address   string
+}
+
 type QueryAddress interface {
 	GetAddress() string
 }
@@ -24,18 +36,6 @@ type NormalAddress struct {
 
 func (addr *NormalAddress) GetAddress() string {
 	return addr.NormalAddress
-}
-
-type GetBalancePayload struct {
-	UdtHashes []interface{} `json:"udt_hashes"`
-	BlockNum  uint          `json:"block_num,omitempty"`
-	Address   QueryAddress  `json:"address"`
-}
-
-type getBalancePayloadBuilder struct {
-	UdtHashes []interface{}
-	BlockNum  uint
-	Address   string
 }
 
 func (builder *getBalancePayloadBuilder) AddUdtHash(udtHash string) {
@@ -86,7 +86,7 @@ func getQueryAddressByAddress(addr string) (QueryAddress, error) {
 
 }
 
-func GetGetBalancePayloadBuilder() *getBalancePayloadBuilder {
+func NewGetBalancePayloadBuilder() *getBalancePayloadBuilder {
 	udtHashes := make([]interface{}, 1)
 	return &getBalancePayloadBuilder{
 		UdtHashes: udtHashes,
