@@ -45,7 +45,7 @@ go get -v github.com/nervosnetwork/ckb-sdk-go
 
 ### 1. CKB RPC
 
-[CKB RPC doc](https://github.com/nervosnetwork/ckb/tree/develop/rpc)
+[CKB RPC doc](https://github.com/nervosnetwork/ckb/blob/develop/rpc/README.md)
 
 #### example
 
@@ -53,7 +53,7 @@ TODO
 
 ### 2. Mercury RPC
 
-[Mercury RPC doc](https://github.com/nervosnetwork/mercury/tree/main/core/rpc#rpc)
+[Mercury RPC doc](https://github.com/nervosnetwork/mercury/blob/main/core/rpc/README.md)
 
 #### example
 
@@ -74,7 +74,7 @@ TODO
 
 ### 3. ckb-indexer RPC
 
-[ckb-indexer RPC doc](https://github.com/nervosnetwork/ckb-indexer#rpc)
+[ckb-indexer RPC doc](https://github.com/nervosnetwork/ckb-indexer/blob/master/README.md)
 
 #### example
 
