@@ -6,12 +6,16 @@
 
 Golang SDK for Nervos [CKB](https://github.com/nervosnetwork/ckb).
 
-The ckb-sdk-go is still under development and **NOT** production ready. You should get familiar with CKB transaction structure and RPC before using it.
+The ckb-sdk-go is still under development and **NOT** production ready. You should get familiar with CKB transaction
+structure and RPC before using it.
 
 ## WARNING
-Module Indexer has been removed from [ckb_v0.40.0](https://github.com/nervosnetwork/ckb/releases/tag/v0.40.0): Please use [ckb-indexer](https://github.com/nervosnetwork/ckb-indexer) as an alternate solution.
+
+Module Indexer has been removed from [ckb_v0.40.0](https://github.com/nervosnetwork/ckb/releases/tag/v0.40.0): Please
+use [ckb-indexer](https://github.com/nervosnetwork/ckb-indexer) as an alternate solution.
 
 The following RPCs hash been removed from [ckb_v0.40.0](https://github.com/nervosnetwork/ckb/releases/tag/v0.40.0):
+
 * `get_live_cells_by_lock_hash`
 * `get_transactions_by_lock_hash`
 * `index_lock_hash`
@@ -19,8 +23,9 @@ The following RPCs hash been removed from [ckb_v0.40.0](https://github.com/nervo
 * `get_lock_hash_index_states`
 * `get_capacity_by_lock_hash`
 
-Since [ckb_v0.36.0](https://github.com/nervosnetwork/ckb/releases/tag/v0.36.0) SDK use [ckb-indexer](https://github.com/nervosnetwork/ckb-indexer) to collect cells, please see [Collect cells](#5-collect-cells) for examples.
-
+Since [ckb_v0.36.0](https://github.com/nervosnetwork/ckb/releases/tag/v0.36.0) SDK
+use [ckb-indexer](https://github.com/nervosnetwork/ckb-indexer) to collect cells, please
+see [Collect cells](#5-collect-cells) for examples.
 
 ## Get started
 
@@ -35,6 +40,49 @@ Since [ckb_v0.36.0](https://github.com/nervosnetwork/ckb/releases/tag/v0.36.0) S
 ```bash
 go get -v github.com/nervosnetwork/ckb-sdk-go
 ```
+
+## SDK RPC
+
+### 1. CKB RPC
+
+[CKB RPC doc](https://github.com/nervosnetwork/ckb/blob/develop/rpc/README.md)
+
+#### example
+
+TODO
+
+### 2. Mercury RPC
+
+[Mercury RPC doc](https://github.com/nervosnetwork/mercury/blob/main/core/rpc/README.md)
+
+#### example
+
+1. [`get_balance` example](./example/balance_example.go)
+2. [`get_generic_block` example](./example/generic_block_example.go)
+3. [`get_generic_transaction` example](./example/generic_transaction_example.go)
+4. [`query_generic_transactions` example](./example/query_generic_transactions_pages_example.go)
+5. [`register_addresses` example](./example/register_addresses_example.go)
+6. [`build_transfer_transaction` example](./example/transfer_completion_example.go)
+7. [`build_transfer_transaction` by action example](./example/action_example.go)
+8. [`build_transfer_transaction` by source example](./example/source_example.go)
+9. [`build_transfer_transaction` by acp example](./example/normal/acp_example.go)
+10. [`build_transfer_transaction` by cheque_cell example](./example/normal/cheque_example.go)
+11. [`build_transfer_transaction` by shor address example](./example/normal/secp256k1_example.go)
+12. [`build_asset_account_creation_transaction` example](./example/build_asset_account_creation_transaction_example.go)
+13. [`build_asset_collection_transaction` example](./example/build_asset_collection_transaction_example.go)
+14. [`fee_rate` example](./example/fee_rate_example.go)
+
+### 3. ckb-indexer RPC
+
+[ckb-indexer RPC doc](https://github.com/nervosnetwork/ckb-indexer/blob/master/README.md)
+
+#### example
+
+1. [get_tip example](./example/indexer/tip_example.go)
+2. [get_cells example](./example/indexer/cells_example.go)
+3. [get_cells_capacity example](./example/indexer/capacity_example.go)
+4. [get_transactions example](./example/indexer/transanction_example.go)
+5. [filter example](./example/indexer/filter_example.go)
 
 ## Basic Usages
 
@@ -96,12 +144,12 @@ func main() {
 
 	group, witnessArgs, err := transaction.AddInputsForTransaction(tx, []*types.CellInput{
 		{
-            Since: 0,
-            PreviousOutput: &types.OutPoint{
-                TxHash: types.HexToHash("0x8e6d818c6e07e6cbd9fca51294030494ee23dc388d7f5276ba50b938d02cc015"),
-                Index: 1,
-            },
-        },
+			Since: 0,
+			PreviousOutput: &types.OutPoint{
+				TxHash: types.HexToHash("0x8e6d818c6e07e6cbd9fca51294030494ee23dc388d7f5276ba50b938d02cc015"),
+				Index:  1,
+			},
+		},
 	})
 
 	if err != nil {
@@ -182,7 +230,7 @@ func main() {
 				Index:  0,
 			},
 		},
-		{   
+		{
 			Since: 0,
 			PreviousOutput: &types.OutPoint{
 				TxHash: types.HexToHash("0x8e6d818c6e07e6cbd9fca51294030494ee23dc388d7f5276ba50b938d02cc015"),
@@ -195,7 +243,7 @@ func main() {
 	}
 
 	groupA, witnessArgsA, err := transaction.AddInputsForTransaction(tx, []*types.CellInput{
-		{ 
+		{
 			Since: 0,
 			PreviousOutput: &types.OutPoint{
 				TxHash: types.HexToHash("0xf56d73acbe235889e726366aa4fa09b3f0b51138c294645bb30912fb872837a5"),
@@ -282,15 +330,15 @@ func main() {
 	tx.OutputsData = [][]byte{{}, {}}
 
 	group, witnessArgs, err := transaction.AddInputsForTransaction(tx, []*types.CellInput{
-		{   
+		{
 			Since: 0,
 			PreviousOutput: &types.OutPoint{
 				TxHash: types.HexToHash("0xccb33a76b5322ff2841511ef10606b6bb207f6eef5a687f14f8c7fa5da8a7cb2"),
 				Index:  0,
 			},
 		},
-		{   
-            Since: 0,
+		{
+			Since: 0,
 			PreviousOutput: &types.OutPoint{
 				TxHash: types.HexToHash("0x06a49393423c1be0a48d422fa60951bdb847d56753915f321c26906a6ba1dd8a"),
 				Index:  0,
@@ -373,8 +421,8 @@ func main() {
 	tx.OutputsData = [][]byte{{}, {}}
 
 	group, witnessArgs, err := transaction.AddInputsForTransaction(tx, []*types.CellInput{
-		{   
-            Since: 0,
+		{
+			Since: 0,
 			PreviousOutput: &types.OutPoint{
 				TxHash: types.HexToHash("0xcb905a3b304b23200225def794c4ce165d93eead77197724680b4ec067b43803"),
 				Index:  0,
@@ -386,8 +434,8 @@ func main() {
 	}
 
 	group1, witnessArgs1, err := transaction.AddInputsForTransaction(tx, []*types.Cell{
-		{   
-            Since: 0,
+		{
+			Since: 0,
 			PreviousOutput: &types.OutPoint{
 				TxHash: types.HexToHash("0xcb905a3b304b23200225def794c4ce165d93eead77197724680b4ec067b43803"),
 				Index:  1,
@@ -589,7 +637,6 @@ func main() {
 }
 ```
 
-
 ### 6. Payment
 
 ```go
@@ -598,42 +645,43 @@ package main
 import (
 	"fmt"
 	"github.com/nervosnetwork/ckb-sdk-go/utils"
-"log"
+	"log"
 
 	"github.com/nervosnetwork/ckb-sdk-go/crypto/secp256k1"
 	"github.com/nervosnetwork/ckb-sdk-go/payment"
 	"github.com/nervosnetwork/ckb-sdk-go/rpc"
 )
-func main(){
-    client, err := rpc.DialWithIndexer("http://localhost:8114", "http://localhost:8116")
-    if err != nil {
-        log.Fatalf("create rpc client error: %v", err)
-    }
-    
-    key, err := secp256k1.HexToKey(PRIVATE_KEY)
-    if err != nil {
-        log.Fatalf("import private key error: %v", err)
-    }
-    
-    pay, err := payment.NewPayment("ckt1qyqwmndf2yl6qvxwgvyw9yj95gkqytgygwasdjf6hm",
-        "ckt1qyqt705jmfy3r7jlvg88k87j0sksmhgduazq7x5l8k", 100000000000, 1000)
-    if err != nil {
-        log.Fatalf("create payment error: %v", err)
-    }
-    systemScripts, _ := utils.NewSystemScripts(client)
-    _, err = pay.GenerateTx(client, systemScripts)
-    if err != nil {
-        log.Fatalf("create transaction error: %v", err)
-    }
-    
-    _, err = pay.Sign(key)
-    if err != nil {
-        log.Fatalf("sign transaction error: %v", err)
-    }
-    
-    hash, err := pay.Send(client)
-    
-    fmt.Println(hash)
+
+func main() {
+	client, err := rpc.DialWithIndexer("http://localhost:8114", "http://localhost:8116")
+	if err != nil {
+		log.Fatalf("create rpc client error: %v", err)
+	}
+
+	key, err := secp256k1.HexToKey(PRIVATE_KEY)
+	if err != nil {
+		log.Fatalf("import private key error: %v", err)
+	}
+
+	pay, err := payment.NewPayment("ckt1qyqwmndf2yl6qvxwgvyw9yj95gkqytgygwasdjf6hm",
+		"ckt1qyqt705jmfy3r7jlvg88k87j0sksmhgduazq7x5l8k", 100000000000, 1000)
+	if err != nil {
+		log.Fatalf("create payment error: %v", err)
+	}
+	systemScripts, _ := utils.NewSystemScripts(client)
+	_, err = pay.GenerateTx(client, systemScripts)
+	if err != nil {
+		log.Fatalf("create transaction error: %v", err)
+	}
+
+	_, err = pay.Sign(key)
+	if err != nil {
+		log.Fatalf("sign transaction error: %v", err)
+	}
+
+	hash, err := pay.Send(client)
+
+	fmt.Println(hash)
 }
 ```
 
@@ -687,8 +735,8 @@ func main() {
 	}
 
 	group, witnessArgs, err := transaction.AddInputsForTransaction(deposit.Transaction, []*types.CellInput{
-		{   
-            Since: 0,
+		{
+			Since: 0,
 			PreviousOutput: &types.OutPoint{
 				TxHash: types.HexToHash("0xaa10f51bc6ee60e851d17e3fffefc950d6dc1d2cd77e15699c3da5e837219764"),
 				Index:  1,
@@ -776,8 +824,8 @@ func main() {
 	}
 
 	group, witnessArgs, err := transaction.AddInputsForTransaction(withdraw.Transaction, []*types.CellInput{
-		{   
-            Since: 0,
+		{
+			Since: 0,
 			PreviousOutput: &types.OutPoint{
 				TxHash: types.HexToHash("0xc8cfe3d09b0a50fd2df3bd79dbadca23b7eb1f58087942d7266abea93459fce1"),
 				Index:  1,
@@ -889,7 +937,9 @@ func main() {
 	fmt.Println(hash.String())
 }
 ```
+
 ### 10. Issuing cheque cell
+
 ```go
 package main
 
@@ -904,36 +954,37 @@ import (
 )
 
 func main() {
-    client, err := rpc.DialWithIndexer("http://localhost:8114", "http://localhost:8116")
-    if err != nil {
-        log.Fatal(err)
-    }
-    systemScripts, _ := utils.NewSystemScripts(client)
-    c, err := payment.NewCheque("ckt1qyqrhmy67jcn7rvft3d2em3sc78pzn02ha4s728fvg", "ckt1qyqrd7cglncpwfzn73qwhed5mvjnrl8v6nvq2cpmd8", "TOKEN_ID", "10000000000000", 1000, systemScripts)
-    if err != nil {
-        fmt.Println(err)
-    }
-    _, err = c.GenerateIssuingChequeUnsignedTx(client)
-    if err != nil {
-        log.Fatal(err)
-    }
-    key, err := secp256k1.HexToKey(PRIVATE_KEY)
-    if err != nil {
-        log.Fatalf("import private key error: %v", err)
-    }
-    _, err = c.SignTx(key)
-    if err != nil {
-        log.Fatal(err)
-    }
-    hash, err := c.Send(client)
-    if err != nil {
-        log.Fatal(err)
-    }
-    fmt.Println(hash)
+	client, err := rpc.DialWithIndexer("http://localhost:8114", "http://localhost:8116")
+	if err != nil {
+		log.Fatal(err)
+	}
+	systemScripts, _ := utils.NewSystemScripts(client)
+	c, err := payment.NewCheque("ckt1qyqrhmy67jcn7rvft3d2em3sc78pzn02ha4s728fvg", "ckt1qyqrd7cglncpwfzn73qwhed5mvjnrl8v6nvq2cpmd8", "TOKEN_ID", "10000000000000", 1000, systemScripts)
+	if err != nil {
+		fmt.Println(err)
+	}
+	_, err = c.GenerateIssuingChequeUnsignedTx(client)
+	if err != nil {
+		log.Fatal(err)
+	}
+	key, err := secp256k1.HexToKey(PRIVATE_KEY)
+	if err != nil {
+		log.Fatalf("import private key error: %v", err)
+	}
+	_, err = c.SignTx(key)
+	if err != nil {
+		log.Fatal(err)
+	}
+	hash, err := c.Send(client)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(hash)
 }
 ``` 
 
 ### 11. Claim cheque cells
+
 ```go
 package main
 
@@ -948,32 +999,32 @@ import (
 )
 
 func main() {
-    client, err := rpc.DialWithIndexer("http://localhost:8114", "http://localhost:8116")
-    if err != nil {
-        log.Fatal(err)
-    }
-    systemScripts, _ := utils.NewSystemScripts(client)
-    c, err := payment.NewClaimCheque("ckt1qyqrd7cglncpwfzn73qwhed5mvjnrl8v6nvq2cpmd8", "TOKEN_ID", 1000, systemScripts)
-    if err != nil {
-        fmt.Println(err)
-    }
-    _, err = c.GenerateClaimChequeUnsignedTx(client)
-    if err != nil {
-        log.Fatal(err)
-    }
-    key, err := secp256k1.HexToKey(PRIVATE_KEY)
-    if err != nil {
-        log.Fatalf("import private key error: %v", err)
-    }
-    _, err = c.SignTx(key)
-    if err != nil {
-        log.Fatal(err)
-    }
-    hash, err := c.Send(client)
-    if err != nil {
-        log.Fatal(err)
-    }
-    fmt.Println(hash)
+	client, err := rpc.DialWithIndexer("http://localhost:8114", "http://localhost:8116")
+	if err != nil {
+		log.Fatal(err)
+	}
+	systemScripts, _ := utils.NewSystemScripts(client)
+	c, err := payment.NewClaimCheque("ckt1qyqrd7cglncpwfzn73qwhed5mvjnrl8v6nvq2cpmd8", "TOKEN_ID", 1000, systemScripts)
+	if err != nil {
+		fmt.Println(err)
+	}
+	_, err = c.GenerateClaimChequeUnsignedTx(client)
+	if err != nil {
+		log.Fatal(err)
+	}
+	key, err := secp256k1.HexToKey(PRIVATE_KEY)
+	if err != nil {
+		log.Fatalf("import private key error: %v", err)
+	}
+	_, err = c.SignTx(key)
+	if err != nil {
+		log.Fatal(err)
+	}
+	hash, err := c.Send(client)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(hash)
 }
 ```
 
@@ -993,102 +1044,104 @@ import (
 )
 
 func main() {
-    client, err := rpc.DialWithIndexer("http://localhost:8114", "http://localhost:8116")
-    if err != nil {
-        log.Fatal(err)
-    }
-    systemScripts, _ := utils.NewSystemScripts(client)
-    c, err := payment.NewWithdrawCheque("ckt1qyqrhmy67jcn7rvft3d2em3sc78pzn02ha4s728fvg", "ckt1qyqrd7cglncpwfzn73qwhed5mvjnrl8v6nvq2cpmd8", "TOKEN_ID", "10000000000000", 1000, systemScripts)
-    if err != nil {
-        fmt.Println(err)
-    }
-    _, err = c.GenerateWithdrawChequeUnsignedTx(client)
-    if err != nil {
-        log.Fatal(err)
-    }
-    key, err := secp256k1.HexToKey(PRIVATE_KEY)
-    if err != nil {
-        log.Fatalf("import private key error: %v", err)
-    }
-    _, err = c.SignTx(key)
-    if err != nil {
-        log.Fatal(err)
-    }
-    hash, err := c.Send(client)
-    if err != nil {
-        log.Fatal(err)
-    }
-    fmt.Println(hash)
+	client, err := rpc.DialWithIndexer("http://localhost:8114", "http://localhost:8116")
+	if err != nil {
+		log.Fatal(err)
+	}
+	systemScripts, _ := utils.NewSystemScripts(client)
+	c, err := payment.NewWithdrawCheque("ckt1qyqrhmy67jcn7rvft3d2em3sc78pzn02ha4s728fvg", "ckt1qyqrd7cglncpwfzn73qwhed5mvjnrl8v6nvq2cpmd8", "TOKEN_ID", "10000000000000", 1000, systemScripts)
+	if err != nil {
+		fmt.Println(err)
+	}
+	_, err = c.GenerateWithdrawChequeUnsignedTx(client)
+	if err != nil {
+		log.Fatal(err)
+	}
+	key, err := secp256k1.HexToKey(PRIVATE_KEY)
+	if err != nil {
+		log.Fatalf("import private key error: %v", err)
+	}
+	_, err = c.SignTx(key)
+	if err != nil {
+		log.Fatal(err)
+	}
+	hash, err := c.Send(client)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(hash)
 }
 ```
 
 ### 13. Transfer sUDT
+
 ```go
 package main
+
 import (
-    "github.com/nervosnetwork/ckb-sdk-go/address"
-    "github.com/nervosnetwork/ckb-sdk-go/crypto"
-    "github.com/nervosnetwork/ckb-sdk-go/crypto/secp256k1"
-    "github.com/nervosnetwork/ckb-sdk-go/payment"
-    "github.com/nervosnetwork/ckb-sdk-go/rpc"
-    "log"
+	"github.com/nervosnetwork/ckb-sdk-go/address"
+	"github.com/nervosnetwork/ckb-sdk-go/crypto"
+	"github.com/nervosnetwork/ckb-sdk-go/crypto/secp256k1"
+	"github.com/nervosnetwork/ckb-sdk-go/payment"
+	"github.com/nervosnetwork/ckb-sdk-go/rpc"
+	"log"
 )
 
 func main() {
-    uuid := "0x683574c1275eb5cfe6f8745faa375b08bf773223fd8d2b4db28dbd90a27f1586"
-    receiverInfo := make(map[string]string)
-    receiverInfo["ckt1qyqrhmy67jcn7rvft3d2em3sc78pzn02ha4s728fvg"] = "10000000000000"
-    receiverInfo["ckt1qyqr4s293mq0f0rhtejta5drx66a95c5wc6sl2dsmk"] = "10000000000000"
-    receiverInfo["ckt1qyqxpe0qj6qxk95zla6v06adej9enmnzqvaqvc07gr"] = "10000000000000"
-    senderAddresses := []string{"ckt1qyqvgpevpyh45a7a4t0l5n7apqduw7y9y99qpyrsd5", "ckt1qyqrd7cglncpwfzn73qwhed5mvjnrl8v6nvq2cpmd8"}
-    ckbPayerAddress := "ckt1qyqrhmy67jcn7rvft3d2em3sc78pzn02ha4s728fvg"
-    ckbChangeAddress := "ckt1qyqrhmy67jcn7rvft3d2em3sc78pzn02ha4s728fvg"
-    sudtChangeAddress := "ckt1qyqrhmy67jcn7rvft3d2em3sc78pzn02ha4s728fvg"
-    keyInfo := map[string]string{
-        "ckt1qyqvgpevpyh45a7a4t0l5n7apqduw7y9y99qpyrsd5": "PRIVATE KEY",
-        "ckt1qyqrd7cglncpwfzn73qwhed5mvjnrl8v6nvq2cpmd8": "PRIVATE KEY",
-        "ckt1qyqrhmy67jcn7rvft3d2em3sc78pzn02ha4s728fvg": "PRIVATE KEY",
-    }
-    client, err := rpc.DialWithIndexer("http://localhost:8114", "http://localhost:8116")
-  	if err != nil {
-  		log.Fatal(err)
-  	}
-    systemScripts, _ := utils.NewSystemScripts(client)
-  	sudt, err := payment.NewSudt(senderAddresses, receiverInfo, ckbPayerAddress, ckbChangeAddress, sudtChangeAddress, uuid, 1000, systemScripts)
-  	if err != nil {
-  		log.Println(err)
-  	}
-  	_, err = sudt.GenerateTransferSudtUnsignedTx(client)
-  	if err != nil {
-  		log.Fatal(err)
-  	}
-  	//fmt.Println(rpc.TransactionString(tx))
-  	keys := make(map[string]crypto.Key)
-  	for addr, sk := range keyInfo {
-  		parsedAddr, err := address.Parse(addr)
-  		if err != nil {
-  			log.Fatal(err)
-  		}
-  		lockHash, err := parsedAddr.Script.Hash()
-  		if err != nil {
-  			log.Fatal(err)
-  		}
-  		key, err := secp256k1.HexToKey(sk)
-  		if err != nil {
-  			log.Fatal(err)
-  		}
-  		keys[lockHash.String()] = key
-  	}
-  	tx, err := sudt.SignTx(keys)
-  	log.Println(rpc.TransactionString(tx))
-  	if err != nil {
-  		log.Fatal(err)
-  	}
-  	hash, err := sudt.Send(client)
-  	if err != nil {
-  		log.Fatal(err)
-  	}
-  	log.Println(hash)
+	uuid := "0x683574c1275eb5cfe6f8745faa375b08bf773223fd8d2b4db28dbd90a27f1586"
+	receiverInfo := make(map[string]string)
+	receiverInfo["ckt1qyqrhmy67jcn7rvft3d2em3sc78pzn02ha4s728fvg"] = "10000000000000"
+	receiverInfo["ckt1qyqr4s293mq0f0rhtejta5drx66a95c5wc6sl2dsmk"] = "10000000000000"
+	receiverInfo["ckt1qyqxpe0qj6qxk95zla6v06adej9enmnzqvaqvc07gr"] = "10000000000000"
+	senderAddresses := []string{"ckt1qyqvgpevpyh45a7a4t0l5n7apqduw7y9y99qpyrsd5", "ckt1qyqrd7cglncpwfzn73qwhed5mvjnrl8v6nvq2cpmd8"}
+	ckbPayerAddress := "ckt1qyqrhmy67jcn7rvft3d2em3sc78pzn02ha4s728fvg"
+	ckbChangeAddress := "ckt1qyqrhmy67jcn7rvft3d2em3sc78pzn02ha4s728fvg"
+	sudtChangeAddress := "ckt1qyqrhmy67jcn7rvft3d2em3sc78pzn02ha4s728fvg"
+	keyInfo := map[string]string{
+		"ckt1qyqvgpevpyh45a7a4t0l5n7apqduw7y9y99qpyrsd5": "PRIVATE KEY",
+		"ckt1qyqrd7cglncpwfzn73qwhed5mvjnrl8v6nvq2cpmd8": "PRIVATE KEY",
+		"ckt1qyqrhmy67jcn7rvft3d2em3sc78pzn02ha4s728fvg": "PRIVATE KEY",
+	}
+	client, err := rpc.DialWithIndexer("http://localhost:8114", "http://localhost:8116")
+	if err != nil {
+		log.Fatal(err)
+	}
+	systemScripts, _ := utils.NewSystemScripts(client)
+	sudt, err := payment.NewSudt(senderAddresses, receiverInfo, ckbPayerAddress, ckbChangeAddress, sudtChangeAddress, uuid, 1000, systemScripts)
+	if err != nil {
+		log.Println(err)
+	}
+	_, err = sudt.GenerateTransferSudtUnsignedTx(client)
+	if err != nil {
+		log.Fatal(err)
+	}
+	//fmt.Println(rpc.TransactionString(tx))
+	keys := make(map[string]crypto.Key)
+	for addr, sk := range keyInfo {
+		parsedAddr, err := address.Parse(addr)
+		if err != nil {
+			log.Fatal(err)
+		}
+		lockHash, err := parsedAddr.Script.Hash()
+		if err != nil {
+			log.Fatal(err)
+		}
+		key, err := secp256k1.HexToKey(sk)
+		if err != nil {
+			log.Fatal(err)
+		}
+		keys[lockHash.String()] = key
+	}
+	tx, err := sudt.SignTx(keys)
+	log.Println(rpc.TransactionString(tx))
+	if err != nil {
+		log.Fatal(err)
+	}
+	hash, err := sudt.Send(client)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println(hash)
 }
 
 ```
