@@ -114,7 +114,6 @@ func TestBlockHashAndBlockNumberDoNotMatch(t *testing.T) {
 	if getErr != nil && getErr.Error() != "block number and hash mismatch" {
 		t.Error(err)
 	}
-
 }
 
 func TestCannotFind(t *testing.T) {

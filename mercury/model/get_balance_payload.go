@@ -50,7 +50,6 @@ func (builder *getBalancePayloadBuilder) AddBlockNum(blockNum uint) {
 }
 
 func (builder *getBalancePayloadBuilder) AddAddress(addr string) {
-
 	builder.Address = addr
 }
 

@@ -43,7 +43,7 @@ func issuingChequeCell() {
 		fmt.Println(err)
 	}
 
-	tx := sign(transferCompletion)
+	tx := constant.Sign(transferCompletion)
 
 	hash, err := ckbNode.SendTransaction(context.Background(), tx)
 	if err != nil {
@@ -79,7 +79,7 @@ func claimChequeCell() {
 		fmt.Println(err)
 	}
 
-	tx := sign(transferCompletion)
+	tx := constant.Sign(transferCompletion)
 
 	hash, err := ckbNode.SendTransaction(context.Background(), tx)
 	if err != nil {
