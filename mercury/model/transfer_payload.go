@@ -1,72 +1,127 @@
 package model
 
+import (
+	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/action"
+)
+
 type TransferPayload struct {
 	UdtHash string          `json:"udt_hash,omitempty"`
-	From    *FromAccount    `json:"from"`
+	From    interface{}     `json:"from"`
 	Items   []*TransferItem `json:"items"`
 	Change  string          `json:"change,omitempty"`
-	Fee     uint            `json:"fee"`
+	FeeRate uint            `json:"fee_rate"`
 }
 
-type FromAccount struct {
-	Idents []string `json:"idents"`
-	Source string   `json:"source"`
+type FromKeyAddresses struct {
+	KeyAddresses *keyAddresses `json:"key_addresses"`
+}
+
+type FromNormalAddresses struct {
+	NormalAddresses []string `json:"normal_addresses"`
+}
+
+type keyAddresses struct {
+	KeyAddresses []string `json:"key_addresses"`
+	Source       string   `json:"source"`
+}
+
+type ToAddress interface {
+	IsPayBayFrom() bool
+}
+
+type ToKeyAddress struct {
+	KeyAddress *keyAddress `json:"key_address"`
+}
+
+func (address *ToKeyAddress) IsPayBayFrom() bool {
+	if address.KeyAddress.Action == action.Pay_by_from {
+		return true
+	}
+
+	return false
+}
+
+type ToNormalAddress struct {
+	NormalAddress string `json:"normal_address"`
+}
+
+func (address *ToNormalAddress) IsPayBayFrom() bool {
+	return false
+}
+
+type keyAddress struct {
+	KeyAddress string `json:"key_address"`
+	Action     string `json:"action"`
 }
 
 type TransferItem struct {
-	To     *ToAccount `json:"to"`
-	Amount uint       `json:"amount"`
+	To     ToAddress `json:"to"`
+	Amount uint      `json:"amount"`
 }
 
-type ToAccount struct {
-	Ident  string `json:"ident"`
-	Action string `json:"action"`
-}
-
-type TransferBuilder struct {
+type transferBuilder struct {
 	UdtHash string          `json:"udt_hash,omitempty"`
-	From    *FromAccount    `json:"from"`
+	From    interface{}     `json:"from"`
 	Items   []*TransferItem `json:"items"`
 	Change  string          `json:"change,omitempty"`
-	Fee     uint            `json:"fee"`
+	FeeRate uint            `json:"fee_rate"`
 }
 
-func (builder *TransferBuilder) AddUdtHash(udtHash string) {
+func (builder *transferBuilder) AddUdtHash(udtHash string) {
 	builder.UdtHash = udtHash
 }
 
-func (builder *TransferBuilder) AddFrom(idents []string, source string) {
-	form := &FromAccount{
-		Idents: idents,
-		Source: source,
+func (builder *transferBuilder) AddFromKeyAddresses(keyAddr []string, source string) {
+	builder.From = &FromKeyAddresses{
+		KeyAddresses: &keyAddresses{
+			KeyAddresses: keyAddr,
+			Source:       source,
+		},
 	}
-	builder.From = form
 }
 
-func (builder *TransferBuilder) AddItem(ident, action string, amount uint) {
-	to := &ToAccount{
-		Ident:  ident,
-		Action: action}
-	item := &TransferItem{Amount: amount}
-	item.To = to
-	builder.Items = append(builder.Items, item)
+func (builder *transferBuilder) AddFromNormalAddresses(normalAddress []string) {
+	builder.From = &FromNormalAddresses{
+		NormalAddresses: normalAddress,
+	}
 }
 
-func (builder *TransferBuilder) AddChange(change string) {
+func (builder *transferBuilder) AddToKeyAddressItem(addr, action string, amount uint) {
+	builder.Items = append(builder.Items, &TransferItem{Amount: amount, To: &ToKeyAddress{
+		KeyAddress: &keyAddress{
+			KeyAddress: addr,
+			Action:     action,
+		},
+	}})
+}
+
+func (builder *transferBuilder) AddToNormalAddressItem(addr string, amount uint) {
+	builder.Items = append(builder.Items, &TransferItem{Amount: amount, To: &ToNormalAddress{
+		NormalAddress: addr,
+	}})
+}
+
+func (builder *transferBuilder) AddChange(change string) {
 	builder.Change = change
 }
 
-func (builder *TransferBuilder) AddFee(fee uint) {
-	builder.Fee = fee
+func (builder *transferBuilder) AddFeeRate(feeRate uint) {
+	builder.FeeRate = feeRate
 }
 
-func (builder *TransferBuilder) Build() *TransferPayload {
+func (builder *transferBuilder) Build() *TransferPayload {
 	return &TransferPayload{
 		builder.UdtHash,
 		builder.From,
 		builder.Items,
 		builder.Change,
-		builder.Fee,
+		builder.FeeRate,
 	}
+}
 
+func NewTransferBuilder() *transferBuilder {
+	// default fee rate
+	return &transferBuilder{
+		FeeRate: 1000,
+	}
 }

@@ -2,6 +2,7 @@ package test
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/nervosnetwork/ckb-sdk-go/crypto/secp256k1"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/example/constant"
@@ -38,7 +39,7 @@ func TestTransferCompletionSudtWithPayByFrom(t *testing.T) {
 	mercuryApi := constant.GetMercuryApiInstance()
 	ckbNode := constant.GetCkbNodeInstance()
 
-	transferPayload := getTransferPayload(constant.TEST_ADDRESS0, constant.TEST_ADDRESS4, "0xf21e7350fa9518ed3cbb008e0e8c941d7e01a12181931d5608aa366ee22228bd", action.Pay_by_from)
+	transferPayload := getTransferPayload(constant.TEST_ADDRESS0, constant.TEST_ADDRESS4, constant.UdtHash, action.Pay_by_from)
 	transferCompletion, err := mercuryApi.BuildTransferTransaction(transferPayload)
 	if err != nil {
 		t.Error(err)
@@ -69,7 +70,7 @@ func TestTransferCompletionSudtWithLendByFrom(t *testing.T) {
 	mercuryApi := constant.GetMercuryApiInstance()
 	ckbNode := constant.GetCkbNodeInstance()
 
-	transferPayload := getTransferPayload(constant.TEST_ADDRESS1, constant.TEST_ADDRESS2, "0xf21e7350fa9518ed3cbb008e0e8c941d7e01a12181931d5608aa366ee22228bd", action.Lend_by_from)
+	transferPayload := getTransferPayload(constant.TEST_ADDRESS1, constant.TEST_ADDRESS2, constant.UdtHash, action.Lend_by_from)
 	transferCompletion, err := mercuryApi.BuildTransferTransaction(transferPayload)
 	if err != nil {
 		t.Error(err)
@@ -99,7 +100,7 @@ func TestTransferCompletionSudtWithPayByTo(t *testing.T) {
 	mercuryApi := constant.GetMercuryApiInstance()
 	ckbNode := constant.GetCkbNodeInstance()
 
-	transferPayload := getTransferPayload(constant.TEST_ADDRESS1, constant.TEST_ADDRESS2, "0xf21e7350fa9518ed3cbb008e0e8c941d7e01a12181931d5608aa366ee22228bd", action.Pay_by_to)
+	transferPayload := getTransferPayload(constant.TEST_ADDRESS1, constant.QUERY_TRANSACTION_ADDRESS, constant.UdtHash, action.Pay_by_to)
 	transferCompletion, err := mercuryApi.BuildTransferTransaction(transferPayload)
 	if err != nil {
 		t.Error(err)
@@ -116,11 +117,13 @@ func TestTransferCompletionSudtWithPayByTo(t *testing.T) {
 }
 
 func getTransferPayload(from, to, udtHash, action string) *model.TransferPayload {
-	builder := new(model.TransferBuilder)
+	builder := model.NewTransferBuilder()
 	builder.AddUdtHash(udtHash)
-	builder.AddFrom([]string{from}, source.Unconstrained)
-	builder.AddItem(to, action, 100)
-	builder.AddFee(10000000)
+	builder.AddFromKeyAddresses([]string{from}, source.Unconstrained)
+	builder.AddToKeyAddressItem(to, action, 100)
+
+	marshal, _ := json.Marshal(builder.Build())
+	fmt.Println(string(marshal))
 
 	return builder.Build()
 }

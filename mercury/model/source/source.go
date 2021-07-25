@@ -1,6 +1,6 @@
 package source
 
 const (
-	Unconstrained = "owned"
-	Fleeting      = "claimable"
+	Unconstrained = "unconstrained"
+	Fleeting      = "fleeting"
 )

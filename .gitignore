@@ -18,3 +18,5 @@
 /vendor
 
 /test.go
+
+**/.DS_Store
