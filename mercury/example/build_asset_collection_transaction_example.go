@@ -301,7 +301,7 @@ func sendLendByFrom() {
 	responseJson, _ := json.Marshal(transferCompletion)
 	fmt.Println(string(responseJson))
 
-	tx := sign(transferCompletion)
+	tx := constant.Sign(transferCompletion)
 
 	hash, err := ckbNode.SendTransaction(context.Background(), tx)
 	if err != nil {
@@ -333,7 +333,7 @@ func sendCKbTx() {
 		fmt.Println(err)
 	}
 
-	tx := sign(transferCompletion)
+	tx := constant.Sign(transferCompletion)
 
 	hash, err := ckbNode.SendTransaction(context.Background(), tx)
 	if err != nil {

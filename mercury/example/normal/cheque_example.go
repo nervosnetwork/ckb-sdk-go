@@ -113,8 +113,8 @@ func printBalance() {
 	ckbBalanceB := getCkbBalance(chequeCellReceiverAddress)
 	udtBalanceB := getUdtBalance(chequeCellReceiverAddress, udtHash)
 
-	fmt.Printf("sender ckb balance: %s\n", getJsonStr(ckbBalanceB))
-	fmt.Printf("sender udt balance: %s\n", getJsonStr(udtBalanceB))
+	fmt.Printf("chequeCellReceiverAddress ckb balance: %s\n", getJsonStr(ckbBalanceB))
+	fmt.Printf("chequeCellReceiverAddress udt balance: %s\n", getJsonStr(udtBalanceB))
 }
 
 func getCkbBalance(addr string) *resp.GetBalanceResponse {

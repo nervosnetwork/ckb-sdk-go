@@ -22,6 +22,6 @@ type OperationResp struct {
 
 type AmountResp struct {
 	Value   string `json:"value"`
-	UdtHash string `json:"udtHash"`
+	UdtHash string `json:"udt_hash"`
 	Status  string `json:"status"`
 }

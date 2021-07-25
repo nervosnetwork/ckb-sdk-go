@@ -18,10 +18,21 @@ type MercuryApi interface {
 	RegisterAddresses(normalAddresses []string) ([]string, error)
 	GetGenericTransaction(txHash string) (*resp.GetGenericTransactionResponse, error)
 	GetGenericBlock(payload *model.GetGenericBlockPayload) (*resp.GenericBlockResponse, error)
+	QueryGenericTransactions(payload *model.QueryGenericTransactionsPayload) (*resp.QueryGenericTransactionsResponse, error)
 }
 type DefaultMercuryApi struct {
 	indexer indexer.Client
 	c       *rpc.Client
+}
+
+func (cli *DefaultMercuryApi) QueryGenericTransactions(payload *model.QueryGenericTransactionsPayload) (*resp.QueryGenericTransactionsResponse, error) {
+	var queryGenericTransactionsResponse resp.QueryGenericTransactionsResponse
+	err := cli.c.Call(&queryGenericTransactionsResponse, "query_generic_transactions", payload)
+	if err != nil {
+		return &queryGenericTransactionsResponse, err
+	}
+
+	return &queryGenericTransactionsResponse, err
 }
 
 func (cli *DefaultMercuryApi) BuildAssetCollectionTransaction(payload *model.CollectAssetPayload) (*resp.TransferCompletionResponse, error) {
