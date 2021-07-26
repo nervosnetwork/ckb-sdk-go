@@ -70,7 +70,6 @@ TODO
 11. [`build_transfer_transaction` by normal address example 3](./mercury/example/normal/secp256k1_example.go)
 12. [`build_asset_account_creation_transaction` example](./mercury/example/build_asset_account_creation_transaction_example.go)
 13. [`build_asset_collection_transaction` example](./mercury/example/build_asset_collection_transaction_example.go)
-14. [`fee_rate` example](./mercury/example/fee_rate_example.go)
 
 ### 3. ckb-indexer RPC
 
