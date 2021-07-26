@@ -66,7 +66,7 @@ TODO
 7. [`build_transfer_transaction` by action example](./mercury/example/action_example.go)
 8. [`build_transfer_transaction` by source example](./mercury/example/source_example.go)
 9. [`build_transfer_transaction` by acp example](./mercury/example/normal/acp_example.go)
-10. [`build_transfer_transaction` by cheque_cell example](./mercury/example/normal/cheque_example.go)
+10. [`build_transfer_transaction` by normal address example 2](./mercury/example/normal/cheque_example.go)
 11. [`build_transfer_transaction` by normal address example 3](./mercury/example/normal/secp256k1_example.go)
 12. [`build_asset_account_creation_transaction` example](./mercury/example/build_asset_account_creation_transaction_example.go)
 13. [`build_asset_collection_transaction` example](./mercury/example/build_asset_collection_transaction_example.go)
