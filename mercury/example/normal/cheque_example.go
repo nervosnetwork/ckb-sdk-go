@@ -1,11 +1,9 @@
 package normal
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/nervosnetwork/ckb-sdk-go/address"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/example/constant"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model"
@@ -13,6 +11,7 @@ import (
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/resp"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/source"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
+	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
 )
@@ -28,7 +27,7 @@ func TestFleeting(t *testing.T) {
 	printBalance()
 	issuingChequeCell()
 	printBalance()
-	claimChequeCell()
+	claimChequeCell(t)
 	printBalance()
 }
 
@@ -68,13 +67,16 @@ func issuingChequeCell() {
 	fmt.Printf("send hash of cheque cell transactions: %s\n", hash.String())
 }
 
-func claimChequeCell() {
+func claimChequeCell(t *testing.T) {
 	mercuryApi := constant.GetMercuryApiInstance()
 	ckbNode := constant.GetCkbNodeInstance()
+	
+	chequeAddress, err := address.GenerateChequeAddress(senderAddress, chequeCellReceiverAddress)
+	assert.Nil(t, err)
 
 	builder := model.NewTransferBuilder()
 	builder.AddUdtHash(udtHash)
-	builder.AddFromNormalAddresses([]string{getChequeAddress()})
+	builder.AddFromNormalAddresses([]string{chequeAddress})
 	builder.AddToKeyAddressItem(receiverAddress, action.Pay_by_from, 100)
 	transferPayload := builder.Build()
 	transferCompletion, err := mercuryApi.BuildTransferTransaction(transferPayload)
@@ -145,37 +147,4 @@ func getUdtBalance(addr, udtHash string) *resp.GetBalanceResponse {
 func getJsonStr(balance *resp.GetBalanceResponse) string {
 	jsonStr, _ := json.Marshal(balance)
 	return string(jsonStr)
-}
-
-func getChequeAddress() string {
-	senderScript, _ := address.Parse(senderAddress)
-	receiverScript, _ := address.Parse(chequeCellReceiverAddress)
-
-	senderScriptHash, _ := senderScript.Script.Hash()
-	receiverScriptHash, _ := receiverScript.Script.Hash()
-
-	fmt.Printf("senderScriptHash: %s\n", senderScriptHash)
-	fmt.Printf("receiverScript: %s\n", receiverScriptHash)
-
-	s1 := senderScriptHash.String()[0:42]
-	s2 := receiverScriptHash.String()[0:42]
-
-	args := bytesCombine(common.FromHex(s2), common.FromHex(s1))
-	pubKey := common.Bytes2Hex(args)
-	fmt.Printf("pubKey: %s\n", pubKey)
-
-	chequeLock := &types.Script{
-		CodeHash: types.HexToHash("0x60d5f39efce409c587cb9ea359cefdead650ca128f0bd9cb3855348f98c70d5b"),
-		HashType: types.HashTypeType,
-		Args:     common.FromHex(pubKey),
-	}
-
-	address, _ := address.Generate(address.Testnet, chequeLock)
-
-	fmt.Printf("address: %s\n", address)
-	return address
-}
-
-func bytesCombine(pBytes ...[]byte) []byte {
-	return bytes.Join(pBytes, []byte(""))
 }
