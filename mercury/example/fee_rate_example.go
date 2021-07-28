@@ -12,7 +12,6 @@ import (
 
 func TestDefaultFeeRate(t *testing.T) {
 	mercuryApi := constant.GetMercuryApiInstance()
-	ckbNode := constant.GetCkbNodeInstance()
 
 	builder := model.NewTransferBuilder()
 	builder.AddUdtHash("0xf21e7350fa9518ed3cbb008e0e8c941d7e01a12181931d5608aa366ee22228bd")
@@ -28,7 +27,7 @@ func TestDefaultFeeRate(t *testing.T) {
 
 	tx := sign(transferCompletion)
 
-	hash, err := ckbNode.SendTransaction(context.Background(), tx)
+	hash, err := mercuryApi.SendTransaction(context.Background(), tx)
 	if err != nil {
 		t.Error(err)
 	}
@@ -38,7 +37,6 @@ func TestDefaultFeeRate(t *testing.T) {
 
 func TestCustomizedFeeRate(t *testing.T) {
 	mercuryApi := constant.GetMercuryApiInstance()
-	ckbNode := constant.GetCkbNodeInstance()
 
 	builder := model.NewTransferBuilder()
 	builder.AddUdtHash("0xf21e7350fa9518ed3cbb008e0e8c941d7e01a12181931d5608aa366ee22228bd")
@@ -53,7 +51,7 @@ func TestCustomizedFeeRate(t *testing.T) {
 
 	tx := sign(transferCompletion)
 
-	hash, err := ckbNode.SendTransaction(context.Background(), tx)
+	hash, err := mercuryApi.SendTransaction(context.Background(), tx)
 	if err != nil {
 		t.Error(err)
 	}

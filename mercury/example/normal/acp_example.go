@@ -32,7 +32,7 @@ func TestFromAcp(t *testing.T) {
 
 	tx := constant.SignByKey(transaction, key)
 
-	hash, err := constant.GetCkbNodeInstance().SendTransaction(context.Background(), tx)
+	hash, err := constant.GetMercuryApiInstance().SendTransaction(context.Background(), tx)
 	if err != nil {
 		t.Error(err)
 	}
@@ -56,7 +56,7 @@ func TestToAcp(t *testing.T) {
 
 	tx := constant.Sign(transaction)
 
-	hash, err := constant.GetCkbNodeInstance().SendTransaction(context.Background(), tx)
+	hash, err := constant.GetMercuryApiInstance().SendTransaction(context.Background(), tx)
 	if err != nil {
 		t.Error(err)
 	}

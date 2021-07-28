@@ -31,7 +31,6 @@ func TestFleeting(t *testing.T) {
 
 func issuingChequeCell() {
 	mercuryApi := constant.GetMercuryApiInstance()
-	ckbNode := constant.GetCkbNodeInstance()
 
 	builder := model.NewTransferBuilder()
 	builder.AddUdtHash(udtHash)
@@ -45,14 +44,14 @@ func issuingChequeCell() {
 
 	tx := constant.Sign(transferCompletion)
 
-	hash, err := ckbNode.SendTransaction(context.Background(), tx)
+	hash, err := mercuryApi.SendTransaction(context.Background(), tx)
 	if err != nil {
 		fmt.Println(err)
 	}
 
 	var txStatus types.TransactionStatus = "pending"
 	for {
-		transaction, _ := ckbNode.GetTransaction(context.Background(), *hash)
+		transaction, _ := mercuryApi.GetTransaction(context.Background(), *hash)
 		if transaction.TxStatus.Status != txStatus {
 			break
 		}
@@ -67,7 +66,6 @@ func issuingChequeCell() {
 
 func claimChequeCell() {
 	mercuryApi := constant.GetMercuryApiInstance()
-	ckbNode := constant.GetCkbNodeInstance()
 
 	builder := model.NewTransferBuilder()
 	builder.AddUdtHash(udtHash)
@@ -81,14 +79,14 @@ func claimChequeCell() {
 
 	tx := constant.Sign(transferCompletion)
 
-	hash, err := ckbNode.SendTransaction(context.Background(), tx)
+	hash, err := mercuryApi.SendTransaction(context.Background(), tx)
 	if err != nil {
 		fmt.Println(err)
 	}
 
 	var txStatus types.TransactionStatus = "pending"
 	for {
-		transaction, _ := ckbNode.GetTransaction(context.Background(), *hash)
+		transaction, _ := mercuryApi.GetTransaction(context.Background(), *hash)
 		if transaction.TxStatus.Status != txStatus {
 			break
 		}
