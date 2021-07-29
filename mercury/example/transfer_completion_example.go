@@ -12,7 +12,6 @@ import (
 
 func TestSingleFromSingleTo(t *testing.T) {
 	mercuryApi := constant.GetMercuryApiInstance()
-	ckbNode := constant.GetCkbNodeInstance()
 
 	builder := model.NewTransferBuilder()
 	builder.AddFromKeyAddresses([]string{constant.TEST_ADDRESS1}, source.Unconstrained)
@@ -25,7 +24,7 @@ func TestSingleFromSingleTo(t *testing.T) {
 
 	tx := sign(transferCompletion)
 
-	hash, err := ckbNode.SendTransaction(context.Background(), tx)
+	hash, err := mercuryApi.SendTransaction(context.Background(), tx)
 	if err != nil {
 		t.Error(err)
 	}
@@ -35,7 +34,6 @@ func TestSingleFromSingleTo(t *testing.T) {
 
 func TestSingleFromMultiTo(t *testing.T) {
 	mercuryApi := constant.GetMercuryApiInstance()
-	ckbNode := constant.GetCkbNodeInstance()
 
 	builder := model.NewTransferBuilder()
 	builder.AddFromKeyAddresses([]string{constant.TEST_ADDRESS1}, source.Unconstrained)
@@ -49,7 +47,7 @@ func TestSingleFromMultiTo(t *testing.T) {
 
 	tx := sign(transferCompletion)
 
-	hash, err := ckbNode.SendTransaction(context.Background(), tx)
+	hash, err := mercuryApi.SendTransaction(context.Background(), tx)
 	if err != nil {
 		t.Error(err)
 	}
@@ -59,7 +57,6 @@ func TestSingleFromMultiTo(t *testing.T) {
 
 func TestMultiFromSingleTo(t *testing.T) {
 	mercuryApi := constant.GetMercuryApiInstance()
-	ckbNode := constant.GetCkbNodeInstance()
 
 	builder := model.NewTransferBuilder()
 	builder.AddFromKeyAddresses([]string{constant.TEST_ADDRESS1, constant.TEST_ADDRESS2}, source.Unconstrained)
@@ -72,7 +69,7 @@ func TestMultiFromSingleTo(t *testing.T) {
 
 	tx := sign(transferCompletion)
 
-	hash, err := ckbNode.SendTransaction(context.Background(), tx)
+	hash, err := mercuryApi.SendTransaction(context.Background(), tx)
 	if err != nil {
 		t.Error(err)
 	}
@@ -82,7 +79,6 @@ func TestMultiFromSingleTo(t *testing.T) {
 
 func TestMultiFromMultiTo(t *testing.T) {
 	mercuryApi := constant.GetMercuryApiInstance()
-	ckbNode := constant.GetCkbNodeInstance()
 
 	builder := model.NewTransferBuilder()
 	builder.AddFromKeyAddresses([]string{constant.TEST_ADDRESS1, constant.TEST_ADDRESS2}, source.Unconstrained)
@@ -96,7 +92,7 @@ func TestMultiFromMultiTo(t *testing.T) {
 
 	tx := sign(transferCompletion)
 
-	hash, err := ckbNode.SendTransaction(context.Background(), tx)
+	hash, err := mercuryApi.SendTransaction(context.Background(), tx)
 	if err != nil {
 		t.Error(err)
 	}

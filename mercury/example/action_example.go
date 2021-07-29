@@ -17,7 +17,6 @@ import (
 
 func TestTransferCompletionCkbWithPayByFrom(t *testing.T) {
 	mercuryApi := constant.GetMercuryApiInstance()
-	ckbNode := constant.GetCkbNodeInstance()
 
 	transferPayload := getTransferPayload(constant.TEST_ADDRESS0, constant.TEST_ADDRESS4, "", action.Pay_by_from)
 	transferCompletion, err := mercuryApi.BuildTransferTransaction(transferPayload)
@@ -27,7 +26,7 @@ func TestTransferCompletionCkbWithPayByFrom(t *testing.T) {
 
 	tx := sign(transferCompletion)
 
-	hash, err := ckbNode.SendTransaction(context.Background(), tx)
+	hash, err := mercuryApi.SendTransaction(context.Background(), tx)
 	if err != nil {
 		t.Error(err)
 	}
@@ -37,7 +36,6 @@ func TestTransferCompletionCkbWithPayByFrom(t *testing.T) {
 
 func TestTransferCompletionSudtWithPayByFrom(t *testing.T) {
 	mercuryApi := constant.GetMercuryApiInstance()
-	ckbNode := constant.GetCkbNodeInstance()
 
 	transferPayload := getTransferPayload(constant.TEST_ADDRESS0, constant.TEST_ADDRESS4, constant.UdtHash, action.Pay_by_from)
 	transferCompletion, err := mercuryApi.BuildTransferTransaction(transferPayload)
@@ -47,7 +45,7 @@ func TestTransferCompletionSudtWithPayByFrom(t *testing.T) {
 
 	tx := sign(transferCompletion)
 
-	hash, err := ckbNode.SendTransaction(context.Background(), tx)
+	hash, err := mercuryApi.SendTransaction(context.Background(), tx)
 	if err != nil {
 		t.Error(err)
 	}
@@ -68,7 +66,6 @@ func TestTransferCompletionCkbWithLendByFrom(t *testing.T) {
 
 func TestTransferCompletionSudtWithLendByFrom(t *testing.T) {
 	mercuryApi := constant.GetMercuryApiInstance()
-	ckbNode := constant.GetCkbNodeInstance()
 
 	transferPayload := getTransferPayload(constant.TEST_ADDRESS1, constant.TEST_ADDRESS2, constant.UdtHash, action.Lend_by_from)
 	transferCompletion, err := mercuryApi.BuildTransferTransaction(transferPayload)
@@ -78,7 +75,7 @@ func TestTransferCompletionSudtWithLendByFrom(t *testing.T) {
 
 	tx := sign(transferCompletion)
 
-	hash, err := ckbNode.SendTransaction(context.Background(), tx)
+	hash, err := mercuryApi.SendTransaction(context.Background(), tx)
 	if err != nil {
 		t.Error(err)
 	}
@@ -98,7 +95,6 @@ func TestTransferCompletionCkbWithPayByTo(t *testing.T) {
 
 func TestTransferCompletionSudtWithPayByTo(t *testing.T) {
 	mercuryApi := constant.GetMercuryApiInstance()
-	ckbNode := constant.GetCkbNodeInstance()
 
 	transferPayload := getTransferPayload(constant.TEST_ADDRESS1, constant.QUERY_TRANSACTION_ADDRESS, constant.UdtHash, action.Pay_by_to)
 	transferCompletion, err := mercuryApi.BuildTransferTransaction(transferPayload)
@@ -108,7 +104,7 @@ func TestTransferCompletionSudtWithPayByTo(t *testing.T) {
 
 	tx := sign(transferCompletion)
 
-	hash, err := ckbNode.SendTransaction(context.Background(), tx)
+	hash, err := mercuryApi.SendTransaction(context.Background(), tx)
 	if err != nil {
 		t.Error(err)
 	}

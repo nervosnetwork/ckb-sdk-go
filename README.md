@@ -43,6 +43,8 @@ go get -v github.com/nervosnetwork/ckb-sdk-go
 
 ## SDK RPC
 
+[How to use the RPC interface](./mercury/example/use_of_mercury_and_ckb_and_indexer_example.go)
+
 ### 1. CKB RPC
 
 [CKB RPC doc](https://github.com/nervosnetwork/ckb/blob/develop/rpc/README.md)
