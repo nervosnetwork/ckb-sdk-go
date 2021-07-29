@@ -32,7 +32,7 @@ func (walletPayload *createAssetAccountPayloadBuilder) Build() *CreateAssetAccou
 	}
 }
 
-func NewCreateWalletPayloadBuilder() *createAssetAccountPayloadBuilder {
+func NewCreateAssetAccountPayloadBuilder() *createAssetAccountPayloadBuilder {
 	// default fee rate
 	return &createAssetAccountPayloadBuilder{
 		FeeRate: 1000,
