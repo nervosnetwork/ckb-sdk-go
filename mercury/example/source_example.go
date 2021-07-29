@@ -126,6 +126,7 @@ func getCkbBalance(addr string) *resp.GetBalanceResponse {
 
 func getUdtBalance(addr, udtHash string) *resp.GetBalanceResponse {
 	builder := model.NewGetBalancePayloadBuilder()
+
 	builder.AddAddress(addr)
 	builder.AddUdtHash(udtHash)
 	payload, err := builder.Build()
