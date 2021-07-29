@@ -37,12 +37,12 @@ func TestFromKeyAddressAndToKeyAddressWithCkb(t *testing.T) {
 
 	tx := constant.Sign(transferCompletion)
 
-	hash, err := constant.GetCkbNodeInstance().SendTransaction(context.Background(), tx)
+	hash, err := constant.GetMercuryApiInstance().SendTransaction(context.Background(), tx)
 	if err != nil {
 		t.Error(err)
 	}
 
-	waitTx(constant.GetCkbNodeInstance(), hash)
+	waitTx(constant.GetMercuryApiInstance(), hash)
 	printCexCkbBalance()
 	fmt.Println(hash)
 
@@ -68,12 +68,12 @@ func TestFromNormalAddressesWithCkb(t *testing.T) {
 
 	tx := constant.Sign(transferCompletion)
 
-	hash, err := constant.GetCkbNodeInstance().SendTransaction(context.Background(), tx)
+	hash, err := constant.GetMercuryApiInstance().SendTransaction(context.Background(), tx)
 	if err != nil {
 		t.Error(err)
 	}
 
-	waitTx(constant.GetCkbNodeInstance(), hash)
+	waitTx(constant.GetMercuryApiInstance(), hash)
 	printCexCkbBalance()
 	fmt.Println(hash)
 }
@@ -98,12 +98,12 @@ func TestToNormalAddressWithCkb(t *testing.T) {
 
 	tx := constant.Sign(transferCompletion)
 
-	hash, err := constant.GetCkbNodeInstance().SendTransaction(context.Background(), tx)
+	hash, err := constant.GetMercuryApiInstance().SendTransaction(context.Background(), tx)
 	if err != nil {
 		t.Error(err)
 	}
 
-	waitTx(constant.GetCkbNodeInstance(), hash)
+	waitTx(constant.GetMercuryApiInstance(), hash)
 	printCexCkbBalance()
 	fmt.Println(hash)
 }
@@ -128,12 +128,12 @@ func TestFromNormalAddressesAndToNormalAddressWithCkb(t *testing.T) {
 
 	tx := constant.Sign(transferCompletion)
 
-	hash, err := constant.GetCkbNodeInstance().SendTransaction(context.Background(), tx)
+	hash, err := constant.GetMercuryApiInstance().SendTransaction(context.Background(), tx)
 	if err != nil {
 		t.Error(err)
 	}
 
-	waitTx(constant.GetCkbNodeInstance(), hash)
+	waitTx(constant.GetMercuryApiInstance(), hash)
 	printCexCkbBalance()
 	fmt.Println(hash)
 }
@@ -164,12 +164,12 @@ func TestFromKeyAddressAndToKeyAddressWithUdt(t *testing.T) {
 
 	tx := constant.Sign(transferCompletion)
 
-	hash, err := constant.GetCkbNodeInstance().SendTransaction(context.Background(), tx)
+	hash, err := constant.GetMercuryApiInstance().SendTransaction(context.Background(), tx)
 	if err != nil {
 		t.Error(err)
 	}
 
-	waitTx(constant.GetCkbNodeInstance(), hash)
+	waitTx(constant.GetMercuryApiInstance(), hash)
 	printCexUdtBalance()
 	fmt.Println(hash)
 }
@@ -200,12 +200,12 @@ func TestFromNormalAddressesWithUdt(t *testing.T) {
 
 	tx := constant.Sign(transferCompletion)
 
-	hash, err := constant.GetCkbNodeInstance().SendTransaction(context.Background(), tx)
+	hash, err := constant.GetMercuryApiInstance().SendTransaction(context.Background(), tx)
 	if err != nil {
 		t.Error(err)
 	}
 
-	waitTx(constant.GetCkbNodeInstance(), hash)
+	waitTx(constant.GetMercuryApiInstance(), hash)
 	printCexUdtBalance()
 	fmt.Println(hash)
 }
@@ -237,12 +237,12 @@ func TestToNormalAddressWithUdt(t *testing.T) {
 
 	tx := constant.Sign(transferCompletion)
 
-	hash, err := constant.GetCkbNodeInstance().SendTransaction(context.Background(), tx)
+	hash, err := constant.GetMercuryApiInstance().SendTransaction(context.Background(), tx)
 	if err != nil {
 		t.Error(err)
 	}
 
-	waitTx(constant.GetCkbNodeInstance(), hash)
+	waitTx(constant.GetMercuryApiInstance(), hash)
 	printCexUdtBalance()
 	printreceiverUdtBalance()
 	fmt.Println(hash)
@@ -274,19 +274,18 @@ func TestFromNormalAddressesAndToNormalAddressWithUdt(t *testing.T) {
 
 	tx := constant.Sign(transferCompletion)
 
-	hash, err := constant.GetCkbNodeInstance().SendTransaction(context.Background(), tx)
+	hash, err := constant.GetMercuryApiInstance().SendTransaction(context.Background(), tx)
 	if err != nil {
 		t.Error(err)
 	}
 
-	waitTx(constant.GetCkbNodeInstance(), hash)
+	waitTx(constant.GetMercuryApiInstance(), hash)
 	printCexUdtBalance()
 	fmt.Println(hash)
 }
 
 func sendLendByFrom() {
 	mercuryApi := constant.GetMercuryApiInstance()
-	ckbNode := constant.GetCkbNodeInstance()
 
 	builder := model.NewTransferBuilder()
 	builder.AddUdtHash(udtHash)
@@ -303,14 +302,14 @@ func sendLendByFrom() {
 
 	tx := constant.Sign(transferCompletion)
 
-	hash, err := ckbNode.SendTransaction(context.Background(), tx)
+	hash, err := mercuryApi.SendTransaction(context.Background(), tx)
 	if err != nil {
 		fmt.Println(err)
 	}
 
 	var txStatus types.TransactionStatus = "pending"
 	for {
-		transaction, _ := ckbNode.GetTransaction(context.Background(), *hash)
+		transaction, _ := mercuryApi.GetTransaction(context.Background(), *hash)
 		if transaction.TxStatus.Status != txStatus {
 			break
 		}
@@ -325,7 +324,6 @@ func sendLendByFrom() {
 
 func sendCKbTx() {
 	mercuryApi := constant.GetMercuryApiInstance()
-	ckbNode := constant.GetCkbNodeInstance()
 
 	transferPayload := getTransferPayload(constant.TEST_ADDRESS0, constant.CEX_ADDRESS, "", action.Pay_by_from)
 	transferCompletion, err := mercuryApi.BuildTransferTransaction(transferPayload)
@@ -335,12 +333,12 @@ func sendCKbTx() {
 
 	tx := constant.Sign(transferCompletion)
 
-	hash, err := ckbNode.SendTransaction(context.Background(), tx)
+	hash, err := mercuryApi.SendTransaction(context.Background(), tx)
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	waitTx(ckbNode, hash)
+	waitTx(mercuryApi, hash)
 	fmt.Printf("send hash of transactions: %s\n", hash.String())
 }
 

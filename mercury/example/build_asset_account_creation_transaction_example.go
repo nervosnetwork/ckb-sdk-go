@@ -12,7 +12,6 @@ import (
 
 func TestAssetAccountCreationTransaction(t *testing.T) {
 	mercuryApi := constant.GetMercuryApiInstance()
-	ckbNode := constant.GetCkbNodeInstance()
 
 	builder := model.NewCreateWalletPayloadBuilder()
 	builder.AddKeyAddress(constant.TEST_ADDRESS3)
@@ -31,7 +30,7 @@ func TestAssetAccountCreationTransaction(t *testing.T) {
 		err = transaction.SingleSignTransaction(tx, group.Group, group.WitnessArgs, key)
 	}
 
-	hash, err := ckbNode.SendTransaction(context.Background(), tx)
+	hash, err := mercuryApi.SendTransaction(context.Background(), tx)
 	if err != nil {
 		t.Error(err)
 	}
