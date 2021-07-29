@@ -14,15 +14,10 @@ func TestQueryGenericTransactionsWithCkb(t *testing.T) {
 	builder := model.NewQueryGenericTransactionsPayloadBuilder()
 	builder.AddAddress(constant.QUERY_TRANSACTION_ADDRESS)
 
-	payload, err := builder.Build()
-	if err != nil {
-		t.Error(err)
-	}
-
-	marshal, _ := json.Marshal(payload)
+	marshal, _ := json.Marshal(builder.Build())
 	fmt.Println(string(marshal))
 
-	transactions, err := constant.GetMercuryApiInstance().QueryGenericTransactions(payload)
+	transactions, err := constant.GetMercuryApiInstance().QueryGenericTransactions(builder.Build())
 	if err != nil {
 		t.Error(err)
 	}
@@ -40,17 +35,12 @@ func TestQueryGenericTransactionsWithCkb(t *testing.T) {
 func TestQueryGenericTransactionsWithUdt(t *testing.T) {
 	builder := model.NewQueryGenericTransactionsPayloadBuilder()
 	builder.AddAddress(constant.QUERY_TRANSACTION_ADDRESS)
-	builder.AddUdtHash(constant.UdtHash)
+	builder.AddUdtHash(constant.UDT_HASH)
 
-	payload, err := builder.Build()
-	if err != nil {
-		t.Error(err)
-	}
-
-	marshal, _ := json.Marshal(payload)
+	marshal, _ := json.Marshal(builder.Build())
 	fmt.Println(string(marshal))
 
-	transactions, err := constant.GetMercuryApiInstance().QueryGenericTransactions(payload)
+	transactions, err := constant.GetMercuryApiInstance().QueryGenericTransactions(builder.Build())
 	if err != nil {
 		t.Error(err)
 	}
@@ -70,15 +60,10 @@ func TestQueryGenericTransactionsWithAll(t *testing.T) {
 	builder.AddAddress(constant.QUERY_TRANSACTION_ADDRESS)
 	builder.AllTransactionType()
 
-	payload, err := builder.Build()
-	if err != nil {
-		t.Error(err)
-	}
-
-	marshal, _ := json.Marshal(payload)
+	marshal, _ := json.Marshal(builder.Build())
 	fmt.Println(string(marshal))
 
-	transactions, err := constant.GetMercuryApiInstance().QueryGenericTransactions(payload)
+	transactions, err := constant.GetMercuryApiInstance().QueryGenericTransactions(builder.Build())
 	if err != nil {
 		t.Error(err)
 	}
@@ -98,18 +83,13 @@ func TestQueryGenericTransactionsWithChequeAddress(t *testing.T) {
 	assert.Nil(t, err)
 
 	builder := model.NewQueryGenericTransactionsPayloadBuilder()
-	builder.AddAddress(chequeAddress)
+	builder.AddNormalAddress(&model.NormalAddress{chequeAddress})
 	builder.AllTransactionType()
 
-	payload, err := builder.Build()
-	if err != nil {
-		t.Error(err)
-	}
-
-	marshal, _ := json.Marshal(payload)
+	marshal, _ := json.Marshal(builder.Build())
 	fmt.Println(string(marshal))
 
-	transactions, err := constant.GetMercuryApiInstance().QueryGenericTransactions(payload)
+	transactions, err := constant.GetMercuryApiInstance().QueryGenericTransactions(builder.Build())
 	if err != nil {
 		t.Error(err)
 	}
@@ -129,18 +109,13 @@ func TestQueryGenericTransactionsWithAcpAddress(t *testing.T) {
 	assert.Nil(t, err)
 
 	builder := model.NewQueryGenericTransactionsPayloadBuilder()
-	builder.AddAddress(acpAddress)
+	builder.AddNormalAddress(&model.NormalAddress{acpAddress})
 	builder.AllTransactionType()
 
-	payload, err := builder.Build()
-	if err != nil {
-		t.Error(err)
-	}
-
-	marshal, _ := json.Marshal(payload)
+	marshal, _ := json.Marshal(builder.Build())
 	fmt.Println(string(marshal))
 
-	transactions, err := constant.GetMercuryApiInstance().QueryGenericTransactions(payload)
+	transactions, err := constant.GetMercuryApiInstance().QueryGenericTransactions(builder.Build())
 	if err != nil {
 		t.Error(err)
 	}
@@ -164,15 +139,10 @@ func TestQueryGenericTransactionsWithFromBlock(t *testing.T) {
 	builder.AllTransactionType()
 	builder.AddFromBlock(2224987)
 
-	payload, err := builder.Build()
-	if err != nil {
-		t.Error(err)
-	}
-
-	marshal, _ := json.Marshal(payload)
+	marshal, _ := json.Marshal(builder.Build())
 	fmt.Println(string(marshal))
 
-	transactions, err := constant.GetMercuryApiInstance().QueryGenericTransactions(payload)
+	transactions, err := constant.GetMercuryApiInstance().QueryGenericTransactions(builder.Build())
 	if err != nil {
 		t.Error(err)
 	}
@@ -196,15 +166,10 @@ func TestQueryGenericTransactionsWithToBlock(t *testing.T) {
 	builder.AllTransactionType()
 	builder.AddToBlock(2224987)
 
-	payload, err := builder.Build()
-	if err != nil {
-		t.Error(err)
-	}
-
-	marshal, _ := json.Marshal(payload)
+	marshal, _ := json.Marshal(builder.Build())
 	fmt.Println(string(marshal))
 
-	transactions, err := constant.GetMercuryApiInstance().QueryGenericTransactions(payload)
+	transactions, err := constant.GetMercuryApiInstance().QueryGenericTransactions(builder.Build())
 	if err != nil {
 		t.Error(err)
 	}
@@ -229,15 +194,10 @@ func TestQueryGenericTransactionsWithFromBlockAndToBlock(t *testing.T) {
 	builder.AddFromBlock(2224993)
 	builder.AddToBlock(2225023)
 
-	payload, err := builder.Build()
-	if err != nil {
-		t.Error(err)
-	}
-
-	marshal, _ := json.Marshal(payload)
+	marshal, _ := json.Marshal(builder.Build())
 	fmt.Println(string(marshal))
 
-	transactions, err := constant.GetMercuryApiInstance().QueryGenericTransactions(payload)
+	transactions, err := constant.GetMercuryApiInstance().QueryGenericTransactions(builder.Build())
 	if err != nil {
 		t.Error(err)
 	}
@@ -262,15 +222,10 @@ func TestQueryGenericTransactionsWithLimit(t *testing.T) {
 	// default limit 50
 	builder.AddLimit(2)
 
-	payload, err := builder.Build()
-	if err != nil {
-		t.Error(err)
-	}
-
-	marshal, _ := json.Marshal(payload)
+	marshal, _ := json.Marshal(builder.Build())
 	fmt.Println(string(marshal))
 
-	transactions, err := constant.GetMercuryApiInstance().QueryGenericTransactions(payload)
+	transactions, err := constant.GetMercuryApiInstance().QueryGenericTransactions(builder.Build())
 	if err != nil {
 		t.Error(err)
 	}
@@ -292,15 +247,10 @@ func TestQueryGenericTransactionsWithOrder(t *testing.T) {
 	// default order desc
 	builder.AddOrder("asc")
 
-	payload, err := builder.Build()
-	if err != nil {
-		t.Error(err)
-	}
-
-	marshal, _ := json.Marshal(payload)
+	marshal, _ := json.Marshal(builder.Build())
 	fmt.Println(string(marshal))
 
-	transactions, err := constant.GetMercuryApiInstance().QueryGenericTransactions(payload)
+	transactions, err := constant.GetMercuryApiInstance().QueryGenericTransactions(builder.Build())
 	if err != nil {
 		t.Error(err)
 	}
@@ -323,15 +273,10 @@ func TestQueryGenericTransactionsWithOffset(t *testing.T) {
 	// Offset start from 0
 	builder.AddOffset(1)
 
-	payload, err := builder.Build()
-	if err != nil {
-		t.Error(err)
-	}
-
-	marshal, _ := json.Marshal(payload)
+	marshal, _ := json.Marshal(builder.Build())
 	fmt.Println(string(marshal))
 
-	transactions, err := constant.GetMercuryApiInstance().QueryGenericTransactions(payload)
+	transactions, err := constant.GetMercuryApiInstance().QueryGenericTransactions(builder.Build())
 	if err != nil {
 		t.Error(err)
 	}

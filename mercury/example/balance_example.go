@@ -3,19 +3,18 @@ package test
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/nervosnetwork/ckb-sdk-go/address"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/example/constant"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 func TestGetBalance(t *testing.T) {
 	builder := model.NewGetBalancePayloadBuilder()
-	builder.AddAddress(constant.TEST_ADDRESS0)
-	payload, err := builder.Build()
-	if err != nil {
-		panic(err)
-	}
-	balance, _ := constant.GetMercuryApiInstance().GetBalance(payload)
+	builder.AddAddress(constant.TEST_ADDRESS4)
+
+	balance, _ := constant.GetMercuryApiInstance().GetBalance(builder.Build())
 
 	marshal, _ := json.Marshal(balance)
 	fmt.Println(string(marshal))
@@ -23,14 +22,10 @@ func TestGetBalance(t *testing.T) {
 
 func TestGetSudtBalance(t *testing.T) {
 	builder := model.NewGetBalancePayloadBuilder()
-	builder.AddAddress(constant.TEST_ADDRESS0)
-	builder.AddUdtHash("0xf21e7350fa9518ed3cbb008e0e8c941d7e01a12181931d5608aa366ee22228bd")
+	builder.AddAddress(constant.TEST_ADDRESS4)
+	builder.AddUdtHash(constant.UDT_HASH)
 
-	payload, err := builder.Build()
-	if err != nil {
-		panic(err)
-	}
-	balance, _ := constant.GetMercuryApiInstance().GetBalance(payload)
+	balance, _ := constant.GetMercuryApiInstance().GetBalance(builder.Build())
 
 	marshal, _ := json.Marshal(balance)
 	fmt.Println(string(marshal))
@@ -38,16 +33,38 @@ func TestGetSudtBalance(t *testing.T) {
 
 func TestAllBalance(t *testing.T) {
 	builder := model.NewGetBalancePayloadBuilder()
-	builder.AddAddress(constant.TEST_ADDRESS0)
+	builder.AddAddress(constant.TEST_ADDRESS4)
 	builder.AllBalance()
 
-	payload, err := builder.Build()
-	if err != nil {
-		panic(err)
-	}
-	balance, _ := constant.GetMercuryApiInstance().GetBalance(payload)
+	balance, _ := constant.GetMercuryApiInstance().GetBalance(builder.Build())
 
 	marshal, _ := json.Marshal(balance)
 	fmt.Println(string(marshal))
+	fmt.Println(len(balance.Balances))
 
+}
+
+func TestNormalAddressWithAcpAddress(t *testing.T) {
+	acpAddress, err := address.GenerateAcpAddress(constant.TEST_ADDRESS4)
+	assert.Nil(t, err)
+
+	builder := model.NewGetBalancePayloadBuilder()
+	builder.AddNormalAddressAddress(&model.NormalAddress{acpAddress})
+	builder.AddUdtHash(constant.UDT_HASH)
+
+	balance, _ := constant.GetMercuryApiInstance().GetBalance(builder.Build())
+
+	marshal, _ := json.Marshal(balance)
+	fmt.Println(string(marshal))
+}
+
+func TestNormalAddressWithSecp256k1Address(t *testing.T) {
+	builder := model.NewGetBalancePayloadBuilder()
+	builder.AddNormalAddressAddress(&model.NormalAddress{constant.TEST_ADDRESS4})
+	builder.AddUdtHash(constant.UDT_HASH)
+
+	balance, _ := constant.GetMercuryApiInstance().GetBalance(builder.Build())
+
+	marshal, _ := json.Marshal(balance)
+	fmt.Println(string(marshal))
 }

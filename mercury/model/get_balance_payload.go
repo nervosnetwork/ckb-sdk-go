@@ -1,11 +1,5 @@
 package model
 
-import (
-	"encoding/hex"
-	"github.com/nervosnetwork/ckb-sdk-go/address"
-	"github.com/nervosnetwork/ckb-sdk-go/crypto/bech32"
-)
-
 type GetBalancePayload struct {
 	UdtHashes []interface{} `json:"udt_hashes"`
 	BlockNum  uint          `json:"block_num,omitempty"`
@@ -15,13 +9,14 @@ type GetBalancePayload struct {
 type getBalancePayloadBuilder struct {
 	UdtHashes []interface{}
 	BlockNum  uint
-	Address   string
+	Address   QueryAddress
 }
 
 type QueryAddress interface {
 	GetAddress() string
 }
 
+// Only addresses in secp256k1 format are available, and the balance contains the balance of addresses in other formats.
 type KeyAddress struct {
 	KeyAddress string
 }
@@ -30,6 +25,8 @@ func (addr *KeyAddress) GetAddress() string {
 	return addr.KeyAddress
 }
 
+// Only the balance of the address in the corresponding format is available.
+// For example, the secp256k1 address will only query the balance of the secp256k1 format, and will not contain the balance of the remaining formats.
 type NormalAddress struct {
 	NormalAddress string
 }
@@ -50,6 +47,14 @@ func (builder *getBalancePayloadBuilder) AddBlockNum(blockNum uint) {
 }
 
 func (builder *getBalancePayloadBuilder) AddAddress(addr string) {
+	builder.Address = &KeyAddress{KeyAddress: addr}
+}
+
+func (builder *getBalancePayloadBuilder) AddKeyAddress(addr *KeyAddress) {
+	builder.Address = addr
+}
+
+func (builder *getBalancePayloadBuilder) AddNormalAddressAddress(addr *NormalAddress) {
 	builder.Address = addr
 }
 
@@ -58,31 +63,13 @@ func (builder *getBalancePayloadBuilder) AllBalance() {
 	builder.UdtHashes = make([]interface{}, 0)
 }
 
-func (builder *getBalancePayloadBuilder) Build() (*GetBalancePayload, error) {
-	address, err := getQueryAddressByAddress(builder.Address)
+func (builder *getBalancePayloadBuilder) Build() *GetBalancePayload {
+
 	return &GetBalancePayload{
 		builder.UdtHashes,
 		builder.BlockNum,
-		address,
-	}, err
-}
-
-func getQueryAddressByAddress(addr string) (QueryAddress, error) {
-	_, decoded, err := bech32.Decode(addr)
-	if err != nil {
-		return nil, err
+		builder.Address,
 	}
-	data, err := bech32.ConvertBits(decoded, 5, 8, false)
-	if err != nil {
-		return nil, err
-	}
-	payload := hex.EncodeToString(data)
-	if address.CodeHashIndexSingleSig == payload[2:4] {
-		return &KeyAddress{addr}, nil
-	} else {
-		return &NormalAddress{addr}, nil
-	}
-
 }
 
 func NewGetBalancePayloadBuilder() *getBalancePayloadBuilder {

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/example/constant"
+	"github.com/nervosnetwork/ckb-sdk-go/mercury/example/utils"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/action"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/source"
@@ -21,8 +22,8 @@ func TestSingleFromSingleTo(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-
-	tx := sign(transferCompletion)
+	
+	tx := utils.Sign(transferCompletion)
 
 	hash, err := mercuryApi.SendTransaction(context.Background(), tx)
 	if err != nil {
@@ -45,7 +46,7 @@ func TestSingleFromMultiTo(t *testing.T) {
 		t.Error(err)
 	}
 
-	tx := sign(transferCompletion)
+	tx := utils.Sign(transferCompletion)
 
 	hash, err := mercuryApi.SendTransaction(context.Background(), tx)
 	if err != nil {
@@ -67,7 +68,7 @@ func TestMultiFromSingleTo(t *testing.T) {
 		t.Error(err)
 	}
 
-	tx := sign(transferCompletion)
+	tx := utils.Sign(transferCompletion)
 
 	hash, err := mercuryApi.SendTransaction(context.Background(), tx)
 	if err != nil {
@@ -90,7 +91,7 @@ func TestMultiFromMultiTo(t *testing.T) {
 		t.Error(err)
 	}
 
-	tx := sign(transferCompletion)
+	tx := utils.Sign(transferCompletion)
 
 	hash, err := mercuryApi.SendTransaction(context.Background(), tx)
 	if err != nil {

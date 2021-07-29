@@ -4,14 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/nervosnetwork/ckb-sdk-go/crypto/secp256k1"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/example/constant"
+	"github.com/nervosnetwork/ckb-sdk-go/mercury/example/utils"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/action"
-	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/resp"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/source"
-	"github.com/nervosnetwork/ckb-sdk-go/transaction"
-	"github.com/nervosnetwork/ckb-sdk-go/types"
 	"testing"
 )
 
@@ -24,7 +21,7 @@ func TestTransferCompletionCkbWithPayByFrom(t *testing.T) {
 		t.Error(err)
 	}
 
-	tx := sign(transferCompletion)
+	tx := utils.Sign(transferCompletion)
 
 	hash, err := mercuryApi.SendTransaction(context.Background(), tx)
 	if err != nil {
@@ -37,13 +34,13 @@ func TestTransferCompletionCkbWithPayByFrom(t *testing.T) {
 func TestTransferCompletionSudtWithPayByFrom(t *testing.T) {
 	mercuryApi := constant.GetMercuryApiInstance()
 
-	transferPayload := getTransferPayload(constant.TEST_ADDRESS0, constant.TEST_ADDRESS4, constant.UdtHash, action.Pay_by_from)
+	transferPayload := getTransferPayload(constant.TEST_ADDRESS0, constant.TEST_ADDRESS4, constant.UDT_HASH, action.Pay_by_from)
 	transferCompletion, err := mercuryApi.BuildTransferTransaction(transferPayload)
 	if err != nil {
 		t.Error(err)
 	}
 
-	tx := sign(transferCompletion)
+	tx := utils.Sign(transferCompletion)
 
 	hash, err := mercuryApi.SendTransaction(context.Background(), tx)
 	if err != nil {
@@ -67,13 +64,13 @@ func TestTransferCompletionCkbWithLendByFrom(t *testing.T) {
 func TestTransferCompletionSudtWithLendByFrom(t *testing.T) {
 	mercuryApi := constant.GetMercuryApiInstance()
 
-	transferPayload := getTransferPayload(constant.TEST_ADDRESS1, constant.TEST_ADDRESS2, constant.UdtHash, action.Lend_by_from)
+	transferPayload := getTransferPayload(constant.TEST_ADDRESS1, constant.TEST_ADDRESS2, constant.UDT_HASH, action.Lend_by_from)
 	transferCompletion, err := mercuryApi.BuildTransferTransaction(transferPayload)
 	if err != nil {
 		t.Error(err)
 	}
 
-	tx := sign(transferCompletion)
+	tx := utils.Sign(transferCompletion)
 
 	hash, err := mercuryApi.SendTransaction(context.Background(), tx)
 	if err != nil {
@@ -96,13 +93,13 @@ func TestTransferCompletionCkbWithPayByTo(t *testing.T) {
 func TestTransferCompletionSudtWithPayByTo(t *testing.T) {
 	mercuryApi := constant.GetMercuryApiInstance()
 
-	transferPayload := getTransferPayload(constant.TEST_ADDRESS1, constant.QUERY_TRANSACTION_ADDRESS, constant.UdtHash, action.Pay_by_to)
+	transferPayload := getTransferPayload(constant.TEST_ADDRESS1, constant.QUERY_TRANSACTION_ADDRESS, constant.UDT_HASH, action.Pay_by_to)
 	transferCompletion, err := mercuryApi.BuildTransferTransaction(transferPayload)
 	if err != nil {
 		t.Error(err)
 	}
 
-	tx := sign(transferCompletion)
+	tx := utils.Sign(transferCompletion)
 
 	hash, err := mercuryApi.SendTransaction(context.Background(), tx)
 	if err != nil {
@@ -122,17 +119,4 @@ func getTransferPayload(from, to, udtHash, action string) *model.TransferPayload
 	fmt.Println(string(marshal))
 
 	return builder.Build()
-}
-
-func sign(transferCompletion *resp.TransferCompletionResponse) *types.Transaction {
-	transferCompletion.GetScriptGroup()
-	tx := transferCompletion.GetTransaction()
-	scriptGroups := transferCompletion.GetScriptGroup()
-	for _, group := range scriptGroups {
-		key, _ := secp256k1.HexToKey(constant.GetKey(group.PubKey))
-		if err := transaction.SingleSignTransaction(tx, group.Group, group.WitnessArgs, key); err != nil {
-			panic(err)
-		}
-	}
-	return tx
 }
