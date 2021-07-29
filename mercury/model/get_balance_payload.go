@@ -46,15 +46,11 @@ func (builder *getBalancePayloadBuilder) AddBlockNum(blockNum uint) {
 	builder.BlockNum = blockNum
 }
 
-func (builder *getBalancePayloadBuilder) AddAddress(addr string) {
-	builder.Address = &KeyAddress{KeyAddress: addr}
-}
-
 func (builder *getBalancePayloadBuilder) AddKeyAddress(addr *KeyAddress) {
 	builder.Address = addr
 }
 
-func (builder *getBalancePayloadBuilder) AddNormalAddressAddress(addr *NormalAddress) {
+func (builder *getBalancePayloadBuilder) AddNormalAddress(addr *NormalAddress) {
 	builder.Address = addr
 }
 

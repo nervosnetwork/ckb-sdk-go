@@ -114,7 +114,7 @@ func printBalance() {
 
 func getCkbBalance(addr string) *resp.GetBalanceResponse {
 	builder := model.NewGetBalancePayloadBuilder()
-	builder.AddAddress(addr)
+	builder.AddKeyAddress(&model.KeyAddress{addr})
 
 	balance, _ := constant.GetMercuryApiInstance().GetBalance(builder.Build())
 
@@ -124,7 +124,7 @@ func getCkbBalance(addr string) *resp.GetBalanceResponse {
 func getUdtBalance(addr, udtHash string) *resp.GetBalanceResponse {
 	builder := model.NewGetBalancePayloadBuilder()
 
-	builder.AddAddress(addr)
+	builder.AddKeyAddress(&model.KeyAddress{addr})
 	builder.AddUdtHash(udtHash)
 
 	balance, _ := constant.GetMercuryApiInstance().GetBalance(builder.Build())

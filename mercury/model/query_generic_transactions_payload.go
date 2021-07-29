@@ -20,10 +20,6 @@ type queryGenericTransactionsPayloadBuilder struct {
 	Order     string
 }
 
-func (builder *queryGenericTransactionsPayloadBuilder) AddAddress(addr string) {
-	builder.Address = &KeyAddress{addr}
-}
-
 func (builder *queryGenericTransactionsPayloadBuilder) AddKeyAddress(addr *KeyAddress) {
 	builder.Address = addr
 }

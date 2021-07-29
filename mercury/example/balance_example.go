@@ -12,7 +12,7 @@ import (
 
 func TestGetBalance(t *testing.T) {
 	builder := model.NewGetBalancePayloadBuilder()
-	builder.AddAddress(constant.TEST_ADDRESS4)
+	builder.AddKeyAddress(&model.KeyAddress{constant.TEST_ADDRESS4})
 
 	balance, _ := constant.GetMercuryApiInstance().GetBalance(builder.Build())
 
@@ -22,7 +22,7 @@ func TestGetBalance(t *testing.T) {
 
 func TestGetSudtBalance(t *testing.T) {
 	builder := model.NewGetBalancePayloadBuilder()
-	builder.AddAddress(constant.TEST_ADDRESS4)
+	builder.AddKeyAddress(&model.KeyAddress{constant.TEST_ADDRESS4})
 	builder.AddUdtHash(constant.UDT_HASH)
 
 	balance, _ := constant.GetMercuryApiInstance().GetBalance(builder.Build())
@@ -33,7 +33,7 @@ func TestGetSudtBalance(t *testing.T) {
 
 func TestAllBalance(t *testing.T) {
 	builder := model.NewGetBalancePayloadBuilder()
-	builder.AddAddress(constant.TEST_ADDRESS4)
+	builder.AddKeyAddress(&model.KeyAddress{constant.TEST_ADDRESS4})
 	builder.AllBalance()
 
 	balance, _ := constant.GetMercuryApiInstance().GetBalance(builder.Build())
@@ -49,7 +49,7 @@ func TestNormalAddressWithAcpAddress(t *testing.T) {
 	assert.Nil(t, err)
 
 	builder := model.NewGetBalancePayloadBuilder()
-	builder.AddNormalAddressAddress(&model.NormalAddress{acpAddress})
+	builder.AddNormalAddress(&model.NormalAddress{acpAddress})
 	builder.AddUdtHash(constant.UDT_HASH)
 
 	balance, _ := constant.GetMercuryApiInstance().GetBalance(builder.Build())
@@ -60,7 +60,7 @@ func TestNormalAddressWithAcpAddress(t *testing.T) {
 
 func TestNormalAddressWithSecp256k1Address(t *testing.T) {
 	builder := model.NewGetBalancePayloadBuilder()
-	builder.AddNormalAddressAddress(&model.NormalAddress{constant.TEST_ADDRESS4})
+	builder.AddNormalAddress(&model.NormalAddress{constant.TEST_ADDRESS4})
 	builder.AddUdtHash(constant.UDT_HASH)
 
 	balance, _ := constant.GetMercuryApiInstance().GetBalance(builder.Build())
