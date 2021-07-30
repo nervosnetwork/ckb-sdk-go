@@ -11,7 +11,7 @@ type QueryGenericTransactionsPayload struct {
 }
 
 type queryGenericTransactionsPayloadBuilder struct {
-	Address   string
+	Address   QueryAddress
 	UdtHashes []interface{}
 	FromBlock uint64
 	ToBlock   uint64
@@ -20,7 +20,11 @@ type queryGenericTransactionsPayloadBuilder struct {
 	Order     string
 }
 
-func (builder *queryGenericTransactionsPayloadBuilder) AddAddress(addr string) {
+func (builder *queryGenericTransactionsPayloadBuilder) AddKeyAddress(addr *KeyAddress) {
+	builder.Address = addr
+}
+
+func (builder *queryGenericTransactionsPayloadBuilder) AddNormalAddress(addr *NormalAddress) {
 	builder.Address = addr
 }
 
@@ -56,20 +60,16 @@ func (builder *queryGenericTransactionsPayloadBuilder) AddOrder(order string) {
 	builder.Order = order
 }
 
-func (builder *queryGenericTransactionsPayloadBuilder) Build() (*QueryGenericTransactionsPayload, error) {
-	address, err := getQueryAddressByAddress(builder.Address)
-	if err != nil {
-		return nil, err
-	}
+func (builder *queryGenericTransactionsPayloadBuilder) Build() *QueryGenericTransactionsPayload {
 	return &QueryGenericTransactionsPayload{
-		Address:   address,
+		Address:   builder.Address,
 		UdtHashes: builder.UdtHashes,
 		FromBlock: builder.FromBlock,
 		ToBlock:   builder.ToBlock,
 		Limit:     builder.Limit,
 		Offset:    builder.Offset,
 		Order:     builder.Order,
-	}, err
+	}
 
 }
 

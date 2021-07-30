@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/example/constant"
+	"github.com/nervosnetwork/ckb-sdk-go/mercury/example/utils"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/action"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/source"
@@ -14,7 +15,7 @@ func TestDefaultFeeRate(t *testing.T) {
 	mercuryApi := constant.GetMercuryApiInstance()
 
 	builder := model.NewTransferBuilder()
-	builder.AddUdtHash("0xf21e7350fa9518ed3cbb008e0e8c941d7e01a12181931d5608aa366ee22228bd")
+	builder.AddUdtHash(constant.UDT_HASH)
 	builder.AddFromKeyAddresses([]string{constant.TEST_ADDRESS1}, source.Unconstrained)
 	builder.AddToKeyAddressItem(constant.TEST_ADDRESS2, action.Pay_by_to, 100)
 	// default 1000 shannons/KB
@@ -25,7 +26,7 @@ func TestDefaultFeeRate(t *testing.T) {
 		t.Error(err)
 	}
 
-	tx := sign(transferCompletion)
+	tx := utils.Sign(transferCompletion)
 
 	hash, err := mercuryApi.SendTransaction(context.Background(), tx)
 	if err != nil {
@@ -39,7 +40,7 @@ func TestCustomizedFeeRate(t *testing.T) {
 	mercuryApi := constant.GetMercuryApiInstance()
 
 	builder := model.NewTransferBuilder()
-	builder.AddUdtHash("0xf21e7350fa9518ed3cbb008e0e8c941d7e01a12181931d5608aa366ee22228bd")
+	builder.AddUdtHash(constant.UDT_HASH)
 	builder.AddFromKeyAddresses([]string{constant.TEST_ADDRESS1}, source.Unconstrained)
 	builder.AddToKeyAddressItem(constant.TEST_ADDRESS2, action.Pay_by_to, 100)
 	builder.AddFeeRate(10000)
@@ -49,7 +50,7 @@ func TestCustomizedFeeRate(t *testing.T) {
 		t.Error(err)
 	}
 
-	tx := sign(transferCompletion)
+	tx := utils.Sign(transferCompletion)
 
 	hash, err := mercuryApi.SendTransaction(context.Background(), tx)
 	if err != nil {

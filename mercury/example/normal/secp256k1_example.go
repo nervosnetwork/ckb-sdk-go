@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/example/constant"
+	"github.com/nervosnetwork/ckb-sdk-go/mercury/example/utils"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/action"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/source"
@@ -13,7 +14,7 @@ import (
 
 func TestFromSecp256k1(t *testing.T) {
 	builder := model.NewTransferBuilder()
-	builder.AddUdtHash(constant.UdtHash)
+	builder.AddUdtHash(constant.UDT_HASH)
 	builder.AddFromNormalAddresses([]string{constant.TEST_ADDRESS1})
 	builder.AddToKeyAddressItem(constant.TEST_ADDRESS2, action.Lend_by_from, 100)
 
@@ -25,7 +26,7 @@ func TestFromSecp256k1(t *testing.T) {
 		t.Error(err)
 	}
 
-	tx := constant.Sign(transaction)
+	tx := utils.Sign(transaction)
 
 	hash, err := constant.GetMercuryApiInstance().SendTransaction(context.Background(), tx)
 	if err != nil {
@@ -38,7 +39,7 @@ func TestFromSecp256k1(t *testing.T) {
 
 func TestToSecp256k1(t *testing.T) {
 	builder := model.NewTransferBuilder()
-	builder.AddUdtHash(constant.UdtHash)
+	builder.AddUdtHash(constant.UDT_HASH)
 	builder.AddFromKeyAddresses([]string{constant.TEST_ADDRESS1}, source.Unconstrained)
 	builder.AddToNormalAddressItem(constant.TEST_ADDRESS2, 100)
 
@@ -50,7 +51,7 @@ func TestToSecp256k1(t *testing.T) {
 		t.Error(err)
 	}
 
-	tx := constant.Sign(transaction)
+	tx := utils.Sign(transaction)
 
 	hash, err := constant.GetMercuryApiInstance().SendTransaction(context.Background(), tx)
 	if err != nil {

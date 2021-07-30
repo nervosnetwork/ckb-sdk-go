@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/nervosnetwork/ckb-sdk-go/address"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/example/constant"
+	"github.com/nervosnetwork/ckb-sdk-go/mercury/example/utils"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/action"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/source"
@@ -34,7 +35,7 @@ func TestFromKeyAddressAndToKeyAddressWithCkb(t *testing.T) {
 		t.Error(err)
 	}
 
-	tx := constant.Sign(transferCompletion)
+	tx := utils.Sign(transferCompletion)
 
 	hash, err := constant.GetMercuryApiInstance().SendTransaction(context.Background(), tx)
 	if err != nil {
@@ -65,7 +66,7 @@ func TestFromNormalAddressesWithCkb(t *testing.T) {
 		t.Error(err)
 	}
 
-	tx := constant.Sign(transferCompletion)
+	tx := utils.Sign(transferCompletion)
 
 	hash, err := constant.GetMercuryApiInstance().SendTransaction(context.Background(), tx)
 	if err != nil {
@@ -95,7 +96,7 @@ func TestToNormalAddressWithCkb(t *testing.T) {
 		t.Error(err)
 	}
 
-	tx := constant.Sign(transferCompletion)
+	tx := utils.Sign(transferCompletion)
 
 	hash, err := constant.GetMercuryApiInstance().SendTransaction(context.Background(), tx)
 	if err != nil {
@@ -125,7 +126,7 @@ func TestFromNormalAddressesAndToNormalAddressWithCkb(t *testing.T) {
 		t.Error(err)
 	}
 
-	tx := constant.Sign(transferCompletion)
+	tx := utils.Sign(transferCompletion)
 
 	hash, err := constant.GetMercuryApiInstance().SendTransaction(context.Background(), tx)
 	if err != nil {
@@ -145,7 +146,7 @@ func TestFromKeyAddressAndToKeyAddressWithUdt(t *testing.T) {
 	printCexUdtBalance()
 
 	builder := model.NewCollectAssetPayloadBuilder()
-	builder.AddUdtHash(constant.UdtHash)
+	builder.AddUdtHash(constant.UDT_HASH)
 	builder.AddFromKeyAddresses([]string{constant.CEX_ADDRESS}, source.Fleeting)
 	builder.AddToKeyAddressItem(constant.TEST_ADDRESS3, action.Pay_by_to)
 	builder.AddFeePaidBy(constant.TEST_ADDRESS4)
@@ -161,7 +162,7 @@ func TestFromKeyAddressAndToKeyAddressWithUdt(t *testing.T) {
 	responseJson, _ := json.Marshal(transferCompletion)
 	fmt.Println(string(responseJson))
 
-	tx := constant.Sign(transferCompletion)
+	tx := utils.Sign(transferCompletion)
 
 	hash, err := constant.GetMercuryApiInstance().SendTransaction(context.Background(), tx)
 	if err != nil {
@@ -184,7 +185,7 @@ func TestFromNormalAddressesWithUdt(t *testing.T) {
 	assert.Nil(t, err)
 
 	builder := model.NewCollectAssetPayloadBuilder()
-	builder.AddUdtHash(constant.UdtHash)
+	builder.AddUdtHash(constant.UDT_HASH)
 	builder.AddFromNormalAddresses([]string{chequeAddress})
 	builder.AddToKeyAddressItem(constant.TEST_ADDRESS3, action.Pay_by_to)
 	builder.AddFeePaidBy(constant.TEST_ADDRESS4)
@@ -200,7 +201,7 @@ func TestFromNormalAddressesWithUdt(t *testing.T) {
 	responseJson, _ := json.Marshal(transferCompletion)
 	fmt.Println(string(responseJson))
 
-	tx := constant.Sign(transferCompletion)
+	tx := utils.Sign(transferCompletion)
 
 	hash, err := constant.GetMercuryApiInstance().SendTransaction(context.Background(), tx)
 	if err != nil {
@@ -224,7 +225,7 @@ func TestToNormalAddressWithUdt(t *testing.T) {
 	assert.Nil(t, err)
 
 	builder := model.NewCollectAssetPayloadBuilder()
-	builder.AddUdtHash(constant.UdtHash)
+	builder.AddUdtHash(constant.UDT_HASH)
 	builder.AddFromKeyAddresses([]string{constant.CEX_ADDRESS}, source.Fleeting)
 	builder.AddToNormalAddressItem(acpAddress)
 	builder.AddFeePaidBy(constant.TEST_ADDRESS4)
@@ -240,7 +241,7 @@ func TestToNormalAddressWithUdt(t *testing.T) {
 	responseJson, _ := json.Marshal(transferCompletion)
 	fmt.Println(string(responseJson))
 
-	tx := constant.Sign(transferCompletion)
+	tx := utils.Sign(transferCompletion)
 
 	hash, err := constant.GetMercuryApiInstance().SendTransaction(context.Background(), tx)
 	if err != nil {
@@ -267,7 +268,7 @@ func TestFromNormalAddressesAndToNormalAddressWithUdt(t *testing.T) {
 	assert.Nil(t, err)
 
 	builder := model.NewCollectAssetPayloadBuilder()
-	builder.AddUdtHash(constant.UdtHash)
+	builder.AddUdtHash(constant.UDT_HASH)
 	builder.AddFromNormalAddresses([]string{chequeAddress})
 	builder.AddToNormalAddressItem(acpAddress)
 	builder.AddFeePaidBy(constant.TEST_ADDRESS4)
@@ -283,7 +284,7 @@ func TestFromNormalAddressesAndToNormalAddressWithUdt(t *testing.T) {
 	responseJson, _ := json.Marshal(transferCompletion)
 	fmt.Println(string(responseJson))
 
-	tx := constant.Sign(transferCompletion)
+	tx := utils.Sign(transferCompletion)
 
 	hash, err := constant.GetMercuryApiInstance().SendTransaction(context.Background(), tx)
 	if err != nil {
@@ -299,7 +300,7 @@ func sendLendByFrom() {
 	mercuryApi := constant.GetMercuryApiInstance()
 
 	builder := model.NewTransferBuilder()
-	builder.AddUdtHash(udtHash)
+	builder.AddUdtHash(constant.UDT_HASH)
 	builder.AddFromKeyAddresses([]string{constant.TEST_ADDRESS0}, source.Unconstrained)
 	builder.AddToKeyAddressItem(constant.CEX_ADDRESS, action.Lend_by_from, 100)
 	transferPayload := builder.Build()
@@ -311,7 +312,7 @@ func sendLendByFrom() {
 	responseJson, _ := json.Marshal(transferCompletion)
 	fmt.Println(string(responseJson))
 
-	tx := constant.Sign(transferCompletion)
+	tx := utils.Sign(transferCompletion)
 
 	hash, err := mercuryApi.SendTransaction(context.Background(), tx)
 	if err != nil {
@@ -342,7 +343,7 @@ func sendCKbTx() {
 		fmt.Println(err)
 	}
 
-	tx := constant.Sign(transferCompletion)
+	tx := utils.Sign(transferCompletion)
 
 	hash, err := mercuryApi.SendTransaction(context.Background(), tx)
 	if err != nil {
@@ -374,16 +375,16 @@ func printCexCkbBalance() {
 }
 
 func printCexUdtBalance() {
-	ckbBalance := getUdtBalance(constant.CEX_ADDRESS, constant.UdtHash)
+	ckbBalance := getUdtBalance(constant.CEX_ADDRESS, constant.UDT_HASH)
 	fmt.Printf("cex udt balance: %s\n", getJsonStr(ckbBalance))
 }
 
 func printreceiverUdtBalance() {
-	ckbBalance := getUdtBalance(constant.TEST_ADDRESS3, constant.UdtHash)
+	ckbBalance := getUdtBalance(constant.TEST_ADDRESS3, constant.UDT_HASH)
 	fmt.Printf("receiver udt balance: %s\n", getJsonStr(ckbBalance))
 }
 
 func printSenderUdtBalance() {
-	ckbBalance := getUdtBalance(constant.TEST_ADDRESS0, constant.UdtHash)
+	ckbBalance := getUdtBalance(constant.TEST_ADDRESS0, constant.UDT_HASH)
 	fmt.Printf("sender udt balance: %s\n", getJsonStr(ckbBalance))
 }

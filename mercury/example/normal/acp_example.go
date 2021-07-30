@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/example/constant"
+	"github.com/nervosnetwork/ckb-sdk-go/mercury/example/utils"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/action"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/source"
@@ -18,7 +19,7 @@ const (
 
 func TestFromAcp(t *testing.T) {
 	builder := model.NewTransferBuilder()
-	builder.AddUdtHash(constant.UdtHash)
+	builder.AddUdtHash(constant.UDT_HASH)
 	builder.AddFromNormalAddresses([]string{acpAddress})
 	builder.AddToKeyAddressItem(constant.TEST_ADDRESS2, action.Lend_by_from, 100)
 
@@ -30,7 +31,7 @@ func TestFromAcp(t *testing.T) {
 		t.Error(err)
 	}
 
-	tx := constant.SignByKey(transaction, key)
+	tx := utils.SignByKey(transaction, key)
 
 	hash, err := constant.GetMercuryApiInstance().SendTransaction(context.Background(), tx)
 	if err != nil {
@@ -42,7 +43,7 @@ func TestFromAcp(t *testing.T) {
 
 func TestToAcp(t *testing.T) {
 	builder := model.NewTransferBuilder()
-	builder.AddUdtHash(constant.UdtHash)
+	builder.AddUdtHash(constant.UDT_HASH)
 	builder.AddFromKeyAddresses([]string{constant.TEST_ADDRESS1}, source.Unconstrained)
 	builder.AddToNormalAddressItem(acpAddress, 100)
 
@@ -54,7 +55,7 @@ func TestToAcp(t *testing.T) {
 		t.Error(err)
 	}
 
-	tx := constant.Sign(transaction)
+	tx := utils.Sign(transaction)
 
 	hash, err := constant.GetMercuryApiInstance().SendTransaction(context.Background(), tx)
 	if err != nil {
