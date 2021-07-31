@@ -112,6 +112,10 @@ func (cli *DefaultMercuryApi) GetConsensus(ctx context.Context) (*types.Consensu
 	return cli.ckb.GetConsensus(ctx)
 }
 
+func (cli *DefaultMercuryApi) GetBlockMedianTime(ctx context.Context, blockHash types.Hash) (uint64, error) {
+	return cli.ckb.GetBlockMedianTime(ctx, blockHash)
+}
+
 func (cli *DefaultMercuryApi) DryRunTransaction(ctx context.Context, transaction *types.Transaction) (*types.DryRunTransactionResult, error) {
 	return cli.ckb.DryRunTransaction(ctx, transaction)
 }
