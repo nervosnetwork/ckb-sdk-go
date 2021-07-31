@@ -91,6 +91,9 @@ type Client interface {
 	// SyncState returns chain synchronization state of this node.
 	SyncState(ctx context.Context) (*types.SyncState, error)
 
+	// SetNetworkActive state - true to enable networking, false to disable
+	SetNetworkActive(ctx context.Context, state bool) error
+
 	////// Pool
 	// SendTransaction send new transaction into transaction pool.
 	SendTransaction(ctx context.Context, tx *types.Transaction) (*types.Hash, error)
@@ -555,6 +558,14 @@ func (cli *client) SyncState(ctx context.Context) (*types.SyncState, error) {
 	}
 
 	return toSyncState(syncState), err
+}
+
+func (cli *client) SetNetworkActive(ctx context.Context, state bool) error {
+	err := cli.c.CallContext(ctx, nil, "set_network_active", state)
+	if err != nil {
+		return err
+	}
+	return err
 }
 
 func (cli *client) SendTransaction(ctx context.Context, tx *types.Transaction) (*types.Hash, error) {
