@@ -96,6 +96,12 @@ func TestClearBannedAddresses(t *testing.T) {
 	assert.Nil(t, err)
 }
 
+func TestAddNode(t *testing.T) {
+	api := getApi()
+	err := api.AddNode(context.Background(), "QmUsZHPbjjzU627UZFt4k8j6ycEcNvXRnVGxCPKqwbAfQS", "/ip4/192.168.2.100/tcp/8114")
+	assert.Nil(t, err)
+}
+
 func getApi() Client {
 	api, _ := Dial("http://localhost:8114")
 	return api
