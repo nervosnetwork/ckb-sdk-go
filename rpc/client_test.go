@@ -102,6 +102,12 @@ func TestAddNode(t *testing.T) {
 	assert.Nil(t, err)
 }
 
+func TestRemoveNode(t *testing.T) {
+	api := getApi()
+	err := api.RemoveNode(context.Background(), "QmUsZHPbjjzU627UZFt4k8j6ycEcNvXRnVGxCPKqwbAfQS")
+	assert.Nil(t, err)
+}
+
 func getApi() Client {
 	api, _ := Dial("http://localhost:8114")
 	return api
