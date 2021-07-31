@@ -114,6 +114,20 @@ func TestPingPeers(t *testing.T) {
 	assert.Nil(t, err)
 }
 
+func TestGetRawTxPool(t *testing.T) {
+	api := getApi()
+	pool, err := api.GetRawTxPool(context.Background())
+	assert.Nil(t, err)
+
+	json, err := json.Marshal(pool)
+	assert.Nil(t, err)
+
+	fmt.Println(len(pool.Pending))
+	fmt.Println(len(pool.Proposed))
+
+	fmt.Println(string(json))
+}
+
 func getApi() Client {
 	api, _ := Dial("http://localhost:8114")
 	return api
