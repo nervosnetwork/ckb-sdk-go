@@ -54,6 +54,9 @@ type Client interface {
 	// GetBlockEconomicState return block economic state, It includes the rewards details and when it is finalized.
 	GetBlockEconomicState(ctx context.Context, hash types.Hash) (*types.BlockEconomicState, error)
 
+	// GetTransactionProof Returns a Merkle proof that transactions are included in a block.
+	GetTransactionProof(ctx context.Context, txHashes []string, blockHash *types.Hash) (*types.TransactionProof, error)
+
 	// GetBlockByNumber get block by number
 	GetBlockByNumber(ctx context.Context, number uint64) (*types.Block, error)
 
@@ -274,6 +277,16 @@ func (cli *client) GetHeaderByNumber(ctx context.Context, number uint64) (*types
 		return nil, err
 	}
 	return toHeader(result), err
+}
+
+func (cli *client) GetTransactionProof(ctx context.Context, txHashes []string, blockHash *types.Hash) (*types.TransactionProof, error) {
+	var transactionProof transactionProof
+	err := cli.c.CallContext(ctx, &transactionProof, "get_transaction_proof", txHashes, blockHash)
+	if err != nil {
+		return nil, err
+	}
+
+	return toTransactionProof(transactionProof), err
 }
 
 func (cli *client) GetLiveCell(ctx context.Context, point *types.OutPoint, withData bool) (*types.CellWithStatus, error) {

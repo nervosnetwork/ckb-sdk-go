@@ -258,6 +258,32 @@ type consensus struct {
 	PermanentDifficultyInDummy           bool           `json:"permanent_difficulty_in_dummy"`
 }
 
+type transactionProof struct {
+	Proof         proof      `json:"proof"`
+	BlockHash     types.Hash `json:"block_hash"`
+	WitnessesRoot types.Hash `json:"witnesses_root"`
+}
+
+type proof struct {
+	Indices []hexutil.Uint `json:"indices"`
+	Iemmas  []types.Hash   `json:"lemmas"`
+}
+
+func toTransactionProof(transactionProof transactionProof) *types.TransactionProof {
+	return &types.TransactionProof{
+		toProof(transactionProof.Proof),
+		transactionProof.BlockHash,
+		transactionProof.WitnessesRoot,
+	}
+}
+
+func toProof(proof proof) *types.Proof {
+	return &types.Proof{
+		toUints(proof.Indices),
+		proof.Iemmas,
+	}
+}
+
 func toHeader(head header) *types.Header {
 	return &types.Header{
 		CompactTarget:    uint(head.CompactTarget),
