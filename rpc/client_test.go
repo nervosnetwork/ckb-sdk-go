@@ -128,6 +128,23 @@ func TestGetRawTxPool(t *testing.T) {
 	fmt.Println(string(json))
 }
 
+func TestClearTxPool(t *testing.T) {
+	api := getApi()
+
+	pool, err := api.GetRawTxPool(context.Background())
+	assert.Nil(t, err)
+	fmt.Println(len(pool.Pending))
+	fmt.Println(len(pool.Proposed))
+
+	err2 := api.ClearTxPool(context.Background())
+	assert.Nil(t, err2)
+
+	pool, err3 := api.GetRawTxPool(context.Background())
+	assert.Nil(t, err3)
+	fmt.Println(len(pool.Pending))
+	fmt.Println(len(pool.Proposed))
+}
+
 func getApi() Client {
 	api, _ := Dial("http://localhost:8114")
 	return api

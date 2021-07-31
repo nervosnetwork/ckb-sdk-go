@@ -122,6 +122,9 @@ type Client interface {
 	// GetRawTxPool Returns all transaction ids in tx pool as a json array of string transaction ids.
 	GetRawTxPool(ctx context.Context) (*types.RawTxPool, error)
 
+	// ClearTxPool Removes all transactions from the transaction pool.
+	ClearTxPool(ctx context.Context) error
+
 	////// Stats
 	// GetBlockchainInfo return state info of blockchain
 	GetBlockchainInfo(ctx context.Context) (*types.BlockchainInfo, error)
@@ -673,6 +676,11 @@ func (cli *client) GetRawTxPool(ctx context.Context) (*types.RawTxPool, error) {
 
 	return &txPool, err
 }
+
+func (cli *client) ClearTxPool(ctx context.Context) error {
+	return cli.c.CallContext(ctx, nil, "clear_tx_pool")
+}
+
 func (cli *client) GetBlockchainInfo(ctx context.Context) (*types.BlockchainInfo, error) {
 	var result blockchainInfo
 
