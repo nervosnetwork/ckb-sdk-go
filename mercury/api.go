@@ -20,6 +20,10 @@ type DefaultMercuryApi struct {
 	mercury Client
 }
 
+func (cli *DefaultMercuryApi) GetTransactionProof(ctx context.Context, txHashes []string, blockHash *types.Hash) (*types.TransactionProof, error) {
+	return cli.ckb.GetTransactionProof(ctx, txHashes, blockHash)
+}
+
 func (cli *DefaultMercuryApi) GetBalance(payload *model.GetBalancePayload) (*resp.GetBalanceResponse, error) {
 	return cli.mercury.GetBalance(payload)
 }
