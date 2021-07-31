@@ -290,7 +290,7 @@ type transactionProof struct {
 
 type proof struct {
 	Indices []hexutil.Uint `json:"indices"`
-	Iemmas  []types.Hash   `json:"lemmas"`
+	Lemmas  []types.Hash   `json:"lemmas"`
 }
 
 func toReqTransactionProof(reqTransactionProof types.TransactionProof) transactionProof {
