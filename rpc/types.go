@@ -279,8 +279,9 @@ func toSyncState(syncState syncState) *types.SyncState {
 		uint64(syncState.FastTime),
 		uint64(syncState.LowTime),
 		uint64(syncState.NormalTime),
-  }
+	}
 }
+
 type transactionProof struct {
 	Proof         proof      `json:"proof"`
 	BlockHash     types.Hash `json:"block_hash"`
@@ -289,7 +290,27 @@ type transactionProof struct {
 
 type proof struct {
 	Indices []hexutil.Uint `json:"indices"`
-	Iemmas  []types.Hash   `json:"lemmas"`
+	Lemmas  []types.Hash   `json:"lemmas"`
+}
+
+func toReqTransactionProof(reqTransactionProof types.TransactionProof) transactionProof {
+
+	return transactionProof{
+		toReqProof(reqTransactionProof.Proof),
+		reqTransactionProof.BlockHash,
+		reqTransactionProof.WitnessesRoot,
+	}
+}
+
+func toReqProof(reqProof *types.Proof) proof {
+	indices := make([]hexutil.Uint, len(reqProof.Indices))
+	for i, value := range reqProof.Indices {
+		indices[i] = hexutil.Uint(value)
+	}
+	return proof{
+		indices,
+		reqProof.Lemmas,
+	}
 }
 
 func toTransactionProof(transactionProof transactionProof) *types.TransactionProof {
@@ -303,7 +324,7 @@ func toTransactionProof(transactionProof transactionProof) *types.TransactionPro
 func toProof(proof proof) *types.Proof {
 	return &types.Proof{
 		toUints(proof.Indices),
-		proof.Iemmas,
+		proof.Lemmas,
 	}
 }
 
