@@ -160,6 +160,10 @@ func (cli *DefaultMercuryApi) RemoveNode(ctx context.Context, peerId string) err
 	return cli.ckb.RemoveNode(ctx, peerId)
 }
 
+func (cli *DefaultMercuryApi) PingPeers(ctx context.Context) error {
+	return cli.ckb.PingPeers(ctx)
+}
+
 func (cli *DefaultMercuryApi) SendTransaction(ctx context.Context, tx *types.Transaction) (*types.Hash, error) {
 	return cli.ckb.SendTransaction(ctx, tx)
 }

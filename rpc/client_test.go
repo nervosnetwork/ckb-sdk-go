@@ -108,6 +108,12 @@ func TestRemoveNode(t *testing.T) {
 	assert.Nil(t, err)
 }
 
+func TestPingPeers(t *testing.T) {
+	api := getApi()
+	err := api.PingPeers(context.Background())
+	assert.Nil(t, err)
+}
+
 func getApi() Client {
 	api, _ := Dial("http://localhost:8114")
 	return api
