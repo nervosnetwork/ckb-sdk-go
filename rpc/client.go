@@ -85,6 +85,9 @@ type Client interface {
 	// SetBan insert or delete an IP/Subnet from the banned list
 	SetBan(ctx context.Context, address string, command string, banTime uint64, absolute bool, reason string) error
 
+	// SyncState returns chain synchronization state of this node.
+	SyncState(ctx context.Context) (*types.SyncState, error)
+
 	////// Pool
 	// SendTransaction send new transaction into transaction pool.
 	SendTransaction(ctx context.Context, tx *types.Transaction) (*types.Hash, error)
@@ -529,6 +532,16 @@ func (cli *client) GetBannedAddresses(ctx context.Context) ([]*types.BannedAddre
 
 func (cli *client) SetBan(ctx context.Context, address string, command string, banTime uint64, absolute bool, reason string) error {
 	return cli.c.CallContext(ctx, nil, "set_ban", address, command, hexutil.Uint64(banTime), absolute, reason)
+}
+
+func (cli *client) SyncState(ctx context.Context) (*types.SyncState, error) {
+	var syncState syncState
+	err := cli.c.CallContext(ctx, &syncState, "sync_state")
+	if err != nil {
+		return nil, err
+	}
+
+	return toSyncState(syncState), err
 }
 
 func (cli *client) SendTransaction(ctx context.Context, tx *types.Transaction) (*types.Hash, error) {

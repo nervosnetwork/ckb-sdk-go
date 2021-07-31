@@ -132,6 +132,10 @@ func (cli *DefaultMercuryApi) SetBan(ctx context.Context, address string, comman
 	return cli.ckb.SetBan(ctx, address, command, banTime, absolute, reason)
 }
 
+func (cli *DefaultMercuryApi) SyncState(ctx context.Context) (*types.SyncState, error) {
+	return cli.ckb.SyncState(ctx)
+}
+
 func (cli *DefaultMercuryApi) SendTransaction(ctx context.Context, tx *types.Transaction) (*types.Hash, error) {
 	return cli.ckb.SendTransaction(ctx, tx)
 }
