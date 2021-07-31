@@ -106,6 +106,9 @@ type Client interface {
 	// RemoveNode Attempts to remove a node from the peers list and try disconnecting from it.
 	RemoveNode(ctx context.Context, peerId string) error
 
+	// PingPeers Requests that a ping is sent to all connected peers, to measure ping time.
+	PingPeers(ctx context.Context) error
+
 	////// Pool
 	// SendTransaction send new transaction into transaction pool.
 	SendTransaction(ctx context.Context, tx *types.Transaction) (*types.Hash, error)
@@ -604,6 +607,14 @@ func (cli *client) AddNode(ctx context.Context, peerId, address string) error {
 
 func (cli *client) RemoveNode(ctx context.Context, peerId string) error {
 	err := cli.c.CallContext(ctx, nil, "remove_node", peerId)
+	if err != nil {
+		return err
+	}
+	return err
+}
+
+func (cli *client) PingPeers(ctx context.Context) error {
+	err := cli.c.CallContext(ctx, nil, "ping_peers")
 	if err != nil {
 		return err
 	}
