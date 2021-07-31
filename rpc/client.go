@@ -103,6 +103,9 @@ type Client interface {
 	// AddNode Attempts to add a node to the peers list and try connecting to it
 	AddNode(ctx context.Context, peerId, address string) error
 
+	// RemoveNode Attempts to remove a node from the peers list and try disconnecting from it.
+	RemoveNode(ctx context.Context, peerId string) error
+
 	////// Pool
 	// SendTransaction send new transaction into transaction pool.
 	SendTransaction(ctx context.Context, tx *types.Transaction) (*types.Hash, error)
@@ -593,6 +596,14 @@ func (cli *client) SetNetworkActive(ctx context.Context, state bool) error {
 
 func (cli *client) AddNode(ctx context.Context, peerId, address string) error {
 	err := cli.c.CallContext(ctx, nil, "add_node", peerId, address)
+	if err != nil {
+		return err
+	}
+	return err
+}
+
+func (cli *client) RemoveNode(ctx context.Context, peerId string) error {
+	err := cli.c.CallContext(ctx, nil, "remove_node", peerId)
 	if err != nil {
 		return err
 	}

@@ -156,6 +156,10 @@ func (cli *DefaultMercuryApi) AddNode(ctx context.Context, peerId, address strin
 	return cli.ckb.AddNode(ctx, peerId, address)
 }
 
+func (cli *DefaultMercuryApi) RemoveNode(ctx context.Context, peerId string) error {
+	return cli.ckb.RemoveNode(ctx, peerId)
+}
+
 func (cli *DefaultMercuryApi) SendTransaction(ctx context.Context, tx *types.Transaction) (*types.Hash, error) {
 	return cli.ckb.SendTransaction(ctx, tx)
 }
