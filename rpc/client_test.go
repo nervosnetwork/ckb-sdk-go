@@ -90,6 +90,12 @@ func TestSetNetworkActive(t *testing.T) {
 	assert.Nil(t, err)
 }
 
+func TestClearBannedAddresses(t *testing.T) {
+	api := getApi()
+	err := api.ClearBannedAddresses(context.Background())
+	assert.Nil(t, err)
+}
+
 func getApi() Client {
 	api, _ := Dial("http://localhost:8114")
 	return api

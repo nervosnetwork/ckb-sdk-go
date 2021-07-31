@@ -136,6 +136,10 @@ func (cli *DefaultMercuryApi) GetBannedAddresses(ctx context.Context) ([]*types.
 	return cli.ckb.GetBannedAddresses(ctx)
 }
 
+func (cli *DefaultMercuryApi) ClearBannedAddresses(ctx context.Context) error {
+	return cli.ckb.ClearBannedAddresses(ctx)
+}
+
 func (cli *DefaultMercuryApi) SetBan(ctx context.Context, address string, command string, banTime uint64, absolute bool, reason string) error {
 	return cli.ckb.SetBan(ctx, address, command, banTime, absolute, reason)
 }
