@@ -24,6 +24,10 @@ func (cli *DefaultMercuryApi) GetTransactionProof(ctx context.Context, txHashes 
 	return cli.ckb.GetTransactionProof(ctx, txHashes, blockHash)
 }
 
+func (cli *DefaultMercuryApi) VerifyTransactionProof(ctx context.Context, proof *types.TransactionProof) ([]*types.Hash, error) {
+	return cli.ckb.VerifyTransactionProof(ctx, proof)
+}
+
 func (cli *DefaultMercuryApi) GetBalance(payload *model.GetBalancePayload) (*resp.GetBalanceResponse, error) {
 	return cli.mercury.GetBalance(payload)
 }

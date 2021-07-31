@@ -63,6 +63,27 @@ func TestGetTransactionProofByBlockHash(t *testing.T) {
 	fmt.Println(string(marshal))
 }
 
+func TestVerifyTransactionProof(t *testing.T) {
+	api := getApi()
+
+	proof := &types.TransactionProof{
+		Proof: &types.Proof{
+			Indices: []uint{2},
+			Iemmas:  []types.Hash{types.HexToHash("0x705d0774a1f870c1e92571e9db806bd85c0ac7f26015f3d6c7b822f7616c1fb4")},
+		},
+		BlockHash:     types.HexToHash("0x36038509b555c8acf360175b9bc4f67bd68be02b152f4a9d1131a424fffd8d23"),
+		WitnessesRoot: types.HexToHash("0x56431856ad780db4cc1181c44b3fddf596380f1e21fb1c0b31db6deca2892c75"),
+	}
+
+	json, err := json.Marshal(proof)
+	assert.Nil(t, err)
+	fmt.Println(string(json))
+
+	result, err := api.VerifyTransactionProof(context.Background(), proof)
+
+	fmt.Println(result)
+}
+
 func TestSetNetworkActive(t *testing.T) {
 	api := getApi()
 	err := api.SetNetworkActive(context.Background(), true)

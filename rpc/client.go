@@ -57,6 +57,9 @@ type Client interface {
 	// GetTransactionProof Returns a Merkle proof that transactions are included in a block.
 	GetTransactionProof(ctx context.Context, txHashes []string, blockHash *types.Hash) (*types.TransactionProof, error)
 
+	//VerifyTransactionProof verifies that a proof points to transactions in a block, returning the transaction hashes it commits to.
+	VerifyTransactionProof(ctx context.Context, proof *types.TransactionProof) ([]*types.Hash, error)
+
 	// GetBlockByNumber get block by number
 	GetBlockByNumber(ctx context.Context, number uint64) (*types.Block, error)
 
@@ -293,6 +296,16 @@ func (cli *client) GetTransactionProof(ctx context.Context, txHashes []string, b
 	}
 
 	return toTransactionProof(transactionProof), err
+}
+
+func (cli *client) VerifyTransactionProof(ctx context.Context, proof *types.TransactionProof) ([]*types.Hash, error) {
+	var result []*types.Hash
+	err := cli.c.CallContext(ctx, &result, "verify_transaction_proof", toReqTransactionProof(*proof))
+	if err != nil {
+		return result, err
+	}
+
+	return result, err
 }
 
 func (cli *client) GetLiveCell(ctx context.Context, point *types.OutPoint, withData bool) (*types.CellWithStatus, error) {
