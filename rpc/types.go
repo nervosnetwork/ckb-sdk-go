@@ -258,6 +258,29 @@ type consensus struct {
 	PermanentDifficultyInDummy           bool           `json:"permanent_difficulty_in_dummy"`
 }
 
+type syncState struct {
+	Ibd                     bool           `json:"ibd"`
+	BestKnownBlockNumber    hexutil.Uint64 `json:"best_known_block_number"`
+	BestKnownBlockTimestamp hexutil.Uint64 `json:"best_known_block_timestamp"`
+	OrphanBlocksCount       hexutil.Uint64 `json:"orphan_blocks_count"`
+	InflightBlocksCount     hexutil.Uint64 `json:"inflight_blocks_count"`
+	FastTime                hexutil.Uint64 `json:"fast_time"`
+	LowTime                 hexutil.Uint64 `json:"low_time"`
+	NormalTime              hexutil.Uint64 `json:"normal_time"`
+}
+
+func toSyncState(syncState syncState) *types.SyncState {
+	return &types.SyncState{
+		syncState.Ibd,
+		uint64(syncState.BestKnownBlockNumber),
+		uint64(syncState.BestKnownBlockTimestamp),
+		uint64(syncState.OrphanBlocksCount),
+		uint64(syncState.InflightBlocksCount),
+		uint64(syncState.FastTime),
+		uint64(syncState.LowTime),
+		uint64(syncState.NormalTime),
+  }
+}
 type transactionProof struct {
 	Proof         proof      `json:"proof"`
 	BlockHash     types.Hash `json:"block_hash"`

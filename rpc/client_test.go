@@ -31,6 +31,16 @@ func TestGetTipBlockNumber(t *testing.T) {
 	assert.Equal(t, uint64(100), num)
 }
 
+func TestSyncState(t *testing.T) {
+	api, _ := Dial("http://localhost:8114")
+	syncState, err := api.SyncState(context.Background())
+	assert.Nil(t, err)
+
+	json, err := json.Marshal(syncState)
+	assert.Nil(t, err)
+	fmt.Println(string(json))
+}
+
 func TestGetTransactionProof(t *testing.T) {
 	api := getApi()
 
@@ -56,5 +66,4 @@ func TestGetTransactionProofByBlockHash(t *testing.T) {
 func getApi() Client {
 	api, _ := Dial("http://localhost:8114")
 	return api
-
 }
