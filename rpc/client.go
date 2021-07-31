@@ -88,6 +88,9 @@ type Client interface {
 	// GetBannedAddresses returns all banned IPs/Subnets.
 	GetBannedAddresses(ctx context.Context) ([]*types.BannedAddress, error)
 
+	// ClearBannedAddress returns all banned IPs/Subnets.
+	ClearBannedAddresses(ctx context.Context) error
+
 	// SetBan insert or delete an IP/Subnet from the banned list
 	SetBan(ctx context.Context, address string, command string, banTime uint64, absolute bool, reason string) error
 
@@ -557,6 +560,10 @@ func (cli *client) GetBannedAddresses(ctx context.Context) ([]*types.BannedAddre
 	}
 
 	return ret, err
+}
+
+func (cli *client) ClearBannedAddresses(ctx context.Context) error {
+	return cli.c.CallContext(ctx, nil, "clear_banned_addresses")
 }
 
 func (cli *client) SetBan(ctx context.Context, address string, command string, banTime uint64, absolute bool, reason string) error {
