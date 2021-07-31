@@ -63,6 +63,12 @@ func TestGetTransactionProofByBlockHash(t *testing.T) {
 	fmt.Println(string(marshal))
 }
 
+func TestSetNetworkActive(t *testing.T) {
+	api := getApi()
+	err := api.SetNetworkActive(context.Background(), true)
+	assert.Nil(t, err)
+}
+
 func getApi() Client {
 	api, _ := Dial("http://localhost:8114")
 	return api

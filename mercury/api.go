@@ -140,6 +140,10 @@ func (cli *DefaultMercuryApi) SyncState(ctx context.Context) (*types.SyncState, 
 	return cli.ckb.SyncState(ctx)
 }
 
+func (cli *DefaultMercuryApi) SetNetworkActive(ctx context.Context, state bool) error {
+	return cli.ckb.SetNetworkActive(ctx, state)
+}
+
 func (cli *DefaultMercuryApi) SendTransaction(ctx context.Context, tx *types.Transaction) (*types.Hash, error) {
 	return cli.ckb.SendTransaction(ctx, tx)
 }
