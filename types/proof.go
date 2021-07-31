@@ -8,5 +8,5 @@ type TransactionProof struct {
 
 type Proof struct {
 	Indices []uint `json:"indices"`
-	Iemmas  []Hash `json:"lemmas"`
+	Lemmas  []Hash `json:"lemmas"`
 }

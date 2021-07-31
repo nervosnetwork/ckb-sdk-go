@@ -309,7 +309,7 @@ func toReqProof(reqProof *types.Proof) proof {
 	}
 	return proof{
 		indices,
-		reqProof.Iemmas,
+		reqProof.Lemmas,
 	}
 }
 
@@ -324,7 +324,7 @@ func toTransactionProof(transactionProof transactionProof) *types.TransactionPro
 func toProof(proof proof) *types.Proof {
 	return &types.Proof{
 		toUints(proof.Indices),
-		proof.Iemmas,
+		proof.Lemmas,
 	}
 }
 
