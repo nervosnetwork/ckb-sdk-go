@@ -63,7 +63,13 @@ type Client interface {
 	// GetBlockByNumber get block by number
 	GetBlockByNumber(ctx context.Context, number uint64) (*types.Block, error)
 
+	// GetConsensus Return various consensus parameters.
 	GetConsensus(ctx context.Context) (*types.Consensus, error)
+
+	// GetBlockMedianTime When the given block hash is not on the current canonical chain, this RPC returns null;
+	// otherwise returns the median time of the consecutive 37 blocks where the given block_hash has the highest height.
+	// Note that the given block is included in the median time. The included block number range is [MAX(block - 36, 0), block].
+	GetBlockMedianTime(ctx context.Context, blockHash types.Hash) (uint64, error)
 
 	////// Experiment
 	// DryRunTransaction dry run transaction and return the execution cycles.
@@ -418,6 +424,15 @@ func (cli *client) GetConsensus(ctx context.Context) (*types.Consensus, error) {
 		return nil, nil
 	}
 	return toConsensus(result), nil
+}
+
+func (cli *client) GetBlockMedianTime(ctx context.Context, blockHash types.Hash) (uint64, error) {
+	var result hexutil.Uint64
+	err := cli.c.CallContext(ctx, &result, "get_block_median_time", blockHash)
+	if err != nil {
+		return uint64(result), nil
+	}
+	return uint64(result), nil
 }
 
 func (cli *client) IndexLockHash(ctx context.Context, lockHash types.Hash, indexFrom uint64) (*types.LockHashIndexState, error) {

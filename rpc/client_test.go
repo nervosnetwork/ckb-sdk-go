@@ -145,6 +145,14 @@ func TestClearTxPool(t *testing.T) {
 	fmt.Println(len(pool.Proposed))
 }
 
+func TestGetBlockMedianTime(t *testing.T) {
+	api := getApi()
+	time, err := api.GetBlockMedianTime(context.Background(), types.HexToHash("0xa5f5c85987a15de25661e5a214f2c1449cd803f071acc7999820f25246471f40"))
+	assert.Nil(t, err)
+
+	fmt.Println(time)
+}
+
 func getApi() Client {
 	api, _ := Dial("http://localhost:8114")
 	return api
