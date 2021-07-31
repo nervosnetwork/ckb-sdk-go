@@ -119,6 +119,9 @@ type Client interface {
 	// TxPoolInfo return the transaction pool information
 	TxPoolInfo(ctx context.Context) (*types.TxPoolInfo, error)
 
+	// GetRawTxPool Returns all transaction ids in tx pool as a json array of string transaction ids.
+	GetRawTxPool(ctx context.Context) (*types.RawTxPool, error)
+
 	////// Stats
 	// GetBlockchainInfo return state info of blockchain
 	GetBlockchainInfo(ctx context.Context) (*types.BlockchainInfo, error)
@@ -661,6 +664,15 @@ func (cli *client) TxPoolInfo(ctx context.Context) (*types.TxPoolInfo, error) {
 	}, err
 }
 
+func (cli *client) GetRawTxPool(ctx context.Context) (*types.RawTxPool, error) {
+	var txPool types.RawTxPool
+	err := cli.c.CallContext(ctx, &txPool, "get_raw_tx_pool")
+	if err != nil {
+		return nil, err
+	}
+
+	return &txPool, err
+}
 func (cli *client) GetBlockchainInfo(ctx context.Context) (*types.BlockchainInfo, error) {
 	var result blockchainInfo
 

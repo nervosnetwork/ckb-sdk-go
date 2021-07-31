@@ -176,6 +176,10 @@ func (cli *DefaultMercuryApi) TxPoolInfo(ctx context.Context) (*types.TxPoolInfo
 	return cli.ckb.TxPoolInfo(ctx)
 }
 
+func (cli *DefaultMercuryApi) GetRawTxPool(ctx context.Context) (*types.RawTxPool, error) {
+	return cli.ckb.GetRawTxPool(ctx)
+}
+
 func (cli *DefaultMercuryApi) GetBlockchainInfo(ctx context.Context) (*types.BlockchainInfo, error) {
 	return cli.ckb.GetBlockchainInfo(ctx)
 }
