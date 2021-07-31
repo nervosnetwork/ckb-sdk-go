@@ -100,6 +100,9 @@ type Client interface {
 	// SetNetworkActive state - true to enable networking, false to disable
 	SetNetworkActive(ctx context.Context, state bool) error
 
+	// AddNode Attempts to add a node to the peers list and try connecting to it
+	AddNode(ctx context.Context, peerId, address string) error
+
 	////// Pool
 	// SendTransaction send new transaction into transaction pool.
 	SendTransaction(ctx context.Context, tx *types.Transaction) (*types.Hash, error)
@@ -582,6 +585,14 @@ func (cli *client) SyncState(ctx context.Context) (*types.SyncState, error) {
 
 func (cli *client) SetNetworkActive(ctx context.Context, state bool) error {
 	err := cli.c.CallContext(ctx, nil, "set_network_active", state)
+	if err != nil {
+		return err
+	}
+	return err
+}
+
+func (cli *client) AddNode(ctx context.Context, peerId, address string) error {
+	err := cli.c.CallContext(ctx, nil, "add_node", peerId, address)
 	if err != nil {
 		return err
 	}

@@ -152,6 +152,10 @@ func (cli *DefaultMercuryApi) SetNetworkActive(ctx context.Context, state bool) 
 	return cli.ckb.SetNetworkActive(ctx, state)
 }
 
+func (cli *DefaultMercuryApi) AddNode(ctx context.Context, peerId, address string) error {
+	return cli.ckb.AddNode(ctx, peerId, address)
+}
+
 func (cli *DefaultMercuryApi) SendTransaction(ctx context.Context, tx *types.Transaction) (*types.Hash, error) {
 	return cli.ckb.SendTransaction(ctx, tx)
 }
