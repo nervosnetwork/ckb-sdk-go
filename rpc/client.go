@@ -63,6 +63,9 @@ type Client interface {
 	// GetBlockByNumber get block by number
 	GetBlockByNumber(ctx context.Context, number uint64) (*types.Block, error)
 
+	// GetForkBlock The RPC returns a fork block or null. When the RPC returns a block, the block hash must equal to the parameter block_hash.
+	GetForkBlock(ctx context.Context, blockHash types.Hash) (*types.Block, error)
+
 	// GetConsensus Return various consensus parameters.
 	GetConsensus(ctx context.Context) (*types.Consensus, error)
 
@@ -382,6 +385,25 @@ func (cli *client) GetBlockByNumber(ctx context.Context, number uint64) (*types.
 	}, nil
 }
 
+func (cli *client) GetForkBlock(ctx context.Context, blockHash types.Hash) (*types.Block, error) {
+	var block block
+	err := cli.c.CallContext(ctx, &block, "get_fork_block", blockHash)
+	if err != nil {
+		return nil, nil
+	}
+
+	if block.Header.Hash.String() == "0x0000000000000000000000000000000000000000000000000000000000000000" {
+		return nil, nil
+	}
+
+	return &types.Block{
+		Header:       toHeader(block.Header),
+		Proposals:    block.Proposals,
+		Transactions: toTransactions(block.Transactions),
+		Uncles:       toUncles(block.Uncles),
+	}, nil
+}
+
 func (cli *client) DryRunTransaction(ctx context.Context, transaction *types.Transaction) (*types.DryRunTransactionResult, error) {
 	var result dryRunTransactionResult
 	err := cli.c.CallContext(ctx, &result, "dry_run_transaction", fromTransaction(transaction))
@@ -404,19 +426,6 @@ func (cli *client) CalculateDaoMaximumWithdraw(ctx context.Context, point *types
 	return uint64(result), err
 }
 
-func (cli *client) EstimateFeeRate(ctx context.Context, blocks uint64) (*types.EstimateFeeRateResult, error) {
-	var result estimateFeeRateResult
-
-	err := cli.c.CallContext(ctx, &result, "estimate_fee_rate", hexutil.Uint64(blocks))
-	if err != nil {
-		return nil, err
-	}
-
-	return &types.EstimateFeeRateResult{
-		FeeRate: uint64(result.FeeRate),
-	}, err
-}
-
 func (cli *client) GetConsensus(ctx context.Context) (*types.Consensus, error) {
 	var result consensus
 	err := cli.c.CallContext(ctx, &result, "get_consensus")
@@ -433,6 +442,19 @@ func (cli *client) GetBlockMedianTime(ctx context.Context, blockHash types.Hash)
 		return uint64(result), nil
 	}
 	return uint64(result), nil
+}
+
+func (cli *client) EstimateFeeRate(ctx context.Context, blocks uint64) (*types.EstimateFeeRateResult, error) {
+	var result estimateFeeRateResult
+
+	err := cli.c.CallContext(ctx, &result, "estimate_fee_rate", hexutil.Uint64(blocks))
+	if err != nil {
+		return nil, err
+	}
+
+	return &types.EstimateFeeRateResult{
+		FeeRate: uint64(result.FeeRate),
+	}, err
 }
 
 func (cli *client) IndexLockHash(ctx context.Context, lockHash types.Hash, indexFrom uint64) (*types.LockHashIndexState, error) {

@@ -108,6 +108,10 @@ func (cli *DefaultMercuryApi) GetBlockByNumber(ctx context.Context, number uint6
 	return cli.ckb.GetBlockByNumber(ctx, number)
 }
 
+func (cli *DefaultMercuryApi) GetForkBlock(ctx context.Context, blockHash types.Hash) (*types.Block, error) {
+	return cli.ckb.GetForkBlock(ctx, blockHash)
+}
+
 func (cli *DefaultMercuryApi) GetConsensus(ctx context.Context) (*types.Consensus, error) {
 	return cli.ckb.GetConsensus(ctx)
 }

@@ -153,6 +153,16 @@ func TestGetBlockMedianTime(t *testing.T) {
 	fmt.Println(time)
 }
 
+func TestGetForkBlock(t *testing.T) {
+	api := getApi()
+	block, err := api.GetForkBlock(context.Background(), types.HexToHash("0xa5f5c85987a15de25661e5a214f2c1449cd803f071acc7999820f25246471f40"))
+	assert.Nil(t, err)
+
+	json, err := json.Marshal(block)
+	assert.Nil(t, err)
+	fmt.Println(string(json))
+}
+
 func getApi() Client {
 	api, _ := Dial("http://localhost:8114")
 	return api
