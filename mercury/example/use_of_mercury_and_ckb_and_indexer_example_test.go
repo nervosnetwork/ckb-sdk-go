@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	E "github.com/ethereum/go-ethereum/rpc"
+	"github.com/nervosnetwork/ckb-sdk-go/api"
 	"github.com/nervosnetwork/ckb-sdk-go/indexer"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/example/constant"
@@ -35,6 +36,17 @@ func TestUseIndexerAlone(t *testing.T) {
 
 }
 
+func TestUseMercuryAlone(t *testing.T) {
+	client, err := mercury.Dial(RPC_ADDRESS)
+	assert.Nil(t, err)
+
+	number, err := client.RegisterAddresses([]string{constant.TEST_ADDRESS3})
+	assert.Nil(t, err)
+
+	fmt.Printf("block info: %+v", number)
+
+}
+
 func TestUseCkbAndIndexer(t *testing.T) {
 
 	dial, err := E.Dial(RPC_ADDRESS)
@@ -55,8 +67,8 @@ func TestUseCkbAndIndexer(t *testing.T) {
 
 }
 
-func TestUseMercuryAlone(t *testing.T) {
-	api, err := mercury.NewMercuryApi(RPC_ADDRESS)
+func TestUseCkbApiAlone(t *testing.T) {
+	api, err := api.NewCkbApi(RPC_ADDRESS)
 	assert.Nil(t, err)
 
 	// rpc using ckb

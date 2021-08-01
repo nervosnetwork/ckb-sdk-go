@@ -1,6 +1,7 @@
 package mercury
 
 import (
+	"context"
 	"errors"
 	"github.com/ethereum/go-ethereum/rpc"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model"
@@ -111,7 +112,19 @@ func (cli *client) QueryGenericTransactions(payload *model.QueryGenericTransacti
 	return &queryGenericTransactionsResponse, err
 }
 
-func newClient(c *rpc.Client) Client {
+func Dial(url string) (Client, error) {
+	return DialContext(context.Background(), url)
+}
+
+func DialContext(ctx context.Context, url string) (Client, error) {
+	c, err := rpc.DialContext(ctx, url)
+	if err != nil {
+		return nil, err
+	}
+	return NewClient(c), nil
+}
+
+func NewClient(c *rpc.Client) Client {
 	return &client{
 		c: c,
 	}
