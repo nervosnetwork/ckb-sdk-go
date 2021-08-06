@@ -1,3 +1,10 @@
+# [v0.43.2-rc.1](https://github.com/nervosnetwork/ckb-sdk-go/compare/v0.43.1...v0.43.2-rc.1) (2021-08-06)
+
+### Bug Fixes
+
+* Fix capacity overflow on
+  payment ([98aff7e](https://github.com/nervosnetwork/ckb-sdk-go/pull/51/commits/98aff7ec39e1680bd47be1e3bb623893090b795e))
+
 # [v0.43.1](https://github.com/nervosnetwork/ckb-sdk-go/compare/v0.43.0...v0.43.1) (2021-08-01)
 
 ### Features
