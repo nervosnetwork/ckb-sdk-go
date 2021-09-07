@@ -1,5 +1,7 @@
 package mercury
 
+import "github.com/nervosnetwork/ckb-sdk-go/types"
+
 type rpcBalanceResp struct {
 	KeyAddress    string `json:"key_address"`
 	UdtHash       string `json:"udt_hash"`
@@ -8,6 +10,36 @@ type rpcBalanceResp struct {
 	Locked        string `json:"locked"`
 }
 
-type RpcGetBalanceResponse struct {
+type rpcGetBalanceResponse struct {
 	Balances []*rpcBalanceResp `json:"balances"`
 }
+
+// -----------------------------------------------------------------------------------------------------------------------------------------------
+
+type rpcTransactionInfoWithStatusResponse struct {
+	Transaction     rpcTransactionInfoResponse `json:"transaction"`
+	Status          types.TransactionStatus    `json:"status"`
+	BlockHash       string                     `json:"block_hash"`
+	BlockNumber     uint64                     `json:"block_number"`
+	ConfirmedNumber uint64                     `json:"confirmed_number"`
+}
+
+type rpcTransactionInfoResponse struct {
+	TxHash     string               `json:"tx_hash"`
+	Operations []*rpcRecordResponse `json:"operations"`
+}
+
+type rpcRecordResponse struct {
+	Id            uint          `json:"id"`
+	KeyAddress    string        `json:"key_address"`
+	NormalAddress string        `json:"normal_address"`
+	Amount        rpcAmountResp `json:"amount"`
+}
+
+type rpcAmountResp struct {
+	Value   string      `json:"value"`
+	UdtHash string      `json:"udt_hash"`
+	Status  interface{} `json:"status"`
+}
+
+// -----------------------------------------------------------------------------------------------------------------------------------------------
