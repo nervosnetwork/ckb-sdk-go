@@ -1,6 +1,6 @@
 package resp
 
-type GenericBlockResponse struct {
+type BlockInfoResponse struct {
 	BlockNumber     uint64                     `json:"block_number"`
 	BlockHash       string                     `json:"block_hash"`
 	ParentBlockHash string                     `json:"parent_block_hash"`

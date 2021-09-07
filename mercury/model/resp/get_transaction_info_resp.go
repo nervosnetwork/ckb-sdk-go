@@ -6,7 +6,7 @@ import (
 )
 
 type TransactionInfoWithStatusResponse struct {
-	Transaction     TransactionInfoResponse
+	Transaction     *TransactionInfoResponse
 	Status          types.TransactionStatus
 	BlockHash       string
 	BlockNumber     uint64
