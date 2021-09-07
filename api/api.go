@@ -37,8 +37,8 @@ func (cli *DefaultCkbApi) BuildTransferTransaction(payload *model.TransferPayloa
 	return cli.mercury.BuildTransferTransaction(payload)
 }
 
-func (cli *DefaultCkbApi) BuildAssetAccountCreationTransaction(payload *model.CreateAssetAccountPayload) (*resp.TransferCompletionResponse, error) {
-	return cli.mercury.BuildAssetAccountCreationTransaction(payload)
+func (cli *DefaultCkbApi) BuildAdjustAccountTransaction(payload *model.AdjustAccountPayload) (*resp.TransferCompletionResponse, error) {
+	return cli.mercury.BuildAdjustAccountTransaction(payload)
 }
 
 func (cli *DefaultCkbApi) BuildAssetCollectionTransaction(payload *model.CollectAssetPayload) (*resp.TransferCompletionResponse, error) {

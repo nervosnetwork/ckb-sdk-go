@@ -12,7 +12,7 @@ import (
 type Client interface {
 	GetBalance(payload *model.GetBalancePayload) (*resp.GetBalanceResponse, error)
 	BuildTransferTransaction(payload *model.TransferPayload) (*resp.TransferCompletionResponse, error)
-	BuildAssetAccountCreationTransaction(payload *model.CreateAssetAccountPayload) (*resp.TransferCompletionResponse, error)
+	BuildAdjustAccountTransaction(payload *model.AdjustAccountPayload) (*resp.TransferCompletionResponse, error)
 	BuildAssetCollectionTransaction(payload *model.CollectAssetPayload) (*resp.TransferCompletionResponse, error)
 	RegisterAddresses(normalAddresses []string) ([]string, error)
 	GetGenericTransaction(txHash string) (*resp.GetGenericTransactionResponse, error)
@@ -69,7 +69,7 @@ func (cli *client) BuildTransferTransaction(payload *model.TransferPayload) (*re
 	return &resp, err
 }
 
-func (cli *client) BuildAssetAccountCreationTransaction(payload *model.CreateAssetAccountPayload) (*resp.TransferCompletionResponse, error) {
+func (cli *client) BuildAdjustAccountTransaction(payload *model.AdjustAccountPayload) (*resp.TransferCompletionResponse, error) {
 	var resp resp.TransferCompletionResponse
 	err := cli.c.Call(&resp, "build_asset_account_creation_transaction", payload)
 	if err != nil {
