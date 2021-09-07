@@ -2,6 +2,7 @@ package mercury
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"github.com/ethereum/go-ethereum/rpc"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model"
@@ -15,7 +16,7 @@ type Client interface {
 	BuildAdjustAccountTransaction(payload *model.AdjustAccountPayload) (*resp.TransferCompletionResponse, error)
 	BuildAssetCollectionTransaction(payload *model.CollectAssetPayload) (*resp.TransferCompletionResponse, error)
 	RegisterAddresses(normalAddresses []string) ([]string, error)
-	GetGenericTransaction(txHash string) (*resp.GetGenericTransactionResponse, error)
+	GetTransactionInfo(txHash string) (*resp.TransactionInfoWithStatusResponse, error)
 	GetGenericBlock(payload *model.GetGenericBlockPayload) (*resp.GenericBlockResponse, error)
 	QueryGenericTransactions(payload *model.QueryGenericTransactionsPayload) (*resp.QueryGenericTransactionsResponse, error)
 }
@@ -25,7 +26,7 @@ type client struct {
 }
 
 func (cli *client) GetBalance(payload *model.GetBalancePayload) (*resp.GetBalanceResponse, error) {
-	var balance RpcGetBalanceResponse
+	var balance rpcGetBalanceResponse
 	err := cli.c.Call(&balance, "get_balance", payload)
 	if err != nil {
 		return nil, err
@@ -110,14 +111,56 @@ func (cli *client) GetGenericBlock(payload *model.GetGenericBlockPayload) (*resp
 	return &block, err
 }
 
-func (cli *client) GetGenericTransaction(txHash string) (*resp.GetGenericTransactionResponse, error) {
-	var tx resp.GetGenericTransactionResponse
+func (cli *client) GetTransactionInfo(txHash string) (*resp.TransactionInfoWithStatusResponse, error) {
+	var tx rpcTransactionInfoWithStatusResponse
 	err := cli.c.Call(&tx, "get_generic_transaction", txHash)
 	if err != nil {
-		return &tx, err
+		return nil, err
 	}
 
-	return &tx, err
+	result := &resp.TransactionInfoWithStatusResponse{
+		Status:          tx.Status,
+		BlockHash:       tx.BlockHash,
+		BlockNumber:     tx.BlockNumber,
+		ConfirmedNumber: tx.ConfirmedNumber,
+	}
+
+	result.Transaction.TxHash = tx.Transaction.TxHash
+	for _, op := range tx.Transaction.Operations {
+
+		var asset *common.AssetInfo
+		if op.Amount.Status == common.Ckb {
+			asset = common.NewCkbAsset()
+		} else {
+			asset = common.NewUdtAsset(op.Amount.UdtHash)
+		}
+
+		var status map[resp.AssetStatus]uint
+		data, _ := json.Marshal(op.Amount.Status)
+		json.Unmarshal(data, status)
+
+		var assetStatus resp.AssetStatus
+		var blockNumber uint
+		if _, ok := status[resp.FIXED]; ok {
+			assetStatus = resp.FIXED
+			blockNumber = status[resp.FIXED]
+		} else {
+			assetStatus = resp.CLAIMABLE
+			blockNumber = status[resp.FIXED]
+		}
+
+		result.Transaction.Operations = append(result.Transaction.Operations, &resp.RecordResponse{
+			op.Id,
+			op.KeyAddress,
+			op.Amount.Value,
+			asset,
+			assetStatus,
+			blockNumber,
+		})
+
+	}
+
+	return result, err
 }
 
 func (cli *client) QueryGenericTransactions(payload *model.QueryGenericTransactionsPayload) (*resp.QueryGenericTransactionsResponse, error) {

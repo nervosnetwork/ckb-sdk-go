@@ -61,7 +61,7 @@ TODO
 
 1. [`get_balance` example](./mercury/example/balance_example.go)
 2. [`get_generic_block` example](./mercury/example/generic_block_example.go)
-3. [`get_generic_transaction` example](./mercury/example/generic_transaction_example.go)
+3. [`get_transaction_info` example](./mercury/example/get_transaction_info_example.go)
 4. [`query_generic_transactions` example](./mercury/example/query_generic_transactions_pages_example.go)
 5. [`register_addresses` example](./mercury/example/register_addresses_example.go)
 6. [`build_transfer_transaction` example](./mercury/example/transfer_completion_example.go)
@@ -70,7 +70,7 @@ TODO
 9. [`build_transfer_transaction` by normal address example 1](./mercury/example/normal/acp_example.go)
 10. [`build_transfer_transaction` by normal address example 2](./mercury/example/normal/cheque_example.go)
 11. [`build_transfer_transaction` by normal address example 3](./mercury/example/normal/secp256k1_example.go)
-12. [`adjust_account_transaction` example](./mercury/example/build_adjust_account_transaction_example_test.go)
+12. [`adjust_account_transaction` example](./mercury/example/build_adjust_account_transaction_example.go)
 13. [`build_asset_collection_transaction` example](./mercury/example/build_asset_collection_transaction_example.go)
 
 ### 3. ckb-indexer RPC
