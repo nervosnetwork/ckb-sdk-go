@@ -53,8 +53,8 @@ func (cli *DefaultCkbApi) GetTransactionInfo(txHash string) (*resp.TransactionIn
 	return cli.mercury.GetTransactionInfo(txHash)
 }
 
-func (cli *DefaultCkbApi) GetGenericBlock(payload *model.GetGenericBlockPayload) (*resp.GenericBlockResponse, error) {
-	return cli.mercury.GetGenericBlock(payload)
+func (cli *DefaultCkbApi) GetBlockInfo(payload *model.GetBlockInfoPayload) (*resp.BlockInfoResponse, error) {
+	return cli.mercury.GetBlockInfo(payload)
 }
 
 func (cli *DefaultCkbApi) QueryGenericTransactions(payload *model.QueryGenericTransactionsPayload) (*resp.QueryGenericTransactionsResponse, error) {
