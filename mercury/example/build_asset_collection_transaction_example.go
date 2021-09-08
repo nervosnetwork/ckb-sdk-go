@@ -13,6 +13,7 @@ import (
 	"github.com/nervosnetwork/ckb-sdk-go/rpc"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 	"github.com/stretchr/testify/assert"
+	"math/big"
 	"testing"
 	"time"
 )
@@ -302,7 +303,7 @@ func sendLendByFrom() {
 	builder := model.NewTransferBuilder()
 	builder.AddUdtHash(constant.UDT_HASH)
 	builder.AddFromKeyAddresses([]string{constant.TEST_ADDRESS0}, source.Unconstrained)
-	builder.AddToKeyAddressItem(constant.CEX_ADDRESS, action.Lend_by_from, 100)
+	builder.AddToKeyAddressItem(constant.CEX_ADDRESS, action.Lend_by_from, big.NewInt(100))
 	transferPayload := builder.Build()
 	transferCompletion, err := mercuryApi.BuildTransferTransaction(transferPayload)
 	if err != nil {

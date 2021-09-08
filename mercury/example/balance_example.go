@@ -9,7 +9,7 @@ import (
 	"testing"
 )
 
-func TestGetBalance(t *testing.T) {
+func TestGetCkbBalance(t *testing.T) {
 	builder := model.NewGetBalancePayloadBuilder()
 	builder.AddAddress(constant.TEST_ADDRESS4)
 	builder.AddAssetInfo(common.NewCkbAsset())

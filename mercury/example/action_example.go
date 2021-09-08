@@ -9,6 +9,8 @@ import (
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/action"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/source"
+	"github.com/nervosnetwork/ckb-sdk-go/utils/amount"
+	"math/big"
 	"testing"
 )
 
@@ -113,7 +115,11 @@ func getTransferPayload(from, to, udtHash, action string) *model.TransferPayload
 	builder := model.NewTransferBuilder()
 	builder.AddUdtHash(udtHash)
 	builder.AddFromKeyAddresses([]string{from}, source.Unconstrained)
-	builder.AddToKeyAddressItem(to, action, 100)
+	if udtHash != "" {
+		builder.AddToKeyAddressItem(to, action, big.NewInt(100))
+	} else {
+		builder.AddToKeyAddressItem(to, action, amount.CkbToShannon(100))
+	}
 
 	marshal, _ := json.Marshal(builder.Build())
 	fmt.Println(string(marshal))

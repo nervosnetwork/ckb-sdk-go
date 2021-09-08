@@ -12,6 +12,7 @@ import (
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/resp"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/source"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
+	"math/big"
 	"testing"
 	"time"
 )
@@ -36,7 +37,7 @@ func issuingChequeCell() {
 	builder := model.NewTransferBuilder()
 	builder.AddUdtHash(constant.UDT_HASH)
 	builder.AddFromKeyAddresses([]string{senderAddress}, source.Unconstrained)
-	builder.AddToKeyAddressItem(chequeCellReceiverAddress, action.Lend_by_from, 100)
+	builder.AddToKeyAddressItem(chequeCellReceiverAddress, action.Lend_by_from, big.NewInt(100))
 	transferPayload := builder.Build()
 	transferCompletion, err := mercuryApi.BuildTransferTransaction(transferPayload)
 	if err != nil {
@@ -71,7 +72,7 @@ func claimChequeCell() {
 	builder := model.NewTransferBuilder()
 	builder.AddUdtHash(constant.UDT_HASH)
 	builder.AddFromKeyAddresses([]string{chequeCellReceiverAddress}, source.Fleeting)
-	builder.AddToKeyAddressItem(receiverAddress, action.Pay_by_from, 100)
+	builder.AddToKeyAddressItem(receiverAddress, action.Pay_by_from, big.NewInt(100))
 	transferPayload := builder.Build()
 	transferCompletion, err := mercuryApi.BuildTransferTransaction(transferPayload)
 	if err != nil {
