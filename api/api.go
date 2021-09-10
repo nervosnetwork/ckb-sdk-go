@@ -37,6 +37,10 @@ func (cli *DefaultCkbApi) BuildTransferTransaction(payload *model.TransferPayloa
 	return cli.mercury.BuildTransferTransaction(payload)
 }
 
+func (cli *DefaultCkbApi) BuildSmartTransferTransaction(payload *model.SmartTransferPayload) (*resp.TransferCompletionResponse, error) {
+	return cli.mercury.BuildSmartTransferTransaction(payload)
+}
+
 func (cli *DefaultCkbApi) BuildAdjustAccountTransaction(payload *model.AdjustAccountPayload) (*resp.TransferCompletionResponse, error) {
 	return cli.mercury.BuildAdjustAccountTransaction(payload)
 }
@@ -59,6 +63,10 @@ func (cli *DefaultCkbApi) GetBlockInfo(payload *model.GetBlockInfoPayload) (*res
 
 func (cli *DefaultCkbApi) QueryGenericTransactions(payload *model.QueryGenericTransactionsPayload) (*resp.QueryGenericTransactionsResponse, error) {
 	return cli.mercury.QueryGenericTransactions(payload)
+}
+
+func (cli *DefaultCkbApi) GetAccountNumber(address string) (uint, error) {
+	return cli.mercury.GetAccountNumber(address)
 }
 
 func (cli *DefaultCkbApi) GetTipBlockNumber(ctx context.Context) (uint64, error) {
