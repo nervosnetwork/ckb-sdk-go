@@ -7,6 +7,7 @@ import (
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/common"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/resp"
+	"math/big"
 )
 
 type Client interface {
@@ -39,12 +40,22 @@ func (cli *client) GetBalance(payload *model.GetBalancePayload) (*resp.GetBalanc
 		} else {
 			asset = common.NewUdtAsset(balanceResp.UdtHash)
 		}
+
+		free := new(big.Int)
+		free.SetString(balanceResp.Unconstrained, 0)
+
+		claimable := new(big.Int)
+		claimable.SetString(balanceResp.Fleeting, 0)
+
+		freezed := new(big.Int)
+		freezed.SetString(balanceResp.Locked, 0)
+
 		result.Balances = append(result.Balances, &resp.BalanceResp{
-			balanceResp.KeyAddress,
-			asset,
-			balanceResp.Unconstrained,
-			balanceResp.Fleeting,
-			balanceResp.Locked,
+			Address:   balanceResp.KeyAddress,
+			AssetInfo: asset,
+			Free:      free,
+			Claimable: claimable,
+			Freezed:   freezed,
 		})
 	}
 

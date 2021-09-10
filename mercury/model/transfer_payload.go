@@ -2,6 +2,7 @@ package model
 
 import (
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/action"
+	"math/big"
 )
 
 type TransferPayload struct {
@@ -56,7 +57,7 @@ type keyAddress struct {
 
 type TransferItem struct {
 	To     ToAddress `json:"to"`
-	Amount uint      `json:"amount"`
+	Amount *big.Int  `json:"amount"`
 }
 
 type transferBuilder struct {
@@ -86,7 +87,7 @@ func (builder *transferBuilder) AddFromNormalAddresses(normalAddress []string) {
 	}
 }
 
-func (builder *transferBuilder) AddToKeyAddressItem(addr, action string, amount uint) {
+func (builder *transferBuilder) AddToKeyAddressItem(addr, action string, amount *big.Int) {
 	builder.Items = append(builder.Items, &TransferItem{Amount: amount, To: &ToKeyAddress{
 		KeyAddress: &keyAddress{
 			KeyAddress: addr,
@@ -95,7 +96,7 @@ func (builder *transferBuilder) AddToKeyAddressItem(addr, action string, amount 
 	}})
 }
 
-func (builder *transferBuilder) AddToNormalAddressItem(addr string, amount uint) {
+func (builder *transferBuilder) AddToNormalAddressItem(addr string, amount *big.Int) {
 	builder.Items = append(builder.Items, &TransferItem{Amount: amount, To: &ToNormalAddress{
 		NormalAddress: addr,
 	}})
