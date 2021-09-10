@@ -49,8 +49,8 @@ func (cli *DefaultCkbApi) RegisterAddresses(normalAddresses []string) ([]string,
 	return cli.mercury.RegisterAddresses(normalAddresses)
 }
 
-func (cli *DefaultCkbApi) GetGenericTransaction(txHash string) (*resp.GetGenericTransactionResponse, error) {
-	return cli.mercury.GetGenericTransaction(txHash)
+func (cli *DefaultCkbApi) GetTransactionInfo(txHash string) (*resp.TransactionInfoWithStatusResponse, error) {
+	return cli.mercury.GetTransactionInfo(txHash)
 }
 
 func (cli *DefaultCkbApi) GetGenericBlock(payload *model.GetGenericBlockPayload) (*resp.GenericBlockResponse, error) {

@@ -8,7 +8,7 @@ import (
 )
 
 func TestGetGenericTransaction(t *testing.T) {
-	transaction, err := constant.GetMercuryApiInstance().GetGenericTransaction("0x83b849ef0c2fc02eab20faad0357026d0f94b98444a4fe947a11bcbafa01b4e8")
+	transaction, err := constant.GetMercuryApiInstance().GetTransactionInfo("0x83b849ef0c2fc02eab20faad0357026d0f94b98444a4fe947a11bcbafa01b4e8")
 	if err != nil {
 		t.Error(err)
 	}
