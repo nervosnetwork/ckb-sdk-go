@@ -1,6 +1,6 @@
-package resp
+package mercury
 
-type Balance struct {
+type rpcBalanceResp struct {
 	KeyAddress    string `json:"key_address"`
 	UdtHash       string `json:"udt_hash"`
 	Unconstrained string `json:"unconstrained"`
@@ -8,7 +8,6 @@ type Balance struct {
 	Locked        string `json:"locked"`
 }
 
-type GetBalanceResponse struct {
-	BlockNum string     `json:"block_num,omitempty"`
-	Balances []*Balance `json:"balances"`
+type RpcGetBalanceResponse struct {
+	Balances []*rpcBalanceResp `json:"balances"`
 }

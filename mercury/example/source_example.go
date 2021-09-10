@@ -8,6 +8,7 @@ import (
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/example/utils"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/action"
+	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/common"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/resp"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/source"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
@@ -114,7 +115,8 @@ func printBalance() {
 
 func getCkbBalance(addr string) *resp.GetBalanceResponse {
 	builder := model.NewGetBalancePayloadBuilder()
-	builder.AddKeyAddress(&model.KeyAddress{addr})
+	builder.AddAddress(addr)
+	builder.AddAssetInfo(common.NewCkbAsset())
 
 	balance, _ := constant.GetMercuryApiInstance().GetBalance(builder.Build())
 
@@ -123,9 +125,8 @@ func getCkbBalance(addr string) *resp.GetBalanceResponse {
 
 func getUdtBalance(addr, udtHash string) *resp.GetBalanceResponse {
 	builder := model.NewGetBalancePayloadBuilder()
-
-	builder.AddKeyAddress(&model.KeyAddress{addr})
-	builder.AddUdtHash(udtHash)
+	builder.AddAddress(addr)
+	builder.AddAssetInfo(common.NewUdtAsset(constant.UDT_HASH))
 
 	balance, _ := constant.GetMercuryApiInstance().GetBalance(builder.Build())
 

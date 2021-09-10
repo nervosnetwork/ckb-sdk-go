@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/ethereum/go-ethereum/rpc"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model"
+	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/common"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/resp"
 )
 
@@ -24,13 +25,30 @@ type client struct {
 }
 
 func (cli *client) GetBalance(payload *model.GetBalancePayload) (*resp.GetBalanceResponse, error) {
-	var balance resp.GetBalanceResponse
+	var balance RpcGetBalanceResponse
 	err := cli.c.Call(&balance, "get_balance", payload)
 	if err != nil {
-		return &balance, err
+		return nil, err
 	}
 
-	return &balance, err
+	result := &resp.GetBalanceResponse{}
+	for _, balanceResp := range balance.Balances {
+		var asset *common.AssetInfo
+		if balanceResp.UdtHash == "" {
+			asset = common.NewCkbAsset()
+		} else {
+			asset = common.NewUdtAsset(balanceResp.UdtHash)
+		}
+		result.Balances = append(result.Balances, &resp.BalanceResp{
+			balanceResp.KeyAddress,
+			asset,
+			balanceResp.Unconstrained,
+			balanceResp.Fleeting,
+			balanceResp.Locked,
+		})
+	}
+
+	return result, err
 }
 
 func (cli *client) BuildTransferTransaction(payload *model.TransferPayload) (*resp.TransferCompletionResponse, error) {
