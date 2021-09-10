@@ -24,7 +24,7 @@ func TestGetGenericBlockWithBlockNumber(t *testing.T) {
 	}
 	fmt.Println(string(json2))
 
-	block, err := constant.GetMercuryApiInstance().GetGenericBlock(payload)
+	block, err := constant.GetMercuryApiInstance().GetBlockInfo(payload)
 	if err != nil {
 		t.Error(err)
 	}
@@ -45,7 +45,7 @@ func TestGetGenericBlockWithBlockHash(t *testing.T) {
 		t.Error(err)
 	}
 
-	block, err := constant.GetMercuryApiInstance().GetGenericBlock(payload)
+	block, err := constant.GetMercuryApiInstance().GetBlockInfo(payload)
 	if err != nil {
 		t.Error(err)
 	}
@@ -68,7 +68,7 @@ func TestGetGenericBlockWithBlockHashAndBlockNumber(t *testing.T) {
 		t.Error(err)
 	}
 
-	block, err := constant.GetMercuryApiInstance().GetGenericBlock(payload)
+	block, err := constant.GetMercuryApiInstance().GetBlockInfo(payload)
 	if err != nil {
 		t.Error(err)
 	}
@@ -88,7 +88,7 @@ func TestTipGenericBlock(t *testing.T) {
 		t.Error(err)
 	}
 
-	block, err := constant.GetMercuryApiInstance().GetGenericBlock(payload)
+	block, err := constant.GetMercuryApiInstance().GetBlockInfo(payload)
 	if err != nil {
 		t.Error(err)
 	}
@@ -110,7 +110,7 @@ func TestBlockHashAndBlockNumberDoNotMatch(t *testing.T) {
 		t.Error(err)
 	}
 
-	_, getErr := constant.GetMercuryApiInstance().GetGenericBlock(payload)
+	_, getErr := constant.GetMercuryApiInstance().GetBlockInfo(payload)
 	if getErr != nil && getErr.Error() != "block number and hash mismatch" {
 		t.Error(err)
 	}
@@ -125,7 +125,7 @@ func TestCannotFind(t *testing.T) {
 		t.Error(err)
 	}
 
-	_, getErr := constant.GetMercuryApiInstance().GetGenericBlock(payload)
+	_, getErr := constant.GetMercuryApiInstance().GetBlockInfo(payload)
 	if getErr != nil && !strings.HasPrefix(getErr.Error(), "Cannot get block by hash H256") {
 		t.Error(err)
 	}
@@ -140,7 +140,7 @@ func TestWrongHeight(t *testing.T) {
 		t.Error(err)
 	}
 	// error: invalid block number
-	_, getErr := constant.GetMercuryApiInstance().GetGenericBlock(payload)
+	_, getErr := constant.GetMercuryApiInstance().GetBlockInfo(payload)
 	if getErr != nil && getErr.Error() != "invalid block number" {
 		t.Error(err)
 	}

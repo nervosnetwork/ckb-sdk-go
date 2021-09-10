@@ -60,7 +60,7 @@ TODO
 #### example
 
 1. [`get_balance` example](./mercury/example/balance_example.go)
-2. [`get_generic_block` example](./mercury/example/generic_block_example.go)
+2. [`get_block_info` example](./mercury/example/get_block_info_example.go)
 3. [`get_transaction_info` example](./mercury/example/get_transaction_info_example.go)
 4. [`query_generic_transactions` example](./mercury/example/query_generic_transactions_pages_example.go)
 5. [`register_addresses` example](./mercury/example/register_addresses_example.go)
