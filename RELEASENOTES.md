@@ -1,38 +1,23 @@
-# [v0.43.2-rc.1](https://github.com/nervosnetwork/ckb-sdk-go/compare/v0.43.1...v0.43.2-rc.1) (2021-08-06)
-
-### Bug Fixes
-
-* Fix capacity overflow on
-  payment ([98aff7e](https://github.com/nervosnetwork/ckb-sdk-go/pull/51/commits/98aff7ec39e1680bd47be1e3bb623893090b795e))
-
-# [v0.43.1](https://github.com/nervosnetwork/ckb-sdk-go/compare/v0.43.0...v0.43.1) (2021-08-01)
+# [v0.43.2](https://github.com/nervosnetwork/ckb-sdk-java/compare/v0.43.2-rc.1...v0.43.2) (2021-09-10)
 
 ### Features
 
-* Relay ckb rpc request through
-  mercury ([d0e4c0a](https://github.com/nervosnetwork/ckb-sdk-go/pull/35/commits/d0e4c0a2ea2454aae52e6ff0d87d96832f18b2c1)
-  and [3c7ce9b](https://github.com/nervosnetwork/ckb-sdk-go/pull/49/commits/3c7ce9b1a5cedc8aaecfd745c7d9b2f1e063f6a5))
-* Add `get_fork_block`
-  api ([56f578e](https://github.com/nervosnetwork/ckb-sdk-go/pull/48/commits/56f578e9cd6b9acf46642971cf9c117eaa81b6b7))
-* Add `get_block_median_time`
-  api ([464cf71](https://github.com/nervosnetwork/ckb-sdk-go/pull/47/commits/464cf71230738f588d46b624db7597539bfdb4d9))
-* Add `clear_tx_pool`
-  api ([a4aea75](https://github.com/nervosnetwork/ckb-sdk-go/pull/46/commits/a4aea75f46c62a0f7a053f709d60c37e694c5d81))
-* Add `raw_tx_pool`
-  api ([0ba6fa5](https://github.com/nervosnetwork/ckb-sdk-go/pull/45/commits/0ba6fa563c468b39b7ad42c9880f72de434f0845))
-* Add `ping_peers`
-  api ([9a8ca27](https://github.com/nervosnetwork/ckb-sdk-go/pull/44/commits/9a8ca276aff50259bd8a4595d21c7ea8d916aded))
-* Add `remove_node`
-  api ([95c7b05](https://github.com/nervosnetwork/ckb-sdk-go/pull/43/commits/95c7b059c06cfc5aec6c9f91a6edb839e3e9bd18))
-* Add `add_node`
-  api ([9e35021](https://github.com/nervosnetwork/ckb-sdk-go/pull/42/commits/9e3502161064e2eb8012becca2d87f8a55c288aa))
-* Add `clear_banned_address`
-  api ([9fe3589](https://github.com/nervosnetwork/ckb-sdk-go/pull/41/commits/9fe3589d3bc6479b24d98d6f4d2d4837c6c96a63))
-* Add `verify_transaction_proof`
-  api ([e270c42](https://github.com/nervosnetwork/ckb-sdk-go/pull/40/commits/e270c423da0e143c6d2dd2574cde7aa6c2f73aae))
-* Add `set_network_active`
-  api ([e704431](https://github.com/nervosnetwork/ckb-sdk-go/pull/39/commits/e704431b1ccb63f14db715fae74fd7c94638f10d))
-* Add `sync_state`
-  api ([c4131be](https://github.com/nervosnetwork/ckb-sdk-go/pull/38/commits/c4131bec2722f4b0764d7a7c475bee28a688f9a5))
-* Add `get_transaction_proof`
-  api ([18209e9](https://github.com/nervosnetwork/ckb-sdk-go/pull/37/commits/18209e9af95302d191e2656eb8b5580ff2108437))
+* Add `build_smart_transfer_transaction`
+  api ([9ad61d3](https://github.com/nervosnetwork/ckb-sdk-go/pull/59/commits/9ad61d3f69422c5fc58b15830942bec333294eb9))
+
+### BreakingChanges
+
+* The uniform unit is
+  shannon ([c1492d4](https://github.com/zhengjianhui/ckb-sdk-go/commit/c1492d4bd2450b39cf3daeb1e507119ce72d0036))
+  
+* Adjusting the `build_asset_account_creation_transaction`
+  interface ([de4be38](https://github.com/nervosnetwork/ckb-sdk-go/pull/54/commits/de4be388808f7f5d7cd8b810addf9320c8b36ad6))
+
+* Adjusting the `get_generic_transaction`
+  interface ([91ba601](https://github.com/nervosnetwork/ckb-sdk-go/pull/55/commits/91ba6010b8908203c97cfc4f8ef1fa85a13f6642))
+
+* Adjusting the `get_generic_block`
+  interface ([3c4ffbc](https://github.com/nervosnetwork/ckb-sdk-go/pull/57/commits/3c4ffbc372dbf72faba2d074ec40b3185d13c97c))
+
+* Adjusting the `get_balance`
+  interface ([361e7f0](https://github.com/nervosnetwork/ckb-sdk-go/pull/53/commits/361e7f0017ae725e0fbf601e4d3327ddddb13977))
