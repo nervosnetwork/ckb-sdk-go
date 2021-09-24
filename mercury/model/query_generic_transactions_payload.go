@@ -1,7 +1,7 @@
 package model
 
 type QueryGenericTransactionsPayload struct {
-	Address   QueryAddress  `json:"address"`
+	Address   Item  `json:"address"`
 	UdtHashes []interface{} `json:"udt_hashes"`
 	FromBlock uint64        `json:"from_block,omitempty"`
 	ToBlock   uint64        `json:"to_block,omitempty"`
@@ -11,7 +11,7 @@ type QueryGenericTransactionsPayload struct {
 }
 
 type queryGenericTransactionsPayloadBuilder struct {
-	Address   QueryAddress
+	Address   Item
 	UdtHashes []interface{}
 	FromBlock uint64
 	ToBlock   uint64
@@ -20,11 +20,11 @@ type queryGenericTransactionsPayloadBuilder struct {
 	Order     string
 }
 
-func (builder *queryGenericTransactionsPayloadBuilder) AddKeyAddress(addr *KeyAddress) {
+func (builder *queryGenericTransactionsPayloadBuilder) AddKeyAddress(addr *Identity) {
 	builder.Address = addr
 }
 
-func (builder *queryGenericTransactionsPayloadBuilder) AddNormalAddress(addr *NormalAddress) {
+func (builder *queryGenericTransactionsPayloadBuilder) AddNormalAddress(addr *Address) {
 	builder.Address = addr
 }
 

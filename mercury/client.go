@@ -3,6 +3,8 @@ package mercury
 import (
 	"context"
 	"errors"
+	"math/big"
+
 	"github.com/ethereum/go-ethereum/rpc"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/action"
@@ -10,7 +12,6 @@ import (
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/resp"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/source"
 	"github.com/nervosnetwork/ckb-sdk-go/utils/amount"
-	"math/big"
 )
 
 type Client interface {
@@ -208,12 +209,12 @@ func (cli *client) toTransferPayload(payload *model.SmartTransferPayload) (*mode
 	source := cli.getSource(fromBalances, payload.To, payload.AssetInfo.AssetType)
 
 	builder := model.NewTransferBuilder()
-	if payload.AssetInfo.AssetType == common.Udt {
+	if payload.AssetInfo.AssetType == common.UDT {
 		builder.UdtHash = payload.AssetInfo.UdtHash
 	}
 	builder.AddFromKeyAddresses(payload.From, source)
 	for _, to := range payload.To {
-		if payload.AssetInfo.AssetType == common.Udt {
+		if payload.AssetInfo.AssetType == common.UDT {
 			number, err := cli.GetAccountNumber(to.Address)
 			if err != nil {
 				return nil, err
@@ -246,8 +247,8 @@ func (cli *client) getSource(fromBalances []*resp.GetBalanceResponse, to []*mode
 }
 
 func (cli *client) feePay(fromBalances, toBalances []*resp.GetBalanceResponse, payload *model.SmartTransferPayload) error {
-	from := cli.getBalanceByAssetTypeAndBalanceType(fromBalances, common.Ckb, "free")
-	to := cli.getBalanceByAssetTypeAndBalanceType(toBalances, common.Ckb, "free")
+	from := cli.getBalanceByAssetTypeAndBalanceType(fromBalances, common.CKB, "free")
+	to := cli.getBalanceByAssetTypeAndBalanceType(toBalances, common.CKB, "free")
 
 	feeThreshold := amount.CkbWithDecimalToShannon(0.0001)
 
@@ -291,7 +292,7 @@ func (cli *client) getBalance(addresses []string, assetInfo *common.AssetInfo) (
 	result := make([]*resp.GetBalanceResponse, len(addresses))
 	for i, address := range addresses {
 		builder := model.NewGetBalancePayloadBuilder()
-		builder.AddAddress(address)
+		builder.SetItemAsAddress(address)
 		builder.AddAssetInfo(common.NewCkbAsset())
 		if assetInfo != nil {
 			builder.AddAssetInfo(assetInfo)

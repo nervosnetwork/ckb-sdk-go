@@ -2,6 +2,7 @@ package mercury
 
 import (
 	"encoding/json"
+
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/common"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/resp"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
@@ -16,6 +17,7 @@ type rpcBalanceResp struct {
 }
 
 type rpcGetBalanceResponse struct {
+	TipBlockNumber uint64 `json:"tip_block_number"`
 	Balances []*rpcBalanceResp `json:"balances"`
 }
 
@@ -68,7 +70,7 @@ func toTransactionInfoResponse(txs []*rpcRecordResponse, txHash string) (*resp.T
 	for _, op := range txs {
 
 		var asset *common.AssetInfo
-		if op.Amount.Status == common.Ckb {
+		if op.Amount.Status == common.CKB {
 			asset = common.NewCkbAsset()
 		} else {
 			asset = common.NewUdtAsset(op.Amount.UdtHash)

@@ -3,16 +3,17 @@ package test
 import (
 	"encoding/json"
 	"fmt"
+	"testing"
+
 	"github.com/nervosnetwork/ckb-sdk-go/address"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/example/constant"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestQueryGenericTransactionsWithCkb(t *testing.T) {
 	builder := model.NewQueryGenericTransactionsPayloadBuilder()
-	builder.AddKeyAddress(&model.KeyAddress{constant.QUERY_TRANSACTION_ADDRESS})
+	builder.AddKeyAddress(&model.Identity{constant.QUERY_TRANSACTION_ADDRESS})
 
 	marshal, _ := json.Marshal(builder.Build())
 	fmt.Println(string(marshal))
@@ -34,7 +35,7 @@ func TestQueryGenericTransactionsWithCkb(t *testing.T) {
 
 func TestQueryGenericTransactionsWithUdt(t *testing.T) {
 	builder := model.NewQueryGenericTransactionsPayloadBuilder()
-	builder.AddKeyAddress(&model.KeyAddress{constant.QUERY_TRANSACTION_ADDRESS})
+	builder.AddKeyAddress(&model.Identity{constant.QUERY_TRANSACTION_ADDRESS})
 	builder.AddUdtHash(constant.UDT_HASH)
 
 	marshal, _ := json.Marshal(builder.Build())
@@ -57,7 +58,7 @@ func TestQueryGenericTransactionsWithUdt(t *testing.T) {
 
 func TestQueryGenericTransactionsWithAll(t *testing.T) {
 	builder := model.NewQueryGenericTransactionsPayloadBuilder()
-	builder.AddKeyAddress(&model.KeyAddress{constant.QUERY_TRANSACTION_ADDRESS})
+	builder.AddKeyAddress(&model.Identity{constant.QUERY_TRANSACTION_ADDRESS})
 	builder.AllTransactionType()
 
 	marshal, _ := json.Marshal(builder.Build())
@@ -83,7 +84,7 @@ func TestQueryGenericTransactionsWithChequeAddress(t *testing.T) {
 	assert.Nil(t, err)
 
 	builder := model.NewQueryGenericTransactionsPayloadBuilder()
-	builder.AddNormalAddress(&model.NormalAddress{chequeAddress})
+	builder.AddNormalAddress(&model.Address{chequeAddress})
 	builder.AllTransactionType()
 
 	marshal, _ := json.Marshal(builder.Build())
@@ -109,7 +110,7 @@ func TestQueryGenericTransactionsWithAcpAddress(t *testing.T) {
 	assert.Nil(t, err)
 
 	builder := model.NewQueryGenericTransactionsPayloadBuilder()
-	builder.AddNormalAddress(&model.NormalAddress{acpAddress})
+	builder.AddNormalAddress(&model.Address{acpAddress})
 	builder.AllTransactionType()
 
 	marshal, _ := json.Marshal(builder.Build())
@@ -135,7 +136,7 @@ func TestQueryGenericTransactionsWithFromBlock(t *testing.T) {
 	assert.Nil(t, err)
 
 	builder := model.NewQueryGenericTransactionsPayloadBuilder()
-	builder.AddKeyAddress(&model.KeyAddress{acpAddress})
+	builder.AddKeyAddress(&model.Identity{acpAddress})
 	builder.AllTransactionType()
 	builder.AddFromBlock(2224987)
 
@@ -162,7 +163,7 @@ func TestQueryGenericTransactionsWithToBlock(t *testing.T) {
 	assert.Nil(t, err)
 
 	builder := model.NewQueryGenericTransactionsPayloadBuilder()
-	builder.AddKeyAddress(&model.KeyAddress{acpAddress})
+	builder.AddKeyAddress(&model.Identity{acpAddress})
 	builder.AllTransactionType()
 	builder.AddToBlock(2224987)
 
@@ -189,7 +190,7 @@ func TestQueryGenericTransactionsWithFromBlockAndToBlock(t *testing.T) {
 	assert.Nil(t, err)
 
 	builder := model.NewQueryGenericTransactionsPayloadBuilder()
-	builder.AddKeyAddress(&model.KeyAddress{acpAddress})
+	builder.AddKeyAddress(&model.Identity{acpAddress})
 	builder.AllTransactionType()
 	builder.AddFromBlock(2224993)
 	builder.AddToBlock(2225023)
@@ -217,7 +218,7 @@ func TestQueryGenericTransactionsWithLimit(t *testing.T) {
 	assert.Nil(t, err)
 
 	builder := model.NewQueryGenericTransactionsPayloadBuilder()
-	builder.AddKeyAddress(&model.KeyAddress{acpAddress})
+	builder.AddKeyAddress(&model.Identity{acpAddress})
 	builder.AllTransactionType()
 	// default limit 50
 	builder.AddLimit(2)
@@ -242,7 +243,7 @@ func TestQueryGenericTransactionsWithLimit(t *testing.T) {
 
 func TestQueryGenericTransactionsWithOrder(t *testing.T) {
 	builder := model.NewQueryGenericTransactionsPayloadBuilder()
-	builder.AddKeyAddress(&model.KeyAddress{constant.QUERY_TRANSACTION_ADDRESS})
+	builder.AddKeyAddress(&model.Identity{constant.QUERY_TRANSACTION_ADDRESS})
 	builder.AllTransactionType()
 	// default order desc
 	builder.AddOrder("asc")
@@ -267,7 +268,7 @@ func TestQueryGenericTransactionsWithOrder(t *testing.T) {
 
 func TestQueryGenericTransactionsWithOffset(t *testing.T) {
 	builder := model.NewQueryGenericTransactionsPayloadBuilder()
-	builder.AddKeyAddress(&model.KeyAddress{constant.QUERY_TRANSACTION_ADDRESS})
+	builder.AddKeyAddress(&model.Identity{constant.QUERY_TRANSACTION_ADDRESS})
 	builder.AllTransactionType()
 	builder.AddLimit(1)
 	// Offset start from 0
