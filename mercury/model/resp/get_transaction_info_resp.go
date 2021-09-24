@@ -5,31 +5,8 @@ import (
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 )
 
-type TransactionInfoWithStatusResponse struct {
-	Transaction     *TransactionInfoResponse
-	Status          types.TransactionStatus
-	BlockHash       string
-	BlockNumber     uint64
-	ConfirmedNumber uint64
+type GetTransactionInfoResponse struct {
+	Transaction  *common.TransactionInfo `json:"transaction"`
+	Status       types.TransactionStatus `json:"status"`
+	RejectReason *uint8                  `json:"reject_reason"`
 }
-
-type TransactionInfoResponse struct {
-	TxHash     string
-	Operations []*RecordResponse
-}
-
-type RecordResponse struct {
-	Id          uint
-	Address     string
-	Amount      string
-	AssetInfo   *common.AssetInfo
-	Status      AssetStatus
-	BlockNumber uint
-}
-
-type AssetStatus string
-
-const (
-	CLAIMABLE AssetStatus = "claimable"
-	FIXED     AssetStatus = "fixed"
-)

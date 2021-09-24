@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+
 	"github.com/ethereum/go-ethereum/rpc"
 	"github.com/nervosnetwork/ckb-sdk-go/indexer"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury"
@@ -53,7 +54,7 @@ func (cli *DefaultCkbApi) RegisterAddresses(normalAddresses []string) ([]string,
 	return cli.mercury.RegisterAddresses(normalAddresses)
 }
 
-func (cli *DefaultCkbApi) GetTransactionInfo(txHash string) (*resp.TransactionInfoWithStatusResponse, error) {
+func (cli *DefaultCkbApi) GetTransactionInfo(txHash string) (*resp.GetTransactionInfoResponse, error) {
 	return cli.mercury.GetTransactionInfo(txHash)
 }
 

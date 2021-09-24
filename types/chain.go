@@ -17,9 +17,11 @@ const (
 	DepTypeCode     DepType = "code"
 	DepTypeDepGroup DepType = "dep_group"
 
-	TransactionStatusPending   TransactionStatus = "pending"
-	TransactionStatusProposed  TransactionStatus = "proposed"
-	TransactionStatusCommitted TransactionStatus = "committed"
+    Pending TransactionStatus = "pending"
+    Proposed TransactionStatus = "proposed"
+    Committed TransactionStatus = "committed"
+    Rejected TransactionStatus = "rejected"
+    Unknown TransactionStatus = "unknown"
 )
 
 type Epoch struct {
