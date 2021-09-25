@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/example/constant"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/example/utils"
-	"github.com/nervosnetwork/ckb-sdk-go/mercury/model"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/action"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/source"
+	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/types/req"
 	"math/big"
 	"testing"
 )
@@ -15,7 +15,7 @@ import (
 func TestDefaultFeeRate(t *testing.T) {
 	mercuryApi := constant.GetMercuryApiInstance()
 
-	builder := model.NewTransferBuilder()
+	builder := req.NewTransferBuilder()
 	builder.AddUdtHash(constant.UDT_HASH)
 	builder.AddFromKeyAddresses([]string{constant.TEST_ADDRESS1}, source.Unconstrained)
 	builder.AddToKeyAddressItem(constant.TEST_ADDRESS2, action.Pay_by_to, big.NewInt(100))
@@ -40,7 +40,7 @@ func TestDefaultFeeRate(t *testing.T) {
 func TestCustomizedFeeRate(t *testing.T) {
 	mercuryApi := constant.GetMercuryApiInstance()
 
-	builder := model.NewTransferBuilder()
+	builder := req.NewTransferBuilder()
 	builder.AddUdtHash(constant.UDT_HASH)
 	builder.AddFromKeyAddresses([]string{constant.TEST_ADDRESS1}, source.Unconstrained)
 	builder.AddToKeyAddressItem(constant.TEST_ADDRESS2, action.Pay_by_to, big.NewInt(100))

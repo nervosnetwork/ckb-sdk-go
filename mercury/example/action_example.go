@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/example/constant"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/example/utils"
-	"github.com/nervosnetwork/ckb-sdk-go/mercury/model"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/action"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/source"
+	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/types/req"
 	"github.com/nervosnetwork/ckb-sdk-go/utils/amount"
 	"math/big"
 	"testing"
@@ -111,8 +111,8 @@ func TestTransferCompletionSudtWithPayByTo(t *testing.T) {
 	fmt.Println(hash)
 }
 
-func getTransferPayload(from, to, udtHash, action string) *model.TransferPayload {
-	builder := model.NewTransferBuilder()
+func getTransferPayload(from, to, udtHash, action string) *req.TransferPayload {
+	builder := req.NewTransferBuilder()
 	builder.AddUdtHash(udtHash)
 	builder.AddFromKeyAddresses([]string{from}, source.Unconstrained)
 	if udtHash != "" {

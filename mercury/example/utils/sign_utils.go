@@ -3,7 +3,7 @@ package utils
 import (
 	"github.com/nervosnetwork/ckb-sdk-go/crypto/secp256k1"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/example/constant"
-	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/resp"
+	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/types/resp"
 	"github.com/nervosnetwork/ckb-sdk-go/transaction"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 )

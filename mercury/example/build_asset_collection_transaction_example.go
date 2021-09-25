@@ -7,9 +7,9 @@ import (
 	"github.com/nervosnetwork/ckb-sdk-go/address"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/example/constant"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/example/utils"
-	"github.com/nervosnetwork/ckb-sdk-go/mercury/model"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/action"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/source"
+	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/types/req"
 	"github.com/nervosnetwork/ckb-sdk-go/rpc"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 	"github.com/stretchr/testify/assert"
@@ -23,7 +23,7 @@ func TestFromKeyAddressAndToKeyAddressWithCkb(t *testing.T) {
 	sendCKbTx()
 	printCexCkbBalance()
 
-	builder := model.NewCollectAssetPayloadBuilder()
+	builder := req.NewCollectAssetPayloadBuilder()
 	builder.AddFromKeyAddresses([]string{constant.CEX_ADDRESS}, source.Unconstrained)
 	builder.AddToKeyAddressItem(constant.TEST_ADDRESS2, action.Pay_by_from)
 	builder.AddFeePaidBy(constant.TEST_ADDRESS4)
@@ -54,7 +54,7 @@ func TestFromNormalAddressesWithCkb(t *testing.T) {
 	sendCKbTx()
 	printCexCkbBalance()
 
-	builder := model.NewCollectAssetPayloadBuilder()
+	builder := req.NewCollectAssetPayloadBuilder()
 	builder.AddFromNormalAddresses([]string{constant.CEX_ADDRESS})
 	builder.AddToKeyAddressItem(constant.TEST_ADDRESS2, action.Pay_by_from)
 	builder.AddFeePaidBy(constant.TEST_ADDRESS4)
@@ -84,7 +84,7 @@ func TestToNormalAddressWithCkb(t *testing.T) {
 	sendCKbTx()
 	printCexCkbBalance()
 
-	builder := model.NewCollectAssetPayloadBuilder()
+	builder := req.NewCollectAssetPayloadBuilder()
 	builder.AddFromKeyAddresses([]string{constant.CEX_ADDRESS}, source.Unconstrained)
 	builder.AddToNormalAddressItem(constant.TEST_ADDRESS2)
 	builder.AddFeePaidBy(constant.TEST_ADDRESS4)
@@ -114,7 +114,7 @@ func TestFromNormalAddressesAndToNormalAddressWithCkb(t *testing.T) {
 	sendCKbTx()
 	printCexCkbBalance()
 
-	builder := model.NewCollectAssetPayloadBuilder()
+	builder := req.NewCollectAssetPayloadBuilder()
 	builder.AddFromNormalAddresses([]string{constant.CEX_ADDRESS})
 	builder.AddToNormalAddressItem(constant.TEST_ADDRESS2)
 	builder.AddFeePaidBy(constant.TEST_ADDRESS4)
@@ -146,7 +146,7 @@ func TestFromKeyAddressAndToKeyAddressWithUdt(t *testing.T) {
 	printSenderUdtBalance()
 	printCexUdtBalance()
 
-	builder := model.NewCollectAssetPayloadBuilder()
+	builder := req.NewCollectAssetPayloadBuilder()
 	builder.AddUdtHash(constant.UDT_HASH)
 	builder.AddFromKeyAddresses([]string{constant.CEX_ADDRESS}, source.Fleeting)
 	builder.AddToKeyAddressItem(constant.TEST_ADDRESS3, action.Pay_by_to)
@@ -185,7 +185,7 @@ func TestFromNormalAddressesWithUdt(t *testing.T) {
 	chequeAddress, err := address.GenerateChequeAddress(constant.TEST_ADDRESS0, constant.CEX_ADDRESS)
 	assert.Nil(t, err)
 
-	builder := model.NewCollectAssetPayloadBuilder()
+	builder := req.NewCollectAssetPayloadBuilder()
 	builder.AddUdtHash(constant.UDT_HASH)
 	builder.AddFromNormalAddresses([]string{chequeAddress})
 	builder.AddToKeyAddressItem(constant.TEST_ADDRESS3, action.Pay_by_to)
@@ -225,7 +225,7 @@ func TestToNormalAddressWithUdt(t *testing.T) {
 	acpAddress, err := address.GenerateAcpAddress(constant.TEST_ADDRESS4)
 	assert.Nil(t, err)
 
-	builder := model.NewCollectAssetPayloadBuilder()
+	builder := req.NewCollectAssetPayloadBuilder()
 	builder.AddUdtHash(constant.UDT_HASH)
 	builder.AddFromKeyAddresses([]string{constant.CEX_ADDRESS}, source.Fleeting)
 	builder.AddToNormalAddressItem(acpAddress)
@@ -268,7 +268,7 @@ func TestFromNormalAddressesAndToNormalAddressWithUdt(t *testing.T) {
 	chequeAddress, err := address.GenerateChequeAddress(constant.TEST_ADDRESS0, constant.CEX_ADDRESS)
 	assert.Nil(t, err)
 
-	builder := model.NewCollectAssetPayloadBuilder()
+	builder := req.NewCollectAssetPayloadBuilder()
 	builder.AddUdtHash(constant.UDT_HASH)
 	builder.AddFromNormalAddresses([]string{chequeAddress})
 	builder.AddToNormalAddressItem(acpAddress)
@@ -300,7 +300,7 @@ func TestFromNormalAddressesAndToNormalAddressWithUdt(t *testing.T) {
 func sendLendByFrom() {
 	mercuryApi := constant.GetMercuryApiInstance()
 
-	builder := model.NewTransferBuilder()
+	builder := req.NewTransferBuilder()
 	builder.AddUdtHash(constant.UDT_HASH)
 	builder.AddFromKeyAddresses([]string{constant.TEST_ADDRESS0}, source.Unconstrained)
 	builder.AddToKeyAddressItem(constant.CEX_ADDRESS, action.Lend_by_from, big.NewInt(100))

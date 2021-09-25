@@ -1,6 +1,8 @@
-package model
+package req
 
-import "github.com/nervosnetwork/ckb-sdk-go/mercury/model/common"
+import (
+	. "github.com/nervosnetwork/ckb-sdk-go/mercury/model/types"
+)
 
 type AdjustAccountPayload struct {
 	KeyAddress string   `json:"key_address"`
@@ -10,7 +12,7 @@ type AdjustAccountPayload struct {
 
 type adjustAccountPayloadBuilder struct {
 	KeyAddress string
-	assetInfos []*common.AssetInfo
+	assetInfos []*AssetInfo
 	FeeRate    uint
 }
 
@@ -22,7 +24,7 @@ func (builder *adjustAccountPayloadBuilder) AddFeeRate(feeRate uint) {
 	builder.FeeRate = feeRate
 }
 
-func (builder *adjustAccountPayloadBuilder) AddAssetInfo(info *common.AssetInfo) {
+func (builder *adjustAccountPayloadBuilder) AddAssetInfo(info *AssetInfo) {
 	builder.assetInfos = append(builder.assetInfos, info)
 }
 

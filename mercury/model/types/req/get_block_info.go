@@ -1,22 +1,22 @@
-package model
+package req
 
-import "github.com/nervosnetwork/ckb-sdk-go/mercury/model/common"
+import . "github.com/nervosnetwork/ckb-sdk-go/mercury/model/types"
 
 type GetBlockInfoPayload struct {
-	BlockNumber common.BlockNumber `json:"block_number,omitempty"`
-	BlockHash common.H256 `json:"block_hash,omitempty"`
+	BlockNumber BlockNumber `json:"block_number,omitempty"`
+	BlockHash   H256        `json:"block_hash,omitempty"`
 }
 
 type getBlockInfoPayloadBuilder struct {
-	blockNumber  common.BlockNumber
-	blockHash common.H256
+	blockNumber BlockNumber
+	blockHash   H256
 }
 
-func (builder *getBlockInfoPayloadBuilder) AddBlockNumber(blockNumber common.BlockNumber) {
+func (builder *getBlockInfoPayloadBuilder) AddBlockNumber(blockNumber BlockNumber) {
 	builder.blockNumber = blockNumber
 }
 
-func (builder *getBlockInfoPayloadBuilder) AddBlockHash(blockHash common.H256) {
+func (builder *getBlockInfoPayloadBuilder) AddBlockHash(blockHash H256) {
 	builder.blockHash = blockHash
 }
 

@@ -1,7 +1,7 @@
-package model
+package req
 
 type QueryGenericTransactionsPayload struct {
-	Address   Item  `json:"address"`
+	Address   Item          `json:"address"`
 	UdtHashes []interface{} `json:"udt_hashes"`
 	FromBlock uint64        `json:"from_block,omitempty"`
 	ToBlock   uint64        `json:"to_block,omitempty"`

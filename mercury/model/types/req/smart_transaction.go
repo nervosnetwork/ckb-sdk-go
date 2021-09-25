@@ -1,12 +1,12 @@
-package model
+package req
 
 import (
-	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/common"
+	. "github.com/nervosnetwork/ckb-sdk-go/mercury/model/types"
 	"math/big"
 )
 
 type SmartTransferPayload struct {
-	AssetInfo *common.AssetInfo
+	AssetInfo *AssetInfo
 	From      []string
 	To        []*SmartTo
 	Change    string
@@ -19,14 +19,14 @@ type SmartTo struct {
 }
 
 type smartTransferPayloadBuilder struct {
-	AssetInfo *common.AssetInfo
+	AssetInfo *AssetInfo
 	From      []string
 	To        []*SmartTo
 	Change    string
 	FeeRate   uint
 }
 
-func (builder *smartTransferPayloadBuilder) AddAssetInfo(info *common.AssetInfo) {
+func (builder *smartTransferPayloadBuilder) AddAssetInfo(info *AssetInfo) {
 	builder.AssetInfo = info
 }
 

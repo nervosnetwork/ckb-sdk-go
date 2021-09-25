@@ -2,12 +2,12 @@ package api
 
 import (
 	"context"
+	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/types/req"
+	resp2 "github.com/nervosnetwork/ckb-sdk-go/mercury/model/types/resp"
 
 	"github.com/ethereum/go-ethereum/rpc"
 	"github.com/nervosnetwork/ckb-sdk-go/indexer"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury"
-	"github.com/nervosnetwork/ckb-sdk-go/mercury/model"
-	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/resp"
 	C "github.com/nervosnetwork/ckb-sdk-go/rpc"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 )
@@ -30,23 +30,34 @@ func (cli *DefaultCkbApi) VerifyTransactionProof(ctx context.Context, proof *typ
 	return cli.ckb.VerifyTransactionProof(ctx, proof)
 }
 
-func (cli *DefaultCkbApi) GetBalance(payload *model.GetBalancePayload) (*resp.GetBalanceResponse, error) {
+
+
+func (cli *DefaultCkbApi) GetDbInfo() (*resp2.DBDriver, error) {
+	return cli.mercury.GetDbInfo()
+}
+
+func (cli *DefaultCkbApi) GetMercuryInfo() (*resp2.MercuryInfo, error) {
+	return cli.mercury.GetMercuryInfo()
+}
+
+
+func (cli *DefaultCkbApi) GetBalance(payload *req.GetBalancePayload) (*resp2.GetBalanceResponse, error) {
 	return cli.mercury.GetBalance(payload)
 }
 
-func (cli *DefaultCkbApi) BuildTransferTransaction(payload *model.TransferPayload) (*resp.TransferCompletionResponse, error) {
+func (cli *DefaultCkbApi) BuildTransferTransaction(payload *req.TransferPayload) (*resp2.TransferCompletionResponse, error) {
 	return cli.mercury.BuildTransferTransaction(payload)
 }
 
-func (cli *DefaultCkbApi) BuildSmartTransferTransaction(payload *model.SmartTransferPayload) (*resp.TransferCompletionResponse, error) {
+func (cli *DefaultCkbApi) BuildSmartTransferTransaction(payload *req.SmartTransferPayload) (*resp2.TransferCompletionResponse, error) {
 	return cli.mercury.BuildSmartTransferTransaction(payload)
 }
 
-func (cli *DefaultCkbApi) BuildAdjustAccountTransaction(payload *model.AdjustAccountPayload) (*resp.TransferCompletionResponse, error) {
+func (cli *DefaultCkbApi) BuildAdjustAccountTransaction(payload *req.AdjustAccountPayload) (*resp2.TransferCompletionResponse, error) {
 	return cli.mercury.BuildAdjustAccountTransaction(payload)
 }
 
-func (cli *DefaultCkbApi) BuildAssetCollectionTransaction(payload *model.CollectAssetPayload) (*resp.TransferCompletionResponse, error) {
+func (cli *DefaultCkbApi) BuildAssetCollectionTransaction(payload *req.CollectAssetPayload) (*resp2.TransferCompletionResponse, error) {
 	return cli.mercury.BuildAssetCollectionTransaction(payload)
 }
 
@@ -54,15 +65,15 @@ func (cli *DefaultCkbApi) RegisterAddresses(normalAddresses []string) ([]string,
 	return cli.mercury.RegisterAddresses(normalAddresses)
 }
 
-func (cli *DefaultCkbApi) GetTransactionInfo(txHash string) (*resp.GetTransactionInfoResponse, error) {
+func (cli *DefaultCkbApi) GetTransactionInfo(txHash string) (*resp2.GetTransactionInfoResponse, error) {
 	return cli.mercury.GetTransactionInfo(txHash)
 }
 
-func (cli *DefaultCkbApi) GetBlockInfo(payload *model.GetBlockInfoPayload) (*resp.GetBlockInfoResponse, error) {
+func (cli *DefaultCkbApi) GetBlockInfo(payload *req.GetBlockInfoPayload) (*resp2.GetBlockInfoResponse, error) {
 	return cli.mercury.GetBlockInfo(payload)
 }
 
-func (cli *DefaultCkbApi) QueryGenericTransactions(payload *model.QueryGenericTransactionsPayload) (*resp.QueryGenericTransactionsResponse, error) {
+func (cli *DefaultCkbApi) QueryGenericTransactions(payload *req.QueryGenericTransactionsPayload) (*resp2.QueryGenericTransactionsResponse, error) {
 	return cli.mercury.QueryGenericTransactions(payload)
 }
 

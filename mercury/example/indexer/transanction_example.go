@@ -6,15 +6,15 @@ import (
 	"fmt"
 	"github.com/nervosnetwork/ckb-sdk-go/indexer"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/example/constant"
-	"github.com/nervosnetwork/ckb-sdk-go/mercury/model"
+	types2 "github.com/nervosnetwork/ckb-sdk-go/mercury/model/types"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 	"testing"
 )
 
 func TestTransanction(t *testing.T) {
-	key := model.SearchKeyBuilder{}
+	key := types2.SearchKeyBuilder{}
 	key.AddScript(
-		model.BuildScript("0x9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8", types.HashTypeType, "0x0c24d18f16e3c43272695e5db006a22cb9ddde51"))
+		types2.BuildScript("0x9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8", types.HashTypeType, "0x0c24d18f16e3c43272695e5db006a22cb9ddde51"))
 
 	key.AddScriptType(indexer.ScriptTypeLock)
 

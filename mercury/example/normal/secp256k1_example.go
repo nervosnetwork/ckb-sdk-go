@@ -6,15 +6,15 @@ import (
 	"fmt"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/example/constant"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/example/utils"
-	"github.com/nervosnetwork/ckb-sdk-go/mercury/model"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/action"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/source"
+	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/types/req"
 	"math/big"
 	"testing"
 )
 
 func TestFromSecp256k1(t *testing.T) {
-	builder := model.NewTransferBuilder()
+	builder := req.NewTransferBuilder()
 	builder.AddUdtHash(constant.UDT_HASH)
 	builder.AddFromNormalAddresses([]string{constant.TEST_ADDRESS1})
 	builder.AddToKeyAddressItem(constant.TEST_ADDRESS2, action.Lend_by_from, big.NewInt(100))
@@ -39,7 +39,7 @@ func TestFromSecp256k1(t *testing.T) {
 }
 
 func TestToSecp256k1(t *testing.T) {
-	builder := model.NewTransferBuilder()
+	builder := req.NewTransferBuilder()
 	builder.AddUdtHash(constant.UDT_HASH)
 	builder.AddFromKeyAddresses([]string{constant.TEST_ADDRESS1}, source.Unconstrained)
 	builder.AddToNormalAddressItem(constant.TEST_ADDRESS2, big.NewInt(100))

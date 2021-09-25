@@ -1,4 +1,4 @@
-package common
+package types
 
 import "math/big"
 type TransactionInfo struct {
@@ -27,13 +27,6 @@ type BurnInfo struct {
 
 type AddressOrLockHash interface {
 	GetAddress() string
-}
-
-type Address struct {
-	Address string `json:"Address"`
-}
-func (addr *Address) GetAddress() string {
-	return addr.Address
 }
 
 type LockHash struct {

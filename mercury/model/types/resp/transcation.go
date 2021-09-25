@@ -2,7 +2,7 @@ package resp
 
 import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
-	. "github.com/nervosnetwork/ckb-sdk-go/mercury/model/common"
+	. "github.com/nervosnetwork/ckb-sdk-go/mercury/model/types"
 	"github.com/nervosnetwork/ckb-sdk-go/transaction"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 )

@@ -1,4 +1,4 @@
-package model
+package req
 
 import (
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/action"

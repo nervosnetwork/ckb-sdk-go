@@ -1,4 +1,4 @@
-package model
+package req
 
 type CollectAssetPayload struct {
 	UdtHash     string      `json:"udt_hash,omitempty"`

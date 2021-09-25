@@ -1,13 +1,13 @@
-package model
+package req
 
 import (
-	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/common"
+	. "github.com/nervosnetwork/ckb-sdk-go/mercury/model/types"
 )
 
 type GetBalancePayload struct {
-	AssetInfos []*common.AssetInfo `json:"asset_infos"`
-	TipBlockNumber  *common.BlockNumber `json:"block_numer,omitempty"`
-	Item Item `json:"item"`
+	AssetInfos []*AssetInfo     `json:"asset_infos"`
+	TipBlockNumber *BlockNumber `json:"block_numer,omitempty"`
+	Item           Item               `json:"item"`
 }
 
 type Item interface {
@@ -41,12 +41,12 @@ func (addr *RecordId) GetAddress() string {
 }
 
 type GetBalancePayloadBuilder struct {
-	Item Item
-	assetInfos []*common.AssetInfo
-	TipBlockNumber *common.BlockNumber
+	Item       Item
+	assetInfos []*AssetInfo
+	TipBlockNumber *BlockNumber
 }
 
-func (builder *GetBalancePayloadBuilder) AddAssetInfo(info *common.AssetInfo) {
+func (builder *GetBalancePayloadBuilder) AddAssetInfo(info *AssetInfo) {
 	builder.assetInfos = append(builder.assetInfos, info)
 }
 
@@ -58,7 +58,7 @@ func (builder *GetBalancePayloadBuilder) SetItem(item Item) {
 	builder.Item = item
 }
 
-func (builder *GetBalancePayloadBuilder) SetTipBlockNumber(tipBlockNumber common.BlockNumber) {
+func (builder *GetBalancePayloadBuilder) SetTipBlockNumber(tipBlockNumber BlockNumber) {
 	builder.TipBlockNumber = &tipBlockNumber
 }
 
@@ -75,7 +75,7 @@ func (builder *GetBalancePayloadBuilder) Build() *GetBalancePayload {
 func NewGetBalancePayloadBuilder() *GetBalancePayloadBuilder {
 	return &GetBalancePayloadBuilder{
 		Item:           nil,
-		assetInfos:     []*common.AssetInfo{},
+		assetInfos:     []*AssetInfo{},
 		TipBlockNumber: nil,
 	}
 }

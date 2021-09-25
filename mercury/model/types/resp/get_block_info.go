@@ -1,7 +1,7 @@
 package resp
 
 import (
-	. "github.com/nervosnetwork/ckb-sdk-go/mercury/model/common"
+	. "github.com/nervosnetwork/ckb-sdk-go/mercury/model/types"
 )
 
 type GetBlockInfoResponse struct {

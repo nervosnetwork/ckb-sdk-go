@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/example/constant"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/example/utils"
-	"github.com/nervosnetwork/ckb-sdk-go/mercury/model"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/action"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/source"
+	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/types/req"
 	"math/big"
 	"testing"
 )
@@ -19,7 +19,7 @@ const (
 )
 
 func TestFromAcp(t *testing.T) {
-	builder := model.NewTransferBuilder()
+	builder := req.NewTransferBuilder()
 	builder.AddUdtHash(constant.UDT_HASH)
 	builder.AddFromNormalAddresses([]string{acpAddress})
 	builder.AddToKeyAddressItem(constant.TEST_ADDRESS2, action.Lend_by_from, big.NewInt(100))
@@ -43,7 +43,7 @@ func TestFromAcp(t *testing.T) {
 }
 
 func TestToAcp(t *testing.T) {
-	builder := model.NewTransferBuilder()
+	builder := req.NewTransferBuilder()
 	builder.AddUdtHash(constant.UDT_HASH)
 	builder.AddFromKeyAddresses([]string{constant.TEST_ADDRESS1}, source.Unconstrained)
 	builder.AddToNormalAddressItem(acpAddress, big.NewInt(100))

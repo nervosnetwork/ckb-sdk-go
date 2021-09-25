@@ -6,10 +6,10 @@ import (
 	"github.com/nervosnetwork/ckb-sdk-go/address"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/example/constant"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/example/utils"
-	"github.com/nervosnetwork/ckb-sdk-go/mercury/model"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/action"
-	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/common"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/source"
+	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/types"
+	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/types/req"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 	"github.com/nervosnetwork/ckb-sdk-go/utils/amount"
 	"github.com/stretchr/testify/assert"
@@ -30,8 +30,8 @@ func TestCkbInsufficientBalanceToPayTheFee1(t *testing.T) {
 	from, _ := address.GenerateShortAddress(address.Testnet)
 	to, _ := address.GenerateShortAddress(address.Testnet)
 
-	builder := model.NewSmartTransferPayloadBuilder()
-	builder.AddAssetInfo(common.NewCkbAsset())
+	builder := req.NewSmartTransferPayloadBuilder()
+	builder.AddAssetInfo(types.NewCkbAsset())
 	builder.AddFrom(from.Address)
 	builder.AddSmartTo(to.Address, big.NewInt(100))
 
@@ -47,8 +47,8 @@ func TestCkbInsufficientBalanceToPayTheFee1(t *testing.T) {
 func TestCkbInsufficientBalanceToPayTheFee2(t *testing.T) {
 	from, _ := address.GenerateShortAddress(address.Testnet)
 
-	builder := model.NewSmartTransferPayloadBuilder()
-	builder.AddAssetInfo(common.NewCkbAsset())
+	builder := req.NewSmartTransferPayloadBuilder()
+	builder.AddAssetInfo(types.NewCkbAsset())
 	builder.AddFrom(from.Address)
 	builder.AddSmartTo(constant.TEST_ADDRESS4, amount.CkbToShannon(100))
 
@@ -69,8 +69,8 @@ func TestCkbInsufficientBalanceToPayTheFee2(t *testing.T) {
 func TestSourceByFleeting(t *testing.T) {
 	initChequeCell()
 
-	builder := model.NewSmartTransferPayloadBuilder()
-	builder.AddAssetInfo(common.NewUdtAsset(constant.UDT_HASH))
+	builder := req.NewSmartTransferPayloadBuilder()
+	builder.AddAssetInfo(types.NewUdtAsset(constant.UDT_HASH))
 	builder.AddFrom(constant.TEST_ADDRESS2)
 	builder.AddSmartTo(constant.TEST_ADDRESS4, big.NewInt(20))
 
@@ -90,8 +90,8 @@ func TestSourceByFleeting(t *testing.T) {
 
 func TestSourceByUnconstrained(t *testing.T) {
 
-	builder := model.NewSmartTransferPayloadBuilder()
-	builder.AddAssetInfo(common.NewUdtAsset(constant.UDT_HASH))
+	builder := req.NewSmartTransferPayloadBuilder()
+	builder.AddAssetInfo(types.NewUdtAsset(constant.UDT_HASH))
 	builder.AddFrom(constant.TEST_ADDRESS4)
 	builder.AddSmartTo(constant.TEST_ADDRESS1, big.NewInt(20))
 
@@ -111,8 +111,8 @@ func TestSourceByUnconstrained(t *testing.T) {
 
 func TestActionByPayByTo(t *testing.T) {
 
-	builder := model.NewSmartTransferPayloadBuilder()
-	builder.AddAssetInfo(common.NewUdtAsset(constant.UDT_HASH))
+	builder := req.NewSmartTransferPayloadBuilder()
+	builder.AddAssetInfo(types.NewUdtAsset(constant.UDT_HASH))
 	builder.AddFrom(constant.TEST_ADDRESS4)
 	builder.AddSmartTo(constant.TEST_ADDRESS1, big.NewInt(20))
 
@@ -133,8 +133,8 @@ func TestActionByPayByTo(t *testing.T) {
 func TestActionByPayByFrom(t *testing.T) {
 	to, _ := address.GenerateShortAddress(address.Testnet)
 
-	builder := model.NewSmartTransferPayloadBuilder()
-	builder.AddAssetInfo(common.NewUdtAsset(constant.UDT_HASH))
+	builder := req.NewSmartTransferPayloadBuilder()
+	builder.AddAssetInfo(types.NewUdtAsset(constant.UDT_HASH))
 	builder.AddFrom(constant.TEST_ADDRESS4)
 	builder.AddSmartTo(to.Address, big.NewInt(20))
 
@@ -155,7 +155,7 @@ func TestActionByPayByFrom(t *testing.T) {
 func initChequeCell() {
 	mercuryApi := constant.GetMercuryApiInstance()
 
-	builder := model.NewTransferBuilder()
+	builder := req.NewTransferBuilder()
 	builder.AddUdtHash(constant.UDT_HASH)
 	builder.AddFromKeyAddresses([]string{constant.TEST_ADDRESS1}, source.Unconstrained)
 	builder.AddToKeyAddressItem(constant.TEST_ADDRESS2, action.Lend_by_from, big.NewInt(100))

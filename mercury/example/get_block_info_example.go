@@ -4,13 +4,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/example/constant"
-	"github.com/nervosnetwork/ckb-sdk-go/mercury/model"
+	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/types/req"
 	"strings"
 	"testing"
 )
 
 func TestGetGenericBlockWithBlockNumber(t *testing.T) {
-	builder := model.NewGetGenericBlockPayloadBuilder()
+	builder := req.NewGetGenericBlockPayloadBuilder()
 	builder.AddBlockNumber(2172093)
 
 	payload, err := builder.Build()
@@ -37,7 +37,7 @@ func TestGetGenericBlockWithBlockNumber(t *testing.T) {
 }
 
 func TestGetGenericBlockWithBlockHash(t *testing.T) {
-	builder := model.NewGetGenericBlockPayloadBuilder()
+	builder := req.NewGetGenericBlockPayloadBuilder()
 	builder.AddBlockHash("0xee8adba356105149cb9dc1cb0d09430a6bd01182868787ace587961c0d64e742")
 
 	payload, err := builder.Build()
@@ -59,7 +59,7 @@ func TestGetGenericBlockWithBlockHash(t *testing.T) {
 }
 
 func TestGetGenericBlockWithBlockHashAndBlockNumber(t *testing.T) {
-	builder := model.NewGetGenericBlockPayloadBuilder()
+	builder := req.NewGetGenericBlockPayloadBuilder()
 	builder.AddBlockNumber(2172093)
 	builder.AddBlockHash("0xee8adba356105149cb9dc1cb0d09430a6bd01182868787ace587961c0d64e742")
 
@@ -81,7 +81,7 @@ func TestGetGenericBlockWithBlockHashAndBlockNumber(t *testing.T) {
 }
 
 func TestTipGenericBlock(t *testing.T) {
-	builder := model.NewGetGenericBlockPayloadBuilder()
+	builder := req.NewGetGenericBlockPayloadBuilder()
 
 	payload, err := builder.Build()
 	if err != nil {
@@ -101,7 +101,7 @@ func TestTipGenericBlock(t *testing.T) {
 }
 
 func TestBlockHashAndBlockNumberDoNotMatch(t *testing.T) {
-	builder := model.NewGetGenericBlockPayloadBuilder()
+	builder := req.NewGetGenericBlockPayloadBuilder()
 	builder.AddBlockNumber(2172092)
 	builder.AddBlockHash("0xee8adba356105149cb9dc1cb0d09430a6bd01182868787ace587961c0d64e742")
 
@@ -117,7 +117,7 @@ func TestBlockHashAndBlockNumberDoNotMatch(t *testing.T) {
 }
 
 func TestCannotFind(t *testing.T) {
-	builder := model.NewGetGenericBlockPayloadBuilder()
+	builder := req.NewGetGenericBlockPayloadBuilder()
 	builder.AddBlockHash("0xee8adba356105149cb9dc1cb0d09430a6bd01182868787ace587961c0d64e741")
 
 	payload, err := builder.Build()
@@ -132,7 +132,7 @@ func TestCannotFind(t *testing.T) {
 }
 
 func TestWrongHeight(t *testing.T) {
-	builder := model.NewGetGenericBlockPayloadBuilder()
+	builder := req.NewGetGenericBlockPayloadBuilder()
 	builder.AddBlockNumber(217209233)
 
 	payload, err := builder.Build()
