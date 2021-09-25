@@ -15,7 +15,7 @@ type Client interface {
 	BuildAdjustAccountTransaction(payload *model.AdjustAccountPayload) (*resp.TransferCompletionResponse, error)
 	BuildAssetCollectionTransaction(payload *model.CollectAssetPayload) (*resp.TransferCompletionResponse, error)
 	RegisterAddresses(normalAddresses []string) ([]string, error)
-	GetTransactionInfo(txHash string) (*resp.TransactionInfoWithStatusResponse, error)
+	GetTransactionInfo(txHash string) (*resp.GetTransactionInfoResponse, error)
 	GetBlockInfo(payload *model.GetBlockInfoPayload) (*resp.BlockInfoResponse, error)
 	QueryGenericTransactions(payload *model.QueryGenericTransactionsPayload) (*resp.QueryGenericTransactionsResponse, error)
 }
@@ -106,30 +106,24 @@ func (cli *client) GetBlockInfo(payload *model.GetBlockInfoPayload) (*resp.Block
 		Timestamp:       block.Timestamp,
 	}
 
-	for _, transaction := range block.Transactions {
-		tx, err := toTransactionInfoResponse(transaction.Operations, transaction.TxHash)
-		if err != nil {
-			return nil, err
-		}
-		result.Transactions = append(result.Transactions, tx)
-	}
+	//for _, transaction := range block.Transactions {
+	//	tx, err := toTransactionInfoResponse(transaction.Operations, transaction.TxHash)
+	//	if err != nil {
+	//		return nil, err
+	//	}
+	//	result.Transactions = append(result.Transactions, tx)
+	//}
 
 	return &result, err
 }
 
-func (cli *client) GetTransactionInfo(txHash string) (*resp.TransactionInfoWithStatusResponse, error) {
-	var tx *rpcTransactionInfoWithStatusResponse
-	err := cli.c.Call(&tx, "get_generic_transaction", txHash)
+func (cli *client) GetTransactionInfo(txHash string) (*resp.GetTransactionInfoResponse, error) {
+	var tx *resp.GetTransactionInfoResponse
+	err := cli.c.Call(&tx, "get_transaction_info", txHash)
 	if err != nil {
 		return nil, err
 	}
-
-	result, err := toTransactionInfoWithStatusResponse(tx)
-	if err != nil {
-		return nil, err
-	}
-
-	return result, err
+	return tx, err
 }
 
 func (cli *client) QueryGenericTransactions(payload *model.QueryGenericTransactionsPayload) (*resp.QueryGenericTransactionsResponse, error) {
