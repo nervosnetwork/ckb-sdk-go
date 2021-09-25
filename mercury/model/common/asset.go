@@ -3,24 +3,25 @@ package common
 type AssetType string
 
 const (
-	Ckb AssetType = "Ckb"
-	Udt           = "Udt"
+	CKB AssetType = "CKB"
+	UDT           = "UDT"
 )
 
 type AssetInfo struct {
-	AssetType AssetType
-	UdtHash   string
+	AssetType AssetType `json:"asset_type"`
+	UdtHash   string    `json:"udt_hash"`
 }
 
 func NewCkbAsset() *AssetInfo {
 	return &AssetInfo{
-		AssetType: Ckb,
+		AssetType: CKB,
+		UdtHash:   "0x0000000000000000000000000000000000000000000000000000000000000000",
 	}
 }
 
 func NewUdtAsset(udtHash string) *AssetInfo {
 	return &AssetInfo{
-		AssetType: Udt,
+		AssetType: UDT,
 		UdtHash:   udtHash,
 	}
 }
