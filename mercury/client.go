@@ -25,10 +25,21 @@ type Client interface {
 	GetBlockInfo(payload *model.GetBlockInfoPayload) (*resp.GetBlockInfoResponse, error)
 	QueryGenericTransactions(payload *model.QueryGenericTransactionsPayload) (*resp.QueryGenericTransactionsResponse, error)
 	GetAccountNumber(address string) (uint, error)
+	GetDbInfo() (*resp.DBDriver, error)
 }
 
 type client struct {
 	c *rpc.Client
+}
+
+func (cli *client) GetDbInfo() (*resp.DBDriver, error) {
+	var resp resp.DBDriver
+	err := cli.c.Call(&resp, "get_balance")
+	if err != nil {
+		return nil, err
+	}
+
+	return &resp, err
 }
 
 func (cli *client) GetBalance(payload *model.GetBalancePayload) (*resp.GetBalanceResponse, error) {
