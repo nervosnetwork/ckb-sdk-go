@@ -2,6 +2,7 @@ package resp
 
 import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
+	. "github.com/nervosnetwork/ckb-sdk-go/mercury/model/common"
 	"github.com/nervosnetwork/ckb-sdk-go/transaction"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 )
@@ -68,7 +69,7 @@ func toTransaction(tx transactionResp) *types.Transaction {
 	}
 }
 
-func toCellDeps(deps []cellDep) []*types.CellDep {
+func toCellDeps(deps []CellDep) []*types.CellDep {
 	result := make([]*types.CellDep, len(deps))
 	for i := 0; i < len(deps); i++ {
 		dep := deps[i]
@@ -83,7 +84,7 @@ func toCellDeps(deps []cellDep) []*types.CellDep {
 	return result
 }
 
-func toInputs(inputs []cellInput) []*types.CellInput {
+func toInputs(inputs []CellInput) []*types.CellInput {
 	result := make([]*types.CellInput, len(inputs))
 	for i := 0; i < len(inputs); i++ {
 		input := inputs[i]
@@ -98,7 +99,7 @@ func toInputs(inputs []cellInput) []*types.CellInput {
 	return result
 }
 
-func toOutputs(outputs []cellOutput) []*types.CellOutput {
+func toOutputs(outputs []CellOutput) []*types.CellOutput {
 	result := make([]*types.CellOutput, len(outputs))
 	for i := 0; i < len(outputs); i++ {
 		output := outputs[i]

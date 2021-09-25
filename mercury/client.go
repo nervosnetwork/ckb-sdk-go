@@ -26,6 +26,7 @@ type Client interface {
 	QueryGenericTransactions(payload *model.QueryGenericTransactionsPayload) (*resp.QueryGenericTransactionsResponse, error)
 	GetAccountNumber(address string) (uint, error)
 	GetDbInfo() (*resp.DBDriver, error)
+	GetMercuryInfo() (*resp.MercuryInfo, error)
 }
 
 type client struct {
@@ -34,6 +35,16 @@ type client struct {
 
 func (cli *client) GetDbInfo() (*resp.DBDriver, error) {
 	var resp resp.DBDriver
+	err := cli.c.Call(&resp, "get_balance")
+	if err != nil {
+		return nil, err
+	}
+
+	return &resp, err
+}
+
+func (cli *client) GetMercuryInfo() (*resp.MercuryInfo, error) {
+	var resp resp.MercuryInfo
 	err := cli.c.Call(&resp, "get_balance")
 	if err != nil {
 		return nil, err
