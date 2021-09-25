@@ -1,26 +1,28 @@
 package model
 
+import "github.com/nervosnetwork/ckb-sdk-go/mercury/model/common"
+
 type GetBlockInfoPayload struct {
-	BlockNum  uint64 `json:"block_num,omitempty"`
-	BlockHash string `json:"block_hash,omitempty"`
+	BlockNumber common.BlockNumber `json:"block_number,omitempty"`
+	BlockHash common.H256 `json:"block_hash,omitempty"`
 }
 
 type getBlockInfoPayloadBuilder struct {
-	blockNum  uint64
-	blockHash string
+	blockNumber  common.BlockNumber
+	blockHash common.H256
 }
 
-func (builder *getBlockInfoPayloadBuilder) AddBlockNumber(blockNumber uint64) {
-	builder.blockNum = blockNumber
+func (builder *getBlockInfoPayloadBuilder) AddBlockNumber(blockNumber common.BlockNumber) {
+	builder.blockNumber = blockNumber
 }
 
-func (builder *getBlockInfoPayloadBuilder) AddBlockHash(blockHash string) {
+func (builder *getBlockInfoPayloadBuilder) AddBlockHash(blockHash common.H256) {
 	builder.blockHash = blockHash
 }
 
 func (builder *getBlockInfoPayloadBuilder) Build() (*GetBlockInfoPayload, error) {
 	return &GetBlockInfoPayload{
-		builder.blockNum,
+		builder.blockNumber,
 		builder.blockHash,
 	}, nil
 }
