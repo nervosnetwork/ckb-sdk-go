@@ -18,10 +18,21 @@ type Client interface {
 	GetTransactionInfo(txHash string) (*resp.TransactionInfoWithStatusResponse, error)
 	GetBlockInfo(payload *model.GetBlockInfoPayload) (*resp.BlockInfoResponse, error)
 	QueryGenericTransactions(payload *model.QueryGenericTransactionsPayload) (*resp.QueryGenericTransactionsResponse, error)
+	GetDbInfo() (*resp.DBInfo, error)
 }
 
 type client struct {
 	c *rpc.Client
+}
+
+func (cli *client) GetDbInfo() (*resp.DBInfo, error) {
+	var resp resp.DBInfo
+	err := cli.c.Call(&resp, "get_db_info")
+	if err != nil {
+		return nil, err
+	}
+
+	return &resp, err
 }
 
 func (cli *client) GetBalance(payload *model.GetBalancePayload) (*resp.GetBalanceResponse, error) {

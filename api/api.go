@@ -29,6 +29,10 @@ func (cli *DefaultCkbApi) VerifyTransactionProof(ctx context.Context, proof *typ
 	return cli.ckb.VerifyTransactionProof(ctx, proof)
 }
 
+func (cli *DefaultCkbApi) GetDbInfo() (*resp.DBInfo, error) {
+	return cli.mercury.GetDbInfo()
+}
+
 func (cli *DefaultCkbApi) GetBalance(payload *model.GetBalancePayload) (*resp.GetBalanceResponse, error) {
 	return cli.mercury.GetBalance(payload)
 }
@@ -224,6 +228,7 @@ func (cli *DefaultCkbApi) GetTip(ctx context.Context) (*indexer.TipHeader, error
 func (cli *DefaultCkbApi) GetCellsCapacity(ctx context.Context, searchKey *indexer.SearchKey) (*indexer.Capacity, error) {
 	return cli.ckb.GetCellsCapacity(ctx, searchKey)
 }
+
 
 func (cli *DefaultCkbApi) Close() {
 	cli.ckb.Close()
