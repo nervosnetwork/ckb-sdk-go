@@ -1,17 +1,17 @@
 package model
 
 type GetBlockInfoPayload struct {
-	BlockNum  uint64 `json:"block_num,omitempty"`
-	BlockHash string `json:"block_hash,omitempty"`
+	BlockNumber uint64 `json:"block_number,omitempty"`
+	BlockHash   string `json:"block_hash,omitempty"`
 }
 
 type getBlockInfoPayloadBuilder struct {
-	blockNum  uint64
-	blockHash string
+	blockNumber uint64
+	blockHash   string
 }
 
 func (builder *getBlockInfoPayloadBuilder) AddBlockNumber(blockNumber uint64) {
-	builder.blockNum = blockNumber
+	builder.blockNumber = blockNumber
 }
 
 func (builder *getBlockInfoPayloadBuilder) AddBlockHash(blockHash string) {
@@ -20,7 +20,7 @@ func (builder *getBlockInfoPayloadBuilder) AddBlockHash(blockHash string) {
 
 func (builder *getBlockInfoPayloadBuilder) Build() (*GetBlockInfoPayload, error) {
 	return &GetBlockInfoPayload{
-		builder.blockNum,
+		builder.blockNumber,
 		builder.blockHash,
 	}, nil
 }
