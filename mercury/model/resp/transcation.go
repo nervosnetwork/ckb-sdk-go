@@ -68,7 +68,7 @@ func toTransaction(tx transactionResp) *types.Transaction {
 	}
 }
 
-func toCellDeps(deps []cellDep) []*types.CellDep {
+func toCellDeps(deps []CellDep) []*types.CellDep {
 	result := make([]*types.CellDep, len(deps))
 	for i := 0; i < len(deps); i++ {
 		dep := deps[i]

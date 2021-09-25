@@ -33,6 +33,10 @@ func (cli *DefaultCkbApi) GetDbInfo() (*resp.DBInfo, error) {
 	return cli.mercury.GetDbInfo()
 }
 
+func (cli *DefaultCkbApi) GetMercuryInfo() (*resp.MercuryInfo, error) {
+	return cli.mercury.GetMercuryInfo()
+}
+
 func (cli *DefaultCkbApi) GetBalance(payload *model.GetBalancePayload) (*resp.GetBalanceResponse, error) {
 	return cli.mercury.GetBalance(payload)
 }
