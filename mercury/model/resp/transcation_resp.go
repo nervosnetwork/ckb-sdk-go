@@ -7,16 +7,16 @@ import (
 
 type transactionResp struct {
 	Version     hexutil.Uint    `json:"version"`
-	Hash        types.Hash      `json:"hash"`
-	CellDeps    []cellDep       `json:"cell_deps"`
-	HeaderDeps  []types.Hash    `json:"header_deps"`
+	Hash        types.Hash   `json:"hash"`
+	CellDeps    []CellDep    `json:"cell_deps"`
+	HeaderDeps  []types.Hash `json:"header_deps"`
 	Inputs      []cellInput     `json:"inputs"`
 	Outputs     []cellOutput    `json:"outputs"`
 	OutputsData []hexutil.Bytes `json:"outputs_data"`
 	Witnesses   []hexutil.Bytes `json:"witnesses"`
 }
 
-type cellDep struct {
+type CellDep struct {
 	OutPoint outPoint      `json:"out_point"`
 	DepType  types.DepType `json:"dep_type"`
 }
@@ -33,11 +33,11 @@ type cellInput struct {
 
 type cellOutput struct {
 	Capacity hexutil.Uint64 `json:"capacity"`
-	Lock     *script        `json:"lock"`
-	Type     *script        `json:"type"`
+	Lock     *Script        `json:"lock"`
+	Type     *Script        `json:"type"`
 }
 
-type script struct {
+type Script struct {
 	CodeHash types.Hash           `json:"code_hash"`
 	HashType types.ScriptHashType `json:"hash_type"`
 	Args     hexutil.Bytes        `json:"args"`
