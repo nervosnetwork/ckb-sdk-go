@@ -68,7 +68,7 @@ func toTransactionInfoResponse(txs []*rpcRecordResponse, txHash string) (*resp.T
 	for _, op := range txs {
 
 		var asset *common.AssetInfo
-		if op.Amount.Status == common.Ckb {
+		if op.Amount.Status == common.CKB {
 			asset = common.NewCkbAsset()
 		} else {
 			asset = common.NewUdtAsset(op.Amount.UdtHash)
