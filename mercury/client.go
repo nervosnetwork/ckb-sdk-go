@@ -125,18 +125,13 @@ func (cli *client) GetBlockInfo(payload *model.GetBlockInfoPayload) (*resp.Block
 }
 
 func (cli *client) GetTransactionInfo(txHash string) (*resp.GetTransactionInfoResponse, error) {
-	var tx *rpcTransactionInfoWithStatusResponse
-	err := cli.c.Call(&tx, "get_generic_transaction", txHash)
+	var resp *resp.GetTransactionInfoResponse
+	err := cli.c.Call(&resp, "get_transaction_info", txHash)
 	if err != nil {
 		return nil, err
 	}
 
-	result, err := toTransactionInfoWithStatusResponse(tx)
-	if err != nil {
-		return nil, err
-	}
-
-	return result, err
+	return resp, err
 }
 
 func (cli *client) QueryGenericTransactions(payload *model.QueryGenericTransactionsPayload) (*resp.QueryGenericTransactionsResponse, error) {

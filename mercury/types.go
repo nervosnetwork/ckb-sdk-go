@@ -1,7 +1,6 @@
 package mercury
 
 import (
-	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/resp"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 )
 
@@ -31,18 +30,6 @@ type rpcAmountResp struct {
 	Value   string      `json:"value"`
 	UdtHash string      `json:"udt_hash"`
 	Status  interface{} `json:"status"`
-}
-
-func toTransactionInfoWithStatusResponse(tx *rpcTransactionInfoWithStatusResponse) (*resp.GetTransactionInfoResponse, error) {
-	result := &resp.GetTransactionInfoResponse{
-		// Status:          tx.Status,
-		// BlockHash:       tx.BlockHash,
-		// BlockNumber:     tx.BlockNumber,
-		// ConfirmedNumber: tx.ConfirmedNumber,
-		// Transaction:     transactionInfoResponse,
-	}
-
-	return result, nil
 }
 
 // -----------------------------------------------------------------------------------------------------------------------------------------------
