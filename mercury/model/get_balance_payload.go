@@ -6,8 +6,8 @@ import (
 
 type GetBalancePayload struct {
 	AssetInfos []*common.AssetInfo `json:"asset_infos"`
-	TipBlockNumber  *uint          `json:"block_numer,omitempty"`
-	Item   Item                    `json:"item"`
+	TipBlockNumber  *common.BlockNumber `json:"block_numer,omitempty"`
+	Item Item `json:"item"`
 }
 
 type Item interface {
@@ -43,7 +43,7 @@ func (addr *RecordId) GetAddress() string {
 type GetBalancePayloadBuilder struct {
 	Item Item
 	assetInfos []*common.AssetInfo
-	TipBlockNumber *uint
+	TipBlockNumber *common.BlockNumber
 }
 
 func (builder *GetBalancePayloadBuilder) AddAssetInfo(info *common.AssetInfo) {
@@ -58,7 +58,7 @@ func (builder *GetBalancePayloadBuilder) SetItem(item Item) {
 	builder.Item = item
 }
 
-func (builder *GetBalancePayloadBuilder) SetTipBlockNumber(tipBlockNumber uint) {
+func (builder *GetBalancePayloadBuilder) SetTipBlockNumber(tipBlockNumber common.BlockNumber) {
 	builder.TipBlockNumber = &tipBlockNumber
 }
 

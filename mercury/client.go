@@ -32,40 +32,13 @@ type client struct {
 }
 
 func (cli *client) GetBalance(payload *model.GetBalancePayload) (*resp.GetBalanceResponse, error) {
-	var balance rpcGetBalanceResponse
-	err := cli.c.Call(&balance, "get_balance", payload)
+	var resp resp.GetBalanceResponse
+	err := cli.c.Call(&resp, "get_balance", payload)
 	if err != nil {
 		return nil, err
 	}
 
-	result := &resp.GetBalanceResponse{}
-	for _, balanceResp := range balance.Balances {
-		var asset *common.AssetInfo
-		if balanceResp.UdtHash == "" {
-			asset = common.NewCkbAsset()
-		} else {
-			asset = common.NewUdtAsset(balanceResp.UdtHash)
-		}
-
-		free := new(big.Int)
-		free.SetString(balanceResp.Unconstrained, 0)
-
-		claimable := new(big.Int)
-		claimable.SetString(balanceResp.Fleeting, 0)
-
-		freezed := new(big.Int)
-		freezed.SetString(balanceResp.Locked, 0)
-
-		result.Balances = append(result.Balances, &resp.BalanceResp{
-			Address:   balanceResp.KeyAddress,
-			AssetInfo: asset,
-			Free:      free,
-			Claimable: claimable,
-			Freezed:   freezed,
-		})
-	}
-
-	return result, err
+	return &resp, err
 }
 
 func (cli *client) BuildTransferTransaction(payload *model.TransferPayload) (*resp.TransferCompletionResponse, error) {
