@@ -25,13 +25,7 @@ func (addr *Identity) GetAddress() string {
 
 // Only the balance of the address in the corresponding format is available.
 // For example, the secp256k1 address will only query the balance of the secp256k1 format, and will not contain the balance of the remaining formats.
-type Address struct {
-	Address string `json:"address"`
-}
-
-func (addr *Address) GetAddress() string {
-	return addr.Address
-}
+// see types.Address
 
 type RecordId struct {
 	RecordId string `json:"record_id"`

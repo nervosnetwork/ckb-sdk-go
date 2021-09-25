@@ -1,6 +1,10 @@
 package types
 
-import "math/big"
+import (
+	"encoding/json"
+	"math/big"
+
+)
 type TransactionInfo struct {
 	TxHash     string               `json:"tx_hash"`
 	Records    []*Record            `json:"records"`
@@ -13,11 +17,44 @@ type Record struct {
 	AddressOrLockHash AddressOrLockHash `json:"address_or_lock_hash"`
 	Amount big.Int `json:"amount"`
 	Occupied uint64 `json:"occupied"`
-	Asset_info AssetInfo `json:"asset_info"`
+	AssetInfo AssetInfo `json:"asset_info"`
 	Status RecordStatus `json:"status"`
 	Extra *ExtraFilter `json:"extra"`
-	BlockNumber uint64 `json:"block_number"`
+	BlockNumber BlockNumber `json:"block_number"`
 	EpochNumber []byte `json:"epoch_number"`
+}
+
+func (r *Record) UnmarshalJSON(data []byte) error {
+	type Alias Record
+	aux := &struct {
+		AddressOrLockHash map[string]string `json:"address_or_lock_hash"`
+		Status map[string]BlockNumber `json:"status"`
+		*Alias
+	}{
+		Alias: (*Alias)(r),
+	}
+	if err := json.Unmarshal(data, &aux); err != nil {
+		return err
+	}
+	for k, v := range aux.AddressOrLockHash {
+		switch k {
+			case "Address":
+				r.AddressOrLockHash = &Address{v}
+			case "LockHash":
+				r.AddressOrLockHash = &LockHash{v}
+		}
+		break
+	}
+	for k, v := range aux.Status {
+		switch k {
+			case "Claimable":
+				r.Status = &Claimable{v}
+			case "Fixed":
+				r.Status = &Fixed{v}
+		}
+		break
+	}
+	return nil
 }
 
 type BurnInfo struct {
@@ -28,29 +65,36 @@ type BurnInfo struct {
 type AddressOrLockHash interface {
 	GetAddress() string
 }
+type Address struct {
+	Address string
+}
+
+func (addr *Address) GetAddress() string {
+	return addr.Address
+}
 
 type LockHash struct {
-	LockHash string `json:"LockHash"`
+	LockHash string
 }
 func (addr *LockHash) GetAddress() string {
 	return addr.LockHash
 }
 
 type RecordStatus interface {
-	GetBlockNumber() uint64
+	GetBlockNumber() BlockNumber
 }
 
 type Claimable struct {
-	BlockNumber uint64 `json:"Claimable"`
+	BlockNumber BlockNumber
 }
-func (status *Claimable) GetBlockNumber() uint64 {
+func (status *Claimable) GetBlockNumber() BlockNumber {
 	return status.BlockNumber
 }
 
 type Fixed struct {
-	BlockNumber uint64 `json:"Fixed"`
+	BlockNumber BlockNumber
 }
-func (status *Fixed) GetBlockNumber() uint64 {
+func (status *Fixed) GetBlockNumber() BlockNumber {
 	return status.BlockNumber
 }
 

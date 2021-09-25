@@ -1,5 +1,7 @@
 package req
 
+import . "github.com/nervosnetwork/ckb-sdk-go/mercury/model/types"
+
 type QueryGenericTransactionsPayload struct {
 	Address   Item          `json:"address"`
 	UdtHashes []interface{} `json:"udt_hashes"`
