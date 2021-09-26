@@ -21,6 +21,14 @@ type DefaultCkbApi struct {
 	mercury mercury.Client
 }
 
+func (cli *DefaultCkbApi) BuildDepositTransaction(payload *model.DepositPayload) (*resp.TransferCompletionResponse, error) {
+	return cli.mercury.BuildDepositTransaction(payload)
+}
+
+func (cli *DefaultCkbApi) BuildWithdrawTransaction(payload *model.WithdrawPayload) (*resp.TransferCompletionResponse, error) {
+	return cli.mercury.BuildWithdrawTransaction(payload)
+}
+
 func (cli *DefaultCkbApi) GetSpentTransactionWithTransactionInfo(payload *model.GetSpentTransactionPayload) (*resp.TransactionInfoWrapper, error) {
 	return cli.mercury.GetSpentTransactionWithTransactionInfo(payload)
 }

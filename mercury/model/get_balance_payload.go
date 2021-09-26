@@ -44,26 +44,3 @@ func NewGetBalancePayloadBuilder() *getBalancePayloadBuilder {
 		assetInfos: make([]*common.AssetInfo, 0),
 	}
 }
-
-type QueryAddress interface {
-	GetAddress() string
-}
-
-// Only addresses in secp256k1 format are available, and the balance contains the balance of addresses in other formats.
-type KeyAddress struct {
-	KeyAddress string
-}
-
-func (addr *KeyAddress) GetAddress() string {
-	return addr.KeyAddress
-}
-
-// Only the balance of the address in the corresponding format is available.
-// For example, the secp256k1 address will only query the balance of the secp256k1 format, and will not contain the balance of the remaining formats.
-type NormalAddress struct {
-	NormalAddress string
-}
-
-func (addr *NormalAddress) GetAddress() string {
-	return addr.NormalAddress
-}
