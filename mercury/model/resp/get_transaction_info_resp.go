@@ -2,7 +2,6 @@ package resp
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/common"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
@@ -47,7 +46,6 @@ type RecordStatus struct {
 func (r *RecordStatus) UnmarshalJSON(bytes []byte) error {
 	recordData := make(map[string]interface{})
 	json.Unmarshal(bytes, &recordData)
-	fmt.Println(string(bytes))
 
 	if _, ok := recordData["Claimable"]; ok {
 		blockNumber := recordData["Claimable"].(float64)
@@ -69,7 +67,9 @@ type ExtraFilter struct {
 }
 
 func (e *ExtraFilter) UnmarshalJSON(bytes []byte) error {
-	fmt.Println(string(bytes))
+	if strings.Contains(string(bytes), "null") {
+		return nil
+	}
 
 	if strings.Contains(string(bytes), "CellBase") {
 		e.ExtraType = CellBase

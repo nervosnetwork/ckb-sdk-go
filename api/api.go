@@ -61,7 +61,7 @@ func (cli *DefaultCkbApi) GetTransactionInfo(txHash string) (*resp.GetTransactio
 	return cli.mercury.GetTransactionInfo(txHash)
 }
 
-func (cli *DefaultCkbApi) GetBlockInfo(payload *model.GetBlockInfoPayload) (*resp.BlockInfoResponse, error) {
+func (cli *DefaultCkbApi) GetBlockInfo(payload *model.GetBlockInfoPayload) (*resp.BlockInfo, error) {
 	return cli.mercury.GetBlockInfo(payload)
 }
 

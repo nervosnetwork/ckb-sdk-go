@@ -16,7 +16,7 @@ type Client interface {
 	BuildAssetCollectionTransaction(payload *model.CollectAssetPayload) (*resp.TransferCompletionResponse, error)
 	RegisterAddresses(normalAddresses []string) ([]string, error)
 	GetTransactionInfo(txHash string) (*resp.GetTransactionInfoResponse, error)
-	GetBlockInfo(payload *model.GetBlockInfoPayload) (*resp.BlockInfoResponse, error)
+	GetBlockInfo(payload *model.GetBlockInfoPayload) (*resp.BlockInfo, error)
 	QueryGenericTransactions(payload *model.QueryGenericTransactionsPayload) (*resp.QueryGenericTransactionsResponse, error)
 	GetDbInfo() (*resp.DBInfo, error)
 	GetMercuryInfo() (*resp.MercuryInfo, error)
@@ -114,29 +114,14 @@ func (cli *client) RegisterAddresses(normalAddresses []string) ([]string, error)
 	return scriptHash, err
 }
 
-func (cli *client) GetBlockInfo(payload *model.GetBlockInfoPayload) (*resp.BlockInfoResponse, error) {
-	var block *rpcBlockInfoResponse
-	err := cli.c.Call(&block, "get_generic_block", payload)
+func (cli *client) GetBlockInfo(payload *model.GetBlockInfoPayload) (*resp.BlockInfo, error) {
+	var block resp.BlockInfo
+	err := cli.c.Call(&block, "get_block_info", payload)
 	if err != nil {
 		return nil, err
 	}
 
-	result := resp.BlockInfoResponse{
-		BlockNumber:     block.BlockNumber,
-		BlockHash:       block.BlockHash,
-		ParentBlockHash: block.ParentBlockHash,
-		Timestamp:       block.Timestamp,
-	}
-
-	//for _, transaction := range block.Transactions {
-	//	tx, err := toTransactionInfoResponse(transaction.Operations, transaction.TxHash)
-	//	if err != nil {
-	//		return nil, err
-	//	}
-	//	result.Transactions = append(result.Transactions, tx)
-	//}
-
-	return &result, err
+	return &block, err
 }
 
 func (cli *client) GetTransactionInfo(txHash string) (*resp.GetTransactionInfoResponse, error) {
