@@ -19,8 +19,8 @@ func (v *QueryTransactionsPayload) AddAssetInfo(assetInfo *common.AssetInfo) {
 }
 
 type BlockRange struct {
-	From *uint64 `json:"from"`
-	To   *uint64 `json:"to"`
+	From uint64 `json:"from"`
+	To   uint64 `json:"to"`
 }
 
 type PaginationRequest struct {
@@ -59,18 +59,9 @@ func (b *QueryTransactionsPayloadBuilder) SetExtra(extra *common.ExtraType) *Que
 	b.Extra = extra
 	return b
 }
-func (b *QueryTransactionsPayloadBuilder) SetFrom(from uint64) *QueryTransactionsPayloadBuilder {
-	if b.BlockRange == nil {
-		b.BlockRange = &BlockRange{}
-	}
-	b.BlockRange.From = &from
-	return b
-}
-func (b *QueryTransactionsPayloadBuilder) SetTo(to uint64) *QueryTransactionsPayloadBuilder {
-	if b.BlockRange == nil {
-		b.BlockRange = &BlockRange{}
-	}
-	b.BlockRange.To = &to
+
+func (b *QueryTransactionsPayloadBuilder) AddBlockRange(blockRangerange *BlockRange) *QueryTransactionsPayloadBuilder {
+	b.BlockRange = blockRangerange
 	return b
 }
 
@@ -89,7 +80,7 @@ func (b *QueryTransactionsPayloadBuilder) SetLimit(limit uint64) *QueryTransacti
 	return b
 }
 
-func (b *QueryTransactionsPayloadBuilder) SetSkip(skip uint64) *QueryTransactionsPayloadBuilder {
+func (b *QueryTransactionsPayloadBuilder) SetPageNumber(skip uint64) *QueryTransactionsPayloadBuilder {
 	b.Pagination.Skip = skip
 	return b
 }
@@ -101,7 +92,7 @@ func NewQueryTransactionsPayloadBuilder() *QueryTransactionsPayloadBuilder {
 		Extra:      nil,
 		BlockRange: nil,
 		Pagination: PaginationRequest{
-			Order:       ASC,
+			Order:       DESC,
 			Limit:       50,
 			ReturnCount: false,
 		},
@@ -122,7 +113,7 @@ func (b QueryTransactionsPayloadBuilder) Build() *QueryTransactionsPayload {
 		y, _ := math.SafeSub(x, payload.Pagination.Limit)
 		payload.Pagination.Skip = y
 	}
-	if payload.Pagination.Cursor != nil && payload.Pagination.Order == DESC {
+	if payload.Pagination.Cursor == nil && payload.Pagination.Order == DESC {
 		payload.Pagination.Cursor = []int{127, 255, 255, 255, 255, 255, 255, 254}
 	}
 	return payload
