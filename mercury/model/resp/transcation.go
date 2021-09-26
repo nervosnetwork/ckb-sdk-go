@@ -8,7 +8,7 @@ import (
 )
 
 type TransferCompletionResponse struct {
-	TxView    transactionResp   `json:"tx_view"`
+	TxView    *transactionResp  `json:"tx_view"`
 	SigsEntry []*SignatureEntry `json:"signature_entries"`
 }
 
@@ -56,7 +56,7 @@ func (self *TransferCompletionResponse) GetScriptGroup() []*ScriptGroup {
 	return groupScripts
 }
 
-func toTransaction(tx transactionResp) *types.Transaction {
+func toTransaction(tx *transactionResp) *types.Transaction {
 	return &types.Transaction{
 		Version:     uint(tx.Version),
 		Hash:        tx.Hash,
