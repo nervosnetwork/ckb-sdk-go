@@ -1,33 +1,43 @@
 package test
 
 import (
-	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/example/constant"
-	"github.com/nervosnetwork/ckb-sdk-go/mercury/example/utils"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/common"
+	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/req"
 	"testing"
 )
 
 func TestBuildAdjustAccountTransaction(t *testing.T) {
 	mercuryApi := constant.GetMercuryApiInstance()
 
-	builder := model.NewAdjustAccountPayloadBuilder()
-	builder.AddKeyAddress(constant.TEST_ADDRESS3)
-	builder.AddAssetInfo(common.NewUdtAsset(constant.UDT_HASH))
+	payload := model.NewBuildAdjustAccountPayload()
+	item, _ := req.NewIdentityItemByCkb("0x512e97d31dcc9f012c550e880cbcc10daafb7aed")
+	payload.Item = item
+	from, _ := req.NewIdentityItemByCkb(constant.TEST_PUBKEY3)
+	payload.AddItemToFrom(from)
+	payload.AssetInfo = common.NewUdtAsset(constant.UDT_HASH)
+	payload.AccountNumber = 1
 
-	creationTransaction, err := mercuryApi.BuildAdjustAccountTransaction(builder.Build())
+	creationTransaction, err := mercuryApi.BuildAdjustAccountTransaction(payload)
 	if err != nil {
 		t.Error(err)
 	}
 
-	tx := utils.Sign(creationTransaction)
-
-	hash, err := mercuryApi.SendTransaction(context.Background(), tx)
+	json, err := json.Marshal(creationTransaction)
 	if err != nil {
 		t.Error(err)
 	}
+	fmt.Println(string(json))
 
-	fmt.Println(hash)
+	//tx := utils.Sign(creationTransaction)
+	//
+	//hash, err := mercuryApi.SendTransaction(context.Background(), tx)
+	//if err != nil {
+	//	t.Error(err)
+	//}
+	//
+	//fmt.Println(hash)
 }
