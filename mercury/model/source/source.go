@@ -1,6 +1,8 @@
 package source
 
+type Source string
+
 const (
-	Unconstrained = "unconstrained"
-	Fleeting      = "fleeting"
+	Free      Source = "Free"
+	Claimable Source = "Claimable"
 )

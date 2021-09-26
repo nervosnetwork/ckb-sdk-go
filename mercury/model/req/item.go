@@ -13,10 +13,6 @@ const (
 	IDENTITY_FLAGS_CKB = "0x00"
 )
 
-type Item struct {
-	Item interface{}
-}
-
 type address struct {
 	Address string `json:"Address"`
 }

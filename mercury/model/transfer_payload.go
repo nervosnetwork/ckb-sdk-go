@@ -1,122 +1,117 @@
 package model
 
 import (
-	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/action"
-	"math/big"
+	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/common"
+	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/mode"
+	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/source"
 )
 
 type TransferPayload struct {
-	UdtHash string          `json:"udt_hash,omitempty"`
-	From    interface{}     `json:"from"`
-	Items   []*TransferItem `json:"items"`
-	Change  string          `json:"change,omitempty"`
-	FeeRate uint            `json:"fee_rate"`
+	AssetInfo *common.AssetInfo `json:"asset_info,omitempty"`
+	From      *From             `json:"from"`
+	To        *To               `json:"to"`
+	PayFee    string            `json:"pay_fee,omitempty"`
+	Change    string            `json:"change,omitempty"`
+	FeeRate   uint              `json:"fee_rate"`
+	Since     *SinceConfig      `json:"since,omitempty"`
 }
 
-type FromKeyAddresses struct {
-	KeyAddresses *keyAddresses `json:"key_addresses"`
+type From struct {
+	Items  []interface{} `json:"items"`
+	Source source.Source `json:"source"`
 }
 
-type FromNormalAddresses struct {
-	NormalAddresses []string `json:"normal_addresses"`
+type ToInfo struct {
+	Address string `json:"address"`
+	Amount  *U128  `json:"amount"`
 }
 
-type keyAddresses struct {
-	KeyAddresses []string `json:"key_addresses"`
-	Source       string   `json:"source"`
+type To struct {
+	ToInfos []*ToInfo `json:"to_infos"`
+	Mode    mode.Mode `json:"mode"`
 }
 
-type ToAddress interface {
-	IsPayBayFrom() bool
-}
-
-type ToKeyAddress struct {
-	KeyAddress *keyAddress `json:"key_address"`
-}
-
-func (address *ToKeyAddress) IsPayBayFrom() bool {
-	if address.KeyAddress.Action == action.Pay_by_from {
-		return true
+func NewToInfo(address string, amount *U128) *ToInfo {
+	return &ToInfo{
+		Address: address,
+		Amount:  amount,
 	}
-
-	return false
 }
 
-type ToNormalAddress struct {
-	NormalAddress string `json:"normal_address"`
+type SinceConfig struct {
+	Flag  SinceFlag `json:"flag"`
+	Type  SinceType `json:"type_"`
+	Value uint64    `json:"value"`
 }
 
-func (address *ToNormalAddress) IsPayBayFrom() bool {
-	return false
-}
+type SinceFlag string
 
-type keyAddress struct {
-	KeyAddress string `json:"key_address"`
-	Action     string `json:"action"`
-}
+const (
+	Relative SinceFlag = "Relative"
+	Absolute SinceFlag = "Absolute"
+)
 
-type TransferItem struct {
-	To     ToAddress `json:"to"`
-	Amount *big.Int  `json:"amount"`
-}
+type SinceType string
+
+const (
+	BlockNumber SinceType = "BlockNumber"
+	EpochNumber SinceType = "EpochNumber"
+	Timestamp   SinceType = "Timestamp"
+)
 
 type transferBuilder struct {
-	UdtHash string          `json:"udt_hash,omitempty"`
-	From    interface{}     `json:"from"`
-	Items   []*TransferItem `json:"items"`
-	Change  string          `json:"change,omitempty"`
-	FeeRate uint            `json:"fee_rate"`
+	AssetInfo *common.AssetInfo
+	From      *From
+	To        *To
+	PayFee    string
+	Change    string
+	FeeRate   uint
+	Since     *SinceConfig
 }
 
-func (builder *transferBuilder) AddUdtHash(udtHash string) {
-	builder.UdtHash = udtHash
+func (builder *transferBuilder) AddAssetInfo(assetInfo *common.AssetInfo) {
+	builder.AssetInfo = assetInfo
 }
 
-func (builder *transferBuilder) AddFromKeyAddresses(keyAddr []string, source string) {
-	builder.From = &FromKeyAddresses{
-		KeyAddresses: &keyAddresses{
-			KeyAddresses: keyAddr,
-			Source:       source,
-		},
+func (builder *transferBuilder) AddFrom(source source.Source, items ...interface{}) {
+	builder.From = &From{
+		Items:  items,
+		Source: source,
 	}
 }
 
-func (builder *transferBuilder) AddFromNormalAddresses(normalAddress []string) {
-	builder.From = &FromNormalAddresses{
-		NormalAddresses: normalAddress,
+func (builder *transferBuilder) AddTo(mode mode.Mode, toInfos ...*ToInfo) {
+	builder.To = &To{
+		ToInfos: toInfos,
+		Mode:    mode,
 	}
 }
 
-func (builder *transferBuilder) AddToKeyAddressItem(addr, action string, amount *big.Int) {
-	builder.Items = append(builder.Items, &TransferItem{Amount: amount, To: &ToKeyAddress{
-		KeyAddress: &keyAddress{
-			KeyAddress: addr,
-			Action:     action,
-		},
-	}})
+func (builder *transferBuilder) AddPayFee(address string) {
+	builder.PayFee = address
 }
 
-func (builder *transferBuilder) AddToNormalAddressItem(addr string, amount *big.Int) {
-	builder.Items = append(builder.Items, &TransferItem{Amount: amount, To: &ToNormalAddress{
-		NormalAddress: addr,
-	}})
-}
-
-func (builder *transferBuilder) AddChange(change string) {
-	builder.Change = change
+func (builder *transferBuilder) AddChange(address string) {
+	builder.Change = address
 }
 
 func (builder *transferBuilder) AddFeeRate(feeRate uint) {
 	builder.FeeRate = feeRate
 }
 
+func (builder *transferBuilder) AddSince(since *SinceConfig) {
+	builder.Since = since
+}
+
 func (builder *transferBuilder) Build() *TransferPayload {
 	return &TransferPayload{
-		builder.UdtHash,
-		builder.From,
-		builder.Items,
-		builder.Change,
-		builder.FeeRate,
+		AssetInfo: builder.AssetInfo,
+		From:      builder.From,
+		To:        builder.To,
+		PayFee:    builder.PayFee,
+		Change:    builder.Change,
+		FeeRate:   builder.FeeRate,
+		Since:     builder.Since,
 	}
 }
 

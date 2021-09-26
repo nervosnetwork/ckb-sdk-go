@@ -244,17 +244,27 @@ func (cli *DefaultCkbApi) GetCellsCapacity(ctx context.Context, searchKey *index
 func (cli *DefaultCkbApi) Close() {
 	cli.ckb.Close()
 }
-func NewCkbApi(address string) (CkbApi, error) {
-	dial, err := rpc.Dial(address)
-	if err != nil {
-		return nil, err
+func NewCkbApi(ckbAddress, mercuryAddress, indexerAddress string) (CkbApi, error) {
+	ckbNode, ckbErr := rpc.Dial(ckbAddress)
+	mercuryNode, mercuryErr := rpc.Dial(mercuryAddress)
+	indexerNode, indexerErr := rpc.Dial(indexerAddress)
+	if ckbErr != nil {
+		return nil, ckbErr
 	}
 
-	indexerClient := indexer.NewClient(dial)
-	mercuryClient := mercury.NewClient(dial)
-	ckbClient := C.NewClientWithIndexer(dial, indexerClient)
+	if mercuryErr != nil {
+		return nil, mercuryErr
+	}
+
+	if indexerErr != nil {
+		return nil, indexerErr
+	}
+
+	indexerClient := indexer.NewClient(indexerNode)
+	mercuryClient := mercury.NewClient(mercuryNode)
+	ckbClient := C.NewClientWithIndexer(ckbNode, indexerClient)
 
 	return &DefaultCkbApi{
 		ckb:     ckbClient,
-		mercury: mercuryClient}, err
+		mercury: mercuryClient}, nil
 }

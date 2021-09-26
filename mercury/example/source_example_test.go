@@ -1,21 +1,18 @@
-package normal
+package test
 
 import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/nervosnetwork/ckb-sdk-go/address"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/example/constant"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/example/utils"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model"
-	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/action"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/common"
+	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/mode"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/req"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/resp"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/source"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
-	"github.com/stretchr/testify/assert"
-	"math/big"
 	"testing"
 	"time"
 )
@@ -30,7 +27,7 @@ func TestFleeting(t *testing.T) {
 	printBalance()
 	issuingChequeCell()
 	printBalance()
-	claimChequeCell(t)
+	claimChequeCell()
 	printBalance()
 }
 
@@ -38,9 +35,10 @@ func issuingChequeCell() {
 	mercuryApi := constant.GetMercuryApiInstance()
 
 	builder := model.NewTransferBuilder()
-	builder.AddUdtHash(constant.UDT_HASH)
-	builder.AddFromKeyAddresses([]string{senderAddress}, source.Unconstrained)
-	builder.AddToKeyAddressItem(chequeCellReceiverAddress, action.Lend_by_from, big.NewInt(100))
+	builder.AddAssetInfo(common.NewUdtAsset(constant.UDT_HASH))
+	item, _ := req.NewIdentityItemByAddress(senderAddress)
+	builder.AddFrom(source.Free, item)
+	builder.AddTo(mode.HoldByFrom, model.NewToInfo(chequeCellReceiverAddress, model.NewU128WithU64(100)))
 	transferPayload := builder.Build()
 	transferCompletion, err := mercuryApi.BuildTransferTransaction(transferPayload)
 	if err != nil {
@@ -69,16 +67,14 @@ func issuingChequeCell() {
 	fmt.Printf("send hash of cheque cell transactions: %s\n", hash.String())
 }
 
-func claimChequeCell(t *testing.T) {
+func claimChequeCell() {
 	mercuryApi := constant.GetMercuryApiInstance()
 
-	chequeAddress, err := address.GenerateChequeAddress(senderAddress, chequeCellReceiverAddress)
-	assert.Nil(t, err)
-
 	builder := model.NewTransferBuilder()
-	builder.AddUdtHash(constant.UDT_HASH)
-	builder.AddFromNormalAddresses([]string{chequeAddress})
-	builder.AddToKeyAddressItem(receiverAddress, action.Pay_by_from, big.NewInt(100))
+	builder.AddAssetInfo(common.NewUdtAsset(constant.UDT_HASH))
+	item, _ := req.NewIdentityItemByAddress(chequeCellReceiverAddress)
+	builder.AddFrom(source.Free, item)
+	builder.AddTo(mode.HoldByFrom, model.NewToInfo(receiverAddress, model.NewU128WithU64(100)))
 	transferPayload := builder.Build()
 	transferCompletion, err := mercuryApi.BuildTransferTransaction(transferPayload)
 	if err != nil {
@@ -116,8 +112,8 @@ func printBalance() {
 	ckbBalanceB := getCkbBalance(chequeCellReceiverAddress)
 	udtBalanceB := getUdtBalance(chequeCellReceiverAddress, constant.UDT_HASH)
 
-	fmt.Printf("chequeCellReceiverAddress ckb balance: %s\n", getJsonStr(ckbBalanceB))
-	fmt.Printf("chequeCellReceiverAddress udt balance: %s\n", getJsonStr(udtBalanceB))
+	fmt.Printf("sender ckb balance: %s\n", getJsonStr(ckbBalanceB))
+	fmt.Printf("sender udt balance: %s\n", getJsonStr(udtBalanceB))
 }
 
 func getCkbBalance(addr string) *resp.GetBalanceResponse {
