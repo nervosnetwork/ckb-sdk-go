@@ -50,3 +50,10 @@ type TransactionWithStatus struct {
 		Status    types.TransactionStatus `json:"status"`
 	} `json:"tx_status"`
 }
+
+type ExtraType string
+
+const (
+	Dao      ExtraType = "Dao"
+	CellBase ExtraType = "CellBase"
+)

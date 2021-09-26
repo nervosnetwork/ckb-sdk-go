@@ -19,7 +19,8 @@ type Client interface {
 	GetSpentTransactionWithTransactionInfo(*model.GetSpentTransactionPayload) (*resp.TransactionInfoWrapper, error)
 	GetSpentTransactionWithTransactionView(*model.GetSpentTransactionPayload) (*resp.TransactionViewWrapper, error)
 	GetBlockInfo(payload *model.GetBlockInfoPayload) (*resp.BlockInfo, error)
-	QueryGenericTransactions(payload *model.QueryGenericTransactionsPayload) (*resp.QueryGenericTransactionsResponse, error)
+	QueryTransactionsWithTransactionInfo(payload *model.QueryTransactionsPayload) (*resp.PaginationResponseTransactionInfo, error)
+	QueryTransactionsWithTransactionView(payload *model.QueryTransactionsPayload) (*resp.PaginationResponseTransactionView, error)
 	GetDbInfo() (*resp.DBInfo, error)
 	GetMercuryInfo() (*resp.MercuryInfo, error)
 }
@@ -155,14 +156,26 @@ func (cli *client) GetSpentTransactionWithTransactionView(payload *model.GetSpen
 	return tx, err
 }
 
-func (cli *client) QueryGenericTransactions(payload *model.QueryGenericTransactionsPayload) (*resp.QueryGenericTransactionsResponse, error) {
-	var queryGenericTransactionsResponse resp.QueryGenericTransactionsResponse
-	err := cli.c.Call(&queryGenericTransactionsResponse, "query_generic_transactions", payload)
+func (cli *client) QueryTransactionsWithTransactionView(payload *model.QueryTransactionsPayload) (*resp.PaginationResponseTransactionView, error) {
+	payload.StructureType = model.Native
+	var resp resp.PaginationResponseTransactionView
+	err := cli.c.Call(&resp, "query_transactions", payload)
 	if err != nil {
-		return &queryGenericTransactionsResponse, err
+		return &resp, err
 	}
 
-	return &queryGenericTransactionsResponse, err
+	return &resp, err
+}
+
+func (cli *client) QueryTransactionsWithTransactionInfo(payload *model.QueryTransactionsPayload) (*resp.PaginationResponseTransactionInfo, error) {
+	payload.StructureType = model.DoubleEntry
+	var resp resp.PaginationResponseTransactionInfo
+	err := cli.c.Call(&resp, "query_transactions", payload)
+	if err != nil {
+		return &resp, err
+	}
+
+	return &resp, err
 }
 
 //func (cli *client) toTransferPayload(payload *model.SmartTransferPayload) (*model.TransferPayload, error) {

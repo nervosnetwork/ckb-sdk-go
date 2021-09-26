@@ -73,10 +73,6 @@ func (cli *DefaultCkbApi) GetBlockInfo(payload *model.GetBlockInfoPayload) (*res
 	return cli.mercury.GetBlockInfo(payload)
 }
 
-func (cli *DefaultCkbApi) QueryGenericTransactions(payload *model.QueryGenericTransactionsPayload) (*resp.QueryGenericTransactionsResponse, error) {
-	return cli.mercury.QueryGenericTransactions(payload)
-}
-
 func (cli *DefaultCkbApi) GetTipBlockNumber(ctx context.Context) (uint64, error) {
 	return cli.ckb.GetTipBlockNumber(ctx)
 }
@@ -135,6 +131,14 @@ func (cli *DefaultCkbApi) GetConsensus(ctx context.Context) (*types.Consensus, e
 
 func (cli *DefaultCkbApi) GetBlockMedianTime(ctx context.Context, blockHash types.Hash) (uint64, error) {
 	return cli.ckb.GetBlockMedianTime(ctx, blockHash)
+}
+
+func (cli *DefaultCkbApi) QueryTransactionsWithTransactionInfo(payload *model.QueryTransactionsPayload) (*resp.PaginationResponseTransactionInfo, error) {
+	return cli.mercury.QueryTransactionsWithTransactionInfo(payload)
+}
+
+func (cli *DefaultCkbApi) QueryTransactionsWithTransactionView(payload *model.QueryTransactionsPayload) (*resp.PaginationResponseTransactionView, error) {
+	return cli.mercury.QueryTransactionsWithTransactionView(payload)
 }
 
 func (cli *DefaultCkbApi) DryRunTransaction(ctx context.Context, transaction *types.Transaction) (*types.DryRunTransactionResult, error) {
