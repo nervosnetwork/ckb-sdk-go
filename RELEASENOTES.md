@@ -1,23 +1,24 @@
-# [v0.43.2](https://github.com/nervosnetwork/ckb-sdk-java/compare/v0.43.2-rc.1...v0.43.2) (2021-09-10)
+# [v0.43.3-beta.1](https://github.com/nervosnetwork/ckb-sdk-java/compare/v0.43.2...v0.43.3-beta.1) (2021-09-27)
 
 ### Features
 
-* Add `build_smart_transfer_transaction`
-  api ([9ad61d3](https://github.com/nervosnetwork/ckb-sdk-go/pull/59/commits/9ad61d3f69422c5fc58b15830942bec333294eb9))
+* Add `get_db_info`
+  api ([#64](https://github.com/nervosnetwork/ckb-sdk-go/pull/64))
+* Add `get_mercury_info`
+  api ([#65](https://github.com/nervosnetwork/ckb-sdk-go/pull/65))
+* Add `get_spent_transaction`
+  support ([#68](https://github.com/nervosnetwork/ckb-sdk-go/pull/68))
+* Add `dao`
+  support ([#74](https://github.com/nervosnetwork/ckb-sdk-go/pull/74))
 
-### BreakingChanges
+### Breaking Changes
 
-* The uniform unit is
-  shannon ([c1492d4](https://github.com/zhengjianhui/ckb-sdk-go/commit/c1492d4bd2450b39cf3daeb1e507119ce72d0036))
-  
-* Adjusting the `build_asset_account_creation_transaction`
-  interface ([de4be38](https://github.com/nervosnetwork/ckb-sdk-go/pull/54/commits/de4be388808f7f5d7cd8b810addf9320c8b36ad6))
-
-* Adjusting the `get_generic_transaction`
-  interface ([91ba601](https://github.com/nervosnetwork/ckb-sdk-go/pull/55/commits/91ba6010b8908203c97cfc4f8ef1fa85a13f6642))
-
-* Adjusting the `get_generic_block`
-  interface ([3c4ffbc](https://github.com/nervosnetwork/ckb-sdk-go/pull/57/commits/3c4ffbc372dbf72faba2d074ec40b3185d13c97c))
-
-* Adjusting the `get_balance`
-  interface ([361e7f0](https://github.com/nervosnetwork/ckb-sdk-go/pull/53/commits/361e7f0017ae725e0fbf601e4d3327ddddb13977))
+* Adjusting `build_smart_transfer_transaction` api ([#75](https://github.com/nervosnetwork/ckb-sdk-go/pull/75))
+* Adjusting `query_transactions`
+  api ([#70](https://github.com/nervosnetwork/ckb-sdk-go/pull/70) [#73](https://github.com/nervosnetwork/ckb-sdk-go/pull/73) [#77](https://github.com/nervosnetwork/ckb-sdk-go/pull/77))
+* Adjusting `build_transfer_transaction` api ([#72](https://github.com/nervosnetwork/ckb-sdk-go/pull/72))
+* Adjusting `build_adjust_account_transaction` api ([#78](https://github.com/nervosnetwork/ckb-sdk-go/pull/78))
+* Adjusting `get_block_info` api（[#67](https://github.com/nervosnetwork/ckb-sdk-go/pull/67))
+* Adjusting `get_transaction_info` api ([#66](https://github.com/nervosnetwork/ckb-sdk-go/pull/66))
+* Adjusting `balance` api ([#63](https://github.com/nervosnetwork/ckb-sdk-go/pull/63))
+* remove `build_asset_collection_transaction` api
