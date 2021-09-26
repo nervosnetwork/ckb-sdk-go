@@ -2,7 +2,7 @@ package mercury
 
 //type rpcBalanceResp struct {
 //	KeyAddress    string `json:"key_address"`
-//	UdtHash       string `json:"udt_hash"`
+//	AssetInfo       string `json:"udt_hash"`
 //	Unconstrained string `json:"unconstrained"`
 //	Fleeting      string `json:"fleeting"`
 //	Locked        string `json:"locked"`
@@ -36,7 +36,7 @@ package mercury
 
 //type rpcAmountResp struct {
 //	Value   string      `json:"value"`
-//	UdtHash string      `json:"udt_hash"`
+//	AssetInfo string      `json:"udt_hash"`
 //	Status  interface{} `json:"status"`
 //}
 
@@ -64,7 +64,7 @@ package mercury
 //		if op.Amount.Status == common.CKB {
 //			asset = common.NewCkbAsset()
 //		} else {
-//			asset = common.NewUdtAsset(op.Amount.UdtHash)
+//			asset = common.NewUdtAsset(op.Amount.AssetInfo)
 //		}
 //
 //		var status map[resp.AssetStatus]uint

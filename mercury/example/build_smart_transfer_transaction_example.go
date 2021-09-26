@@ -8,7 +8,7 @@ package test
 //	"github.com/nervosnetwork/ckb-sdk-go/mercury/example/constant"
 //	"github.com/nervosnetwork/ckb-sdk-go/mercury/example/utils"
 //	"github.com/nervosnetwork/ckb-sdk-go/mercury/model"
-//	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/action"
+//	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/mode"
 //	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/common"
 //	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/source"
 //	"github.com/nervosnetwork/ckb-sdk-go/types"
@@ -157,9 +157,9 @@ package test
 //	mercuryApi := constant.GetMercuryApiInstance()
 //
 //	builder := model.NewTransferBuilder()
-//	builder.AddUdtHash(constant.UDT_HASH)
-//	builder.AddFromKeyAddresses([]string{constant.TEST_ADDRESS1}, source.Unconstrained)
-//	builder.AddToKeyAddressItem(constant.TEST_ADDRESS2, action.Lend_by_from, big.NewInt(100))
+//	builder.AddAssetInfo(constant.UDT_HASH)
+//	builder.AddFrom([]string{constant.TEST_ADDRESS1}, source.Unconstrained)
+//	builder.AddTo(constant.TEST_ADDRESS2, mode.Lend_by_from, big.NewInt(100))
 //	transferPayload := builder.Build()
 //	transferCompletion, err := mercuryApi.BuildTransferTransaction(transferPayload)
 //	if err != nil {

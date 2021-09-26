@@ -2,10 +2,12 @@ package mercury
 
 import (
 	"context"
-	"errors"
 	"github.com/ethereum/go-ethereum/rpc"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model"
+	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/common"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/resp"
+	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/source"
+	"github.com/pkg/errors"
 )
 
 type Client interface {
@@ -23,7 +25,6 @@ type Client interface {
 	GetDbInfo() (*resp.DBInfo, error)
 	GetMercuryInfo() (*resp.MercuryInfo, error)
 }
-
 type client struct {
 	c *rpc.Client
 }
@@ -59,15 +60,11 @@ func (cli *client) GetBalance(payload *model.GetBalancePayload) (*resp.GetBalanc
 }
 
 func (cli *client) BuildTransferTransaction(payload *model.TransferPayload) (*resp.TransferCompletionResponse, error) {
-	var resp resp.TransferCompletionResponse
-	if payload.UdtHash == "" {
-		for _, item := range payload.Items {
-			if !item.To.IsPayBayFrom() || !item.To.IsPayBayFrom() {
-				return &resp, errors.New("The transaction does not support ckb")
-			}
-		}
+	if payload.From.Source == source.Claimable && payload.AssetInfo.AssetType == common.CKB {
+		return nil, errors.New("The transaction does not support ckb")
 	}
 
+	var resp resp.TransferCompletionResponse
 	err := cli.c.Call(&resp, "build_transfer_transaction", payload)
 	if err != nil {
 		return &resp, err
@@ -97,7 +94,7 @@ func (cli *client) BuildAdjustAccountTransaction(payload *model.BuildAdjustAccou
 
 func (cli *client) RegisterAddresses(normalAddresses []string) ([]string, error) {
 	var scriptHash []string
-	err := cli.c.Call(&scriptHash, "register_addresses", normalAddresses)
+	err := cli.c.Call(&scriptHash, "register_address", normalAddresses)
 	if err != nil {
 		return scriptHash, err
 	}
@@ -190,9 +187,9 @@ func (cli *client) QueryTransactionsWithTransactionInfo(payload *model.QueryTran
 //
 //	builder := model.NewTransferBuilder()
 //	if payload.AssetInfo.AssetType == common.Udt {
-//		builder.UdtHash = payload.AssetInfo.UdtHash
+//		builder.AssetInfo = payload.AssetInfo.AssetInfo
 //	}
-//	builder.AddFromKeyAddresses(payload.From, source)
+//	builder.AddFrom(payload.From, source)
 //	for _, to := range payload.To {
 //		if payload.AssetInfo.AssetType == common.Udt {
 //			number, err := cli.GetAccountNumber(to.Address)
@@ -200,12 +197,12 @@ func (cli *client) QueryTransactionsWithTransactionInfo(payload *model.QueryTran
 //				return nil, err
 //			}
 //			if number > 0 {
-//				builder.AddToKeyAddressItem(to.Address, action.Pay_by_to, to.Amount)
+//				builder.AddTo(to.Address, mode.Pay_by_to, to.Amount)
 //			} else {
-//				builder.AddToKeyAddressItem(to.Address, action.Pay_by_from, to.Amount)
+//				builder.AddTo(to.Address, mode.Pay_by_from, to.Amount)
 //			}
 //		} else {
-//			builder.AddToKeyAddressItem(to.Address, action.Pay_by_from, to.Amount)
+//			builder.AddTo(to.Address, mode.Pay_by_from, to.Amount)
 //		}
 //	}
 //

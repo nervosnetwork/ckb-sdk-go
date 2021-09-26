@@ -9,7 +9,7 @@ import (
 
 type TransferCompletionResponse struct {
 	TxView    transactionResp   `json:"tx_view"`
-	SigsEntry []*SignatureEntry `json:"sigs_entry"`
+	SigsEntry []*SignatureEntry `json:"signature_entries"`
 }
 
 type SignatureEntry struct {
