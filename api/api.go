@@ -53,7 +53,7 @@ func (cli *DefaultCkbApi) BuildTransferTransaction(payload *model.TransferPayloa
 	return cli.mercury.BuildTransferTransaction(payload)
 }
 
-func (cli *DefaultCkbApi) BuildAdjustAccountTransaction(payload *model.AdjustAccountPayload) (*resp.TransferCompletionResponse, error) {
+func (cli *DefaultCkbApi) BuildAdjustAccountTransaction(payload *model.BuildAdjustAccountPayload) (*resp.TransferCompletionResponse, error) {
 	return cli.mercury.BuildAdjustAccountTransaction(payload)
 }
 
