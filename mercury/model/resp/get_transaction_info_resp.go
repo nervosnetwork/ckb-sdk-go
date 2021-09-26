@@ -63,7 +63,7 @@ func (r *RecordStatus) UnmarshalJSON(bytes []byte) error {
 
 type ExtraFilter struct {
 	DaoInfo   *DaoInfo
-	ExtraType ExtraType
+	ExtraType common.ExtraType
 }
 
 func (e *ExtraFilter) UnmarshalJSON(bytes []byte) error {
@@ -72,7 +72,7 @@ func (e *ExtraFilter) UnmarshalJSON(bytes []byte) error {
 	}
 
 	if strings.Contains(string(bytes), "CellBase") {
-		e.ExtraType = CellBase
+		e.ExtraType = common.CellBase
 	} else {
 		ExtraFilterData := make(map[string]interface{})
 		json.Unmarshal(bytes, &ExtraFilterData)
@@ -106,7 +106,7 @@ func (e *ExtraFilter) UnmarshalJSON(bytes []byte) error {
 			Reward:              uint64(reward),
 		}
 
-		e.ExtraType = Dao
+		e.ExtraType = common.Dao
 
 	}
 
@@ -125,13 +125,6 @@ type DaoState = string
 const (
 	Deposit  DaoState = "Deposit"
 	Withdraw DaoState = "Withdraw"
-)
-
-type ExtraType string
-
-const (
-	Dao      ExtraType = "Dao"
-	CellBase ExtraType = "CellBase"
 )
 
 type AssetStatus string
