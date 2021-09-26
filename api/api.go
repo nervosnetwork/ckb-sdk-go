@@ -21,6 +21,14 @@ type DefaultCkbApi struct {
 	mercury mercury.Client
 }
 
+func (cli *DefaultCkbApi) GetSpentTransactionWithTransactionInfo(payload *model.GetSpentTransactionPayload) (*resp.TransactionInfoWrapper, error) {
+	return cli.mercury.GetSpentTransactionWithTransactionInfo(payload)
+}
+
+func (cli *DefaultCkbApi) GetSpentTransactionWithTransactionView(payload *model.GetSpentTransactionPayload) (*resp.TransactionViewWrapper, error) {
+	return cli.mercury.GetSpentTransactionWithTransactionView(payload)
+}
+
 func (cli *DefaultCkbApi) GetTransactionProof(ctx context.Context, txHashes []string, blockHash *types.Hash) (*types.TransactionProof, error) {
 	return cli.ckb.GetTransactionProof(ctx, txHashes, blockHash)
 }
@@ -232,7 +240,6 @@ func (cli *DefaultCkbApi) GetTip(ctx context.Context) (*indexer.TipHeader, error
 func (cli *DefaultCkbApi) GetCellsCapacity(ctx context.Context, searchKey *indexer.SearchKey) (*indexer.Capacity, error) {
 	return cli.ckb.GetCellsCapacity(ctx, searchKey)
 }
-
 
 func (cli *DefaultCkbApi) Close() {
 	cli.ckb.Close()

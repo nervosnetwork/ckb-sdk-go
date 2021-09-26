@@ -16,6 +16,8 @@ type Client interface {
 	BuildAssetCollectionTransaction(payload *model.CollectAssetPayload) (*resp.TransferCompletionResponse, error)
 	RegisterAddresses(normalAddresses []string) ([]string, error)
 	GetTransactionInfo(txHash string) (*resp.GetTransactionInfoResponse, error)
+	GetSpentTransactionWithTransactionInfo(*model.GetSpentTransactionPayload) (*resp.TransactionInfoWrapper, error)
+	GetSpentTransactionWithTransactionView(*model.GetSpentTransactionPayload) (*resp.TransactionViewWrapper, error)
 	GetBlockInfo(payload *model.GetBlockInfoPayload) (*resp.BlockInfo, error)
 	QueryGenericTransactions(payload *model.QueryGenericTransactionsPayload) (*resp.QueryGenericTransactionsResponse, error)
 	GetDbInfo() (*resp.DBInfo, error)
@@ -127,6 +129,26 @@ func (cli *client) GetBlockInfo(payload *model.GetBlockInfoPayload) (*resp.Block
 func (cli *client) GetTransactionInfo(txHash string) (*resp.GetTransactionInfoResponse, error) {
 	var tx *resp.GetTransactionInfoResponse
 	err := cli.c.Call(&tx, "get_transaction_info", txHash)
+	if err != nil {
+		return nil, err
+	}
+	return tx, err
+}
+
+func (cli *client) GetSpentTransactionWithTransactionInfo(payload *model.GetSpentTransactionPayload) (*resp.TransactionInfoWrapper, error) {
+	payload.StructureType = model.DoubleEntry
+	var tx *resp.TransactionInfoWrapper
+	err := cli.c.Call(&tx, "get_spent_transaction", payload)
+	if err != nil {
+		return nil, err
+	}
+	return tx, err
+}
+
+func (cli *client) GetSpentTransactionWithTransactionView(payload *model.GetSpentTransactionPayload) (*resp.TransactionViewWrapper, error) {
+	payload.StructureType = model.Native
+	var tx *resp.TransactionViewWrapper
+	err := cli.c.Call(&tx, "get_spent_transaction", payload)
 	if err != nil {
 		return nil, err
 	}
