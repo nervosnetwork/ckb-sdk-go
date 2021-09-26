@@ -73,6 +73,7 @@ TODO
 12. [`build_adjust_account_transaction` example](./mercury/example/build_adjust_account_transaction_example.go)
 13. [`get_spent_transaction` example](./mercury/example/get_spent_transaction_example.go)
 14. [`query_transactions` example](./mercury/example/query_transactions_example.go)
+15. [`DAO` example](./mercury/example/dao_example.go)
 
 ### 3. ckb-indexer RPC
 
