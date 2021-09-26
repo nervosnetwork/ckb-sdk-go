@@ -10,26 +10,12 @@ import (
 	"testing"
 )
 
-func NewIdentityQueryTransactionsPayload(pubkey string) *model.QueryTransactionsPayload {
-	item, _ := req.NewIdentityItemByCkb(pubkey)
-	limit := uint64(3)
-	tx := &model.QueryTransactionsPayload{
-		Item:       item,
-		AssetInfos: []*common.AssetInfo{},
-		Extra:      nil,
-		BlockRange: nil,
-		Pagination: model.PaginationRequest{
-			Order:       model.ASC,
-			Limit:       &limit,
-			ReturnCount: false,
-		},
-	}
-	return tx
-}
-
 func TestQueryTransactionsWithCkb(t *testing.T) {
-	payload := NewIdentityQueryTransactionsPayload(constant.QUERY_TRANSACTION_KEY_PUBKEY)
-	payload.AddAssetInfo(common.NewCkbAsset())
+	item, _ := req.NewIdentityItemByCkb(constant.QUERY_TRANSACTION_KEY_PUBKEY)
+	payload := model.NewQueryTransactionsPayloadBuilder().
+		SetItem(item).
+		AddAssetInfo(common.NewCkbAsset()).
+		Build()
 	printJson(payload)
 
 	transactions, err := constant.GetMercuryApiInstance().QueryTransactionsWithTransactionView(payload)
@@ -40,8 +26,11 @@ func TestQueryTransactionsWithCkb(t *testing.T) {
 }
 
 func TestQueryTransactionsWithUdt(t *testing.T) {
-	payload := NewIdentityQueryTransactionsPayload(constant.QUERY_TRANSACTION_KEY_PUBKEY)
-	payload.AddAssetInfo(common.NewUdtAsset(constant.UDT_HASH))
+	item, _ := req.NewIdentityItemByCkb(constant.QUERY_TRANSACTION_KEY_PUBKEY)
+	payload := model.NewQueryTransactionsPayloadBuilder().
+		SetItem(item).
+		AddAssetInfo(common.NewUdtAsset(constant.UDT_HASH)).
+		Build()
 	printJson(payload)
 
 	transactions, err := constant.GetMercuryApiInstance().QueryTransactionsWithTransactionView(payload)
@@ -52,8 +41,12 @@ func TestQueryTransactionsWithUdt(t *testing.T) {
 }
 
 func TestQueryTransactionsInfo(t *testing.T) {
-	payload := NewIdentityQueryTransactionsPayload(constant.QUERY_TRANSACTION_KEY_PUBKEY)
-	payload.AddAssetInfo(common.NewCkbAsset())
+	item, _ := req.NewIdentityItemByCkb(constant.QUERY_TRANSACTION_KEY_PUBKEY)
+	payload := model.NewQueryTransactionsPayloadBuilder().
+		SetItem(item).
+		AddAssetInfo(common.NewCkbAsset()).
+		Build()
+
 	printJson(payload)
 
 	transactions, err := constant.GetMercuryApiInstance().QueryTransactionsWithTransactionInfo(payload)
@@ -64,11 +57,13 @@ func TestQueryTransactionsInfo(t *testing.T) {
 }
 
 func TestQueryTransactionsWithCellbase(t *testing.T) {
-	payload := NewIdentityQueryTransactionsPayload(constant.QUERY_TRANSACTION_KEY_PUBKEY)
-	payload.Item, _ = req.NewAddressItem("ckt1qyqd5eyygtdmwdr7ge736zw6z0ju6wsw7rssu8fcve")
-	payload.AddAssetInfo(common.NewCkbAsset())
+	item, _ := req.NewAddressItem("ckt1qyqd5eyygtdmwdr7ge736zw6z0ju6wsw7rssu8fcve")
 	extra := common.CellBase
-	payload.Extra = &extra
+	payload := model.NewQueryTransactionsPayloadBuilder().
+		SetItem(item).
+		AddAssetInfo(common.NewCkbAsset()).
+		SetExtra(&extra).
+		Build()
 
 	printJson(payload)
 
@@ -80,10 +75,12 @@ func TestQueryTransactionsWithCellbase(t *testing.T) {
 }
 
 func TestQueryTransactionsWithPage(t *testing.T) {
-	payload := NewIdentityQueryTransactionsPayload(constant.QUERY_TRANSACTION_KEY_PUBKEY)
-	payload.AddAssetInfo(common.NewCkbAsset())
-	limit := uint64(1)
-	payload.Pagination.Limit = &limit
+	item, _ := req.NewIdentityItemByCkb(constant.QUERY_TRANSACTION_KEY_PUBKEY)
+	builder := model.NewQueryTransactionsPayloadBuilder().
+		SetItem(item).
+		AddAssetInfo(common.NewUdtAsset(constant.UDT_HASH)).
+		SetLimit(1)
+	payload := builder.Build()
 
 	printJson(payload)
 
