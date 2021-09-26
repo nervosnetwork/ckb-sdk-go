@@ -13,7 +13,7 @@ import (
 type Client interface {
 	GetBalance(payload *model.GetBalancePayload) (*resp.GetBalanceResponse, error)
 	BuildTransferTransaction(payload *model.TransferPayload) (*resp.TransferCompletionResponse, error)
-	//BuildSmartTransferTransaction(payload *model.SmartTransferPayload) (*resp.TransferCompletionResponse, error)
+	BuildSmartTransferTransaction(payload *model.SmartTransferPayload) (*resp.TransferCompletionResponse, error)
 	BuildAdjustAccountTransaction(*model.BuildAdjustAccountPayload) (*resp.TransferCompletionResponse, error)
 	RegisterAddresses(normalAddresses []string) ([]string, error)
 	GetTransactionInfo(txHash string) (*resp.GetTransactionInfoResponse, error)
@@ -95,14 +95,15 @@ func (cli *client) BuildTransferTransaction(payload *model.TransferPayload) (*re
 	return &resp, err
 }
 
-//func (cli *client) BuildSmartTransferTransaction(payload *model.SmartTransferPayload) (*resp.TransferCompletionResponse, error) {
-//	transferPayload, err := cli.toTransferPayload(payload)
-//	if err != nil {
-//		return nil, err
-//	}
-//
-//	return cli.BuildTransferTransaction(transferPayload)
-//}
+func (cli *client) BuildSmartTransferTransaction(payload *model.SmartTransferPayload) (*resp.TransferCompletionResponse, error) {
+	var resp resp.TransferCompletionResponse
+	err := cli.c.Call(&resp, "build_smart_transfer_transaction", payload)
+	if err != nil {
+		return &resp, err
+	}
+
+	return &resp, err
+}
 
 func (cli *client) BuildAdjustAccountTransaction(payload *model.BuildAdjustAccountPayload) (*resp.TransferCompletionResponse, error) {
 	var resp resp.TransferCompletionResponse
@@ -231,7 +232,7 @@ func (cli *client) QueryTransactionsWithTransactionInfo(payload *model.QueryTran
 //	return builder.Build(), nil
 //}
 //
-//func (cli *client) getSource(fromBalances []*resp.GetBalanceResponse, to []*model.SmartTo, assetType common.AssetType) string {
+//func (cli *client) getSource(fromBalances []*resp.GetBalanceResponse, to []*model.ToInfo, assetType common.AssetType) string {
 //	fromBalance := cli.getBalanceByAssetTypeAndBalanceType(fromBalances, assetType, "claimable")
 //	totalAmount := big.NewInt(0)
 //	for _, smartTo := range to {
