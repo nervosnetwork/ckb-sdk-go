@@ -23,6 +23,7 @@ func TestQueryTransactionsWithCkb(t *testing.T) {
 		t.Error(err)
 	}
 	printJson(transactions)
+	fmt.Println(len(transactions.Response))
 }
 
 func TestQueryTransactionsWithUdt(t *testing.T) {
@@ -38,6 +39,22 @@ func TestQueryTransactionsWithUdt(t *testing.T) {
 		t.Error(err)
 	}
 	printJson(transactions)
+	fmt.Println(len(transactions.Response))
+}
+
+func TestQueryTransactionsWithAll(t *testing.T) {
+	item, _ := req.NewIdentityItemByCkb(constant.QUERY_TRANSACTION_KEY_PUBKEY)
+	payload := model.NewQueryTransactionsPayloadBuilder().
+		SetItem(item).
+		Build()
+	printJson(payload)
+
+	transactions, err := constant.GetMercuryApiInstance().QueryTransactionsWithTransactionView(payload)
+	if err != nil {
+		t.Error(err)
+	}
+	printJson(transactions)
+	fmt.Println(len(transactions.Response))
 }
 
 func TestQueryTransactionsInfo(t *testing.T) {
@@ -54,6 +71,7 @@ func TestQueryTransactionsInfo(t *testing.T) {
 		t.Error(err)
 	}
 	printJson(transactions)
+	fmt.Println(len(transactions.Response))
 }
 
 func TestQueryTransactionsWithCellbase(t *testing.T) {
@@ -74,15 +92,86 @@ func TestQueryTransactionsWithCellbase(t *testing.T) {
 	printJson(transactions)
 }
 
-func TestQueryTransactionsWithPage(t *testing.T) {
+func TestQueryTransactionsWithDao(t *testing.T) {
+	item, _ := req.NewAddressItem(constant.TEST_ADDRESS3)
+	extra := common.Dao
+	payload := model.NewQueryTransactionsPayloadBuilder().
+		SetItem(item).
+		AddAssetInfo(common.NewCkbAsset()).
+		SetExtra(&extra).
+		Build()
+
+	printJson(payload)
+
+	transactions, err := constant.GetMercuryApiInstance().QueryTransactionsWithTransactionView(payload)
+	if err != nil {
+		t.Error(err)
+	}
+	printJson(transactions)
+}
+
+func TestQueryTransactionsWithFromBlockAndToBlock(t *testing.T) {
+	item, _ := req.NewIdentityItemByAddress(constant.QUERY_TRANSACTION_ADDRESS)
+	payload := model.NewQueryTransactionsPayloadBuilder().
+		SetItem(item).
+		AddBlockRange(&model.BlockRange{
+			From: 2778110,
+			To:   2778201,
+		}).
+		Build()
+
+	printJson(payload)
+
+	transactions, err := constant.GetMercuryApiInstance().QueryTransactionsWithTransactionView(payload)
+	if err != nil {
+		t.Error(err)
+	}
+	printJson(transactions)
+	fmt.Println(len(transactions.Response))
+}
+
+func TestQueryTransactionsWithLimit(t *testing.T) {
+	item, _ := req.NewIdentityItemByAddress(constant.QUERY_TRANSACTION_ADDRESS)
+	payload := model.NewQueryTransactionsPayloadBuilder().
+		SetItem(item).
+		SetLimit(2).
+		Build()
+
+	printJson(payload)
+
+	transactions, err := constant.GetMercuryApiInstance().QueryTransactionsWithTransactionView(payload)
+	if err != nil {
+		t.Error(err)
+	}
+	printJson(transactions)
+	fmt.Println(len(transactions.Response))
+}
+
+func TestQueryTransactionsWithOrder(t *testing.T) {
+	item, _ := req.NewIdentityItemByAddress(constant.QUERY_TRANSACTION_ADDRESS)
+	payload := model.NewQueryTransactionsPayloadBuilder().
+		SetItem(item).
+		SetOrder(model.ASC).
+		Build()
+
+	printJson(payload)
+
+	transactions, err := constant.GetMercuryApiInstance().QueryTransactionsWithTransactionView(payload)
+	if err != nil {
+		t.Error(err)
+	}
+	printJson(transactions)
+	fmt.Println(len(transactions.Response))
+}
+
+func TestQueryTransactionsWithPage1(t *testing.T) {
 	item, _ := req.NewIdentityItemByCkb(constant.QUERY_TRANSACTION_KEY_PUBKEY)
 	builder := model.NewQueryTransactionsPayloadBuilder().
 		SetItem(item).
-		AddAssetInfo(common.NewUdtAsset(constant.UDT_HASH)).
 		SetLimit(1)
 	payload := builder.Build()
 
-	printJson(payload)
+	//printJson(payload)
 
 	transactions, err := constant.GetMercuryApiInstance().QueryTransactionsWithTransactionView(payload)
 	if err != nil {
@@ -91,14 +180,37 @@ func TestQueryTransactionsWithPage(t *testing.T) {
 
 	printJson(transactions)
 
-	payload.Pagination.Cursor = transactions.NextCursor
-	transactions, err = constant.GetMercuryApiInstance().QueryTransactionsWithTransactionView(payload)
+	for {
+		if transactions.NextCursor == nil {
+			break
+		}
+		payload.Pagination.Cursor = transactions.NextCursor
+		transactions, err = constant.GetMercuryApiInstance().QueryTransactionsWithTransactionView(payload)
+		if err != nil {
+			t.Error(err)
+		}
+
+		printJson(transactions)
+	}
+
+}
+
+func TestQueryTransactionsWithPage2(t *testing.T) {
+	item, _ := req.NewIdentityItemByAddress(constant.QUERY_TRANSACTION_ADDRESS)
+	payload := model.NewQueryTransactionsPayloadBuilder().
+		SetItem(item).
+		SetLimit(1).
+		SetPageNumber(1).
+		Build()
+
+	printJson(payload)
+
+	transactions, err := constant.GetMercuryApiInstance().QueryTransactionsWithTransactionView(payload)
 	if err != nil {
 		t.Error(err)
 	}
-
 	printJson(transactions)
-
+	fmt.Println(len(transactions.Response))
 }
 
 func printJson(i interface{}) {
@@ -107,6 +219,5 @@ func printJson(i interface{}) {
 		panic(err)
 	}
 
-	fmt.Println(i)
 	fmt.Println(string(marshal))
 }
