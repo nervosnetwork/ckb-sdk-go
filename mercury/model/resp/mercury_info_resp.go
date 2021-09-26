@@ -1,6 +1,8 @@
 package resp
 
-import "github.com/nervosnetwork/ckb-sdk-go/mercury/model/common"
+import (
+	"github.com/nervosnetwork/ckb-sdk-go/types"
+)
 
 type MercuryInfo struct {
 	MercuryVersion    string      `json:"mercury_version"`
@@ -19,7 +21,7 @@ const (
 )
 
 type Extension struct {
-	Name     string           `json:"name"`
-	Scripts  []common.Script  `json:"scripts"`
-	CellDeps []common.CellDep `json:"cell_deps"`
+	Name     string          `json:"name"`
+	Scripts  []types.Script  `json:"scripts"`
+	CellDeps []types.CellDep `json:"cell_deps"`
 }

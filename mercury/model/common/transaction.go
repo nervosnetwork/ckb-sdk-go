@@ -31,3 +31,22 @@ type Script struct {
 	HashType types.ScriptHashType `json:"hash_type"`
 	Args     hexutil.Bytes        `json:"args"`
 }
+
+type Transaction struct {
+	Version     hexutil.Uint    `json:"version"`
+	Hash        types.Hash      `json:"hash"`
+	CellDeps    []CellDep       `json:"cell_deps"`
+	HeaderDeps  []types.Hash    `json:"header_deps"`
+	Inputs      []CellInput     `json:"inputs"`
+	Outputs     []CellOutput    `json:"outputs"`
+	OutputsData []hexutil.Bytes `json:"outputs_data"`
+	Witnesses   []hexutil.Bytes `json:"witnesses"`
+}
+
+type TransactionWithStatus struct {
+	Transaction Transaction `json:"transaction"`
+	TxStatus    struct {
+		BlockHash *types.Hash             `json:"block_hash"`
+		Status    types.TransactionStatus `json:"status"`
+	} `json:"tx_status"`
+}
