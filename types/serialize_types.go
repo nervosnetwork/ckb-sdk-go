@@ -14,6 +14,8 @@ func (t ScriptHashType) Serialize() ([]byte, error) {
 		return []byte{00}, nil
 	} else if t == HashTypeType {
 		return []byte{01}, nil
+	} else if t == HashTypeData1 {
+		return []byte{02}, nil
 	}
 	return nil, errors.New("invalid script hash type")
 }
