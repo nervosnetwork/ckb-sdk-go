@@ -11,8 +11,9 @@ type DepType string
 type TransactionStatus string
 
 const (
-	HashTypeData ScriptHashType = "data"
-	HashTypeType ScriptHashType = "type"
+	HashTypeData  ScriptHashType = "data"
+	HashTypeData1 ScriptHashType = "data1"
+	HashTypeType  ScriptHashType = "type"
 
 	DepTypeCode     DepType = "code"
 	DepTypeDepGroup DepType = "dep_group"
@@ -40,7 +41,7 @@ type Header struct {
 	ProposalsHash    Hash     `json:"proposals_hash"`
 	Timestamp        uint64   `json:"timestamp"`
 	TransactionsRoot Hash     `json:"transactions_root"`
-	UnclesHash       Hash     `json:"uncles_hash"`
+	ExtraHash        Hash     `json:"extra_hash"`
 	Version          uint     `json:"version"`
 }
 
