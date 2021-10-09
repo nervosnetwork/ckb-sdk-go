@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
+	"github.com/nervosnetwork/ckb-sdk-go/crypto/bech32"
 	"github.com/nervosnetwork/ckb-sdk-go/crypto/blake2b"
 	"github.com/nervosnetwork/ckb-sdk-go/crypto/secp256k1"
 	"github.com/nervosnetwork/ckb-sdk-go/transaction"
@@ -110,6 +111,28 @@ func GenerateChequeAddress(senderAddress, receiverAddress string) (string, error
 
 	return Generate(senderScript.Mode, chequeLock)
 
+}
+
+func GenerateBech32mFullAddress(mode Mode, script *types.Script) (string, error) {
+	// Payload: type(00) | code hash | hash type | args
+	payload := TYPE_FULL_WITH_BECH32M
+	payload += script.CodeHash.Hex()[2:]
+	payload += getHashType(script.HashType)
+	payload += common.Bytes2Hex(script.Args)
+
+	dataPart, err := bech32.ConvertBits(common.FromHex(payload), 8, 5, true)
+	if err != nil {
+		return "", err
+	}
+	return bech32.EncodeWithBech32m(string(mode), dataPart)
+}
+
+func getHashType(hashType types.ScriptHashType) string {
+	if hashType == types.HashTypeType {
+		return "01"
+	} else {
+		return "00"
+	}
 }
 
 func getAcpCodeHash(mode Mode) string {
