@@ -151,11 +151,13 @@ func Parse(address string) (*ParsedAddress, error) {
 			Args:     common.Hex2Bytes(payload[68:]),
 		}
 
-		if payload[66:68] == "01" {
-			script.HashType = types.HashTypeType
-		} else {
-			script.HashType = types.HashTypeData
+		hashType, err := types.DeserializeHashType(payload[66:68])
+		if err != nil {
+			return nil, err
 		}
+
+		script.HashType = hashType
+
 	} else {
 		return nil, errors.New("address type error:" + payload[:2])
 	}
