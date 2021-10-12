@@ -28,7 +28,7 @@ func TestGenerateChequeAddress(t *testing.T) {
 	assert.Equal(t, "ckt1q3sdtuu7lnjqn3v8ew02xkwwlh4dv5x2z28shkwt8p2nfruccux4k5kw5xmckqjq7gwpe990sn88xssv96try4l46hu6nnudr2huau238a4prwus9pqts3uptms", acpAddress)
 }
 
-func TestBech32mTypeFullTestnetAddressGenerate(t *testing.T) {
+func TestBech32mTypeFullMainnetAddressGenerate(t *testing.T) {
 	script := &types.Script{
 		CodeHash: types.HexToHash("0x9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8"),
 		HashType: types.HashTypeType,
@@ -55,4 +55,64 @@ func TestBech32mTypeFullTestnetAddressGenerate(t *testing.T) {
 		assert.Equal(t, script.HashType, mnAddress.Script.HashType)
 		assert.Equal(t, script.Args, mnAddress.Script.Args)
 	})
+
+}
+
+func TestBech32mDataFullMainnetAddressGenerate(t *testing.T) {
+	script := &types.Script{
+		CodeHash: types.HexToHash("0xa656f172b6b45c245307aeb5a7a37a176f002f6f22e92582c58bf7ba362e4176"),
+		HashType: types.HashTypeData,
+		Args:     common.FromHex("0x36c329ed630d6ce750712a477543672adab57f4c"),
+	}
+
+	address, err := GenerateBech32mFullAddress(Mainnet, script)
+	println(address)
+	if err != nil {
+		return
+	}
+
+	assert.Equal(t,
+		"ckb1qzn9dutjk669cfznq7httfar0gtk7qp0du3wjfvzck9l0w3k9eqhvqpkcv576ccddnn4quf2ga65xee2m26h7nqdcg257",
+		address)
+
+	t.Run("parse full address", func(t *testing.T) {
+		mnAddress, err := Parse(address)
+
+		assert.Nil(t, err)
+		assert.Equal(t, Mainnet, mnAddress.Mode)
+		assert.Equal(t, TypeFull, mnAddress.Type)
+		assert.Equal(t, script.CodeHash, mnAddress.Script.CodeHash)
+		assert.Equal(t, script.HashType, mnAddress.Script.HashType)
+		assert.Equal(t, script.Args, mnAddress.Script.Args)
+	})
+}
+
+func TestBech32mData1FullMainnetAddressGenerate(t *testing.T) {
+	script := &types.Script{
+		CodeHash: types.HexToHash("0xa656f172b6b45c245307aeb5a7a37a176f002f6f22e92582c58bf7ba362e4176"),
+		HashType: types.HashTypeData1,
+		Args:     common.FromHex("0x36c329ed630d6ce750712a477543672adab57f4c"),
+	}
+
+	address, err := GenerateBech32mFullAddress(Mainnet, script)
+	println(address)
+	if err != nil {
+		return
+	}
+
+	assert.Equal(t,
+		"ckb1qzn9dutjk669cfznq7httfar0gtk7qp0du3wjfvzck9l0w3k9eqhvq3kcv576ccddnn4quf2ga65xee2m26h7nqe5e7m2",
+		address)
+
+	t.Run("parse full address", func(t *testing.T) {
+		mnAddress, err := Parse(address)
+
+		assert.Nil(t, err)
+		assert.Equal(t, Mainnet, mnAddress.Mode)
+		assert.Equal(t, TypeFull, mnAddress.Type)
+		assert.Equal(t, script.CodeHash, mnAddress.Script.CodeHash)
+		assert.Equal(t, script.HashType, mnAddress.Script.HashType)
+		assert.Equal(t, script.Args, mnAddress.Script.Args)
+	})
+
 }
