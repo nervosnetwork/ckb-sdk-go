@@ -114,6 +114,7 @@ func GenerateChequeAddress(senderAddress, receiverAddress string) (string, error
 }
 
 func GenerateBech32mFullAddress(mode Mode, script *types.Script) (string, error) {
+
 	hashType, err := types.SerializeHashType(script.HashType)
 	if err != nil {
 		return "", err
@@ -123,6 +124,7 @@ func GenerateBech32mFullAddress(mode Mode, script *types.Script) (string, error)
 	payload := TYPE_FULL_WITH_BECH32M
 	payload += script.CodeHash.Hex()[2:]
 	payload += hashType
+
 	payload += common.Bytes2Hex(script.Args)
 
 	dataPart, err := bech32.ConvertBits(common.FromHex(payload), 8, 5, true)

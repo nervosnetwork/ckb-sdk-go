@@ -157,6 +157,7 @@ func Parse(address string) (*ParsedAddress, error) {
 		}
 
 		script.HashType = hashType
+
 	} else {
 		return nil, errors.New("address type error:" + payload[:2])
 	}

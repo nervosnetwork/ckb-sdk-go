@@ -55,6 +55,7 @@ func TestBech32mTypeFullMainnetAddressGenerate(t *testing.T) {
 		assert.Equal(t, script.HashType, mnAddress.Script.HashType)
 		assert.Equal(t, script.Args, mnAddress.Script.Args)
 	})
+
 }
 
 func TestBech32mDataFullMainnetAddressGenerate(t *testing.T) {
@@ -113,4 +114,5 @@ func TestBech32mData1FullMainnetAddressGenerate(t *testing.T) {
 		assert.Equal(t, script.HashType, mnAddress.Script.HashType)
 		assert.Equal(t, script.Args, mnAddress.Script.Args)
 	})
+
 }
