@@ -32,6 +32,10 @@ func TestGetTipBlockNumber(t *testing.T) {
 }
 
 func TestSyncState(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skip use cases that require node access at ci")
+	}
+
 	api, _ := Dial("http://localhost:8114")
 	syncState, err := api.SyncState(context.Background())
 	assert.Nil(t, err)
@@ -42,6 +46,10 @@ func TestSyncState(t *testing.T) {
 }
 
 func TestGetTransactionProof(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skip use cases that require node access at ci")
+	}
+
 	api := getApi()
 
 	proof, err := api.GetTransactionProof(context.Background(), []string{"0xc9ae96ff99b48e755ccdb350a69591ba80877be3d6c67ac9660bb9a0c52dc3d6"}, nil)
@@ -53,6 +61,10 @@ func TestGetTransactionProof(t *testing.T) {
 }
 
 func TestGetTransactionProofByBlockHash(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skip use cases that require node access at ci")
+	}
+
 	api := getApi()
 	hash := types.HexToHash("0x36038509b555c8acf360175b9bc4f67bd68be02b152f4a9d1131a424fffd8d23")
 	proof, err := api.GetTransactionProof(context.Background(), []string{"0xc9ae96ff99b48e755ccdb350a69591ba80877be3d6c67ac9660bb9a0c52dc3d6"}, &hash)
@@ -64,6 +76,10 @@ func TestGetTransactionProofByBlockHash(t *testing.T) {
 }
 
 func TestVerifyTransactionProof(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skip use cases that require node access at ci")
+	}
+
 	api := getApi()
 
 	proof := &types.TransactionProof{
@@ -85,36 +101,60 @@ func TestVerifyTransactionProof(t *testing.T) {
 }
 
 func TestSetNetworkActive(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skip use cases that require node access at ci")
+	}
+
 	api := getApi()
 	err := api.SetNetworkActive(context.Background(), true)
 	assert.Nil(t, err)
 }
 
 func TestClearBannedAddresses(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skip use cases that require node access at ci")
+	}
+
 	api := getApi()
 	err := api.ClearBannedAddresses(context.Background())
 	assert.Nil(t, err)
 }
 
 func TestAddNode(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skip use cases that require node access at ci")
+	}
+
 	api := getApi()
 	err := api.AddNode(context.Background(), "QmUsZHPbjjzU627UZFt4k8j6ycEcNvXRnVGxCPKqwbAfQS", "/ip4/192.168.2.100/tcp/8114")
 	assert.Nil(t, err)
 }
 
 func TestRemoveNode(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skip use cases that require node access at ci")
+	}
+
 	api := getApi()
 	err := api.RemoveNode(context.Background(), "QmUsZHPbjjzU627UZFt4k8j6ycEcNvXRnVGxCPKqwbAfQS")
 	assert.Nil(t, err)
 }
 
 func TestPingPeers(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skip use cases that require node access at ci")
+	}
+
 	api := getApi()
 	err := api.PingPeers(context.Background())
 	assert.Nil(t, err)
 }
 
 func TestGetRawTxPool(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skip use cases that require node access at ci")
+	}
+
 	api := getApi()
 	pool, err := api.GetRawTxPool(context.Background())
 	assert.Nil(t, err)
@@ -129,6 +169,10 @@ func TestGetRawTxPool(t *testing.T) {
 }
 
 func TestClearTxPool(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skip use cases that require node access at ci")
+	}
+
 	api := getApi()
 
 	pool, err := api.GetRawTxPool(context.Background())
@@ -146,6 +190,10 @@ func TestClearTxPool(t *testing.T) {
 }
 
 func TestGetBlockMedianTime(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skip use cases that require node access at ci")
+	}
+
 	api := getApi()
 	time, err := api.GetBlockMedianTime(context.Background(), types.HexToHash("0xa5f5c85987a15de25661e5a214f2c1449cd803f071acc7999820f25246471f40"))
 	assert.Nil(t, err)
@@ -154,6 +202,10 @@ func TestGetBlockMedianTime(t *testing.T) {
 }
 
 func TestGetForkBlock(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skip use cases that require node access at ci")
+	}
+	
 	api := getApi()
 	block, err := api.GetForkBlock(context.Background(), types.HexToHash("0xa5f5c85987a15de25661e5a214f2c1449cd803f071acc7999820f25246471f40"))
 	assert.Nil(t, err)

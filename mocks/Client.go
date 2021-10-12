@@ -16,6 +16,54 @@ type Client struct {
 	mock.Mock
 }
 
+func (_m *Client) GetTransactionProof(ctx context.Context, txHashes []string, blockHash *types.Hash) (*types.TransactionProof, error) {
+	panic("implement me")
+}
+
+func (_m *Client) VerifyTransactionProof(ctx context.Context, proof *types.TransactionProof) ([]*types.Hash, error) {
+	panic("implement me")
+}
+
+func (_m *Client) GetForkBlock(ctx context.Context, blockHash types.Hash) (*types.Block, error) {
+	panic("implement me")
+}
+
+func (_m *Client) GetBlockMedianTime(ctx context.Context, blockHash types.Hash) (uint64, error) {
+	panic("implement me")
+}
+
+func (_m *Client) ClearBannedAddresses(ctx context.Context) error {
+	panic("implement me")
+}
+
+func (_m *Client) SyncState(ctx context.Context) (*types.SyncState, error) {
+	panic("implement me")
+}
+
+func (_m *Client) SetNetworkActive(ctx context.Context, state bool) error {
+	panic("implement me")
+}
+
+func (_m *Client) AddNode(ctx context.Context, peerId, address string) error {
+	panic("implement me")
+}
+
+func (_m *Client) RemoveNode(ctx context.Context, peerId string) error {
+	panic("implement me")
+}
+
+func (_m *Client) PingPeers(ctx context.Context) error {
+	panic("implement me")
+}
+
+func (_m *Client) GetRawTxPool(ctx context.Context) (*types.RawTxPool, error) {
+	panic("implement me")
+}
+
+func (_m *Client) ClearTxPool(ctx context.Context) error {
+	panic("implement me")
+}
+
 // BatchLiveCells provides a mock function with given fields: ctx, batch
 func (_m *Client) BatchLiveCells(ctx context.Context, batch []types.BatchLiveCellItem) error {
 	ret := _m.Called(ctx, batch)
