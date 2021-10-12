@@ -114,7 +114,6 @@ func GenerateChequeAddress(senderAddress, receiverAddress string) (string, error
 }
 
 func GenerateBech32mFullAddress(mode Mode, script *types.Script) (string, error) {
-
 	hashType, err := types.SerializeHashType(script.HashType)
 	if err != nil {
 		return "", err
