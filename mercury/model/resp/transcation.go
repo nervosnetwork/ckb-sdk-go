@@ -3,13 +3,12 @@ package resp
 import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/common"
-	"github.com/nervosnetwork/ckb-sdk-go/transaction"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 )
 
 type TransferCompletionResponse struct {
-	TxView    *transactionResp  `json:"tx_view"`
-	SigsEntry []*SignatureEntry `json:"signature_entries"`
+	TxView           *transactionResp   `json:"tx_view"`
+	SignatureActions []*SignatureAction `json:"signature_actions"`
 }
 
 type SignatureEntry struct {
@@ -20,9 +19,9 @@ type SignatureEntry struct {
 }
 
 type ScriptGroup struct {
-	Group       []int
-	WitnessArgs *types.WitnessArgs
-	PubKey      string
+	Action          *SignatureAction
+	Transaction     *transactionResp
+	OriginalWitness string
 }
 
 func (self *TransferCompletionResponse) GetTransaction() *types.Transaction {
@@ -30,30 +29,31 @@ func (self *TransferCompletionResponse) GetTransaction() *types.Transaction {
 }
 
 func (self *TransferCompletionResponse) GetScriptGroup() []*ScriptGroup {
-	groupScripts := make([]*ScriptGroup, len(self.SigsEntry))
+	//groupScripts := make([]*ScriptGroup, len(self.SigsEntry))
 
-	self.TxView.Witnesses = make([]hexutil.Bytes, len(self.TxView.Inputs))
-	for i, _ := range self.TxView.Witnesses {
-		self.TxView.Witnesses[i] = []byte{}
-	}
-
-	for index, entry := range self.SigsEntry {
-		group := make([]int, entry.GroupLen)
-		groupIndex := 0
-		for i := entry.Index; i < entry.Index+entry.GroupLen; i++ {
-			group[groupIndex] = i
-			groupIndex += 1
-		}
-
-		groupScripts[index] = &ScriptGroup{
-			Group:       group,
-			WitnessArgs: transaction.EmptyWitnessArg,
-			PubKey:      entry.PubKey,
-		}
-
-		self.TxView.Witnesses[entry.Index] = transaction.EmptyWitnessArgPlaceholder
-	}
-	return groupScripts
+	//self.TxView.Witnesses = make([]hexutil.Bytes, len(self.TxView.Inputs))
+	//for i, _ := range self.TxView.Witnesses {
+	//	self.TxView.Witnesses[i] = []byte{}
+	//}
+	//
+	//for index, entry := range self.SigsEntry {
+	//	group := make([]int, entry.GroupLen)
+	//	groupIndex := 0
+	//	for i := entry.Index; i < entry.Index+entry.GroupLen; i++ {
+	//		group[groupIndex] = i
+	//		groupIndex += 1
+	//	}
+	//
+	//	groupScripts[index] = &ScriptGroup{
+	//		Group:       group,
+	//		WitnessArgs: transaction.EmptyWitnessArg,
+	//		PubKey:      entry.PubKey,
+	//	}
+	//
+	//	self.TxView.Witnesses[entry.Index] = transaction.EmptyWitnessArgPlaceholder
+	//}
+	//return groupScripts
+	return nil
 }
 
 func toTransaction(tx *transactionResp) *types.Transaction {
@@ -128,4 +128,21 @@ func toBytesArray(bytes []hexutil.Bytes) [][]byte {
 		result[i] = data
 	}
 	return result
+}
+
+func NewScriptGroup(action *SignatureAction, transaction *transactionResp) *ScriptGroup {
+	return &ScriptGroup{
+		Action:          action,
+		Transaction:     transaction,
+		OriginalWitness: transaction.Witnesses[action.SignatureLocation.Index].String(),
+	}
+}
+
+func getGroupWitness(self *ScriptGroup) []string {
+	var groupWitnesses []string
+	groupWitnesses = append(groupWitnesses, self.OriginalWitness)
+	for _, v := range self.Action.OtherIndexesInGroup {
+		groupWitnesses = append(groupWitnesses, self.Transaction.Witnesses[v].String())
+	}
+	return groupWitnesses
 }
