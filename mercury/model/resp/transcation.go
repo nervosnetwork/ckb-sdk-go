@@ -29,31 +29,11 @@ func (self *TransferCompletionResponse) GetTransaction() *types.Transaction {
 }
 
 func (self *TransferCompletionResponse) GetScriptGroup() []*ScriptGroup {
-	//groupScripts := make([]*ScriptGroup, len(self.SigsEntry))
-
-	//self.TxView.Witnesses = make([]hexutil.Bytes, len(self.TxView.Inputs))
-	//for i, _ := range self.TxView.Witnesses {
-	//	self.TxView.Witnesses[i] = []byte{}
-	//}
-	//
-	//for index, entry := range self.SigsEntry {
-	//	group := make([]int, entry.GroupLen)
-	//	groupIndex := 0
-	//	for i := entry.Index; i < entry.Index+entry.GroupLen; i++ {
-	//		group[groupIndex] = i
-	//		groupIndex += 1
-	//	}
-	//
-	//	groupScripts[index] = &ScriptGroup{
-	//		Group:       group,
-	//		WitnessArgs: transaction.EmptyWitnessArg,
-	//		PubKey:      entry.PubKey,
-	//	}
-	//
-	//	self.TxView.Witnesses[entry.Index] = transaction.EmptyWitnessArgPlaceholder
-	//}
-	//return groupScripts
-	return nil
+	scriptGroups := make([]*ScriptGroup, len(self.SignatureActions))
+	for i, v := range self.SignatureActions {
+		scriptGroups[i] = NewScriptGroup(v, self.TxView)
+	}
+	return scriptGroups
 }
 
 func toTransaction(tx *transactionResp) *types.Transaction {
