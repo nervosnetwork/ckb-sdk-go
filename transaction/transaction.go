@@ -3,7 +3,6 @@ package transaction
 import (
 	"encoding/binary"
 	"errors"
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/nervosnetwork/ckb-sdk-go/crypto"
 	"github.com/nervosnetwork/ckb-sdk-go/crypto/blake2b"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/resp"
@@ -82,7 +81,7 @@ func AddInputsForTransaction(transaction *types.Transaction, inputs []*types.Cel
 }
 
 func SignTransaction(transaction *types.Transaction, scriptGroup *resp.ScriptGroup, privateKey crypto.Key) error {
-	witnessBytes := common.Hex2Bytes(scriptGroup.GetWitness())
+	witnessBytes := scriptGroup.GetWitness()
 	groupWitnesses := scriptGroup.GetGroupWitnesses()
 
 	txHash, err := transaction.ComputeHash()
@@ -98,7 +97,7 @@ func SignTransaction(transaction *types.Transaction, scriptGroup *resp.ScriptGro
 	message = append(message, witnessBytes...)
 
 	for i := 1; i < len(groupWitnesses); i++ {
-		witnessBytes := common.Hex2Bytes(groupWitnesses[i])
+		witnessBytes := groupWitnesses[i]
 		length := make([]byte, 8)
 		binary.LittleEndian.PutUint64(length, uint64(len(witnessBytes)))
 		message = append(message, length...)
@@ -115,8 +114,8 @@ func SignTransaction(transaction *types.Transaction, scriptGroup *resp.ScriptGro
 		return err
 	}
 
-	newWitness := common.Hex2Bytes(scriptGroup.GetWitness())
-	offset := scriptGroup.GetOffSet() * 2
+	newWitness := scriptGroup.GetWitness()
+	offset := scriptGroup.GetOffSet()
 	for i := 0; i < len(signature); i++ {
 		newWitness[i+offset] = signature[i]
 	}

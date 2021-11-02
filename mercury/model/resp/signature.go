@@ -1,25 +1,25 @@
 package resp
 
-type HashAlgorithm int
+type HashAlgorithm string
 
 const (
-	Blake2b HashAlgorithm = iota
+	Blake2b HashAlgorithm = "Blake2b"
 )
 
-type SignAlgorithm int
+type SignAlgorithm string
 
 const (
-	Secp256k1 SignAlgorithm = iota
+	Secp256k1 SignAlgorithm = "Secp256k1"
 )
 
 type SignatureLocation struct {
-	Index  int
-	Offset int
+	Index  int `json:"index"`
+	Offset int `json:"offset"`
 }
 
 type SignatureInfo struct {
-	Algorithm SignAlgorithm
-	Address   string
+	Algorithm SignAlgorithm `json:"algorithm"`
+	Address   string        `json:"address"`
 }
 type SignatureAction struct {
 	SignatureLocation   *SignatureLocation `json:"signature_location"`
