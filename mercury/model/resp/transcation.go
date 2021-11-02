@@ -11,13 +11,6 @@ type TransferCompletionResponse struct {
 	SignatureActions []*SignatureAction `json:"signature_actions"`
 }
 
-type SignatureEntry struct {
-	Type     string `json:"type"`
-	Index    int    `json:"index"`
-	PubKey   string `json:"pub_key"`
-	GroupLen int    `json:"group_len"`
-}
-
 type ScriptGroup struct {
 	Action          *SignatureAction
 	Transaction     *transactionResp
@@ -118,11 +111,27 @@ func NewScriptGroup(action *SignatureAction, transaction *transactionResp) *Scri
 	}
 }
 
-func getGroupWitness(self *ScriptGroup) []string {
+func (g *ScriptGroup) GetOffSet() int {
+	return g.Action.SignatureLocation.Offset
+}
+
+func (g *ScriptGroup) GetWitness() string {
+	return g.OriginalWitness
+}
+
+func (g *ScriptGroup) GetWitnessIndex() int {
+	return g.Action.SignatureLocation.Index
+}
+
+func (g *ScriptGroup) GetAddress() string {
+	return g.Action.SignatureInfo.Address
+}
+
+func (g *ScriptGroup) GetGroupWitnesses() []string {
 	var groupWitnesses []string
-	groupWitnesses = append(groupWitnesses, self.OriginalWitness)
-	for _, v := range self.Action.OtherIndexesInGroup {
-		groupWitnesses = append(groupWitnesses, self.Transaction.Witnesses[v].String())
+	groupWitnesses = append(groupWitnesses, g.OriginalWitness)
+	for _, v := range g.Action.OtherIndexesInGroup {
+		groupWitnesses = append(groupWitnesses, g.Transaction.Witnesses[v].String())
 	}
 	return groupWitnesses
 }
