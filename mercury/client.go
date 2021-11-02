@@ -26,6 +26,7 @@ type Client interface {
 	GetMercuryInfo() (*resp.MercuryInfo, error)
 	BuildDaoDepositTransaction(payload *model.DaoDepositPayload) (*resp.TransferCompletionResponse, error)
 	BuildDaoWithdrawTransaction(payload *model.DaoWithdrawPayload) (*resp.TransferCompletionResponse, error)
+	BuildDaoClaimTransaction(payload *model.DaoClaimPayload) (*resp.TransferCompletionResponse, error)
 }
 type client struct {
 	c *rpc.Client
@@ -44,6 +45,16 @@ func (cli *client) BuildDaoDepositTransaction(payload *model.DaoDepositPayload) 
 func (cli *client) BuildDaoWithdrawTransaction(payload *model.DaoWithdrawPayload) (*resp.TransferCompletionResponse, error) {
 	var resp resp.TransferCompletionResponse
 	err := cli.c.Call(&resp, "build_dao_withdraw_transaction", payload)
+	if err != nil {
+		return nil, err
+	}
+
+	return &resp, err
+}
+
+func (cli *client) BuildDaoClaimTransaction(payload *model.DaoClaimPayload) (*resp.TransferCompletionResponse, error) {
+	var resp resp.TransferCompletionResponse
+	err := cli.c.Call(&resp, "build_dao_claim_transaction", payload)
 	if err != nil {
 		return nil, err
 	}

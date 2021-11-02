@@ -33,6 +33,10 @@ func (cli *DefaultCkbApi) BuildDaoWithdrawTransaction(payload *model.DaoWithdraw
 	return cli.mercury.BuildDaoWithdrawTransaction(payload)
 }
 
+func (cli *DefaultCkbApi) BuildDaoClaimTransaction(payload *model.DaoClaimPayload) (*resp.TransferCompletionResponse, error) {
+	return cli.mercury.BuildDaoClaimTransaction(payload)
+}
+
 func (cli *DefaultCkbApi) GetSpentTransactionWithTransactionInfo(payload *model.GetSpentTransactionPayload) (*resp.TransactionInfoWrapper, error) {
 	return cli.mercury.GetSpentTransactionWithTransactionInfo(payload)
 }

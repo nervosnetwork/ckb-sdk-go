@@ -90,3 +90,27 @@ func TestDaoWithdraw(t *testing.T) {
 	fmt.Println(hash)
 
 }
+
+func TestDaoClaim(t *testing.T) {
+	builder := model.NewDaoClaimPayloadBuilder()
+	item, _ := req.NewIdentityItemByCkb(constant.TEST_PUBKEY3)
+	builder.AddItem(item)
+
+	transaction, err := constant.GetMercuryApiInstance().BuildDaoClaimTransaction(builder.Build())
+
+	marshal, _ := json.Marshal(builder.Build())
+	fmt.Println(string(marshal))
+
+	if err != nil {
+		t.Error(err)
+	}
+
+	tx := utils.Sign(transaction)
+
+	hash, err := constant.GetMercuryApiInstance().SendTransaction(context.Background(), tx)
+	if err != nil {
+		t.Error(err)
+	}
+
+	fmt.Println(hash)
+}
