@@ -65,13 +65,13 @@ func TestDepositWithIdentity(t *testing.T) {
 
 }
 
-func TestWithdraw(t *testing.T) {
-	builder := model.NewWithdrawPayloadBuilder()
+func TestDaoWithdraw(t *testing.T) {
+	builder := model.NewDaoWithdrawPayloadBuilder()
 	item, _ := req.NewIdentityItemByCkb(constant.TEST_PUBKEY3)
 	builder.AddItem(item)
 	builder.AddPayFee(constant.TEST_ADDRESS1)
 
-	transaction, err := constant.GetMercuryApiInstance().BuildWithdrawTransaction(builder.Build())
+	transaction, err := constant.GetMercuryApiInstance().BuildDaoWithdrawTransaction(builder.Build())
 
 	marshal, _ := json.Marshal(builder.Build())
 	fmt.Println(string(marshal))
