@@ -13,13 +13,13 @@ import (
 	"testing"
 )
 
-func TestDepositWithAddress(t *testing.T) {
-	builder := model.NewDepositPayloadBuilder()
+func TestDaoDepositWithAddress(t *testing.T) {
+	builder := model.NewDaoDepositPayloadBuilder()
 	item, _ := req.NewAddressItem(constant.TEST_ADDRESS3)
 	builder.AddFrom(source.Free, item)
 	builder.AddAmount(amount.CkbToShannon(300).Uint64())
 
-	transaction, err := constant.GetMercuryApiInstance().BuildDepositTransaction(builder.Build())
+	transaction, err := constant.GetMercuryApiInstance().BuildDaoDepositTransaction(builder.Build())
 
 	marshal, _ := json.Marshal(builder.Build())
 	fmt.Println(string(marshal))
@@ -39,13 +39,13 @@ func TestDepositWithAddress(t *testing.T) {
 
 }
 
-func TestDepositWithIdentity(t *testing.T) {
-	builder := model.NewDepositPayloadBuilder()
+func TestDaoDepositWithIdentity(t *testing.T) {
+	builder := model.NewDaoDepositPayloadBuilder()
 	item, _ := req.NewIdentityItemByCkb(constant.TEST_PUBKEY3)
 	builder.AddFrom(source.Free, item)
 	builder.AddAmount(amount.CkbToShannon(300).Uint64())
 
-	transaction, err := constant.GetMercuryApiInstance().BuildDepositTransaction(builder.Build())
+	transaction, err := constant.GetMercuryApiInstance().BuildDaoDepositTransaction(builder.Build())
 
 	marshal, _ := json.Marshal(builder.Build())
 	fmt.Println(string(marshal))

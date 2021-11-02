@@ -24,16 +24,16 @@ type Client interface {
 	QueryTransactionsWithTransactionView(payload *model.QueryTransactionsPayload) (*resp.PaginationResponseTransactionView, error)
 	GetDbInfo() (*resp.DBInfo, error)
 	GetMercuryInfo() (*resp.MercuryInfo, error)
-	BuildDepositTransaction(payload *model.DepositPayload) (*resp.TransferCompletionResponse, error)
+	BuildDaoDepositTransaction(payload *model.DaoDepositPayload) (*resp.TransferCompletionResponse, error)
 	BuildDaoWithdrawTransaction(payload *model.DaoWithdrawPayload) (*resp.TransferCompletionResponse, error)
 }
 type client struct {
 	c *rpc.Client
 }
 
-func (cli *client) BuildDepositTransaction(payload *model.DepositPayload) (*resp.TransferCompletionResponse, error) {
+func (cli *client) BuildDaoDepositTransaction(payload *model.DaoDepositPayload) (*resp.TransferCompletionResponse, error) {
 	var resp resp.TransferCompletionResponse
-	err := cli.c.Call(&resp, "build_deposit_transaction", payload)
+	err := cli.c.Call(&resp, "build_dao_deposit_transaction", payload)
 	if err != nil {
 		return nil, err
 	}

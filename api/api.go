@@ -25,8 +25,8 @@ func (cli *DefaultCkbApi) BuildSmartTransferTransaction(payload *model.SmartTran
 	return cli.mercury.BuildSmartTransferTransaction(payload)
 }
 
-func (cli *DefaultCkbApi) BuildDepositTransaction(payload *model.DepositPayload) (*resp.TransferCompletionResponse, error) {
-	return cli.mercury.BuildDepositTransaction(payload)
+func (cli *DefaultCkbApi) BuildDaoDepositTransaction(payload *model.DaoDepositPayload) (*resp.TransferCompletionResponse, error) {
+	return cli.mercury.BuildDaoDepositTransaction(payload)
 }
 
 func (cli *DefaultCkbApi) BuildDaoWithdrawTransaction(payload *model.DaoWithdrawPayload) (*resp.TransferCompletionResponse, error) {
