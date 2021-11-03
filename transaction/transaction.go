@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/nervosnetwork/ckb-sdk-go/crypto"
 	"github.com/nervosnetwork/ckb-sdk-go/crypto/blake2b"
+	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/resp"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 	"github.com/nervosnetwork/ckb-sdk-go/utils"
 )
@@ -77,6 +78,49 @@ func AddInputsForTransaction(transaction *types.Transaction, inputs []*types.Cel
 	}
 	transaction.Witnesses[start] = EmptyWitnessArgPlaceholder
 	return group, EmptyWitnessArg, nil
+}
+
+func SignTransaction(transaction *types.Transaction, scriptGroup *resp.ScriptGroup, privateKey crypto.Key) error {
+	witnessBytes := scriptGroup.GetWitness()
+	groupWitnesses := scriptGroup.GetGroupWitnesses()
+
+	txHash, err := transaction.ComputeHash()
+	if err != nil {
+		return err
+	}
+
+	length := make([]byte, 8)
+	binary.LittleEndian.PutUint64(length, uint64(len(witnessBytes)))
+
+	message := txHash.Bytes()
+	message = append(message, length...)
+	message = append(message, witnessBytes...)
+
+	for i := 1; i < len(groupWitnesses); i++ {
+		witnessBytes := groupWitnesses[i]
+		length := make([]byte, 8)
+		binary.LittleEndian.PutUint64(length, uint64(len(witnessBytes)))
+		message = append(message, length...)
+		message = append(message, witnessBytes...)
+	}
+
+	hash, err := blake2b.Blake256(message)
+	if err != nil {
+		return err
+	}
+
+	signature, err := privateKey.Sign(hash)
+	if err != nil {
+		return err
+	}
+
+	newWitness := scriptGroup.GetWitness()
+	offset := scriptGroup.GetOffSet()
+	for i := 0; i < len(signature); i++ {
+		newWitness[i+offset] = signature[i]
+	}
+	transaction.Witnesses[scriptGroup.GetWitnessIndex()] = newWitness
+	return nil
 }
 
 // group is an array, which content is the index of input after grouping

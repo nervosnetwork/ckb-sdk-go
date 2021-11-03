@@ -9,27 +9,11 @@ import (
 )
 
 func Sign(transferCompletion *resp.TransferCompletionResponse) *types.Transaction {
-	transferCompletion.GetScriptGroup()
-	tx := transferCompletion.GetTransaction()
 	scriptGroups := transferCompletion.GetScriptGroup()
-	for _, group := range scriptGroups {
-		key, _ := secp256k1.HexToKey(constant.GetKey(group.PubKey))
-		if err := transaction.SingleSignTransaction(tx, group.Group, group.WitnessArgs, key); err != nil {
-			panic(err)
-		}
-	}
-	return tx
-}
-
-func SignByKey(transferCompletion *resp.TransferCompletionResponse, privateKey string) *types.Transaction {
-	transferCompletion.GetScriptGroup()
 	tx := transferCompletion.GetTransaction()
-	scriptGroups := transferCompletion.GetScriptGroup()
 	for _, group := range scriptGroups {
-		key, _ := secp256k1.HexToKey(privateKey)
-		if err := transaction.SingleSignTransaction(tx, group.Group, group.WitnessArgs, key); err != nil {
-			panic(err)
-		}
+		key, _ := secp256k1.HexToKey(constant.GetKey(group.GetAddress()))
+		transaction.SignTransaction(tx, group, key)
 	}
 	return tx
 }
