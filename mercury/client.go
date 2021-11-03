@@ -24,16 +24,17 @@ type Client interface {
 	QueryTransactionsWithTransactionView(payload *model.QueryTransactionsPayload) (*resp.PaginationResponseTransactionView, error)
 	GetDbInfo() (*resp.DBInfo, error)
 	GetMercuryInfo() (*resp.MercuryInfo, error)
-	BuildDepositTransaction(payload *model.DepositPayload) (*resp.TransferCompletionResponse, error)
-	BuildWithdrawTransaction(payload *model.WithdrawPayload) (*resp.TransferCompletionResponse, error)
+	BuildDaoDepositTransaction(payload *model.DaoDepositPayload) (*resp.TransferCompletionResponse, error)
+	BuildDaoWithdrawTransaction(payload *model.DaoWithdrawPayload) (*resp.TransferCompletionResponse, error)
+	BuildDaoClaimTransaction(payload *model.DaoClaimPayload) (*resp.TransferCompletionResponse, error)
 }
 type client struct {
 	c *rpc.Client
 }
 
-func (cli *client) BuildDepositTransaction(payload *model.DepositPayload) (*resp.TransferCompletionResponse, error) {
+func (cli *client) BuildDaoDepositTransaction(payload *model.DaoDepositPayload) (*resp.TransferCompletionResponse, error) {
 	var resp resp.TransferCompletionResponse
-	err := cli.c.Call(&resp, "build_deposit_transaction", payload)
+	err := cli.c.Call(&resp, "build_dao_deposit_transaction", payload)
 	if err != nil {
 		return nil, err
 	}
@@ -41,9 +42,19 @@ func (cli *client) BuildDepositTransaction(payload *model.DepositPayload) (*resp
 	return &resp, err
 }
 
-func (cli *client) BuildWithdrawTransaction(payload *model.WithdrawPayload) (*resp.TransferCompletionResponse, error) {
+func (cli *client) BuildDaoWithdrawTransaction(payload *model.DaoWithdrawPayload) (*resp.TransferCompletionResponse, error) {
 	var resp resp.TransferCompletionResponse
-	err := cli.c.Call(&resp, "build_withdraw_transaction", payload)
+	err := cli.c.Call(&resp, "build_dao_withdraw_transaction", payload)
+	if err != nil {
+		return nil, err
+	}
+
+	return &resp, err
+}
+
+func (cli *client) BuildDaoClaimTransaction(payload *model.DaoClaimPayload) (*resp.TransferCompletionResponse, error) {
+	var resp resp.TransferCompletionResponse
+	err := cli.c.Call(&resp, "build_dao_claim_transaction", payload)
 	if err != nil {
 		return nil, err
 	}

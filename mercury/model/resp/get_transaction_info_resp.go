@@ -35,7 +35,7 @@ type Record struct {
 	Status            RecordStatus              `json:"status"`
 	Extra             ExtraFilter               `json:"extra"`
 	BlockNumber       uint64                    `json:"block_number"`
-	EpochNumber       []byte                    `json:"epoch_number"`
+	EpochNumber       uint64                    `json:"epoch_number"`
 }
 
 type RecordStatus struct {
