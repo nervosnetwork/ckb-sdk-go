@@ -111,7 +111,7 @@ func TestBlockHashAndBlockNumberDoNotMatch(t *testing.T) {
 	}
 
 	_, getErr := constant.GetMercuryApiInstance().GetBlockInfo(payload)
-	if getErr != nil && getErr.Error() != "block number and hash mismatch" {
+	if getErr != nil && !strings.HasSuffix(getErr.Error(), "block number mismatches block hash") {
 		t.Error(err)
 	}
 }
@@ -126,7 +126,7 @@ func TestCannotFind(t *testing.T) {
 	}
 
 	_, getErr := constant.GetMercuryApiInstance().GetBlockInfo(payload)
-	if getErr != nil && !strings.HasPrefix(getErr.Error(), "Cannot get block by hash H256") {
+	if getErr != nil && !strings.HasSuffix(getErr.Error(), "No block with the hash was found") {
 		t.Error(err)
 	}
 }
@@ -141,7 +141,7 @@ func TestWrongHeight(t *testing.T) {
 	}
 	// error: invalid block number
 	_, getErr := constant.GetMercuryApiInstance().GetBlockInfo(payload)
-	if getErr != nil && getErr.Error() != "invalid block number" {
+	if getErr != nil && !strings.HasSuffix(getErr.Error(), "block number is wrong height") {
 		t.Error(err)
 	}
 }
