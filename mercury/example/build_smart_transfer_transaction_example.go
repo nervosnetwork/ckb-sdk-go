@@ -22,12 +22,12 @@ func TestCkbInsufficientBalanceToPayTheFee1(t *testing.T) {
 	from, _ := address.GenerateShortAddress(address.Testnet)
 	to, _ := address.GenerateShortAddress(address.Testnet)
 
-	builder := model.NewSmartTransferPayloadBuilder()
+	builder := model.NewSimpleTransferPayloadBuilder()
 	builder.AddAssetInfo(common.NewCkbAsset())
 	builder.AddFrom(from.Address)
 	builder.AddToInfo(to.Address, amount.CkbToShannon(100))
 
-	_, err := constant.GetMercuryApiInstance().BuildSmartTransferTransaction(builder.Build())
+	_, err := constant.GetMercuryApiInstance().BuildSimpleTransferTransaction(builder.Build())
 
 	assert.EqualError(
 		t,
@@ -39,12 +39,12 @@ func TestCkbInsufficientBalanceToPayTheFee1(t *testing.T) {
 func TestCkbInsufficientBalanceToPayTheFee2(t *testing.T) {
 	from, _ := address.GenerateShortAddress(address.Testnet)
 
-	builder := model.NewSmartTransferPayloadBuilder()
+	builder := model.NewSimpleTransferPayloadBuilder()
 	builder.AddAssetInfo(common.NewCkbAsset())
 	builder.AddFrom(from.Address)
 	builder.AddToInfo(constant.TEST_ADDRESS4, amount.CkbToShannon(100))
 
-	_, err := constant.GetMercuryApiInstance().BuildSmartTransferTransaction(builder.Build())
+	_, err := constant.GetMercuryApiInstance().BuildSimpleTransferTransaction(builder.Build())
 
 	assert.EqualError(
 		t,
@@ -55,12 +55,12 @@ func TestCkbInsufficientBalanceToPayTheFee2(t *testing.T) {
 
 func TestSourceByClaimable(t *testing.T) {
 	initChequeCell()
-	builder := model.NewSmartTransferPayloadBuilder()
+	builder := model.NewSimpleTransferPayloadBuilder()
 	builder.AddAssetInfo(common.NewUdtAsset(constant.UDT_HASH))
 	builder.AddFrom(constant.TEST_ADDRESS2)
 	builder.AddToInfo(constant.TEST_ADDRESS4, model.NewU128WithU64(20))
 
-	tx, err := constant.GetMercuryApiInstance().BuildSmartTransferTransaction(builder.Build())
+	tx, err := constant.GetMercuryApiInstance().BuildSimpleTransferTransaction(builder.Build())
 	if err != nil {
 		t.Error(err)
 	}
@@ -78,12 +78,12 @@ func TestSendChequeCell(t *testing.T) {
 
 	to, _ := address.GenerateShortAddress(address.Testnet)
 
-	builder := model.NewSmartTransferPayloadBuilder()
+	builder := model.NewSimpleTransferPayloadBuilder()
 	builder.AddAssetInfo(common.NewUdtAsset(constant.UDT_HASH))
 	builder.AddFrom(constant.TEST_ADDRESS2)
 	builder.AddToInfo(to.Address, model.NewU128WithU64(20))
 
-	tx, err := constant.GetMercuryApiInstance().BuildSmartTransferTransaction(builder.Build())
+	tx, err := constant.GetMercuryApiInstance().BuildSimpleTransferTransaction(builder.Build())
 	if err != nil {
 		t.Error(err)
 	}
@@ -98,12 +98,12 @@ func TestSendChequeCell(t *testing.T) {
 }
 
 func TestSourceByFree(t *testing.T) {
-	builder := model.NewSmartTransferPayloadBuilder()
+	builder := model.NewSimpleTransferPayloadBuilder()
 	builder.AddAssetInfo(common.NewUdtAsset(constant.UDT_HASH))
 	builder.AddFrom(constant.TEST_ADDRESS4)
 	builder.AddToInfo(constant.TEST_ADDRESS1, model.NewU128WithU64(20))
 
-	tx, err := constant.GetMercuryApiInstance().BuildSmartTransferTransaction(builder.Build())
+	tx, err := constant.GetMercuryApiInstance().BuildSimpleTransferTransaction(builder.Build())
 	if err != nil {
 		t.Error(err)
 	}
@@ -119,13 +119,13 @@ func TestSourceByFree(t *testing.T) {
 
 func TestModeByHoldyTo(t *testing.T) {
 
-	builder := model.NewSmartTransferPayloadBuilder()
+	builder := model.NewSimpleTransferPayloadBuilder()
 	builder.AddAssetInfo(common.NewUdtAsset(constant.UDT_HASH))
 	builder.AddFrom(constant.TEST_ADDRESS1)
 	acpAddress, _ := address.GenerateAcpAddress(constant.TEST_ADDRESS4)
 	builder.AddToInfo(acpAddress, model.NewU128WithU64(20))
 
-	tx, err := constant.GetMercuryApiInstance().BuildSmartTransferTransaction(builder.Build())
+	tx, err := constant.GetMercuryApiInstance().BuildSimpleTransferTransaction(builder.Build())
 	if err != nil {
 		t.Error(err)
 	}

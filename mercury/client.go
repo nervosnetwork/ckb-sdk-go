@@ -13,7 +13,7 @@ import (
 type Client interface {
 	GetBalance(payload *model.GetBalancePayload) (*resp.GetBalanceResponse, error)
 	BuildTransferTransaction(payload *model.TransferPayload) (*resp.TransferCompletionResponse, error)
-	BuildSmartTransferTransaction(payload *model.SmartTransferPayload) (*resp.TransferCompletionResponse, error)
+	BuildSimpleTransferTransaction(payload *model.SimpleTransferPayload) (*resp.TransferCompletionResponse, error)
 	BuildAdjustAccountTransaction(*model.BuildAdjustAccountPayload) (*resp.TransferCompletionResponse, error)
 	RegisterAddresses(normalAddresses []string) ([]string, error)
 	GetTransactionInfo(txHash string) (*resp.GetTransactionInfoResponse, error)
@@ -106,9 +106,9 @@ func (cli *client) BuildTransferTransaction(payload *model.TransferPayload) (*re
 	return &resp, err
 }
 
-func (cli *client) BuildSmartTransferTransaction(payload *model.SmartTransferPayload) (*resp.TransferCompletionResponse, error) {
+func (cli *client) BuildSimpleTransferTransaction(payload *model.SimpleTransferPayload) (*resp.TransferCompletionResponse, error) {
 	var resp resp.TransferCompletionResponse
-	err := cli.c.Call(&resp, "build_smart_transfer_transaction", payload)
+	err := cli.c.Call(&resp, "build_simple_transfer_transaction", payload)
 	if err != nil {
 		return &resp, err
 	}
@@ -197,7 +197,7 @@ func (cli *client) QueryTransactionsWithTransactionInfo(payload *model.QueryTran
 	return &resp, err
 }
 
-//func (cli *client) toTransferPayload(payload *model.SmartTransferPayload) (*model.TransferPayload, error) {
+//func (cli *client) toTransferPayload(payload *model.SimpleTransferPayload) (*model.TransferPayload, error) {
 //	fromBalances, err := cli.getBalance(payload.From, payload.AssetInfo)
 //	if err != nil {
 //		return nil, err
@@ -257,7 +257,7 @@ func (cli *client) QueryTransactionsWithTransactionInfo(payload *model.QueryTran
 //	}
 //}
 //
-//func (cli *client) feePay(fromBalances, toBalances []*resp.GetBalanceResponse, payload *model.SmartTransferPayload) error {
+//func (cli *client) feePay(fromBalances, toBalances []*resp.GetBalanceResponse, payload *model.SimpleTransferPayload) error {
 //	from := cli.getBalanceByAssetTypeAndBalanceType(fromBalances, common.Ckb, "free")
 //	to := cli.getBalanceByAssetTypeAndBalanceType(toBalances, common.Ckb, "free")
 //

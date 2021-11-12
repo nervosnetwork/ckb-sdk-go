@@ -4,7 +4,7 @@ import (
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/common"
 )
 
-type SmartTransferPayload struct {
+type SimpleTransferPayload struct {
 	AssetInfo *common.AssetInfo `json:"asset_info"`
 	From      []string          `json:"from"`
 	To        []*ToInfo         `json:"to"`
@@ -14,7 +14,7 @@ type SmartTransferPayload struct {
 	Since     *SinceConfig      `json:"since,omitempty"`
 }
 
-type smartTransferPayloadBuilder struct {
+type simpleTransferPayloadBuilder struct {
 	AssetInfo *common.AssetInfo
 	From      []string
 	To        []*ToInfo
@@ -24,36 +24,36 @@ type smartTransferPayloadBuilder struct {
 	Since     *SinceConfig
 }
 
-func (builder *smartTransferPayloadBuilder) AddAssetInfo(info *common.AssetInfo) {
+func (builder *simpleTransferPayloadBuilder) AddAssetInfo(info *common.AssetInfo) {
 	builder.AssetInfo = info
 }
 
-func (builder *smartTransferPayloadBuilder) AddFrom(from string) {
+func (builder *simpleTransferPayloadBuilder) AddFrom(from string) {
 	builder.From = append(builder.From, from)
 }
 
-func (builder *smartTransferPayloadBuilder) AddToInfo(address string, amount *U128) {
+func (builder *simpleTransferPayloadBuilder) AddToInfo(address string, amount *U128) {
 	builder.To = append(builder.To, &ToInfo{address, amount})
 }
 
-func (builder *smartTransferPayloadBuilder) AddPayFee(address string) {
+func (builder *simpleTransferPayloadBuilder) AddPayFee(address string) {
 	builder.PayFee = address
 }
 
-func (builder *smartTransferPayloadBuilder) AddChange(change string) {
+func (builder *simpleTransferPayloadBuilder) AddChange(change string) {
 	builder.Change = change
 }
 
-func (builder *smartTransferPayloadBuilder) AddFeeRate(feeRate uint64) {
+func (builder *simpleTransferPayloadBuilder) AddFeeRate(feeRate uint64) {
 	builder.FeeRate = feeRate
 }
 
-func (builder *smartTransferPayloadBuilder) AddSince(since *SinceConfig) {
+func (builder *simpleTransferPayloadBuilder) AddSince(since *SinceConfig) {
 	builder.Since = since
 }
 
-func (builder *smartTransferPayloadBuilder) Build() *SmartTransferPayload {
-	return &SmartTransferPayload{
+func (builder *simpleTransferPayloadBuilder) Build() *SimpleTransferPayload {
+	return &SimpleTransferPayload{
 		AssetInfo: builder.AssetInfo,
 		From:      builder.From,
 		To:        builder.To,
@@ -64,9 +64,9 @@ func (builder *smartTransferPayloadBuilder) Build() *SmartTransferPayload {
 	}
 }
 
-func NewSmartTransferPayloadBuilder() *smartTransferPayloadBuilder {
+func NewSimpleTransferPayloadBuilder() *simpleTransferPayloadBuilder {
 	// default fee rate
-	return &smartTransferPayloadBuilder{
+	return &simpleTransferPayloadBuilder{
 		From:    make([]string, 0),
 		To:      make([]*ToInfo, 0),
 		FeeRate: 1000,

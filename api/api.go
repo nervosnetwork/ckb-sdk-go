@@ -21,8 +21,8 @@ type DefaultCkbApi struct {
 	mercury mercury.Client
 }
 
-func (cli *DefaultCkbApi) BuildSmartTransferTransaction(payload *model.SmartTransferPayload) (*resp.TransferCompletionResponse, error) {
-	return cli.mercury.BuildSmartTransferTransaction(payload)
+func (cli *DefaultCkbApi) BuildSimpleTransferTransaction(payload *model.SimpleTransferPayload) (*resp.TransferCompletionResponse, error) {
+	return cli.mercury.BuildSimpleTransferTransaction(payload)
 }
 
 func (cli *DefaultCkbApi) BuildDaoDepositTransaction(payload *model.DaoDepositPayload) (*resp.TransferCompletionResponse, error) {
