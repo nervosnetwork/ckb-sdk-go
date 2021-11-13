@@ -9,5 +9,5 @@ type TransactionInfoWrapper struct {
 }
 
 type TransactionViewWrapper struct {
-	TransactionView common.TransactionWithStatus `json:"TransactionView"`
+	TransactionView common.TransactionWithRichStatus `json:"TransactionView"`
 }

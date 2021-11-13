@@ -20,6 +20,8 @@ const (
 	TransactionStatusPending   TransactionStatus = "pending"
 	TransactionStatusProposed  TransactionStatus = "proposed"
 	TransactionStatusCommitted TransactionStatus = "committed"
+	TransactionStatusUnknown   TransactionStatus = "unknown"
+	TransactionStatusRejected  TransactionStatus = "rejected"
 )
 
 type Epoch struct {
