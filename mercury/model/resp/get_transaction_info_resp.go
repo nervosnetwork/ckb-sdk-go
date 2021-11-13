@@ -15,10 +15,11 @@ type GetTransactionInfoResponse struct {
 }
 
 type TransactionInfo struct {
-	TxHash  string      `json:"tx_hash"`
-	Records []Record    `json:"records"`
-	Fee     int64       `json:"fee"`
-	Burn    []*BurnInfo `json:"burn"`
+	TxHash    string      `json:"tx_hash"`
+	Records   []Record    `json:"records"`
+	Fee       int64       `json:"fee"`
+	Burn      []*BurnInfo `json:"burn"`
+	Timestamp int64       `json:"timestamp"`
 }
 
 type BurnInfo struct {
