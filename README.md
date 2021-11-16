@@ -69,7 +69,7 @@ TODO
 8. [`build_transfer_transaction` by source example](./mercury/example/source_example.go)
 9. [`adjust_account_transaction` example](./mercury/example/build_adjust_account_transaction_example.go)
 10. [`build_asset_collection_transaction` example](./mercury/example/build_asset_collection_transaction_example.go)
-11. [`build_smart_transaction` example](./mercury/example/build_smart_transfer_transaction_example.go)
+11. [`build_simple_transaction` example](./mercury/example/build_simple_transfer_transaction_example.go)
 12. [`build_adjust_account_transaction` example](./mercury/example/build_adjust_account_transaction_example.go)
 13. [`get_spent_transaction` example](./mercury/example/get_spent_transaction_example.go)
 14. [`query_transactions` example](./mercury/example/query_transactions_example.go)
