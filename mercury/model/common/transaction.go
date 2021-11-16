@@ -43,17 +43,21 @@ type Transaction struct {
 	Witnesses   []hexutil.Bytes `json:"witnesses"`
 }
 
-type TransactionWithStatus struct {
-	Transaction Transaction `json:"transaction"`
-	TxStatus    struct {
-		BlockHash *types.Hash             `json:"block_hash"`
-		Status    types.TransactionStatus `json:"status"`
-	} `json:"tx_status"`
-}
-
 type ExtraType string
 
 const (
 	Dao      ExtraType = "Dao"
 	CellBase ExtraType = "CellBase"
 )
+
+type TransactionWithRichStatus struct {
+	Transaction Transaction  `json:"transaction"`
+	TxStatus    TxRichStatus `json:"tx_status"`
+}
+
+type TxRichStatus struct {
+	Status    types.TransactionStatus `json:"status"`
+	BlockHash string                  `json:"block_hash"`
+	Reason    string                  `json:"reason"`
+	Timestamp uint64                  `json:"timestamp"`
+}
