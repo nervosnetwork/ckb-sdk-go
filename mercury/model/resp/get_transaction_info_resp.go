@@ -40,27 +40,16 @@ type Record struct {
 }
 
 type RecordStatus struct {
-	Status      AssetStatus
-	BlockNumber uint64
+	Type  RecordStatusType `json:"type"`
+	Value uint64           `json:"value"`
 }
 
-func (r *RecordStatus) UnmarshalJSON(bytes []byte) error {
-	recordData := make(map[string]interface{})
-	json.Unmarshal(bytes, &recordData)
+type RecordStatusType string
 
-	if _, ok := recordData["Claimable"]; ok {
-		blockNumber := recordData["Claimable"].(float64)
-		r.BlockNumber = uint64(blockNumber)
-		r.Status = Claimable
-	} else {
-		blockNumber := recordData["Fixed"].(float64)
-		r.BlockNumber = uint64(blockNumber)
-		r.Status = Fixed
-
-	}
-
-	return nil
-}
+const (
+	RecordStatusFixed     RecordStatusType = "Fixed"
+	RecordStatusClaimable                  = "Claimable"
+)
 
 type ExtraFilter struct {
 	DaoInfo   *DaoInfo
