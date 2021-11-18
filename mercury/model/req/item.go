@@ -13,34 +13,30 @@ const (
 	IDENTITY_FLAGS_CKB = "0x00"
 )
 
-type address struct {
-	Address string `json:"Address"`
+func NewAddressItem(addr string) (*Item, error) {
+	return &Item{
+		ItemAddress,
+		addr,
+	}, nil
 }
 
-func NewAddressItem(addr string) (*address, error) {
-	return &address{addr}, nil
-}
-
-type identity struct {
-	Identity string `json:"Identity"`
-}
-
-func NewIdentityItemByCkb(pubKey string) (*identity, error) {
-	return &identity{
+func NewIdentityItemByCkb(pubKey string) (*Item, error) {
+	return &Item{
+		ItemIdentity,
 		toIdentity(IDENTITY_FLAGS_CKB, common.FromHex(pubKey)),
 	}, nil
 }
 
-func NewIdentityItemByAddress(address string) (*identity, error) {
+func NewIdentityItemByAddress(address string) (*Item, error) {
 	parse, err := address2.Parse(address)
 	if err != nil {
 		return nil, err
 	}
 
-	return &identity{
+	return &Item{
+		ItemIdentity,
 		toIdentity(IDENTITY_FLAGS_CKB, parse.Script.Args),
 	}, nil
-
 }
 
 func toIdentity(flag string, pubKey []byte) string {
@@ -51,11 +47,20 @@ func toIdentity(flag string, pubKey []byte) string {
 	return hexutil.Encode(bytes.Join(byteArr, []byte("")))
 }
 
-type record struct {
-	Record string `json:"Record"`
+type Item struct {
+	Type  ItemType `json:"type"`
+	Value string   `json:"value"`
 }
 
-func NewRecordItemByScript(point *types.OutPoint, script *types.Script) (*record, error) {
+type ItemType string
+
+const (
+	ItemAddress  ItemType = "Address"
+	ItemIdentity          = "Identity"
+	ItemRecord            = "Record"
+)
+
+func NewRecordItemByScript(point *types.OutPoint, script *types.Script) (*Item, error) {
 	hash, err := script.Hash()
 	if err != nil {
 		return nil, err
@@ -67,12 +72,13 @@ func NewRecordItemByScript(point *types.OutPoint, script *types.Script) (*record
 	byteArr[2] = common.FromHex("0x01")
 	byteArr[3] = runesToUTF8Manual([]rune(hexutil.Encode(hash.Bytes())[2:42]))
 
-	return &record{
+	return &Item{
+		ItemRecord,
 		hexutil.Encode(bytes.Join(byteArr, []byte(""))),
 	}, nil
 }
 
-func NewRecordItemByAddress(point *types.OutPoint, address string) (*record, error) {
+func NewRecordItemByAddress(point *types.OutPoint, address string) (*Item, error) {
 
 	byteArr := make([][]byte, 4)
 	byteArr[0] = point.TxHash[:]
@@ -80,7 +86,8 @@ func NewRecordItemByAddress(point *types.OutPoint, address string) (*record, err
 	byteArr[2] = common.FromHex("0x00")
 	byteArr[3] = []byte(address)
 
-	return &record{
+	return &Item{
+		ItemRecord,
 		hexutil.Encode(bytes.Join(byteArr, []byte(""))),
 	}, nil
 }
