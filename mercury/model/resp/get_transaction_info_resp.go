@@ -1,9 +1,12 @@
 package resp
 
 import (
+	"encoding/json"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/common"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
+	"github.com/pkg/errors"
+	"reflect"
 )
 
 type GetTransactionInfoResponse struct {
@@ -55,18 +58,53 @@ type ExtraFilter struct {
 }
 
 type DaoInfo struct {
-	DepositBlockNumber  uint64
-	WithdrawBlockNumber uint64
-	DaoState            DaoState
-	Reward              uint64
+	DepositBlockNumber  uint64   `json:"deposit_block_number"`
+	WithdrawBlockNumber uint64   `json:"withdraw_block_number"`
+	DaoState            DaoState `json:"state"`
+	Reward              uint64   `json:"reward"`
 }
 
-type DaoState = string
+type DaoState struct {
+	Type  DaoStateType `json:"type"`
+	Value []uint64     `json:"value"`
+}
+
+type DaoStateType = string
 
 const (
-	Deposit  DaoState = "Deposit"
-	Withdraw DaoState = "Withdraw"
+	DaoStateDeposit  DaoStateType = "Deposit"
+	DaoStateWithdraw DaoStateType = "Withdraw"
 )
+
+func (e *DaoState) UnmarshalJSON(bytes []byte) error {
+	var data map[string]interface{}
+
+	if err := json.Unmarshal(bytes, &data); err != nil {
+		return err
+	}
+
+	e.Type = data["type"].(string)
+	//json.Unmarshal(data["type"].(string), &e.Type)
+
+	//if int == data["value"].(type) {
+	//
+	//}
+	//e.Value = [1]uint64{1}
+	var v = data["value"]
+	switch reflect.ValueOf(v).Kind() {
+	case reflect.Float64:
+		e.Value = make([]uint64, 1)
+		e.Value[0] = uint64(v.(float64))
+	case reflect.Slice:
+		if err := json.Unmarshal(v.([]byte), &e.Value); err != nil {
+			return err
+		}
+	default:
+		return errors.New("invalide type while unmarshal DaoState")
+	}
+
+	return nil
+}
 
 type AssetStatus string
 
