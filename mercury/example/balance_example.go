@@ -138,7 +138,7 @@ func TestGetBalanceByRecordByAddress(t *testing.T) {
 	builder.AddItem(item)
 	builder.AddAssetInfo(common.NewCkbAsset())
 
-	fmt.Println(item.Record)
+	fmt.Println(item)
 
 	balance, _ := constant.GetMercuryApiInstance().GetBalance(builder.Build())
 

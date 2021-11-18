@@ -76,11 +76,11 @@ func TestQueryTransactionsInfo(t *testing.T) {
 
 func TestQueryTransactionsWithCellbase(t *testing.T) {
 	item, _ := req.NewAddressItem("ckt1qyqd5eyygtdmwdr7ge736zw6z0ju6wsw7rssu8fcve")
-	extra := common.CellBase
+	extra := common.ExtraFilterCellBase
 	payload := model.NewQueryTransactionsPayloadBuilder().
 		SetItem(item).
 		AddAssetInfo(common.NewCkbAsset()).
-		SetExtra(&extra).
+		SetExtra((*common.ExtraFilterType)(&extra)).
 		Build()
 
 	printJson(payload)
@@ -94,7 +94,7 @@ func TestQueryTransactionsWithCellbase(t *testing.T) {
 
 func TestQueryTransactionsWithDao(t *testing.T) {
 	item, _ := req.NewAddressItem(constant.TEST_ADDRESS3)
-	extra := common.Dao
+	extra := common.ExtraFilterDao
 	payload := model.NewQueryTransactionsPayloadBuilder().
 		SetItem(item).
 		AddAssetInfo(common.NewCkbAsset()).

@@ -5,7 +5,8 @@ import (
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/common"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
-	"strings"
+	"github.com/pkg/errors"
+	"reflect"
 )
 
 type GetTransactionInfoResponse struct {
@@ -28,105 +29,82 @@ type BurnInfo struct {
 }
 
 type Record struct {
-	Id                string                    `json:"id"`
-	AddressOrLockHash *common.AddressOrLockHash `json:"address_or_lock_hash"`
-	Amount            *model.U128               `json:"amount"`
-	Occupied          *model.U128               `json:"occupied"`
-	AssetInfo         *common.AssetInfo         `json:"asset_info"`
-	Status            RecordStatus              `json:"status"`
-	Extra             ExtraFilter               `json:"extra"`
-	BlockNumber       uint64                    `json:"block_number"`
-	EpochNumber       uint64                    `json:"epoch_number"`
+	Id          string            `json:"id"`
+	Ownership   *common.Ownership `json:"ownership"`
+	Amount      *model.U128       `json:"amount"`
+	Occupied    *model.U128       `json:"occupied"`
+	AssetInfo   *common.AssetInfo `json:"asset_info"`
+	Status      RecordStatus      `json:"status"`
+	Extra       ExtraFilter       `json:"extra"`
+	BlockNumber uint64            `json:"block_number"`
+	EpochNumber uint64            `json:"epoch_number"`
 }
 
 type RecordStatus struct {
-	Status      AssetStatus
-	BlockNumber uint64
+	Type  RecordStatusType `json:"type"`
+	Value uint64           `json:"value"`
 }
 
-func (r *RecordStatus) UnmarshalJSON(bytes []byte) error {
-	recordData := make(map[string]interface{})
-	json.Unmarshal(bytes, &recordData)
+type RecordStatusType string
 
-	if _, ok := recordData["Claimable"]; ok {
-		blockNumber := recordData["Claimable"].(float64)
-		r.BlockNumber = uint64(blockNumber)
-		r.Status = Claimable
-	} else {
-		blockNumber := recordData["Fixed"].(float64)
-		r.BlockNumber = uint64(blockNumber)
-		r.Status = Fixed
-
-	}
-
-	return nil
-}
+const (
+	RecordStatusFixed     RecordStatusType = "Fixed"
+	RecordStatusClaimable                  = "Claimable"
+)
 
 type ExtraFilter struct {
-	DaoInfo   *DaoInfo
-	ExtraType common.ExtraType
-}
-
-func (e *ExtraFilter) UnmarshalJSON(bytes []byte) error {
-	if strings.Contains(string(bytes), "null") {
-		return nil
-	}
-
-	if strings.Contains(string(bytes), "CellBase") {
-		e.ExtraType = common.CellBase
-	} else {
-		ExtraFilterData := make(map[string]interface{})
-		json.Unmarshal(bytes, &ExtraFilterData)
-
-		DaoData := ExtraFilterData["Dao"].(map[string]interface{})
-		stateData := DaoData["state"].(map[string]interface{})
-		var depositBlockNumber uint64
-		var withdrawBlockNumber uint64
-		var state DaoState
-
-		if _, ok := stateData["Deposit"]; ok {
-			depositNumber := stateData["Deposit"].(float64)
-			depositBlockNumber = uint64(depositNumber)
-			state = Deposit
-
-		} else {
-			withdraw := stateData["Withdraw"].([]interface{})
-			depositNumber := withdraw[0].(float64)
-			withdrawNumber := withdraw[1].(float64)
-			depositBlockNumber = uint64(depositNumber)
-			withdrawBlockNumber = uint64(withdrawNumber)
-			state = Withdraw
-		}
-
-		reward := DaoData["reward"].(float64)
-
-		e.DaoInfo = &DaoInfo{
-			DepositBlockNumber:  depositBlockNumber,
-			WithdrawBlockNumber: withdrawBlockNumber,
-			DaoState:            state,
-			Reward:              uint64(reward),
-		}
-
-		e.ExtraType = common.Dao
-
-	}
-
-	return nil
+	Type  common.ExtraFilterType `json:"type"`
+	Value *DaoInfo               `json:"value"`
 }
 
 type DaoInfo struct {
-	DepositBlockNumber  uint64
-	WithdrawBlockNumber uint64
-	DaoState            DaoState
-	Reward              uint64
+	DepositBlockNumber  uint64   `json:"deposit_block_number"`
+	WithdrawBlockNumber uint64   `json:"withdraw_block_number"`
+	DaoState            DaoState `json:"state"`
+	Reward              uint64   `json:"reward"`
 }
 
-type DaoState = string
+type DaoState struct {
+	Type  DaoStateType `json:"type"`
+	Value []uint64     `json:"value"`
+}
+
+type DaoStateType = string
 
 const (
-	Deposit  DaoState = "Deposit"
-	Withdraw DaoState = "Withdraw"
+	DaoStateDeposit  DaoStateType = "Deposit"
+	DaoStateWithdraw DaoStateType = "Withdraw"
 )
+
+func (e *DaoState) UnmarshalJSON(bytes []byte) error {
+	var data map[string]interface{}
+
+	if err := json.Unmarshal(bytes, &data); err != nil {
+		return err
+	}
+
+	e.Type = data["type"].(string)
+	//json.Unmarshal(data["type"].(string), &e.Type)
+
+	//if int == data["value"].(type) {
+	//
+	//}
+	//e.Value = [1]uint64{1}
+	var v = data["value"]
+	switch reflect.ValueOf(v).Kind() {
+	case reflect.Float64:
+		e.Value = make([]uint64, 1)
+		e.Value[0] = uint64(v.(float64))
+	case reflect.Slice:
+		if err := json.Unmarshal(v.([]byte), &e.Value); err != nil {
+			return err
+		}
+	default:
+		return errors.New("invalide type while unmarshal DaoState")
+	}
+
+	return nil
+}
 
 type AssetStatus string
 

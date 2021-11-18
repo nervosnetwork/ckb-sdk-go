@@ -2,6 +2,7 @@ package model
 
 import (
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/common"
+	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/req"
 )
 
 type GetBalancePayload struct {
@@ -11,7 +12,7 @@ type GetBalancePayload struct {
 }
 
 type getBalancePayloadBuilder struct {
-	item           interface{}
+	item           *req.Item
 	assetInfos     []*common.AssetInfo
 	TipBlockNumber uint64
 }
@@ -20,7 +21,7 @@ func (builder *getBalancePayloadBuilder) AddAssetInfo(info *common.AssetInfo) {
 	builder.assetInfos = append(builder.assetInfos, info)
 }
 
-func (builder *getBalancePayloadBuilder) AddItem(item interface{}) {
+func (builder *getBalancePayloadBuilder) AddItem(item *req.Item) {
 	builder.item = item
 }
 
