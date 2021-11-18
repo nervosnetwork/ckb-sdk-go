@@ -28,15 +28,15 @@ type BurnInfo struct {
 }
 
 type Record struct {
-	Id                string                    `json:"id"`
-	AddressOrLockHash *common.AddressOrLockHash `json:"address_or_lock_hash"`
-	Amount            *model.U128               `json:"amount"`
-	Occupied          *model.U128               `json:"occupied"`
-	AssetInfo         *common.AssetInfo         `json:"asset_info"`
-	Status            RecordStatus              `json:"status"`
-	Extra             ExtraFilter               `json:"extra"`
-	BlockNumber       uint64                    `json:"block_number"`
-	EpochNumber       uint64                    `json:"epoch_number"`
+	Id          string            `json:"id"`
+	Ownership   *common.Ownership `json:"ownership"`
+	Amount      *model.U128       `json:"amount"`
+	Occupied    *model.U128       `json:"occupied"`
+	AssetInfo   *common.AssetInfo `json:"asset_info"`
+	Status      RecordStatus      `json:"status"`
+	Extra       ExtraFilter       `json:"extra"`
+	BlockNumber uint64            `json:"block_number"`
+	EpochNumber uint64            `json:"epoch_number"`
 }
 
 type RecordStatus struct {

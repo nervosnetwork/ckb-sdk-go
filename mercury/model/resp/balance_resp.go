@@ -6,12 +6,12 @@ import (
 )
 
 type Balance struct {
-	AddressOrLockHash *common.AddressOrLockHash `json:"address_or_lock_hash"`
-	AssetInfo         *common.AssetInfo         `json:"asset_info"`
-	Free              *model.U128               `json:"free"`
-	Occupied          *model.U128               `json:"occupied"`
-	Freezed           *model.U128               `json:"freezed"`
-	Claimable         *model.U128               `json:"claimable"`
+	Ownership *common.Ownership `json:"ownership"`
+	AssetInfo *common.AssetInfo `json:"asset_info"`
+	Free      *model.U128       `json:"free"`
+	Occupied  *model.U128       `json:"occupied"`
+	Freezed   *model.U128       `json:"freezed"`
+	Claimable *model.U128       `json:"claimable"`
 }
 
 type GetBalanceResponse struct {
