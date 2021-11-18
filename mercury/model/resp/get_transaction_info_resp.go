@@ -1,11 +1,9 @@
 package resp
 
 import (
-	"encoding/json"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/common"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
-	"strings"
 )
 
 type GetTransactionInfoResponse struct {
@@ -52,55 +50,8 @@ const (
 )
 
 type ExtraFilter struct {
-	DaoInfo   *DaoInfo
-	ExtraType common.ExtraType
-}
-
-func (e *ExtraFilter) UnmarshalJSON(bytes []byte) error {
-	if strings.Contains(string(bytes), "null") {
-		return nil
-	}
-
-	if strings.Contains(string(bytes), "CellBase") {
-		e.ExtraType = common.CellBase
-	} else {
-		ExtraFilterData := make(map[string]interface{})
-		json.Unmarshal(bytes, &ExtraFilterData)
-
-		DaoData := ExtraFilterData["Dao"].(map[string]interface{})
-		stateData := DaoData["state"].(map[string]interface{})
-		var depositBlockNumber uint64
-		var withdrawBlockNumber uint64
-		var state DaoState
-
-		if _, ok := stateData["Deposit"]; ok {
-			depositNumber := stateData["Deposit"].(float64)
-			depositBlockNumber = uint64(depositNumber)
-			state = Deposit
-
-		} else {
-			withdraw := stateData["Withdraw"].([]interface{})
-			depositNumber := withdraw[0].(float64)
-			withdrawNumber := withdraw[1].(float64)
-			depositBlockNumber = uint64(depositNumber)
-			withdrawBlockNumber = uint64(withdrawNumber)
-			state = Withdraw
-		}
-
-		reward := DaoData["reward"].(float64)
-
-		e.DaoInfo = &DaoInfo{
-			DepositBlockNumber:  depositBlockNumber,
-			WithdrawBlockNumber: withdrawBlockNumber,
-			DaoState:            state,
-			Reward:              uint64(reward),
-		}
-
-		e.ExtraType = common.Dao
-
-	}
-
-	return nil
+	Type  common.ExtraFilterType `json:"type"`
+	Value *DaoInfo               `json:"value"`
 }
 
 type DaoInfo struct {

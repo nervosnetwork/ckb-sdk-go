@@ -6,12 +6,12 @@ import (
 )
 
 type QueryTransactionsPayload struct {
-	Item          interface{}         `json:"item"`
-	AssetInfos    []*common.AssetInfo `json:"asset_infos"`
-	Extra         *common.ExtraType   `json:"extra"`
-	BlockRange    *BlockRange         `json:"block_range"`
-	Pagination    PaginationRequest   `json:"pagination"`
-	StructureType StructureType       `json:"structure_type"`
+	Item          interface{}             `json:"item"`
+	AssetInfos    []*common.AssetInfo     `json:"asset_infos"`
+	Extra         *common.ExtraFilterType `json:"extra"`
+	BlockRange    *BlockRange             `json:"block_range"`
+	Pagination    PaginationRequest       `json:"pagination"`
+	StructureType StructureType           `json:"structure_type"`
 }
 
 func (v *QueryTransactionsPayload) AddAssetInfo(assetInfo *common.AssetInfo) {
@@ -41,7 +41,7 @@ const (
 type QueryTransactionsPayloadBuilder struct {
 	Item          interface{}
 	AssetInfos    []*common.AssetInfo
-	Extra         *common.ExtraType
+	Extra         *common.ExtraFilterType
 	BlockRange    *BlockRange
 	Pagination    PaginationRequest
 	StructureType StructureType
@@ -55,7 +55,7 @@ func (b *QueryTransactionsPayloadBuilder) AddAssetInfo(assetInfo *common.AssetIn
 	b.AssetInfos = append(b.AssetInfos, assetInfo)
 	return b
 }
-func (b *QueryTransactionsPayloadBuilder) SetExtra(extra *common.ExtraType) *QueryTransactionsPayloadBuilder {
+func (b *QueryTransactionsPayloadBuilder) SetExtra(extra *common.ExtraFilterType) *QueryTransactionsPayloadBuilder {
 	b.Extra = extra
 	return b
 }

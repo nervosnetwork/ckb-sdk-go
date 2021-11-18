@@ -43,11 +43,11 @@ type Transaction struct {
 	Witnesses   []hexutil.Bytes `json:"witnesses"`
 }
 
-type ExtraType string
+type ExtraFilterType string
 
 const (
-	Dao      ExtraType = "Dao"
-	CellBase ExtraType = "CellBase"
+	ExtraFilterDao      ExtraFilterType = "Dao"
+	ExtraFilterCellBase                 = "CellBase"
 )
 
 type TransactionWithRichStatus struct {
