@@ -15,6 +15,7 @@ type Client interface {
 	BuildTransferTransaction(payload *model.TransferPayload) (*resp.TransferCompletionResponse, error)
 	BuildSimpleTransferTransaction(payload *model.SimpleTransferPayload) (*resp.TransferCompletionResponse, error)
 	BuildAdjustAccountTransaction(*model.BuildAdjustAccountPayload) (*resp.TransferCompletionResponse, error)
+	BuildSudtIssueTransaction(payload *model.BuildSudtIssueTransactionPayload) (*resp.TransferCompletionResponse, error)
 	RegisterAddresses(normalAddresses []string) ([]string, error)
 	GetTransactionInfo(txHash string) (*resp.GetTransactionInfoResponse, error)
 	GetSpentTransactionWithTransactionInfo(*model.GetSpentTransactionPayload) (*resp.TransactionInfoWrapper, error)
@@ -119,6 +120,16 @@ func (cli *client) BuildSimpleTransferTransaction(payload *model.SimpleTransferP
 func (cli *client) BuildAdjustAccountTransaction(payload *model.BuildAdjustAccountPayload) (*resp.TransferCompletionResponse, error) {
 	var resp resp.TransferCompletionResponse
 	err := cli.c.Call(&resp, "build_adjust_account_transaction", payload)
+	if err != nil {
+		return &resp, err
+	}
+
+	return &resp, err
+}
+
+func (cli *client) BuildSudtIssueTransaction(payload *model.BuildSudtIssueTransactionPayload) (*resp.TransferCompletionResponse, error) {
+	var resp resp.TransferCompletionResponse
+	err := cli.c.Call(&resp, "build_sudt_issue_transaction", payload)
 	if err != nil {
 		return &resp, err
 	}

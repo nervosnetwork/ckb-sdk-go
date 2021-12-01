@@ -73,6 +73,10 @@ func (cli *DefaultCkbApi) BuildAdjustAccountTransaction(payload *model.BuildAdju
 	return cli.mercury.BuildAdjustAccountTransaction(payload)
 }
 
+func (cli *DefaultCkbApi) BuildSudtIssueTransaction(payload *model.BuildSudtIssueTransactionPayload) (*resp.TransferCompletionResponse, error) {
+	return cli.mercury.BuildSudtIssueTransaction(payload)
+}
+
 func (cli *DefaultCkbApi) RegisterAddresses(normalAddresses []string) ([]string, error) {
 	return cli.mercury.RegisterAddresses(normalAddresses)
 }
