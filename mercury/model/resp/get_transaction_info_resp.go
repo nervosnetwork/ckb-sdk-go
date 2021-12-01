@@ -53,8 +53,8 @@ const (
 )
 
 type ExtraFilter struct {
-	Type  common.ExtraFilterType `json:"type"`
-	Value *DaoInfo               `json:"value"`
+	Type  ExtraFilterType `json:"type"`
+	Value *DaoInfo        `json:"value"`
 }
 
 type DaoInfo struct {
@@ -105,6 +105,14 @@ func (e *DaoState) UnmarshalJSON(bytes []byte) error {
 
 	return nil
 }
+
+type ExtraFilterType string
+
+const (
+	ExtraFilterDao      ExtraFilterType = "Dao"
+	ExtraFilterCellBase                 = "CellBase"
+	ExtraFilterFreeze                   = "Freeze"
+)
 
 type AssetStatus string
 
