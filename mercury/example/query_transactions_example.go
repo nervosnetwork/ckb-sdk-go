@@ -75,7 +75,7 @@ func TestQueryTransactionsInfo(t *testing.T) {
 }
 
 func TestQueryTransactionsWithCellbase(t *testing.T) {
-	item, _ := req.NewAddressItem("ckt1qyqd5eyygtdmwdr7ge736zw6z0ju6wsw7rssu8fcve")
+	item, _ := req.NewAddressItem("ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqw6vjzy9kahx3lyvlgap8dp8ewd8g80pcgcexzrj")
 	extra := common.ExtraFilterCellBase
 	payload := model.NewQueryTransactionsPayloadBuilder().
 		SetItem(item).

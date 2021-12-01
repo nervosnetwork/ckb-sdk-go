@@ -14,18 +14,18 @@ func TestGenerateShortAddress(t *testing.T) {
 }
 
 func TestGenerateAcpAddress(t *testing.T) {
-	address := "ckt1qyqqtg06h75ymw098r3w0l3u4xklsj04tnsqctqrmc"
+	address := "ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqg958atl2zdh8jn3ch8lc72nt0cf864ecqdxm9zf"
 	acpAddress, err := GenerateAcpAddress(address)
 	assert.Nil(t, err)
-	assert.Equal(t, "ckt1qypqtg06h75ymw098r3w0l3u4xklsj04tnsqkm65q6", acpAddress)
+	assert.Equal(t, "ckt1qq6pngwqn6e9vlm92th84rk0l4jp2h8lurchjmnwv8kq3rt5psf4vqg958atl2zdh8jn3ch8lc72nt0cf864ecqz4aphl", acpAddress)
 }
 
 func TestGenerateChequeAddress(t *testing.T) {
-	senderAddress := "ckt1qyq27z6pccncqlaamnh8ttapwn260egnt67ss2cwvz"
-	receiverAddress := "ckt1qyqqtg06h75ymw098r3w0l3u4xklsj04tnsqctqrmc"
+	senderAddress := "ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqd0pdquvfuq077aemn447shf4d8u5f4a0glzz2g4"
+	receiverAddress := "ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqg958atl2zdh8jn3ch8lc72nt0cf864ecqdxm9zf"
 	acpAddress, err := GenerateChequeAddress(senderAddress, receiverAddress)
 	assert.Nil(t, err)
-	assert.Equal(t, "ckt1q3sdtuu7lnjqn3v8ew02xkwwlh4dv5x2z28shkwt8p2nfruccux4k5kw5xmckqjq7gwpe990sn88xssv96try4l46hu6nnudr2huau238a4prwus9pqts3uptms", acpAddress)
+	assert.Equal(t, "ckt1qpsdtuu7lnjqn3v8ew02xkwwlh4dv5x2z28shkwt8p2nfruccux4kq2je6sm0zczgrepc8y547zvuu6zpshfvvjh7h2ln2w035d2lnh32ylk5ydmjq5ypwq24ftzt", acpAddress)
 }
 
 func TestBech32mTypeFullMainnetAddressGenerate(t *testing.T) {
@@ -35,7 +35,7 @@ func TestBech32mTypeFullMainnetAddressGenerate(t *testing.T) {
 		Args:     common.FromHex("0xb39bbc0b3673c7d36450bc14cfcdad2d559c6c64"),
 	}
 
-	address, err := GenerateBech32mFullAddress(Mainnet, script)
+	address, err := ConvertScriptToBech32mFullAddress(Mainnet, script)
 	println(address)
 	if err != nil {
 		return
@@ -65,7 +65,7 @@ func TestBech32mDataFullMainnetAddressGenerate(t *testing.T) {
 		Args:     common.FromHex("0x36c329ed630d6ce750712a477543672adab57f4c"),
 	}
 
-	address, err := GenerateBech32mFullAddress(Mainnet, script)
+	address, err := ConvertScriptToBech32mFullAddress(Mainnet, script)
 	println(address)
 	if err != nil {
 		return
@@ -94,7 +94,7 @@ func TestBech32mData1FullMainnetAddressGenerate(t *testing.T) {
 		Args:     common.FromHex("0x36c329ed630d6ce750712a477543672adab57f4c"),
 	}
 
-	address, err := GenerateBech32mFullAddress(Mainnet, script)
+	address, err := ConvertScriptToBech32mFullAddress(Mainnet, script)
 	println(address)
 	if err != nil {
 		return
