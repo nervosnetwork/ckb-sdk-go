@@ -18,6 +18,24 @@
 * dao APIS rename ([#86](https://github.com/nervosnetwork/ckb-sdk-go/pull/86))
 * Change type of epochNumber ([#87](https://github.com/nervosnetwork/ckb-sdk-go/pull/87))
 
+# [v0.100.0-beta.2](https://github.com/nervosnetwork/ckb-sdk-java/compare/v0.100.0-beta.1...v0.100.0-beta.2) (2021-10-13)
+
+### Bug Fixes
+
+* Fix the case that script type data1 is not taken into account during bech32m serialization and
+  deserialization ([#82](https://github.com/nervosnetwork/ckb-sdk-go/pull/82))
+
+# [v0.100.0-beta.1](https://github.com/nervosnetwork/ckb-sdk-java/compare/v0.43.3-beta.1...v0.100.0-beta.1) (2021-10-10)
+
+### Features
+
+* The field hash_type has a new allowed value `data1` but it is only valid after hard fork activation
+* Add support for Bech32m
+
+### Breaking Changes
+
+* The field `uncles_hash` in header will be renamed to `extra_hash` for all JSON RPC methods
+
 # [v0.43.3-beta.1](https://github.com/nervosnetwork/ckb-sdk-java/compare/v0.43.2...v0.43.3-beta.1) (2021-09-27)
 
 ### Features
