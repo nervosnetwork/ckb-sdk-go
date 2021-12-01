@@ -37,5 +37,5 @@ func TestGenerateSecp256k1MultisigScript(t *testing.T) {
 	if err != nil {
 		assert.Error(t, err)
 	}
-	assert.Equal(t, "ckt1qyqlqn8vsj7r0a5rvya76tey9jd2rdnca8lqh4kcuq", address)
+	assert.Equal(t, "ckt1qpw9q60tppt7l3j7r09qcp7lxnp3vcanvgha8pmvsa3jplykxn32sq0sfnkgf0ph76pkzwld9ujzex4pkeuwnlsdc5tqu", address)
 }

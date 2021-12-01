@@ -21,12 +21,12 @@ func TestGenerate(t *testing.T) {
 		Args:     common.FromHex("0xedcda9513fa030ce4308e29245a22c022d0443bb"),
 	}
 
-	mnAddress, err := ConvertScriptToAddress(Mainnet, script)
+	mnAddress, err := ConvertScriptToShortAddress(Mainnet, script)
 
 	assert.Nil(t, err)
 	assert.Equal(t, "ckb1qyqwmndf2yl6qvxwgvyw9yj95gkqytgygwasshh9m8", mnAddress)
 
-	tnAddress, err := ConvertScriptToAddress(Testnet, script)
+	tnAddress, err := ConvertScriptToShortAddress(Testnet, script)
 	assert.Nil(t, err)
 	assert.Equal(t, "ckt1qyqwmndf2yl6qvxwgvyw9yj95gkqytgygwasdjf6hm", tnAddress)
 
@@ -37,7 +37,7 @@ func TestGenerate(t *testing.T) {
 			Args:     common.FromHex("0x4fb2be2e5d0c1a3b8694f832350a33c1685d477a"),
 		}
 
-		mAddress, err := ConvertScriptToAddress(Mainnet, mAcpLock)
+		mAddress, err := ConvertScriptToShortAddress(Mainnet, mAcpLock)
 		assert.Nil(t, err)
 		assert.Equal(t, "ckb1qypylv479ewscx3ms620sv34pgeuz6zagaaqvrugu7", mAddress)
 
@@ -46,7 +46,7 @@ func TestGenerate(t *testing.T) {
 			HashType: types.HashTypeType,
 			Args:     common.FromHex("0x4fb2be2e5d0c1a3b8694f832350a33c1685d477a"),
 		}
-		tAddress, err := ConvertScriptToAddress(Testnet, tAcpLock)
+		tAddress, err := ConvertScriptToShortAddress(Testnet, tAcpLock)
 		assert.Nil(t, err)
 		assert.Equal(t, "ckt1qypylv479ewscx3ms620sv34pgeuz6zagaaq3xzhsz", tAddress)
 	})
@@ -58,7 +58,7 @@ func TestGenerate(t *testing.T) {
 			Args:     common.FromHex("0x4fb2be2e5d0c1a3b8694f832350a33c1685d477a0c"),
 		}
 
-		mAddress, err := ConvertScriptToAddress(Mainnet, mAcpLock)
+		mAddress, err := ConvertScriptToShortAddress(Mainnet, mAcpLock)
 		assert.Nil(t, err)
 		assert.Equal(t, "ckb1qypylv479ewscx3ms620sv34pgeuz6zagaaqcehzz9g", mAddress)
 
@@ -67,7 +67,7 @@ func TestGenerate(t *testing.T) {
 			HashType: types.HashTypeType,
 			Args:     common.FromHex("0x4fb2be2e5d0c1a3b8694f832350a33c1685d477a0c"),
 		}
-		tAddress, err := ConvertScriptToAddress(Testnet, tAcpLock)
+		tAddress, err := ConvertScriptToShortAddress(Testnet, tAcpLock)
 		assert.Nil(t, err)
 		assert.Equal(t, "ckt1qypylv479ewscx3ms620sv34pgeuz6zagaaqc9q8fqw", tAddress)
 	})
@@ -79,7 +79,7 @@ func TestGenerate(t *testing.T) {
 			Args:     common.FromHex("0x4fb2be2e5d0c1a3b8694f832350a33c1685d477a0c01"),
 		}
 
-		mAddress, err := ConvertScriptToAddress(Mainnet, mAcpLock)
+		mAddress, err := ConvertScriptToShortAddress(Mainnet, mAcpLock)
 		assert.Nil(t, err)
 		assert.Equal(t, "ckb1qypylv479ewscx3ms620sv34pgeuz6zagaaqcqgzc5xlw", mAddress)
 
@@ -88,7 +88,7 @@ func TestGenerate(t *testing.T) {
 			HashType: types.HashTypeType,
 			Args:     common.FromHex("0x4fb2be2e5d0c1a3b8694f832350a33c1685d477a0c01"),
 		}
-		tAddress, err := ConvertScriptToAddress(Testnet, tAcpLock)
+		tAddress, err := ConvertScriptToShortAddress(Testnet, tAcpLock)
 		assert.Nil(t, err)
 		assert.Equal(t, "ckt1qypylv479ewscx3ms620sv34pgeuz6zagaaqcqgr072sz", tAddress)
 	})
@@ -100,7 +100,7 @@ func TestGenerate(t *testing.T) {
 			Args:     common.FromHex("0x4fb2be2e5d0c1a3b8694f832350a33c1685d477a0c0101"),
 		}
 
-		mAddress, err := ConvertScriptToAddress(Mainnet, mAcpLock)
+		mAddress, err := ConvertScriptToFullAddress(FullTypeFormat, Mainnet, mAcpLock)
 		assert.Nil(t, err)
 		assert.Equal(t, "ckb1qnfkjktl73ljn77q637judm4xux3y59c29qvvu8ywx90wy5c8g34gnajhch96rq68wrff7pjx59r8stgt4rh5rqpqy532xj3", mAddress)
 
@@ -110,7 +110,7 @@ func TestGenerate(t *testing.T) {
 			Args:     common.FromHex("0x4fb2be2e5d0c1a3b8694f832350a33c1685d477a0c0101"),
 		}
 
-		tAddress, err := ConvertScriptToAddress(Testnet, tAcpLock)
+		tAddress, err := ConvertScriptToFullAddress(FullTypeFormat, Testnet, tAcpLock)
 		assert.Nil(t, err)
 		assert.Equal(t, "ckt1qs6pngwqn6e9vlm92th84rk0l4jp2h8lurchjmnwv8kq3rt5psf4vnajhch96rq68wrff7pjx59r8stgt4rh5rqpqy2a9ak4", tAddress)
 	})
