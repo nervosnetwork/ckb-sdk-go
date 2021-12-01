@@ -118,6 +118,14 @@ func ConvertScriptToBech32mFullAddress(mode Mode, script *types.Script) (string,
 	return bech32.EncodeWithBech32m(string(mode), dataPart)
 }
 
+func ConvertDeprecatedAddressToBech32mFullAddress(address string) (string, error) {
+	parsedAddress, err := Parse(address)
+	if err != nil {
+		return "", err
+	}
+	return ConvertScriptToBech32mFullAddress(parsedAddress.Mode, parsedAddress.Script)
+}
+
 func Parse(address string) (*ParsedAddress, error) {
 	hrp, decoded, err := bech32.Decode(address)
 	if err != nil {
