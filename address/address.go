@@ -126,6 +126,15 @@ func ConvertDeprecatedAddressToBech32mFullAddress(address string) (string, error
 	return ConvertScriptToBech32mFullAddress(parsedAddress.Mode, parsedAddress.Script)
 }
 
+func ConvertPublicToAddress(mode Mode, publicKey string) (string, error) {
+	script := &types.Script{
+		CodeHash: types.HexToHash(transaction.SECP256K1_BLAKE160_SIGHASH_ALL_TYPE_HASH),
+		HashType: types.HashTypeType,
+		Args:     common.FromHex(publicKey),
+	}
+	return ConvertScriptToBech32mFullAddress(mode, script)
+}
+
 func Parse(address string) (*ParsedAddress, error) {
 	hrp, decoded, err := bech32.Decode(address)
 	if err != nil {

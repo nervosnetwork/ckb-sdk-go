@@ -129,11 +129,29 @@ func main() {
 
 ### Create a new address
 
+In CKB world, a lock script can be represented as an address. `secp256k1_blake160` is the most common used address and
+here we show how to generate it.
+
 ```go
 addressGenerateResult, error := GenerateAddress(Testnet)
 ```
 
+For more details please about CKB address refer
+to [CKB rfc 0021](https://github.com/nervosnetwork/rfcs/blob/master/rfcs/0021-ckb-address-format/0021-ckb-address-format.md)
+.
+
+### Convert public key to address
+
+Convert elliptic curve public key to an address (`secp256k1_blake160`)
+
+```go
+address, err := ConvertPublicToAddress(Mainnet, "0xb39bbc0b3673c7d36450bc14cfcdad2d559c6c64")
+```
+
 ### Convert short/bech32 address to bech32m address
+
+Short address and bech32 address are deprecated. The standard address format is bech32m-encoded long address, which can
+be got from the short address or bech32 address as the following snippet code.
 
 ```go
 bech32mFullAddress, err := ConvertDeprecatedAddressToBech32mFullAddress("ckt1qyqxgp7za7dajm5wzjkye52asc8fxvvqy9eqlhp82g")
@@ -147,3 +165,7 @@ transaction or getting udt asset information. You need to deploy your own mercur
 using it.
 
 ckb-sdk-go also integrate with Mercury. For usage guide, please check the [example folder](./mercury/example).
+
+## License
+
+The SDK is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
