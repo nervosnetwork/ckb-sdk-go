@@ -343,3 +343,12 @@ func TestConvertDeprecatedAddressToBech32mFullAddress(t *testing.T) {
 	}
 	assert.Equal(t, bech32mFullAddress, "ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqtyqlpwlx7ed68pftzv69wcvr5nxxqzzus2zxwa6")
 }
+
+func TestConvertPublickeyToBech32mFullAddress(t *testing.T) {
+	address, err := ConvertPublicToAddress(Mainnet, "0xb39bbc0b3673c7d36450bc14cfcdad2d559c6c64")
+	if err != nil {
+		t.Errorf("Fail to convert public key to bech32m full address. error = %v", err)
+		return
+	}
+	assert.Equal(t, address, "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqdnnw7qkdnnclfkg59uzn8umtfd2kwxceqxwquc4")
+}
