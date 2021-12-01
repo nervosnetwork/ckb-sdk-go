@@ -33,7 +33,7 @@ func TestGenerateSecp256k1MultisigScript(t *testing.T) {
 		assert.Error(t, err)
 	}
 
-	address, err := Generate(Testnet, script)
+	address, err := ConvertScriptToAddress(Testnet, script)
 	if err != nil {
 		assert.Error(t, err)
 	}

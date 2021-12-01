@@ -35,7 +35,7 @@ func TestBech32mTypeFullMainnetAddressGenerate(t *testing.T) {
 		Args:     common.FromHex("0xb39bbc0b3673c7d36450bc14cfcdad2d559c6c64"),
 	}
 
-	address, err := GenerateBech32mFullAddress(Mainnet, script)
+	address, err := ConvertScriptToBech32mFullAddress(Mainnet, script)
 	println(address)
 	if err != nil {
 		return
@@ -65,7 +65,7 @@ func TestBech32mDataFullMainnetAddressGenerate(t *testing.T) {
 		Args:     common.FromHex("0x36c329ed630d6ce750712a477543672adab57f4c"),
 	}
 
-	address, err := GenerateBech32mFullAddress(Mainnet, script)
+	address, err := ConvertScriptToBech32mFullAddress(Mainnet, script)
 	println(address)
 	if err != nil {
 		return
@@ -94,7 +94,7 @@ func TestBech32mData1FullMainnetAddressGenerate(t *testing.T) {
 		Args:     common.FromHex("0x36c329ed630d6ce750712a477543672adab57f4c"),
 	}
 
-	address, err := GenerateBech32mFullAddress(Mainnet, script)
+	address, err := ConvertScriptToBech32mFullAddress(Mainnet, script)
 	println(address)
 	if err != nil {
 		return
