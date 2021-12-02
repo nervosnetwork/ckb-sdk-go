@@ -157,6 +157,12 @@ be got from the short address or bech32 address as the following snippet code.
 bech32mFullAddress, err := ConvertDeprecatedAddressToBech32mFullAddress("ckt1qyqxgp7za7dajm5wzjkye52asc8fxvvqy9eqlhp82g")
 ```
 
+### Parse and validate address
+
+```go
+parsedAddress, err := Parse("ckt1qg8mxsu48mncexvxkzgaa7mz2g25uza4zpz062relhjmyuc52ps3zn47dugwyk5e6mgxvlf5ukx7k3uyq9wlkkmegke")
+```
+
 ### Mercury
 
 [Mercury](https://github.com/nervosnetwork/mercury) is a development service in CKB ecosystem, providing many
