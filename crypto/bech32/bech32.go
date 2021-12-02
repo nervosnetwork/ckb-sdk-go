@@ -47,7 +47,6 @@ func Decode(bech string) (string, []byte, error) {
 
 	polymod := append(bech32HrpExpand(hrp), ints...)
 	i := bech32Polymod(polymod)
-	print(i)
 
 	if i == 1 {
 		if !bech32VerifyChecksum(hrp, decoded) {
