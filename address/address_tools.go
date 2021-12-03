@@ -27,8 +27,7 @@ type AddressGenerateResult struct {
 }
 
 func GenerateAddress(mode Mode) (*AddressGenerateResult, error) {
-	return GenerateShortAddress(mode)
-	//return GenerateBech32mFullAddress(mode)
+	return GenerateBech32mFullAddress(mode)
 }
 
 // Deprecated: Short address format deprecated because it is limited (only support secp256k1_blake160,

@@ -334,14 +334,24 @@ func TestValidateChequeAddress(t *testing.T) {
 	}
 }
 
-func TestConvertDeprecatedAddressToBech32mFullAddress(t *testing.T) {
-	deprecatedShortAddress := "ckt1qyqxgp7za7dajm5wzjkye52asc8fxvvqy9eqlhp82g"
-	bech32mFullAddress, err := ConvertDeprecatedAddressToBech32mFullAddress(deprecatedShortAddress)
+func TestConvertShortAddressToBech32mFullAddress(t *testing.T) {
+	shortAddress := "ckt1qyqxgp7za7dajm5wzjkye52asc8fxvvqy9eqlhp82g"
+	bech32mFullAddress, err := ConvertToBech32mFullAddress(shortAddress)
 	if err != nil {
 		t.Errorf("Fail to convert deprecated address to bech32m full address. error = %v", err)
 		return
 	}
-	assert.Equal(t, bech32mFullAddress, "ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqtyqlpwlx7ed68pftzv69wcvr5nxxqzzus2zxwa6")
+	assert.Equal(t, "ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqtyqlpwlx7ed68pftzv69wcvr5nxxqzzus2zxwa6", bech32mFullAddress)
+}
+
+func TestBech32mFullAddressToShortAddress(t *testing.T) {
+	bech32mFullAddress := "ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqtyqlpwlx7ed68pftzv69wcvr5nxxqzzus2zxwa6"
+	shortAddress, err := ConvertToShortAddress(bech32mFullAddress)
+	if err != nil {
+		t.Errorf("Fail to convert deprecated address to bech32m full address. error = %v", err)
+		return
+	}
+	assert.Equal(t, "ckt1qyqxgp7za7dajm5wzjkye52asc8fxvvqy9eqlhp82g", shortAddress)
 }
 
 func TestConvertPublickeyToBech32mFullAddress(t *testing.T) {
