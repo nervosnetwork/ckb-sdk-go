@@ -138,6 +138,17 @@ func ConvertToShortAddress(address string) (string, error) {
 	return ConvertScriptToShortAddress(parsedAddress.Mode, parsedAddress.Script)
 }
 
+// Deprecated: Old full address format is deprecated because a flaw has been found in its encoding method
+// bech32, which could enable attackers to generate valid but unexpected addresses.
+// For more please check https://github.com/nervosnetwork/rfcs/blob/master/rfcs/0021-ckb-address-format/0021-ckb-address-format.md
+func ConvertToBech32FullAddress(address string) (string, error) {
+	parsedAddress, err := Parse(address)
+	if err != nil {
+		return "", err
+	}
+	return ConvertScriptToFullAddress(FullTypeFormat, parsedAddress.Mode, parsedAddress.Script)
+}
+
 func ConvertPublicToAddress(mode Mode, publicKey string) (string, error) {
 	script := &types.Script{
 		CodeHash: types.HexToHash(transaction.SECP256K1_BLAKE160_SIGHASH_ALL_TYPE_HASH),
