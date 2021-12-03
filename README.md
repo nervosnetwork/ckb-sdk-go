@@ -154,7 +154,7 @@ Short address and bech32 address are deprecated. The standard address format is 
 be got from the short address or bech32 address as the following snippet code.
 
 ```go
-bech32mFullAddress, err := ConvertDeprecatedAddressToBech32mFullAddress("ckt1qyqxgp7za7dajm5wzjkye52asc8fxvvqy9eqlhp82g")
+bech32mFullAddress, err := ConvertToBech32mFullAddress("ckt1qyqxgp7za7dajm5wzjkye52asc8fxvvqy9eqlhp82g")
 ```
 
 ### Parse and validate address
