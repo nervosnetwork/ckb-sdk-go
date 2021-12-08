@@ -19,5 +19,5 @@ jobs:
         with:
           commit-message: update CHANGELOG.md for release ${{ github.event.release.tag_name }}
           branch: chore/update-CHANGELOG-for-release-${{ github.event.release.tag_name }}
-          base: master
+          base: develop
           title: 'Update CHANGELOG for release ${{ github.event.release.tag_name }}'
