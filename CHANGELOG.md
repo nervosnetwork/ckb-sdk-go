@@ -1,3 +1,23 @@
+# v0.101.2 (2021-12-04)
+
+## Fix
+
+- generate default address with bech32m format (#106)
+- Remove uncessary print in address parsing (#103)
+
+# v0.101.1 (2021-12-01)
+
+## 🚀 Features
+
+- feat: adopt full address by default (#98, #106)
+- feat: add enum Freeze in extraFilter (#95)
+- feat(mercury): support `build_sudt_issue_transaction` (#97)
+- feat: Add method to convert public key to address (#100)
+
+## 📝 Document
+
+- docs: update README for default address (#101)
+
 # [v0.101.0-beta.2](https://github.com/nervosnetwork/ckb-sdk-java/compare/v0.101.0-beta.1...v0.101.0-beta.2) (2021-11-18)
 
 ### Feature
