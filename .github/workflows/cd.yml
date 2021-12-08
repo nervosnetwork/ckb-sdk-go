@@ -1,0 +1,25 @@
+name: Continuous delivery in GitHub and Maven Central Repository
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  create-release-draft:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get tag
+        id: get-tag
+        run: echo ::set-output name=tag::${GITHUB_REF/refs\/tags\//}
+      - name: Run action release-drafter
+        id: release-drafter
+        uses: release-drafter/release-drafter@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag: ${{ steps.get-tag.outputs.tag }}
+    outputs:
+      tag: ${{ steps.get-tag.outputs.tag }}
+      id: ${{ steps.release-drafter.outputs.id }}
+      upload-url: ${{ steps.release-drafter.outputs.upload_url }}
