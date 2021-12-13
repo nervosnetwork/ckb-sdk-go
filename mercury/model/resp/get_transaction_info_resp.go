@@ -58,8 +58,8 @@ type ExtraFilter struct {
 }
 
 type DaoInfo struct {
-	DepositBlockNumber  uint64   `json:"deposit_block_number"`
-	WithdrawBlockNumber uint64   `json:"withdraw_block_number"`
+	DepositBlockNumber  uint64   `json:"deposit_block_number,omitempty"`
+	WithdrawBlockNumber uint64   `json:"withdraw_block_number,omitempty"`
 	DaoState            DaoState `json:"state"`
 	Reward              uint64   `json:"reward"`
 }
@@ -84,23 +84,20 @@ func (e *DaoState) UnmarshalJSON(bytes []byte) error {
 	}
 
 	e.Type = data["type"].(string)
-	//json.Unmarshal(data["type"].(string), &e.Type)
 
-	//if int == data["value"].(type) {
-	//
-	//}
-	//e.Value = [1]uint64{1}
 	var v = data["value"]
 	switch reflect.ValueOf(v).Kind() {
 	case reflect.Float64:
 		e.Value = make([]uint64, 1)
 		e.Value[0] = uint64(v.(float64))
 	case reflect.Slice:
-		if err := json.Unmarshal(v.([]byte), &e.Value); err != nil {
-			return err
+		vv := v.([]interface{})
+		e.Value = make([]uint64, len(vv))
+		for i := range vv {
+			e.Value[i] = uint64(vv[i].(float64))
 		}
 	default:
-		return errors.New("invalide type while unmarshal DaoState")
+		return errors.New("invalid type while unmarshal DaoState")
 	}
 
 	return nil
