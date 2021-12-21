@@ -1,0 +1,17 @@
+name: On PR target
+
+on:
+  pull_request_target:
+    types: [ opened, reopened, synchronize, edited ]
+
+jobs:
+  add_label_on_PR:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add label on PR
+        uses: release-drafter/release-drafter@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          disable-releaser: true
+          disable-autolabeler: false

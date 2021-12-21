@@ -5,16 +5,6 @@ on:
     types: [ opened, reopened, synchronize, edited ]
 
 jobs:
-  add-label-on-PR:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Add label on PR
-        uses: release-drafter/release-drafter@v5
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          disable-releaser: true
-          disable-autolabeler: false
   build:
     runs-on: ubuntu-latest
     steps:
