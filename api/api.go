@@ -61,6 +61,10 @@ func (cli *DefaultCkbApi) GetMercuryInfo() (*resp.MercuryInfo, error) {
 	return cli.mercury.GetMercuryInfo()
 }
 
+func (cli *DefaultCkbApi) GetSyncState() (*resp.MercurySyncState, error) {
+	return cli.mercury.GetSyncState()
+}
+
 func (cli *DefaultCkbApi) GetBalance(payload *model.GetBalancePayload) (*resp.GetBalanceResponse, error) {
 	return cli.mercury.GetBalance(payload)
 }

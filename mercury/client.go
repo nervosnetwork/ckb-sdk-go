@@ -25,6 +25,7 @@ type Client interface {
 	QueryTransactionsWithTransactionView(payload *model.QueryTransactionsPayload) (*resp.PaginationResponseTransactionView, error)
 	GetDbInfo() (*resp.DBInfo, error)
 	GetMercuryInfo() (*resp.MercuryInfo, error)
+	GetSyncState() (*resp.MercurySyncState, error)
 	BuildDaoDepositTransaction(payload *model.DaoDepositPayload) (*resp.TransferCompletionResponse, error)
 	BuildDaoWithdrawTransaction(payload *model.DaoWithdrawPayload) (*resp.TransferCompletionResponse, error)
 	BuildDaoClaimTransaction(payload *model.DaoClaimPayload) (*resp.TransferCompletionResponse, error)
@@ -76,6 +77,16 @@ func (cli *client) GetDbInfo() (*resp.DBInfo, error) {
 func (cli *client) GetMercuryInfo() (*resp.MercuryInfo, error) {
 	var resp resp.MercuryInfo
 	err := cli.c.Call(&resp, "get_mercury_info")
+	if err != nil {
+		return nil, err
+	}
+
+	return &resp, err
+}
+
+func (cli *client) GetSyncState() (*resp.MercurySyncState, error) {
+	var resp resp.MercurySyncState
+	err := cli.c.Call(&resp, "get_sync_state")
 	if err != nil {
 		return nil, err
 	}
