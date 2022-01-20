@@ -13,7 +13,7 @@ type SearchKeyBuilder struct {
 	Filter     *indexer.CellsFilter
 }
 
-func (builder *SearchKeyBuilder) AddScript(script *types.Script)  {
+func (builder *SearchKeyBuilder) AddScript(script *types.Script) {
 	builder.Script = script
 }
 
@@ -30,22 +30,22 @@ func (builder *SearchKeyBuilder) AddFilterScript(script *types.Script) {
 	builder.Filter.Script = script
 }
 
-func (builder *SearchKeyBuilder) AddFilterOutputDataLenRange(inclusive, exclusive uint64)  {
+func (builder *SearchKeyBuilder) AddFilterOutputDataLenRange(inclusive, exclusive uint64) {
 	builder.initFilter()
 	builder.Filter.OutputDataLenRange = &[2]uint64{inclusive, exclusive}
 }
 
-func (builder *SearchKeyBuilder) AddFilterOutputCapacityRange(inclusive, exclusive uint64)  {
+func (builder *SearchKeyBuilder) AddFilterOutputCapacityRange(inclusive, exclusive uint64) {
 	builder.initFilter()
 	builder.Filter.OutputCapacityRange = &[2]uint64{inclusive, exclusive}
 }
 
-func (builder *SearchKeyBuilder) AddFilterBlockRange(inclusive, exclusive uint64)  {
+func (builder *SearchKeyBuilder) AddFilterBlockRange(inclusive, exclusive uint64) {
 	builder.initFilter()
 	builder.Filter.BlockRange = &[2]uint64{inclusive, exclusive}
 }
 
-func (builder *SearchKeyBuilder) initFilter()  {
+func (builder *SearchKeyBuilder) initFilter() {
 	if builder.Filter == nil {
 		builder.Filter = &indexer.CellsFilter{}
 	}
@@ -67,4 +67,3 @@ func BuildScript(hash string, hashType types.ScriptHashType, args string) *types
 		common.FromHex(args),
 	}
 }
-

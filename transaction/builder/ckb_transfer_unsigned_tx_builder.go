@@ -140,7 +140,7 @@ func (b *CkbTransferUnsignedTxBuilder) isEnough() (bool, error) {
 			}
 		} else {
 			// check whether the handling fee is sufficient
-			if changeCapacity.Cmp(big.NewInt(0))  > 0 {
+			if changeCapacity.Cmp(big.NewInt(0)) > 0 {
 				return true, nil
 			} else {
 				return false, nil

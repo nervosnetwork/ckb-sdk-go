@@ -205,7 +205,7 @@ func TestGetForkBlock(t *testing.T) {
 	if testing.Short() {
 		t.Skip("Skip use cases that require node access at ci")
 	}
-	
+
 	api := getApi()
 	block, err := api.GetForkBlock(context.Background(), types.HexToHash("0xa5f5c85987a15de25661e5a214f2c1449cd803f071acc7999820f25246471f40"))
 	assert.Nil(t, err)

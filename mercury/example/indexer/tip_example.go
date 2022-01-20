@@ -12,4 +12,3 @@ func TestGetTip(t *testing.T) {
 	tip, _ := mercuryApi.GetTip(context.Background())
 	fmt.Println(tip)
 }
-
