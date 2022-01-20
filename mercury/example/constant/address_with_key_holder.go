@@ -22,6 +22,8 @@ const (
 	QUERY_TRANSACTION_ADDRESS        = "ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqg6flmrtx8y8tuu6s3jf2ahv4l6sjw9hsc3t4tqv"
 	QUERY_TRANSACTION_KEY_PUBKEY     = "0x1a4ff63598e43af9cd42324abb7657fa849c5bc3"
 	QUERY_TRANSACTION_KEY            = "385b57e3fedf89e5b553a3274e7039f7be742040a5af98303de29aff61b05c2c"
+	PW_LOCK_ADDRESS                  = "ckt1qpvvtay34wndv9nckl8hah6fzzcltcqwcrx79apwp2a5lkd07fdxxqdd40lmnsnukjh3qr88hjnfqvc4yg8g0gskp8ffv"
+	PW_LOCK_KEY                      = "e0ccb2548af279947b452efda4535dd4bcadf756d919701fcd4c382833277f85"
 )
 
 func GetKey(address string) string {
@@ -40,6 +42,8 @@ func GetKey(address string) string {
 		return CEX_KEY
 	case QUERY_TRANSACTION_ADDRESS:
 		return QUERY_TRANSACTION_KEY
+	case PW_LOCK_ADDRESS:
+		return PW_LOCK_KEY
 	default:
 		return ""
 	}
