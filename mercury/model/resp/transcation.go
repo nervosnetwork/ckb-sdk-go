@@ -5,8 +5,10 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/nervosnetwork/ckb-sdk-go/crypto"
 	"github.com/nervosnetwork/ckb-sdk-go/crypto/blake2b"
+	"github.com/nervosnetwork/ckb-sdk-go/crypto/ethereum"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/common"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
+	"strconv"
 )
 
 type TransferCompletionResponse struct {
@@ -140,6 +142,14 @@ func (g *ScriptGroup) GetGroupWitnesses() [][]byte {
 }
 
 func SignTransaction(transaction *types.Transaction, scriptGroup *ScriptGroup, privateKey crypto.Key) error {
+	if isPWLock(scriptGroup) {
+		return ethereumPersonalKeccakSign(transaction, scriptGroup, privateKey)
+	} else {
+		return secp256Blake2bSign(transaction, scriptGroup, privateKey)
+	}
+}
+
+func secp256Blake2bSign(transaction *types.Transaction, scriptGroup *ScriptGroup, privateKey crypto.Key) error {
 	witnessBytes := scriptGroup.GetWitness()
 	groupWitnesses := scriptGroup.GetGroupWitnesses()
 
@@ -180,4 +190,63 @@ func SignTransaction(transaction *types.Transaction, scriptGroup *ScriptGroup, p
 	}
 	transaction.Witnesses[scriptGroup.GetWitnessIndex()] = newWitness
 	return nil
+}
+
+func ethereumPersonalKeccakSign(transaction *types.Transaction, scriptGroup *ScriptGroup, privateKey crypto.Key) error {
+	witnessBytes := scriptGroup.GetWitness()
+	groupWitnesses := scriptGroup.GetGroupWitnesses()
+
+	txHash, err := transaction.ComputeHash()
+	if err != nil {
+		return err
+	}
+
+	length := make([]byte, 8)
+	binary.LittleEndian.PutUint64(length, uint64(len(witnessBytes)))
+
+	message := txHash.Bytes()
+	message = append(message, length...)
+	message = append(message, witnessBytes...)
+
+	for i := 1; i < len(groupWitnesses); i++ {
+		witnessBytes := groupWitnesses[i]
+		length := make([]byte, 8)
+		binary.LittleEndian.PutUint64(length, uint64(len(witnessBytes)))
+		message = append(message, length...)
+		message = append(message, witnessBytes...)
+	}
+
+	hash, err := ethereum.Keccak256(message)
+	if err != nil {
+		return err
+	}
+
+	prefix := []byte("\u0019Ethereum Signed Message:\n" + strconv.Itoa(len(hash)))
+
+	message = append(prefix, hash...)
+	hash, err = ethereum.Keccak256(message)
+
+	if err != nil {
+		return err
+	}
+
+	signature, err := privateKey.Sign(hash)
+	if err != nil {
+		return err
+	}
+
+	newWitness := scriptGroup.GetWitness()
+	offset := scriptGroup.GetOffSet()
+	for i := 0; i < len(signature); i++ {
+		newWitness[i+offset] = signature[i]
+	}
+	transaction.Witnesses[scriptGroup.GetWitnessIndex()] = newWitness
+	return nil
+}
+
+func isPWLock(g *ScriptGroup) bool {
+	if Keccak256 == *g.Action.HashAlgorithm && EthereumPersonal == g.Action.SignatureInfo.Algorithm {
+		return true
+	}
+	return false
 }
