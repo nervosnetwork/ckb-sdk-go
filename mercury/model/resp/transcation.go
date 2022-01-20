@@ -5,7 +5,7 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/nervosnetwork/ckb-sdk-go/crypto"
 	"github.com/nervosnetwork/ckb-sdk-go/crypto/blake2b"
-	"github.com/nervosnetwork/ckb-sdk-go/crypto/ethereum"
+	"github.com/nervosnetwork/ckb-sdk-go/crypto/keccak256"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/common"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 	"strconv"
@@ -216,7 +216,7 @@ func ethereumPersonalKeccakSign(transaction *types.Transaction, scriptGroup *Scr
 		message = append(message, witnessBytes...)
 	}
 
-	hash, err := ethereum.Keccak256(message)
+	hash, err := keccak256.Keccak256(message)
 	if err != nil {
 		return err
 	}
@@ -224,7 +224,7 @@ func ethereumPersonalKeccakSign(transaction *types.Transaction, scriptGroup *Scr
 	prefix := []byte("\u0019Ethereum Signed Message:\n" + strconv.Itoa(len(hash)))
 
 	message = append(prefix, hash...)
-	hash, err = ethereum.Keccak256(message)
+	hash, err = keccak256.Keccak256(message)
 
 	if err != nil {
 		return err

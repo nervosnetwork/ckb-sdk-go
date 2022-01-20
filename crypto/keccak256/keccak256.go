@@ -1,4 +1,4 @@
-package ethereum
+package keccak256
 
 import (
 	"github.com/ethereum/go-ethereum/crypto"
