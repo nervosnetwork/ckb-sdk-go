@@ -3,13 +3,15 @@ package resp
 type HashAlgorithm string
 
 const (
-	Blake2b HashAlgorithm = "Blake2b"
+	Blake2b   HashAlgorithm = "Blake2b"
+	Keccak256 HashAlgorithm = "Keccak256"
 )
 
 type SignAlgorithm string
 
 const (
-	Secp256k1 SignAlgorithm = "Secp256k1"
+	Secp256k1        SignAlgorithm = "Secp256k1"
+	EthereumPersonal SignAlgorithm = "EthereumPersonal"
 )
 
 type SignatureLocation struct {
