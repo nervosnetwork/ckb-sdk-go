@@ -1,3 +1,10 @@
+# 0.101.4
+
+## 🚀 Features
+
+- feat: support mercury get\_sync\_state RPC API (#111)
+- feat: Support pw lock signature (#112)
+
 # 0.101.3
 
 ## 🐛 Bug Fixes
