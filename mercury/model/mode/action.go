@@ -5,4 +5,5 @@ type Mode string
 const (
 	HoldByFrom Mode = "HoldByFrom"
 	HoldByTo   Mode = "HoldByTo"
+	PayWithAcp Mode = "PayWithAcp"
 )
