@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+
 	"github.com/ethereum/go-ethereum/rpc"
 	"github.com/nervosnetwork/ckb-sdk-go/indexer"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury"
@@ -91,6 +92,10 @@ func (cli *DefaultCkbApi) GetTransactionInfo(txHash string) (*resp.GetTransactio
 
 func (cli *DefaultCkbApi) GetBlockInfo(payload *model.GetBlockInfoPayload) (*resp.BlockInfo, error) {
 	return cli.mercury.GetBlockInfo(payload)
+}
+
+func (cli *DefaultCkbApi) GetAccountInfo(payload *model.GetAccountInfoPayload) (*resp.AccountInfo, error) {
+	return cli.mercury.GetAccountInfo(payload)
 }
 
 func (cli *DefaultCkbApi) GetTipBlockNumber(ctx context.Context) (uint64, error) {
