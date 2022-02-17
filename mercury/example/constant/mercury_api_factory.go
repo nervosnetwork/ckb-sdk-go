@@ -4,11 +4,11 @@ import (
 	"github.com/nervosnetwork/ckb-sdk-go/api"
 )
 
-const MERCURY_URL = "http://127.0.0.1:8116"
+const MERCURY_URL = "https://mercury-testnet.ckbapp.dev/"
 
-const INDEXER_URL = "https://mercury-testnet.ckbapp.dev"
+const INDEXER_URL = "https://testnet.ckb.dev/indexer"
 
-const CKB_URL = "https://mercury-testnet.ckbapp.dev"
+const CKB_URL = "https://testnet.ckb.dev/"
 
 type MercuryApiFactory struct {
 	clent api.CkbApi
