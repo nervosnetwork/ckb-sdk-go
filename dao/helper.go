@@ -6,6 +6,7 @@ import (
 	"github.com/nervosnetwork/ckb-sdk-go/rpc"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 	"github.com/pkg/errors"
+	"math"
 	"math/big"
 )
 
@@ -14,13 +15,14 @@ type DaoHelper struct {
 }
 
 type DaoDepositCellInfo struct {
-	Outpoint                 types.OutPoint
-	withdrawBlockHash        types.Hash
-	withdrawBlockNumber      uint64
-	DepositCapacity          uint64
-	Compensation             uint64
-	NextClaimableBlock       uint64
-	NextClaimableEpochNumber uint32
+	Outpoint            types.OutPoint
+	withdrawBlockHash   types.Hash
+	withdrawBlockNumber uint64
+	DepositCapacity     uint64
+	Compensation        uint64
+	ClaimableEpoch      struct {
+		Numerator, Denominator uint64
+	}
 }
 
 // GetDaoDepositCellInfo Get information for DAO cell deposited as outpoint and withdrawn in block of withdrawBlockHash
@@ -87,9 +89,19 @@ func (c *DaoHelper) getDaoDepositCellInfo(outpoint *types.OutPoint, withdrawBloc
 	cellInfo.Compensation = compensation.Uint64()
 	cellInfo.DepositCapacity = totalCapacity
 
-	epochLength, blockIndexInEpoch, epochNumber := ResolveEpoch(withdrawBlockHeader.Epoch)
-	cellInfo.NextClaimableBlock = withdrawBlockHeader.Number + uint64(epochLength-blockIndexInEpoch)
-	cellInfo.NextClaimableEpochNumber = epochNumber + 1
+	withdrawEpochLength, withdrawBlockIndexInEpoch, withdrawEpochNumber := ResolveEpoch(withdrawBlockHeader.Epoch)
+	depositEpochLength, depositBlockIndexInEpoch, depositEpochNumber := ResolveEpoch(depositBlock.Header.Epoch)
+	withdrawEpoch := float64(withdrawEpochNumber) + float64(withdrawBlockIndexInEpoch)/float64(withdrawEpochLength)
+	depositEpoch := float64(depositEpochNumber) + float64(depositBlockIndexInEpoch)/float64(depositEpochLength)
+
+	// claimableEpoch = depositEpoch + round_up( (withdrawEpoch - depositEpoch) / 180) * 180
+	//                = (depositEpochNumber + depositBlockIndexInEpoch / depositEpochLength) + epochDistance
+	//                = ( (depositEpochNumber + epochDistance) * depositEpochLength + depositBlockIndexInEpoch ) / depositEpochLength
+	epochDistance := uint64(math.Ceil((withdrawEpoch-depositEpoch)/180) * 180)
+	cellInfo.ClaimableEpoch = struct{ Numerator, Denominator uint64 }{
+		Numerator:   (uint64(depositEpochNumber)+epochDistance)*uint64(depositEpochLength) + uint64(depositBlockIndexInEpoch+1), // block index in epoch starts with 0 but proportion should start with 1
+		Denominator: uint64(depositEpochLength),
+	}
 
 	return cellInfo, nil
 }

@@ -26,8 +26,8 @@ func TestGetDaoDepositCellInfo(t *testing.T) {
 	assert.Equal(t, withdrawBlockHash, daoCellInfo.withdrawBlockHash)
 	assert.Equal(t, uint64(2383851), daoCellInfo.Compensation)
 	assert.Equal(t, uint64(11055500000), daoCellInfo.DepositCapacity)
-	assert.Equal(t, uint32(247), daoCellInfo.NextClaimableEpochNumber)
-	assert.Equal(t, uint64(171182), daoCellInfo.NextClaimableBlock)
+	assert.Equal(t, uint64(648), daoCellInfo.ClaimableEpoch.Denominator)
+	assert.Equal(t, uint64(176218), daoCellInfo.ClaimableEpoch.Numerator)
 }
 
 func TestGetDaoDepositCellInfoWithWithdrawOutpoint(t *testing.T) {
@@ -52,8 +52,8 @@ func TestGetDaoDepositCellInfoWithWithdrawOutpoint(t *testing.T) {
 	assert.Equal(t, outpoint, daoCellInfo.Outpoint)
 	assert.Equal(t, uint64(2383851), daoCellInfo.Compensation)
 	assert.Equal(t, uint64(11055500000), daoCellInfo.DepositCapacity)
-	assert.Equal(t, uint32(247), daoCellInfo.NextClaimableEpochNumber)
-	assert.Equal(t, uint64(171182), daoCellInfo.NextClaimableBlock)
+	assert.Equal(t, uint64(648), daoCellInfo.ClaimableEpoch.Denominator)
+	assert.Equal(t, uint64(176218), daoCellInfo.ClaimableEpoch.Numerator)
 }
 
 func TestResolveEpoch(t *testing.T) {
