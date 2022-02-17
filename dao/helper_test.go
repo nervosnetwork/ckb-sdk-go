@@ -1,7 +1,6 @@
 package dao
 
 import (
-	"context"
 	"fmt"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/example/constant"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
@@ -12,9 +11,6 @@ import (
 func TestGetDaoDepositCellInfo(t *testing.T) {
 	client := constant.GetMercuryApiInstance()
 	daoHelper := DaoHelper{Client: client}
-
-	block, _ := client.GetBlock(context.Background(), types.HexToHash("0x63a7eec772d66f996fb7889d6288f50c0d4cd5ef32d7ce40a7f59dc9cc99b4ef"))
-	fmt.Println(block)
 
 	outpoint := types.OutPoint{
 		TxHash: types.HexToHash("0x41bbccdf7015ea8458d7ef3499dc80cb2d3dc10cf48eb2b7f8f74468b24027fc"),
@@ -29,6 +25,32 @@ func TestGetDaoDepositCellInfo(t *testing.T) {
 
 	assert.Equal(t, outpoint, daoCellInfo.Outpoint)
 	assert.Equal(t, withdrawBlockHash, daoCellInfo.withdrawBlockHash)
+	assert.Equal(t, uint64(2383851), daoCellInfo.Compensation)
+	assert.Equal(t, uint64(11055500000), daoCellInfo.DepositCapacity)
+	assert.Equal(t, uint32(247), daoCellInfo.NextClaimableEpochNumber)
+	assert.Equal(t, uint64(171182), daoCellInfo.NextClaimableBlock)
+}
+
+func TestGetDaoDepositCellInfoWithWithdrawOutpoint(t *testing.T) {
+	client := constant.GetMercuryApiInstance()
+	daoHelper := DaoHelper{Client: client}
+
+	outpoint := types.OutPoint{
+		TxHash: types.HexToHash("0x41bbccdf7015ea8458d7ef3499dc80cb2d3dc10cf48eb2b7f8f74468b24027fc"),
+		Index:  0,
+	}
+
+	withdrawOutpoint := types.OutPoint{
+		TxHash: types.HexToHash("0x88b071409d8bda119c1b4d613ccd78abbc01442566defcb7f745f6084c81adcb"),
+		Index:  0,
+	}
+
+	daoCellInfo, err := daoHelper.GetDaoDepositCellInfoWithWithdrawOutpoint(&outpoint, &withdrawOutpoint)
+	if err != nil {
+		panic(err)
+	}
+
+	assert.Equal(t, outpoint, daoCellInfo.Outpoint)
 	assert.Equal(t, uint64(2383851), daoCellInfo.Compensation)
 	assert.Equal(t, uint64(11055500000), daoCellInfo.DepositCapacity)
 	assert.Equal(t, uint32(247), daoCellInfo.NextClaimableEpochNumber)
