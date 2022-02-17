@@ -22,7 +22,7 @@ func TestGetDaoDepositCellInfo(t *testing.T) {
 	}
 	withdrawBlockHash := types.HexToHash("0xbaef9b22ee3d04d8fc3ad8c04f8403ad3b3b39c5ace51406c5305920976105f7")
 
-	daoCellInfo, err := daoHelper.GetDaoDepositCellInfo(&outpoint, withdrawBlockHash)
+	daoCellInfo, err := daoHelper.GetDaoDepositCellInfo(&outpoint, &withdrawBlockHash)
 	if err != nil {
 		panic(err)
 	}
@@ -44,6 +44,7 @@ func TestResolveEpoch(t *testing.T) {
 }
 
 func TestExtractArFromDaoData(t *testing.T) {
-	x := extractArFromDaoData(types.HexToHash("8268d571c743a32ee1e547ea57872300989ceafa3e710000005d6a650b53ff06"))
+	daoData := types.HexToHash("8268d571c743a32ee1e547ea57872300989ceafa3e710000005d6a650b53ff06")
+	x := extractArFromDaoData(&daoData)
 	fmt.Println(x)
 }
