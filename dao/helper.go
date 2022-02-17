@@ -29,7 +29,7 @@ func (c *DaoHelper) GetDaoDepositCellInfo(outpoint *types.OutPoint, withdrawBloc
 	if err != nil {
 		return DaoDepositCellInfo{}, err
 	}
-	return c.getDaoDepositCellInfo(outpoint, withdrawBlock)
+	return c.getDaoDepositCellInfo(outpoint, withdrawBlock.Header)
 }
 
 // GetDaoDepositCellInfoWithWithdrawOutpoint Get information for DAO cell deposited as outpoint and withdrawn in block where the withdrawCellOutPoint is
@@ -52,15 +52,15 @@ func (c *DaoHelper) GetDaoDepositCellInfoByNow(outpoint *types.OutPoint) (DaoDep
 		return DaoDepositCellInfo{}, err
 	}
 
-	return c.getDaoDepositCellInfo(outpoint, tipBlock)
+	return c.getDaoDepositCellInfo(outpoint, tipBlock.Header)
 }
 
 // getDaoDepositCellInfo Get information for DAO cell deposited as outpoint and withdrawn in withdrawBlock
-func (c *DaoHelper) getDaoDepositCellInfo(outpoint *types.OutPoint, withdrawBlock *types.Block) (DaoDepositCellInfo, error) {
+func (c *DaoHelper) getDaoDepositCellInfo(outpoint *types.OutPoint, withdrawBlockHeader *types.Header) (DaoDepositCellInfo, error) {
 	cellInfo := DaoDepositCellInfo{}
 	cellInfo.Outpoint = *outpoint
-	cellInfo.withdrawBlockHash = withdrawBlock.Header.Hash
-	cellInfo.withdrawBlockNumber = withdrawBlock.Header.Number
+	cellInfo.withdrawBlockHash = withdrawBlockHeader.Hash
+	cellInfo.withdrawBlockNumber = withdrawBlockHeader.Number
 
 	depositTransactionWithStatus, err := c.Client.GetTransaction(context.Background(), outpoint.TxHash)
 	if err != nil {
@@ -81,14 +81,14 @@ func (c *DaoHelper) getDaoDepositCellInfo(outpoint *types.OutPoint, withdrawBloc
 
 	freeCapacity := new(big.Int).SetUint64(totalCapacity - occupiedCapacity)
 	depositAr := new(big.Int).SetUint64(extractArFromDaoData(&depositBlock.Header.Dao))
-	withdrawAr := new(big.Int).SetUint64(extractArFromDaoData(&withdrawBlock.Header.Dao))
+	withdrawAr := new(big.Int).SetUint64(extractArFromDaoData(&withdrawBlockHeader.Dao))
 	compensation := new(big.Int)
 	compensation.Mul(freeCapacity, withdrawAr).Div(compensation, depositAr).Sub(compensation, freeCapacity)
 	cellInfo.Compensation = compensation.Uint64()
 	cellInfo.DepositCapacity = totalCapacity
 
-	epochLength, blockIndexInEpoch, epochNumber := ResolveEpoch(withdrawBlock.Header.Epoch)
-	cellInfo.NextClaimableBlock = withdrawBlock.Header.Number + uint64(epochLength-blockIndexInEpoch)
+	epochLength, blockIndexInEpoch, epochNumber := ResolveEpoch(withdrawBlockHeader.Epoch)
+	cellInfo.NextClaimableBlock = withdrawBlockHeader.Number + uint64(epochLength-blockIndexInEpoch)
 	cellInfo.NextClaimableEpochNumber = epochNumber + 1
 
 	return cellInfo, nil
