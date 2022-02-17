@@ -1,7 +1,6 @@
 package dao
 
 import (
-	"fmt"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/example/constant"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 	"github.com/stretchr/testify/assert"
@@ -67,6 +66,6 @@ func TestResolveEpoch(t *testing.T) {
 
 func TestExtractArFromDaoData(t *testing.T) {
 	daoData := types.HexToHash("8268d571c743a32ee1e547ea57872300989ceafa3e710000005d6a650b53ff06")
-	x := extractArFromDaoData(&daoData)
-	fmt.Println(x)
+	ar := extractArFromDaoData(&daoData)
+	assert.Equal(t, uint64(10000435847357921), ar)
 }
