@@ -20,7 +20,7 @@ type DaoDepositCellInfo struct {
 	WithdrawBlockNumber uint64
 	DepositCapacity     uint64
 	Compensation        uint64
-	EpochParams         types.EpochParams
+	UnlockableEpoch     types.EpochParams
 }
 
 // GetDaoDepositCellInfo Get information for DAO cell deposited as outpoint and withdrawn in block of withdrawBlockHash
@@ -84,7 +84,7 @@ func (c *DaoHelper) getDaoDepositCellInfo(outpoint *types.OutPoint, withdrawBloc
 	depositEpoch := float64(depositEpochParams.Number) + float64(depositEpochParams.Index)/float64(depositEpochParams.Length)
 	epochDistance := uint64(math.Ceil((withdrawEpoch-depositEpoch)/180) * 180)
 
-	cellInfo.EpochParams = types.EpochParams{
+	cellInfo.UnlockableEpoch = types.EpochParams{
 		Length: depositEpochParams.Length,
 		Index:  depositEpochParams.Index,
 		Number: depositEpochParams.Number + epochDistance,

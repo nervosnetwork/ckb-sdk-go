@@ -26,9 +26,9 @@ func TestGetDaoDepositCellInfo(t *testing.T) {
 	assert.Equal(t, withdrawBlockHash, daoCellInfo.WithdrawBlockHash)
 	assert.Equal(t, uint64(2383851), daoCellInfo.Compensation)
 	assert.Equal(t, uint64(11055500000), daoCellInfo.DepositCapacity)
-	assert.Equal(t, uint64(648), daoCellInfo.EpochParams.Length)
-	assert.Equal(t, uint64(609), daoCellInfo.EpochParams.Index)
-	assert.Equal(t, uint64(271), daoCellInfo.EpochParams.Number)
+	assert.Equal(t, uint64(648), daoCellInfo.UnlockableEpoch.Length)
+	assert.Equal(t, uint64(609), daoCellInfo.UnlockableEpoch.Index)
+	assert.Equal(t, uint64(271), daoCellInfo.UnlockableEpoch.Number)
 }
 
 func TestGetDaoDepositCellInfoWithWithdrawOutpoint(t *testing.T) {
@@ -53,9 +53,9 @@ func TestGetDaoDepositCellInfoWithWithdrawOutpoint(t *testing.T) {
 	assert.Equal(t, outpoint, daoCellInfo.Outpoint)
 	assert.Equal(t, uint64(2383851), daoCellInfo.Compensation)
 	assert.Equal(t, uint64(11055500000), daoCellInfo.DepositCapacity)
-	assert.Equal(t, uint64(648), daoCellInfo.EpochParams.Length)
-	assert.Equal(t, uint64(609), daoCellInfo.EpochParams.Index)
-	assert.Equal(t, uint64(271), daoCellInfo.EpochParams.Number)
+	assert.Equal(t, uint64(648), daoCellInfo.UnlockableEpoch.Length)
+	assert.Equal(t, uint64(609), daoCellInfo.UnlockableEpoch.Index)
+	assert.Equal(t, uint64(271), daoCellInfo.UnlockableEpoch.Number)
 }
 
 func TestExtractArFromDaoData(t *testing.T) {
