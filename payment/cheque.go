@@ -101,7 +101,7 @@ func (c *Cheque) GenerateIssuingChequeUnsignedTx(client rpc.Client) (*types.Tran
 
 // SignTx sign an unsigned issuing cheque transaction and return an signed transaction
 func (c *Cheque) SignTx(key crypto.Key) (*types.Transaction, error) {
-	err := transaction.SingleSegmentSignTransaction(c.tx, 0, len(c.tx.Witnesses), transaction.EmptyWitnessArg, key)
+	err := transaction.SingleSegmentSignTransaction(c.tx, 0, len(c.tx.Witnesses), transaction.Secp256k1EmptyWitnessArg, key)
 	if err != nil {
 		return nil, fmt.Errorf("sign transaction error: %v", err)
 	}

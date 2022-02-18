@@ -184,7 +184,7 @@ func (b *IssuingChequeUnsignedTxBuilder) collectSUDTCells() error {
 		b.tx.Inputs = append(b.tx.Inputs, input)
 		b.tx.Witnesses = append(b.tx.Witnesses, []byte{})
 		if len(b.tx.Witnesses[0]) == 0 {
-			b.tx.Witnesses[0] = transaction.EmptyWitnessArgPlaceholder
+			b.tx.Witnesses[0] = transaction.Secp256k1EmptyWitnessArgPlaceholder
 		}
 		// stop collect
 		if b.isSUDTEnough() {

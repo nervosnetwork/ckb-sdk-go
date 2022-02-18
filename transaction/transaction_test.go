@@ -79,14 +79,14 @@ func TestSingleSignTransaction(t *testing.T) {
 			},
 		},
 		OutputsData: [][]byte{{}, {}},
-		Witnesses:   [][]byte{EmptyWitnessArgPlaceholder, {}, EmptyWitnessArgPlaceholder, {}, EmptyWitnessArgPlaceholder, {0, 1, 0}, {1, 123, 4}},
+		Witnesses:   [][]byte{Secp256k1EmptyWitnessArgPlaceholder, {}, Secp256k1EmptyWitnessArgPlaceholder, {}, Secp256k1EmptyWitnessArgPlaceholder, {0, 1, 0}, {1, 123, 4}},
 	}
 	groupA := []int{0, 1}
 	keyA, err := s.HexToKey("0948fca7a59ec4d50390271458cd993ff1d95cd8228e50310978660760e56ac8")
 	if err != nil {
 		t.Error(err)
 	}
-	err = SingleSignTransaction(tx, groupA, EmptyWitnessArg, keyA)
+	err = SingleSignTransaction(tx, groupA, Secp256k1EmptyWitnessArg, keyA)
 	if err != nil {
 		t.Error(err)
 	}
@@ -95,7 +95,7 @@ func TestSingleSignTransaction(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	err = SingleSignTransaction(tx, groupB, EmptyWitnessArg, keyB)
+	err = SingleSignTransaction(tx, groupB, Secp256k1EmptyWitnessArg, keyB)
 	if err != nil {
 		t.Error(err)
 	}
@@ -104,7 +104,7 @@ func TestSingleSignTransaction(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	err = SingleSignTransaction(tx, groupC, EmptyWitnessArg, keyC)
+	err = SingleSignTransaction(tx, groupC, Secp256k1EmptyWitnessArg, keyC)
 	if err != nil {
 		t.Error(err)
 	}

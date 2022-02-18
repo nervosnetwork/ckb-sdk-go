@@ -121,7 +121,7 @@ func (c *WithdrawCheque) GenerateWithdrawChequeUnsignedTx(client rpc.Client) (*t
 // SignTx sign an unsigned withdraw cheque transaction and return an signed transaction
 func (c *WithdrawCheque) SignTx(key crypto.Key) (*types.Transaction, error) {
 	for _, group := range c.groups {
-		err := transaction.SingleSignTransaction(c.tx, group, transaction.EmptyWitnessArg, key)
+		err := transaction.SingleSignTransaction(c.tx, group, transaction.Secp256k1EmptyWitnessArg, key)
 		if err != nil {
 			return nil, fmt.Errorf("sign transaction error: %v", err)
 		}

@@ -6,7 +6,7 @@
 
 Golang SDK for Nervos [CKB](https://github.com/nervosnetwork/ckb).
 
-The ckb-sdk-go is still under development and **NOT** production ready. You should get familiar with CKB transaction
+The ckb-sdk-go is still under development and considered to be a work in progress. You should get familiar with CKB transaction
 structure and RPC before using it.
 
 ## WARNING
@@ -14,7 +14,7 @@ structure and RPC before using it.
 Module Indexer has been removed from [ckb_v0.40.0](https://github.com/nervosnetwork/ckb/releases/tag/v0.40.0): Please
 use [ckb-indexer](https://github.com/nervosnetwork/ckb-indexer) as an alternate solution.
 
-The following RPCs hash been removed from [ckb_v0.40.0](https://github.com/nervosnetwork/ckb/releases/tag/v0.40.0):
+The following RPCs have been removed from [ckb_v0.40.0](https://github.com/nervosnetwork/ckb/releases/tag/v0.40.0):
 
 * `get_live_cells_by_lock_hash`
 * `get_transactions_by_lock_hash`
