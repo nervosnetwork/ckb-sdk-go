@@ -20,9 +20,7 @@ type DaoDepositCellInfo struct {
 	withdrawBlockNumber uint64
 	DepositCapacity     uint64
 	Compensation        uint64
-	ClaimableEpoch      struct {
-		Numerator, Denominator uint64
-	}
+	EpochParams         types.EpochParams
 }
 
 // GetDaoDepositCellInfo Get information for DAO cell deposited as outpoint and withdrawn in block of withdrawBlockHash
@@ -89,18 +87,20 @@ func (c *DaoHelper) getDaoDepositCellInfo(outpoint *types.OutPoint, withdrawBloc
 	cellInfo.Compensation = compensation.Uint64()
 	cellInfo.DepositCapacity = totalCapacity
 
-	withdrawEpochLength, withdrawBlockIndexInEpoch, withdrawEpochNumber := ResolveEpoch(withdrawBlockHeader.Epoch)
-	depositEpochLength, depositBlockIndexInEpoch, depositEpochNumber := ResolveEpoch(depositBlock.Header.Epoch)
-	withdrawEpoch := float64(withdrawEpochNumber) + float64(withdrawBlockIndexInEpoch)/float64(withdrawEpochLength)
-	depositEpoch := float64(depositEpochNumber) + float64(depositBlockIndexInEpoch)/float64(depositEpochLength)
+	//withdrawEpochLength, withdrawBlockIndexInEpoch, withdrawEpochNumber := ResolveEpoch(withdrawBlockHeader.Epoch)
+	//depositEpochLength, depositBlockIndexInEpoch, depositEpochNumber := ResolveEpoch(depositBlock.Header.Epoch)
 
-	// claimableEpoch = depositEpoch + round_up( (withdrawEpoch - depositEpoch) / 180) * 180
-	//                = (depositEpochNumber + depositBlockIndexInEpoch / depositEpochLength) + epochDistance
-	//                = ( (depositEpochNumber + epochDistance) * depositEpochLength + depositBlockIndexInEpoch ) / depositEpochLength
+	withdrawEpochParams := types.ParseEpoch(withdrawBlockHeader.Epoch)
+	depositEpochParams := types.ParseEpoch(depositBlock.Header.Epoch)
+
+	withdrawEpoch := float64(withdrawEpochParams.Number) + float64(withdrawEpochParams.Index)/float64(withdrawEpochParams.Length)
+	depositEpoch := float64(depositEpochParams.Number) + float64(depositEpochParams.Index)/float64(depositEpochParams.Length)
 	epochDistance := uint64(math.Ceil((withdrawEpoch-depositEpoch)/180) * 180)
-	cellInfo.ClaimableEpoch = struct{ Numerator, Denominator uint64 }{
-		Numerator:   (uint64(depositEpochNumber)+epochDistance)*uint64(depositEpochLength) + uint64(depositBlockIndexInEpoch+1), // block index in epoch starts with 0 but proportion should start with 1
-		Denominator: uint64(depositEpochLength),
+
+	cellInfo.EpochParams = types.EpochParams{
+		Length: depositEpochParams.Length,
+		Index:  depositEpochParams.Index,
+		Number: depositEpochParams.Number + epochDistance,
 	}
 
 	return cellInfo, nil
@@ -109,17 +109,4 @@ func (c *DaoHelper) getDaoDepositCellInfo(outpoint *types.OutPoint, withdrawBloc
 func extractArFromDaoData(headerDao *types.Hash) uint64 {
 	ar := headerDao[8:16]
 	return binary.LittleEndian.Uint64(ar)
-}
-
-// ResolveEpoch resolve epoch to (epochLength, blockIndexInEpoch, epochNumber)
-func ResolveEpoch(epoch uint64) (uint16, uint16, uint32) {
-	epochBinary := make([]byte, 8)
-	binary.BigEndian.PutUint64(epochBinary, epoch)
-
-	epochLength := binary.BigEndian.Uint16(epochBinary[1:3])
-	blockIndexInEpoch := binary.BigEndian.Uint16(epochBinary[3:5])
-	epochNumberBinary := append(make([]byte, 1), epochBinary[5:8]...)
-	epochNumber := binary.BigEndian.Uint32(epochNumberBinary)
-
-	return epochLength, blockIndexInEpoch, epochNumber
 }
