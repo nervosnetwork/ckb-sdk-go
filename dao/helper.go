@@ -6,7 +6,6 @@ import (
 	"errors"
 	"github.com/nervosnetwork/ckb-sdk-go/rpc"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
-	"math"
 	"math/big"
 )
 
@@ -80,9 +79,12 @@ func (c *DaoHelper) getDaoDepositCellInfo(outpoint *types.OutPoint, withdrawBloc
 
 	withdrawEpochParams := types.ParseEpoch(withdrawBlockHeader.Epoch)
 	depositEpochParams := types.ParseEpoch(depositBlockHeader.Epoch)
-	withdrawEpoch := float64(withdrawEpochParams.Number) + float64(withdrawEpochParams.Index)/float64(withdrawEpochParams.Length)
-	depositEpoch := float64(depositEpochParams.Number) + float64(depositEpochParams.Index)/float64(depositEpochParams.Length)
-	epochDistance := uint64(math.Ceil((withdrawEpoch-depositEpoch)/180) * 180)
+	// epochDistance = Ceil( (withdrawEpoch - depositEpoch ) / 180 ) * 180
+	epochDistance := withdrawEpochParams.Number - depositEpochParams.Number
+	if withdrawEpochParams.Index*depositEpochParams.Length > depositEpochParams.Index*withdrawEpochParams.Length {
+		epochDistance += 1
+	}
+	epochDistance = (epochDistance + 179) / 180 * 180
 
 	cellInfo.UnlockableEpoch = types.EpochParams{
 		Length: depositEpochParams.Length,
