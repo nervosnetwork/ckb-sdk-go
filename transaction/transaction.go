@@ -12,7 +12,7 @@ import (
 var (
 	Secp256k1EmptyWitnessArg            = NewEmptyWitnessArg(65)
 	Secp256k1EmptyWitnessArgPlaceholder = make([]byte, 89)
-	SignaturePlaceholder                = make([]byte, 65)
+	Secp256k1SignaturePlaceholder       = make([]byte, 65)
 )
 
 func NewEmptyWitnessArg(LockScriptLength uint) *types.WitnessArgs {
@@ -145,7 +145,7 @@ func SingleSignTransaction(transaction *types.Transaction, group []int, witnessA
 func MultiSignTransaction(transaction *types.Transaction, group []int, witnessArgs *types.WitnessArgs, serialize []byte, keys ...crypto.Key) error {
 	var emptySignature []byte
 	for range keys {
-		emptySignature = append(emptySignature, SignaturePlaceholder...)
+		emptySignature = append(emptySignature, Secp256k1SignaturePlaceholder...)
 	}
 	witnessArgs.Lock = append(serialize, emptySignature...)
 
