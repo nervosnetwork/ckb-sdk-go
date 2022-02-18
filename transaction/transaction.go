@@ -11,7 +11,7 @@ import (
 
 var (
 	Secp256k1EmptyWitnessArg            = NewEmptyWitnessArg(65)
-	Secp256k1EmptyWitnessArgPlaceholder = make([]byte, 89)
+	Secp256k1EmptyWitnessArgPlaceholder = make([]byte, 85)
 	Secp256k1SignaturePlaceholder       = make([]byte, 65)
 )
 
@@ -67,7 +67,7 @@ func NewSecp256k1HybirdSigTx(scripts *utils.SystemScripts) *types.Transaction {
 	}
 }
 
-func AddInputsForTransaction(transaction *types.Transaction, inputs []*types.CellInput) ([]int, *types.WitnessArgs, error) {
+func AddInputsForTransaction(transaction *types.Transaction, inputs []*types.CellInput, signatureLengthInBytes uint) ([]int, *types.WitnessArgs, error) {
 	if len(inputs) == 0 {
 		return nil, nil, errors.New("input cells empty")
 	}
@@ -79,8 +79,13 @@ func AddInputsForTransaction(transaction *types.Transaction, inputs []*types.Cel
 		transaction.Witnesses = append(transaction.Witnesses, []byte{})
 		group[i] = start + i
 	}
-	transaction.Witnesses[start] = Secp256k1EmptyWitnessArgPlaceholder
-	return group, Secp256k1EmptyWitnessArg, nil
+	emptyWitnessArgs := NewEmptyWitnessArg(signatureLengthInBytes)
+	emptyWitnessArgsBytes, err := emptyWitnessArgs.Serialize()
+	if err != nil {
+		return make([]int, 0), &types.WitnessArgs{}, err
+	}
+	transaction.Witnesses[start] = emptyWitnessArgsBytes
+	return group, emptyWitnessArgs, nil
 }
 
 // group is an array, which content is the index of input after grouping
