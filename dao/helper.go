@@ -25,11 +25,11 @@ type DaoDepositCellInfo struct {
 
 // GetDaoDepositCellInfo Get information for DAO cell deposited as outpoint and withdrawn in block of withdrawBlockHash
 func (c *DaoHelper) GetDaoDepositCellInfo(outpoint *types.OutPoint, withdrawBlockHash *types.Hash) (DaoDepositCellInfo, error) {
-	withdrawBlock, err := c.Client.GetBlock(context.Background(), *withdrawBlockHash)
+	blockHeader, err := c.Client.GetHeader(context.Background(), *withdrawBlockHash)
 	if err != nil {
 		return DaoDepositCellInfo{}, err
 	}
-	return c.getDaoDepositCellInfo(outpoint, withdrawBlock.Header)
+	return c.getDaoDepositCellInfo(outpoint, blockHeader)
 }
 
 // GetDaoDepositCellInfoWithWithdrawOutpoint Get information for DAO cell deposited as outpoint and withdrawn in block where the withdrawCellOutPoint is
@@ -43,16 +43,11 @@ func (c *DaoHelper) GetDaoDepositCellInfoWithWithdrawOutpoint(outpoint *types.Ou
 
 // GetDaoDepositCellInfoByNow DAO information for DAO cell deposited as outpoint and withdrawn in tip block
 func (c *DaoHelper) GetDaoDepositCellInfoByNow(outpoint *types.OutPoint) (DaoDepositCellInfo, error) {
-	tipBlockNumber, err := c.Client.GetTipBlockNumber(context.Background())
+	tipBlockHeader, err := c.Client.GetTipHeader(context.Background())
 	if err != nil {
 		return DaoDepositCellInfo{}, err
 	}
-	tipBlock, err := c.Client.GetBlockByNumber(context.Background(), tipBlockNumber)
-	if err != nil {
-		return DaoDepositCellInfo{}, err
-	}
-
-	return c.getDaoDepositCellInfo(outpoint, tipBlock.Header)
+	return c.getDaoDepositCellInfo(outpoint, tipBlockHeader)
 }
 
 // getDaoDepositCellInfo Get information for DAO cell deposited as outpoint and withdrawn in withdrawBlock
@@ -66,7 +61,7 @@ func (c *DaoHelper) getDaoDepositCellInfo(outpoint *types.OutPoint, withdrawBloc
 	if err != nil {
 		return cellInfo, err
 	}
-	depositBlock, err := c.Client.GetBlock(context.Background(), *depositTransactionWithStatus.TxStatus.BlockHash)
+	depositBlockHeader, err := c.Client.GetHeader(context.Background(), *depositTransactionWithStatus.TxStatus.BlockHash)
 	if err != nil {
 		return cellInfo, err
 	}
@@ -80,18 +75,15 @@ func (c *DaoHelper) getDaoDepositCellInfo(outpoint *types.OutPoint, withdrawBloc
 	}
 
 	freeCapacity := new(big.Int).SetUint64(totalCapacity - occupiedCapacity)
-	depositAr := new(big.Int).SetUint64(extractArFromDaoData(&depositBlock.Header.Dao))
+	depositAr := new(big.Int).SetUint64(extractArFromDaoData(&depositBlockHeader.Dao))
 	withdrawAr := new(big.Int).SetUint64(extractArFromDaoData(&withdrawBlockHeader.Dao))
 	compensation := new(big.Int)
 	compensation.Mul(freeCapacity, withdrawAr).Div(compensation, depositAr).Sub(compensation, freeCapacity)
 	cellInfo.Compensation = compensation.Uint64()
 	cellInfo.DepositCapacity = totalCapacity
 
-	//withdrawEpochLength, withdrawBlockIndexInEpoch, withdrawEpochNumber := ResolveEpoch(withdrawBlockHeader.Epoch)
-	//depositEpochLength, depositBlockIndexInEpoch, depositEpochNumber := ResolveEpoch(depositBlock.Header.Epoch)
-
 	withdrawEpochParams := types.ParseEpoch(withdrawBlockHeader.Epoch)
-	depositEpochParams := types.ParseEpoch(depositBlock.Header.Epoch)
+	depositEpochParams := types.ParseEpoch(depositBlockHeader.Epoch)
 
 	withdrawEpoch := float64(withdrawEpochParams.Number) + float64(withdrawEpochParams.Index)/float64(withdrawEpochParams.Length)
 	depositEpoch := float64(depositEpochParams.Number) + float64(depositEpochParams.Index)/float64(depositEpochParams.Length)
