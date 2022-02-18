@@ -85,7 +85,7 @@ func (b *CkbTransferUnsignedTxBuilder) BuildInputsAndWitnesses() error {
 		b.tx.Inputs = append(b.tx.Inputs, input)
 		b.tx.Witnesses = append(b.tx.Witnesses, []byte{})
 		if len(b.tx.Witnesses[0]) == 0 {
-			b.tx.Witnesses[0] = transaction.EmptyWitnessArgPlaceholder
+			b.tx.Witnesses[0] = transaction.Secp256k1EmptyWitnessArgPlaceholder
 		}
 		ok, err := b.isEnough()
 		if err != nil {

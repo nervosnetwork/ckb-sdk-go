@@ -10,9 +10,9 @@ import (
 )
 
 var (
-	Secp256k1EmptyWitnessArg   = NewEmptyWitnessArg(65)
-	EmptyWitnessArgPlaceholder = make([]byte, 89)
-	SignaturePlaceholder       = make([]byte, 65)
+	Secp256k1EmptyWitnessArg            = NewEmptyWitnessArg(65)
+	Secp256k1EmptyWitnessArgPlaceholder = make([]byte, 89)
+	SignaturePlaceholder                = make([]byte, 65)
 )
 
 func NewEmptyWitnessArg(LockScriptLength uint) *types.WitnessArgs {
@@ -79,7 +79,7 @@ func AddInputsForTransaction(transaction *types.Transaction, inputs []*types.Cel
 		transaction.Witnesses = append(transaction.Witnesses, []byte{})
 		group[i] = start + i
 	}
-	transaction.Witnesses[start] = EmptyWitnessArgPlaceholder
+	transaction.Witnesses[start] = Secp256k1EmptyWitnessArgPlaceholder
 	return group, Secp256k1EmptyWitnessArg, nil
 }
 

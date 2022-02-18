@@ -183,7 +183,7 @@ func (s *SudtTransferUnsignedTxBuilder) collectCkbCells() error {
 		s.tx.Inputs = append(s.tx.Inputs, input)
 		s.tx.Witnesses = append(s.tx.Witnesses, []byte{})
 		if isUniqueLock && len(s.tx.Witnesses[currentGroupFirstIndex]) == 0 {
-			s.tx.Witnesses[currentGroupFirstIndex] = transaction.EmptyWitnessArgPlaceholder
+			s.tx.Witnesses[currentGroupFirstIndex] = transaction.Secp256k1EmptyWitnessArgPlaceholder
 		}
 		ok, err := s.isCkbEnough()
 		if err != nil {
@@ -232,7 +232,7 @@ func (s *SudtTransferUnsignedTxBuilder) collectSUDTCells() error {
 			s.tx.Inputs = append(s.tx.Inputs, input)
 			s.tx.Witnesses = append(s.tx.Witnesses, []byte{})
 			if len(s.tx.Witnesses[currentGroupFirstIndex]) == 0 {
-				s.tx.Witnesses[currentGroupFirstIndex] = transaction.EmptyWitnessArgPlaceholder
+				s.tx.Witnesses[currentGroupFirstIndex] = transaction.Secp256k1EmptyWitnessArgPlaceholder
 			}
 			// stop collect
 			if s.isSUDTEnough() {

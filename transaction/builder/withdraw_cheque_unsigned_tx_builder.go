@@ -126,7 +126,7 @@ func (b *WithdrawChequesUnsignedTxBuilder) collectCkbCells() error {
 		b.tx.Inputs = append(b.tx.Inputs, input)
 		b.tx.Witnesses = append(b.tx.Witnesses, []byte{})
 		if len(b.tx.Witnesses[lastChequeWitnessIndex]) == 0 {
-			b.tx.Witnesses[lastChequeWitnessIndex] = transaction.EmptyWitnessArgPlaceholder
+			b.tx.Witnesses[lastChequeWitnessIndex] = transaction.Secp256k1EmptyWitnessArgPlaceholder
 		}
 		ok, err := b.isCkbEnough()
 		if err != nil {
