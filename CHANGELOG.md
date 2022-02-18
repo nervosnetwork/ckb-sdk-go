@@ -1,3 +1,9 @@
+# 0.101.5
+
+## 🚀 Features
+
+- Support new mode  and get\_account\_info RPC (#114)
+
 # 0.101.4
 
 ## 🚀 Features
