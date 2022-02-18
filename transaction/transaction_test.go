@@ -86,7 +86,7 @@ func TestSingleSignTransaction(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	err = SingleSignTransaction(tx, groupA, EmptyWitnessArg, keyA)
+	err = SingleSignTransaction(tx, groupA, Secp256k1EmptyWitnessArg, keyA)
 	if err != nil {
 		t.Error(err)
 	}
@@ -95,7 +95,7 @@ func TestSingleSignTransaction(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	err = SingleSignTransaction(tx, groupB, EmptyWitnessArg, keyB)
+	err = SingleSignTransaction(tx, groupB, Secp256k1EmptyWitnessArg, keyB)
 	if err != nil {
 		t.Error(err)
 	}
@@ -104,7 +104,7 @@ func TestSingleSignTransaction(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	err = SingleSignTransaction(tx, groupC, EmptyWitnessArg, keyC)
+	err = SingleSignTransaction(tx, groupC, Secp256k1EmptyWitnessArg, keyC)
 	if err != nil {
 		t.Error(err)
 	}

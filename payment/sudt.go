@@ -149,7 +149,7 @@ func (s *Sudt) GenerateTransferSudtUnsignedTx(client rpc.Client) (*types.Transac
 // The order of keys must be consistent with the order of locks in senders
 func (s *Sudt) SignTx(keys map[string]crypto.Key) (*types.Transaction, error) {
 	for lockHash, group := range s.groups {
-		err := transaction.SingleSignTransaction(s.tx, group, transaction.EmptyWitnessArg, keys[lockHash])
+		err := transaction.SingleSignTransaction(s.tx, group, transaction.Secp256k1EmptyWitnessArg, keys[lockHash])
 		if err != nil {
 			return nil, fmt.Errorf("sign transaction error: %v", err)
 		}

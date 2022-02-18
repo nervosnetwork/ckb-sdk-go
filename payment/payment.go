@@ -81,7 +81,7 @@ func generateTxWithIndexer(client rpc.Client, p *Payment, systemScripts *utils.S
 }
 
 func (p *Payment) Sign(key crypto.Key) (*types.Transaction, error) {
-	err := transaction.SingleSegmentSignTransaction(p.tx, 0, len(p.tx.Witnesses), transaction.EmptyWitnessArg, key)
+	err := transaction.SingleSegmentSignTransaction(p.tx, 0, len(p.tx.Witnesses), transaction.Secp256k1EmptyWitnessArg, key)
 	if err != nil {
 		return nil, fmt.Errorf("sign transaction error: %v", err)
 	}

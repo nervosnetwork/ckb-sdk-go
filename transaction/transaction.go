@@ -10,14 +10,18 @@ import (
 )
 
 var (
-	EmptyWitnessArg = &types.WitnessArgs{
-		Lock:       make([]byte, 65),
-		InputType:  nil,
-		OutputType: nil,
-	}
+	Secp256k1EmptyWitnessArg   = NewEmptyWitnessArg(65)
 	EmptyWitnessArgPlaceholder = make([]byte, 89)
 	SignaturePlaceholder       = make([]byte, 65)
 )
+
+func NewEmptyWitnessArg(LockScriptLength uint) *types.WitnessArgs {
+	return &types.WitnessArgs{
+		Lock:       make([]byte, LockScriptLength),
+		InputType:  nil,
+		OutputType: nil,
+	}
+}
 
 func NewSecp256k1SingleSigTx(scripts *utils.SystemScripts) *types.Transaction {
 	return &types.Transaction{
@@ -76,7 +80,7 @@ func AddInputsForTransaction(transaction *types.Transaction, inputs []*types.Cel
 		group[i] = start + i
 	}
 	transaction.Witnesses[start] = EmptyWitnessArgPlaceholder
-	return group, EmptyWitnessArg, nil
+	return group, Secp256k1EmptyWitnessArg, nil
 }
 
 // group is an array, which content is the index of input after grouping
