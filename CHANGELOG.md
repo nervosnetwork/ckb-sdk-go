@@ -1,3 +1,13 @@
+# 0.101.6
+
+## 🐛 Bug Fixes
+
+- fix: support variable lock script length (#117)
+
+## 🚀 Features
+
+- feat: support dao compensation calculation (#116)
+
 # 0.101.5
 
 ## 🚀 Features
