@@ -23,7 +23,7 @@ func TestGetDaoDepositCellInfo(t *testing.T) {
 	}
 
 	assert.Equal(t, outpoint, daoCellInfo.Outpoint)
-	assert.Equal(t, withdrawBlockHash, daoCellInfo.withdrawBlockHash)
+	assert.Equal(t, withdrawBlockHash, daoCellInfo.WithdrawBlockHash)
 	assert.Equal(t, uint64(2383851), daoCellInfo.Compensation)
 	assert.Equal(t, uint64(11055500000), daoCellInfo.DepositCapacity)
 	assert.Equal(t, uint64(648), daoCellInfo.EpochParams.Length)

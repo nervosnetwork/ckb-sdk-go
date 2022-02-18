@@ -3,9 +3,9 @@ package dao
 import (
 	"context"
 	"encoding/binary"
+	"errors"
 	"github.com/nervosnetwork/ckb-sdk-go/rpc"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
-	"github.com/pkg/errors"
 	"math"
 	"math/big"
 )
@@ -16,8 +16,8 @@ type DaoHelper struct {
 
 type DaoDepositCellInfo struct {
 	Outpoint            types.OutPoint
-	withdrawBlockHash   types.Hash
-	withdrawBlockNumber uint64
+	WithdrawBlockHash   types.Hash
+	WithdrawBlockNumber uint64
 	DepositCapacity     uint64
 	Compensation        uint64
 	EpochParams         types.EpochParams
@@ -52,39 +52,34 @@ func (c *DaoHelper) GetDaoDepositCellInfoByNow(outpoint *types.OutPoint) (DaoDep
 
 // getDaoDepositCellInfo Get information for DAO cell deposited as outpoint and withdrawn in withdrawBlock
 func (c *DaoHelper) getDaoDepositCellInfo(outpoint *types.OutPoint, withdrawBlockHeader *types.Header) (DaoDepositCellInfo, error) {
-	cellInfo := DaoDepositCellInfo{}
-	cellInfo.Outpoint = *outpoint
-	cellInfo.withdrawBlockHash = withdrawBlockHeader.Hash
-	cellInfo.withdrawBlockNumber = withdrawBlockHeader.Number
-
 	depositTransactionWithStatus, err := c.Client.GetTransaction(context.Background(), outpoint.TxHash)
 	if err != nil {
-		return cellInfo, err
+		return DaoDepositCellInfo{}, err
 	}
 	depositBlockHeader, err := c.Client.GetHeader(context.Background(), *depositTransactionWithStatus.TxStatus.BlockHash)
 	if err != nil {
-		return cellInfo, err
+		return DaoDepositCellInfo{}, err
 	}
 
-	outpointData := depositTransactionWithStatus.Transaction.OutputsData[outpoint.Index]
+	if int(outpoint.Index) >= len(depositTransactionWithStatus.Transaction.Outputs) {
+		return DaoDepositCellInfo{}, errors.New("index out of range of outputs in deposit transaction")
+	}
 	outpointCell := depositTransactionWithStatus.Transaction.Outputs[outpoint.Index]
+	outpointData := depositTransactionWithStatus.Transaction.OutputsData[outpoint.Index]
 	occupiedCapacity := outpointCell.OccupiedCapacity(outpointData) * 100000000
 	totalCapacity := outpointCell.Capacity
-	if totalCapacity < occupiedCapacity {
-		return cellInfo, errors.New("Total capacity is less than occupied capacity")
-	}
-
 	freeCapacity := new(big.Int).SetUint64(totalCapacity - occupiedCapacity)
 	depositAr := new(big.Int).SetUint64(extractArFromDaoData(&depositBlockHeader.Dao))
 	withdrawAr := new(big.Int).SetUint64(extractArFromDaoData(&withdrawBlockHeader.Dao))
+
 	compensation := new(big.Int)
 	compensation.Mul(freeCapacity, withdrawAr).Div(compensation, depositAr).Sub(compensation, freeCapacity)
+	cellInfo := DaoDepositCellInfo{}
 	cellInfo.Compensation = compensation.Uint64()
 	cellInfo.DepositCapacity = totalCapacity
 
 	withdrawEpochParams := types.ParseEpoch(withdrawBlockHeader.Epoch)
 	depositEpochParams := types.ParseEpoch(depositBlockHeader.Epoch)
-
 	withdrawEpoch := float64(withdrawEpochParams.Number) + float64(withdrawEpochParams.Index)/float64(withdrawEpochParams.Length)
 	depositEpoch := float64(depositEpochParams.Number) + float64(depositEpochParams.Index)/float64(depositEpochParams.Length)
 	epochDistance := uint64(math.Ceil((withdrawEpoch-depositEpoch)/180) * 180)
@@ -94,6 +89,10 @@ func (c *DaoHelper) getDaoDepositCellInfo(outpoint *types.OutPoint, withdrawBloc
 		Index:  depositEpochParams.Index,
 		Number: depositEpochParams.Number + epochDistance,
 	}
+
+	cellInfo.Outpoint = *outpoint
+	cellInfo.WithdrawBlockHash = withdrawBlockHeader.Hash
+	cellInfo.WithdrawBlockNumber = withdrawBlockHeader.Number
 
 	return cellInfo, nil
 }
