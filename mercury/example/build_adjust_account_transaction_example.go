@@ -101,7 +101,7 @@ func TestAdjustAssetExtraCkb(t *testing.T) {
 func TestPWLock(t *testing.T) {
 	//item, _ := req.NewIdentityItemByCkb(constant.TEST_PUBKEY4)
 	builder := model.NewBuildAdjustAccountPayloadBuilder()
-	item, _ := req.NewAddressItem("ckt1qpvvtay34wndv9nckl8hah6fzzcltcqwcrx79apwp2a5lkd07fdxxqdd40lmnsnukjh3qr88hjnfqvc4yg8g0gskp8ffv")
+	item, _ := req.NewAddressItem(constant.PW_LOCK_ADDRESS)
 	builder.AddItem(item)
 	builder.AddAssetInfo(common.NewUdtAsset("0xf21e7350fa9518ed3cbb008e0e8c941d7e01a12181931d5608aa366ee22228bd"))
 	item, _ = req.NewAddressItem("ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqthh5pum5pzqpssk47zk67hnd6lm28rnqs4cnj0w")
