@@ -29,7 +29,7 @@ type BurnInfo struct {
 }
 
 type Record struct {
-	Outpoint    *common.OutPoint  `json:"out_point"`
+	OutPoint    *common.OutPoint  `json:"out_point"`
 	Ownership   *common.Ownership `json:"ownership"`
 	Amount      *model.U128       `json:"amount"`
 	Occupied    *model.U128       `json:"occupied"`

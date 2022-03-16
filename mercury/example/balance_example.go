@@ -80,7 +80,7 @@ func TestGetBalanceByIdentity(t *testing.T) {
 
 func TestGetBalanceByRecordByScriptByChequeCellSender(t *testing.T) {
 	builder := model.NewGetBalancePayloadBuilder()
-	item := req.NewOutpointItem(
+	item := req.NewOutPointItem(
 		types.HexToHash("0x52b1cf0ad857d53e1a3552944c1acf268f6a6aea8e8fc85fe8febcb8127d56f0"),
 		0)
 	builder.AddItem(item)
@@ -95,7 +95,7 @@ func TestGetBalanceByRecordByScriptByChequeCellSender(t *testing.T) {
 
 func TestGetBalanceByRecordByScriptChequeCellReceiver(t *testing.T) {
 	builder := model.NewGetBalancePayloadBuilder()
-	item := req.NewOutpointItem(
+	item := req.NewOutPointItem(
 		types.HexToHash("0x52b1cf0ad857d53e1a3552944c1acf268f6a6aea8e8fc85fe8febcb8127d56f0"),
 		0)
 	builder.AddItem(item)
@@ -111,7 +111,7 @@ func TestGetBalanceByRecordByScriptChequeCellReceiver(t *testing.T) {
 
 func TestGetBalanceByRecordByAddress(t *testing.T) {
 	builder := model.NewGetBalancePayloadBuilder()
-	item := req.NewOutpointItem(
+	item := req.NewOutPointItem(
 		types.HexToHash("0xfc43d8bdfff3051f3c908cd137e0766eecba4e88ae5786760c3e0e0f1d76c004"),
 		2)
 	fmt.Println(item)

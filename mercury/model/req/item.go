@@ -61,11 +61,11 @@ const (
 	ItemOutPoint          = "OutPoint"
 )
 
-func NewOutpointItem(txHash types.Hash, index uint) *Item {
-	outpoint := common.OutPoint{txHash, hexutil.Uint(index)}
+func NewOutPointItem(txHash types.Hash, index uint) *Item {
+	outPoint := common.OutPoint{txHash, hexutil.Uint(index)}
 	return &Item{
 		ItemOutPoint,
-		outpoint,
+		outPoint,
 	}
 }
 
