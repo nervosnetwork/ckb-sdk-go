@@ -2,7 +2,7 @@
 
 Breaking Changes
 
-- feat: Replace Record with Outpoint (#119) @fjchen7
+- feat: Replace Record with Outpoint (#119)
 
 # 0.101.6
 
