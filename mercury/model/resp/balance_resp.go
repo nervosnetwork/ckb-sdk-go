@@ -10,7 +10,7 @@ type Balance struct {
 	AssetInfo *common.AssetInfo `json:"asset_info"`
 	Free      *model.U128       `json:"free"`
 	Occupied  *model.U128       `json:"occupied"`
-	Freezed   *model.U128       `json:"freezed"`
+	Frozen    *model.U128       `json:"frozen"`
 	Claimable *model.U128       `json:"claimable"`
 }
 

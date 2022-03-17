@@ -3,7 +3,6 @@ package test
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/nervosnetwork/ckb-sdk-go/address"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/example/constant"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/common"
@@ -80,17 +79,10 @@ func TestGetBalanceByIdentity(t *testing.T) {
 }
 
 func TestGetBalanceByRecordByScriptByChequeCellSender(t *testing.T) {
-
-	parse, _ := address.Parse(constant.TEST_ADDRESS1)
-	script := parse.Script
-
-	outPoint := &types.OutPoint{
-		types.HexToHash("0xecfea4bdf6bf8290d8f8186ed9f4da9b0f8fbba217600b47632f5a72ff677d4d"),
-		0,
-	}
-
 	builder := model.NewGetBalancePayloadBuilder()
-	item, _ := req.NewRecordItemByScript(outPoint, script)
+	item := req.NewOutPointItem(
+		types.HexToHash("0x52b1cf0ad857d53e1a3552944c1acf268f6a6aea8e8fc85fe8febcb8127d56f0"),
+		0)
 	builder.AddItem(item)
 	builder.AddAssetInfo(common.NewCkbAsset())
 
@@ -99,21 +91,13 @@ func TestGetBalanceByRecordByScriptByChequeCellSender(t *testing.T) {
 	marshal, _ := json.Marshal(balance)
 	fmt.Println(string(marshal))
 	fmt.Println(len(balance.Balances))
-
 }
 
 func TestGetBalanceByRecordByScriptChequeCellReceiver(t *testing.T) {
-
-	parse, _ := address.Parse(constant.TEST_ADDRESS2)
-	script := parse.Script
-
-	outPoint := &types.OutPoint{
-		types.HexToHash("0xecfea4bdf6bf8290d8f8186ed9f4da9b0f8fbba217600b47632f5a72ff677d4d"),
-		0,
-	}
-
 	builder := model.NewGetBalancePayloadBuilder()
-	item, _ := req.NewRecordItemByScript(outPoint, script)
+	item := req.NewOutPointItem(
+		types.HexToHash("0x52b1cf0ad857d53e1a3552944c1acf268f6a6aea8e8fc85fe8febcb8127d56f0"),
+		0)
 	builder.AddItem(item)
 	builder.AddAssetInfo(common.NewCkbAsset())
 
@@ -126,14 +110,10 @@ func TestGetBalanceByRecordByScriptChequeCellReceiver(t *testing.T) {
 }
 
 func TestGetBalanceByRecordByAddress(t *testing.T) {
-
-	outPoint := &types.OutPoint{
-		types.HexToHash("0xfc43d8bdfff3051f3c908cd137e0766eecba4e88ae5786760c3e0e0f1d76c004"),
-		2,
-	}
-
 	builder := model.NewGetBalancePayloadBuilder()
-	item, _ := req.NewRecordItemByAddress(outPoint, constant.TEST_ADDRESS4)
+	item := req.NewOutPointItem(
+		types.HexToHash("0xfc43d8bdfff3051f3c908cd137e0766eecba4e88ae5786760c3e0e0f1d76c004"),
+		2)
 	fmt.Println(item)
 	builder.AddItem(item)
 	builder.AddAssetInfo(common.NewCkbAsset())
