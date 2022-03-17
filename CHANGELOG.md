@@ -1,3 +1,9 @@
+# 1.0.0
+
+Breaking Changes
+
+- feat: Replace Record with Outpoint (#119) @fjchen7
+
 # 0.101.6
 
 ## 🐛 Bug Fixes
