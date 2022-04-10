@@ -147,9 +147,9 @@ func SingleSignTransaction(transaction *types.Transaction, group []int, witnessA
 	return nil
 }
 
-func MultiSignTransaction(transaction *types.Transaction, group []int, witnessArgs *types.WitnessArgs, serialize []byte, keys ...crypto.Key) error {
+func MultiSignTransaction(transaction *types.Transaction, group []int, witnessArgs *types.WitnessArgs, serialize []byte, signatures ...[]byte) error {
 	var emptySignature []byte
-	for range keys {
+	for range signatures {
 		emptySignature = append(emptySignature, Secp256k1SignaturePlaceholder...)
 	}
 	witnessArgs.Lock = append(serialize, emptySignature...)
@@ -185,12 +185,8 @@ func MultiSignTransaction(transaction *types.Transaction, group []int, witnessAr
 	}
 
 	var signed []byte
-	for _, key := range keys {
-		s, err := key.Sign(message)
-		if err != nil {
-			return err
-		}
-		signed = append(signed, s...)
+	for _, sig := range signatures {
+		signed = append(signed, sig...)
 	}
 
 	wa := &types.WitnessArgs{
