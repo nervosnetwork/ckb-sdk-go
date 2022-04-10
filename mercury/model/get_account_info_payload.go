@@ -5,13 +5,13 @@ import (
 )
 
 type GetAccountInfoPayload struct {
-	Item          interface{}           `json:"item"`
-	AssetInfo     *common.AssetInfo     `json:"asset_info"`
+	Item      interface{}       `json:"item"`
+	AssetInfo *common.AssetInfo `json:"asset_info"`
 }
 
 type GetAccountInfoPayloadBuilder struct {
-	Item          interface{}           `json:"item"`
-	AssetInfo     *common.AssetInfo     `json:"asset_info"`
+	Item      interface{}       `json:"item"`
+	AssetInfo *common.AssetInfo `json:"asset_info"`
 }
 
 func (b *GetAccountInfoPayloadBuilder) SetItem(item interface{}) *GetAccountInfoPayloadBuilder {
@@ -25,15 +25,15 @@ func (b *GetAccountInfoPayloadBuilder) AddAssetInfo(assetInfo *common.AssetInfo)
 
 func NewGetAccountInfoPayloadBuilder() *GetAccountInfoPayloadBuilder {
 	return &GetAccountInfoPayloadBuilder{
-		Item:       nil,
-		AssetInfo:  nil,
+		Item:      nil,
+		AssetInfo: nil,
 	}
 }
 
 func (b GetAccountInfoPayloadBuilder) Build() *GetAccountInfoPayload {
 	payload := &GetAccountInfoPayload{
-		Item:          b.Item,
-		AssetInfo:    b.AssetInfo,
+		Item:      b.Item,
+		AssetInfo: b.AssetInfo,
 	}
 	return payload
 }

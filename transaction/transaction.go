@@ -147,23 +147,23 @@ func SingleSignTransaction(transaction *types.Transaction, group []int, witnessA
 	return nil
 }
 
-func MultiSignTransaction(transaction *types.Transaction, group []int, witnessArgs *types.WitnessArgs, serialize []byte, signatures ...[]byte) error {
+func MsgFromTxForMultiSig(transaction *types.Transaction, group []int, witnessArgs *types.WitnessArgs, serialize []byte, numSigs int) ([]byte, error) {
 	var emptySignature []byte
-	for range signatures {
+	for i := 0; i < numSigs; i++ {
 		emptySignature = append(emptySignature, Secp256k1SignaturePlaceholder...)
 	}
 	witnessArgs.Lock = append(serialize, emptySignature...)
 
 	data, err := witnessArgs.Serialize()
 	if err != nil {
-		return err
+		return nil, err
 	}
 	length := make([]byte, 8)
 	binary.LittleEndian.PutUint64(length, uint64(len(data)))
 
 	hash, err := transaction.ComputeHash()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	message := append(hash.Bytes(), length...)
@@ -179,11 +179,10 @@ func MultiSignTransaction(transaction *types.Transaction, group []int, witnessAr
 		}
 	}
 
-	message, err = blake2b.Blake256(message)
-	if err != nil {
-		return err
-	}
+	return blake2b.Blake256(message)
+}
 
+func MultiSignTransaction(transaction *types.Transaction, group []int, witnessArgs *types.WitnessArgs, serialize []byte, signatures ...[]byte) error {
 	var signed []byte
 	for _, sig := range signatures {
 		signed = append(signed, sig...)
