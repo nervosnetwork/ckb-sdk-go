@@ -84,7 +84,7 @@ func GenerateFullAddress(mode Mode) (*AddressGenerateResult, error) {
 		Args:     common.FromHex(hex.EncodeToString(pubKey)),
 	}
 
-	address, err := ConvertScriptToFullAddress(FullTypeFormat, mode, script)
+	address, err := ConvertScriptToFullAddress(mode, script)
 	if err != nil {
 		return nil, err
 	}

@@ -100,7 +100,7 @@ func TestGenerate(t *testing.T) {
 			Args:     common.FromHex("0x4fb2be2e5d0c1a3b8694f832350a33c1685d477a0c0101"),
 		}
 
-		mAddress, err := ConvertScriptToFullAddress(FullTypeFormat, Mainnet, mAcpLock)
+		mAddress, err := ConvertScriptToFullAddress(Mainnet, mAcpLock)
 		assert.Nil(t, err)
 		assert.Equal(t, "ckb1qnfkjktl73ljn77q637judm4xux3y59c29qvvu8ywx90wy5c8g34gnajhch96rq68wrff7pjx59r8stgt4rh5rqpqy532xj3", mAddress)
 
@@ -110,7 +110,7 @@ func TestGenerate(t *testing.T) {
 			Args:     common.FromHex("0x4fb2be2e5d0c1a3b8694f832350a33c1685d477a0c0101"),
 		}
 
-		tAddress, err := ConvertScriptToFullAddress(FullTypeFormat, Testnet, tAcpLock)
+		tAddress, err := ConvertScriptToFullAddress(Testnet, tAcpLock)
 		assert.Nil(t, err)
 		assert.Equal(t, "ckt1qs6pngwqn6e9vlm92th84rk0l4jp2h8lurchjmnwv8kq3rt5psf4vnajhch96rq68wrff7pjx59r8stgt4rh5rqpqy2a9ak4", tAddress)
 	})
