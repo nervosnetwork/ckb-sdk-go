@@ -21,8 +21,9 @@ const (
 	Mainnet Mode = "ckb"
 	Testnet Mode = "ckt"
 
-	TypeFull  Type = "Full"
-	TypeShort Type = "Short"
+	Short       Type = "Short"
+	FullBech32  Type = "FullBech32"
+	FullBech32m Type = "FullBech32m"
 
 	TYPE_FULL_WITH_BECH32M    = "00"
 	ShortFormat               = "01"
@@ -180,7 +181,7 @@ func Parse(address string) (*ParsedAddress, error) {
 	var addressType Type
 	var script types.Script
 	if strings.HasPrefix(payload, "01") {
-		addressType = TypeShort
+		addressType = Short
 		if CodeHashIndexSingleSig == payload[2:4] {
 			script = types.Script{
 				CodeHash: types.HexToHash(transaction.SECP256K1_BLAKE160_SIGHASH_ALL_TYPE_HASH),
@@ -205,21 +206,21 @@ func Parse(address string) (*ParsedAddress, error) {
 			}
 		}
 	} else if strings.HasPrefix(payload, "02") {
-		addressType = TypeFull
+		addressType = FullBech32
 		script = types.Script{
 			CodeHash: types.HexToHash(payload[2:66]),
 			HashType: types.HashTypeData,
 			Args:     common.Hex2Bytes(payload[66:]),
 		}
 	} else if strings.HasPrefix(payload, "04") {
-		addressType = TypeFull
+		addressType = FullBech32
 		script = types.Script{
 			CodeHash: types.HexToHash(payload[2:66]),
 			HashType: types.HashTypeType,
 			Args:     common.Hex2Bytes(payload[66:]),
 		}
 	} else if strings.HasPrefix(payload, "00") {
-		addressType = TypeFull
+		addressType = FullBech32m
 		script = types.Script{
 			CodeHash: types.HexToHash(payload[2:66]),
 			Args:     common.Hex2Bytes(payload[68:]),
