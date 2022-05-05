@@ -127,7 +127,7 @@ func TestParse(t *testing.T) {
 
 	assert.Nil(t, err)
 	assert.Equal(t, Mainnet, mnAddress.Mode)
-	assert.Equal(t, TypeShort, mnAddress.Type)
+	assert.Equal(t, Short, mnAddress.Type)
 	assert.Equal(t, script.CodeHash, mnAddress.Script.CodeHash)
 	assert.Equal(t, script.HashType, mnAddress.Script.HashType)
 	assert.Equal(t, script.Args, mnAddress.Script.Args)
@@ -142,7 +142,7 @@ func TestParse(t *testing.T) {
 		mParsedAddress, err := Parse("ckb1qypylv479ewscx3ms620sv34pgeuz6zagaaqvrugu7")
 		assert.Nil(t, err)
 		assert.Equal(t, Mainnet, mParsedAddress.Mode)
-		assert.Equal(t, TypeShort, mParsedAddress.Type)
+		assert.Equal(t, Short, mParsedAddress.Type)
 		assert.Equal(t, mAcpLock.CodeHash, mParsedAddress.Script.CodeHash)
 		assert.Equal(t, mAcpLock.HashType, mParsedAddress.Script.HashType)
 		assert.Equal(t, mAcpLock.Args, mParsedAddress.Script.Args)
@@ -156,7 +156,7 @@ func TestParse(t *testing.T) {
 		tParsedAddress, err := Parse("ckt1qypylv479ewscx3ms620sv34pgeuz6zagaaq3xzhsz")
 		assert.Nil(t, err)
 		assert.Equal(t, Testnet, tParsedAddress.Mode)
-		assert.Equal(t, TypeShort, tParsedAddress.Type)
+		assert.Equal(t, Short, tParsedAddress.Type)
 		assert.Equal(t, tAcpLock.CodeHash, tParsedAddress.Script.CodeHash)
 		assert.Equal(t, tAcpLock.HashType, tParsedAddress.Script.HashType)
 		assert.Equal(t, tAcpLock.Args, tParsedAddress.Script.Args)
@@ -172,7 +172,7 @@ func TestParse(t *testing.T) {
 		mParsedAddress, err := Parse("ckb1qypylv479ewscx3ms620sv34pgeuz6zagaaqcehzz9g")
 		assert.Nil(t, err)
 		assert.Equal(t, Mainnet, mParsedAddress.Mode)
-		assert.Equal(t, TypeShort, mParsedAddress.Type)
+		assert.Equal(t, Short, mParsedAddress.Type)
 		assert.Equal(t, mAcpLock.CodeHash, mParsedAddress.Script.CodeHash)
 		assert.Equal(t, mAcpLock.HashType, mParsedAddress.Script.HashType)
 		assert.Equal(t, mAcpLock.Args, mParsedAddress.Script.Args)
@@ -186,10 +186,15 @@ func TestParse(t *testing.T) {
 		tParsedAddress, err := Parse("ckt1qypylv479ewscx3ms620sv34pgeuz6zagaaqc9q8fqw")
 		assert.Nil(t, err)
 		assert.Equal(t, Testnet, tParsedAddress.Mode)
-		assert.Equal(t, TypeShort, tParsedAddress.Type)
+		assert.Equal(t, Short, tParsedAddress.Type)
 		assert.Equal(t, tAcpLock.CodeHash, tParsedAddress.Script.CodeHash)
 		assert.Equal(t, tAcpLock.HashType, tParsedAddress.Script.HashType)
 		assert.Equal(t, tAcpLock.Args, tParsedAddress.Script.Args)
+
+		tParsedAddress, err = Parse("ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqdnnw7qkdnnclfkg59uzn8umtfd2kwxceqxwquc4")
+		assert.Nil(t, err)
+		assert.Equal(t, Testnet, tParsedAddress.Mode)
+		assert.Equal(t, FullBech32m, tParsedAddress.Type)
 	})
 
 	t.Run("parse short payload acp address with ckb minimum limit and udt minimum limit", func(t *testing.T) {
@@ -202,7 +207,7 @@ func TestParse(t *testing.T) {
 		mParsedAddress, err := Parse("ckb1qypylv479ewscx3ms620sv34pgeuz6zagaaqcqgzc5xlw")
 		assert.Nil(t, err)
 		assert.Equal(t, Mainnet, mParsedAddress.Mode)
-		assert.Equal(t, TypeShort, mParsedAddress.Type)
+		assert.Equal(t, Short, mParsedAddress.Type)
 		assert.Equal(t, mAcpLock.CodeHash, mParsedAddress.Script.CodeHash)
 		assert.Equal(t, mAcpLock.HashType, mParsedAddress.Script.HashType)
 		assert.Equal(t, mAcpLock.Args, mParsedAddress.Script.Args)
@@ -216,7 +221,7 @@ func TestParse(t *testing.T) {
 		tParsedAddress, err := Parse("ckt1qypylv479ewscx3ms620sv34pgeuz6zagaaqcqgr072sz")
 		assert.Nil(t, err)
 		assert.Equal(t, Testnet, tParsedAddress.Mode)
-		assert.Equal(t, TypeShort, tParsedAddress.Type)
+		assert.Equal(t, Short, tParsedAddress.Type)
 		assert.Equal(t, tAcpLock.CodeHash, tParsedAddress.Script.CodeHash)
 		assert.Equal(t, tAcpLock.HashType, tParsedAddress.Script.HashType)
 		assert.Equal(t, tAcpLock.Args, tParsedAddress.Script.Args)
@@ -232,7 +237,7 @@ func TestParse(t *testing.T) {
 		mParsedAddress, err := Parse("ckb1qnfkjktl73ljn77q637judm4xux3y59c29qvvu8ywx90wy5c8g34gnajhch96rq68wrff7pjx59r8stgt4rh5rqpqy532xj3")
 		assert.Nil(t, err)
 		assert.Equal(t, Mainnet, mParsedAddress.Mode)
-		assert.Equal(t, TypeFull, mParsedAddress.Type)
+		assert.Equal(t, FullBech32, mParsedAddress.Type)
 		assert.Equal(t, mAcpLock.CodeHash, mParsedAddress.Script.CodeHash)
 		assert.Equal(t, mAcpLock.HashType, mParsedAddress.Script.HashType)
 		assert.Equal(t, mAcpLock.Args, mParsedAddress.Script.Args)
@@ -246,7 +251,7 @@ func TestParse(t *testing.T) {
 		tParsedAddress, err := Parse("ckt1qs6pngwqn6e9vlm92th84rk0l4jp2h8lurchjmnwv8kq3rt5psf4vnajhch96rq68wrff7pjx59r8stgt4rh5rqpqy2a9ak4")
 		assert.Nil(t, err)
 		assert.Equal(t, Testnet, tParsedAddress.Mode)
-		assert.Equal(t, TypeFull, tParsedAddress.Type)
+		assert.Equal(t, FullBech32, tParsedAddress.Type)
 		assert.Equal(t, tAcpLock.CodeHash, tParsedAddress.Script.CodeHash)
 		assert.Equal(t, tAcpLock.HashType, tParsedAddress.Script.HashType)
 		assert.Equal(t, tAcpLock.Args, tParsedAddress.Script.Args)
@@ -289,7 +294,7 @@ func TestValidateChequeAddress(t *testing.T) {
 			},
 			&ParsedAddress{
 				Mode: Testnet,
-				Type: TypeShort,
+				Type: Short,
 				Script: &types.Script{
 					CodeHash: types.HexToHash("0x9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8"),
 					HashType: types.HashTypeType,
@@ -306,7 +311,7 @@ func TestValidateChequeAddress(t *testing.T) {
 			},
 			&ParsedAddress{
 				Mode: Mainnet,
-				Type: TypeShort,
+				Type: Short,
 				Script: &types.Script{
 					CodeHash: types.HexToHash("0x9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8"),
 					HashType: types.HashTypeType,

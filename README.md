@@ -107,7 +107,7 @@ func main() {
 				Index:  1,
 			},
 		},
-	}, uint(len(transaction.Secp256k1EmptyWitnessArgPlaceholder)))
+	}, uint(len(transaction.Secp256k1SignaturePlaceholder)))
 
 	if err != nil {
 		log.Fatalf("add inputs to transaction error: %v", err)
