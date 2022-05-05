@@ -1,3 +1,8 @@
+# 1.0.2
+
+## 🚀 Features
+
+- Add type  for  (#126)
 # 1.0.1
 
 ## Breaking Changes
