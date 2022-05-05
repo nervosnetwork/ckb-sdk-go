@@ -1,3 +1,9 @@
+# 1.0.1
+
+## Breaking Changes
+- feat: change  method signature (#121)
+- feat: refactor method to create old full address (#123)
+
 # 0.101.6
 
 ## 🐛 Bug Fixes
