@@ -2,7 +2,7 @@
 
 ## 🚀 Features
 
-- Add type  for  (#126)
+- feat: add type FullBech32m for parsedAddress (#126)
 # 1.0.1
 
 ## Breaking Changes
