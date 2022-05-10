@@ -1,3 +1,8 @@
+# 1.0.2
+
+## 🚀 Features
+
+- feat: add type FullBech32m for parsedAddress (#126)
 # 1.0.1
 
 ## Breaking Changes
