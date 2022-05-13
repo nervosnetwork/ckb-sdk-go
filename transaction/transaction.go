@@ -171,12 +171,19 @@ func MsgFromTxForMultiSig(transaction *types.Transaction, group []int, witnessAr
 
 	if len(group) > 1 {
 		for i := 1; i < len(group); i++ {
-			var data []byte
+			data = transaction.Witnesses[group[i]]
 			length := make([]byte, 8)
 			binary.LittleEndian.PutUint64(length, uint64(len(data)))
 			message = append(message, length...)
 			message = append(message, data...)
 		}
+	}
+	// hash witnesses that are not in any input group
+	for _, witness := range transaction.Witnesses[len(transaction.Inputs):] {
+		length := make([]byte, 8)
+		binary.LittleEndian.PutUint64(length, uint64(len(witness)))
+		message = append(message, length...)
+		message = append(message, witness...)
 	}
 
 	return blake2b.Blake256(message)
