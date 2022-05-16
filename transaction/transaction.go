@@ -147,13 +147,10 @@ func SingleSignTransaction(transaction *types.Transaction, group []int, witnessA
 	return nil
 }
 
-func MsgFromTxForMultiSig(transaction *types.Transaction, group []int, witnessArgs *types.WitnessArgs, serialize []byte, numSigs int) ([]byte, error) {
-	var emptySignature []byte
-	for i := 0; i < numSigs; i++ {
-		emptySignature = append(emptySignature, Secp256k1SignaturePlaceholder...)
-	}
-	witnessArgs.Lock = append(serialize, emptySignature...)
-
+func MsgFromTxForMultiSig(transaction *types.Transaction, group []int, multisigScript []byte) ([]byte, error) {
+	n := int (multisigScript[3])
+	witnessArgsLock := append(multisigScript, make([]byte, n * len(Secp256k1SignaturePlaceholder))...)
+	witnessArgs := types.WitnessArgs{Lock: witnessArgsLock}
 	data, err := witnessArgs.Serialize()
 	if err != nil {
 		return nil, err
