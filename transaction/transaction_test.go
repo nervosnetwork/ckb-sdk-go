@@ -121,7 +121,7 @@ func TestMsgFromTxForMultiSig(t *testing.T) {
 					TxHash: types.HexToHash("0xf8de3bb47d055cdf460d93a2a6e1b05f7432f9777c8c474abf4eec1d4aee5d37"),
 					Index:  1,
 				},
-				DepType:  types.DepTypeDepGroup,
+				DepType: types.DepTypeDepGroup,
 			},
 		},
 		HeaderDeps: []types.Hash{},
@@ -153,13 +153,15 @@ func TestMsgFromTxForMultiSig(t *testing.T) {
 			},
 		},
 		OutputsData: [][]byte{{}, {}},
-		Witnesses:   [][]byte{
-			[]byte{},
+		Witnesses: [][]byte{
+			common.FromHex("0x10000000100000001000000010000000"),
 			[]byte{0x12, 0x34},
-			},
+		},
 	}
 	multisigScript := common.FromHex("000002029b41c025515b00c24e2e2042df7b221af5c1891fe732dcd15b7618eb1d7a11e6a68e4579b5be0114")
-	hash, _ := MsgFromTxForMultiSig(tx, []int{0}, multisigScript);
-	expectedHash := common.FromHex("0x371fbe3cc22420117c77fc345c832eaf4e90111e20fdd4189fe680fcf469d289")
-	assert.Equal(t, expectedHash, hash)
+	hash, _ := MsgFromTxForMultiSig(tx, []int{0}, multisigScript)
+	key, _ := s.HexToKey("5271b0e474609ee280eb6ba07895718863a0eb8f114afd7217fa371fd48f6941")
+	signature, _ := key.Sign(hash)
+	expectedSignature := common.FromHex("bf990766e3efa8253c58330f4366bef09f49cbe4efa47b2b491541ad919c90c33ca6763c5780693efd0efea89c1645e8992520e8e551c1dec50fc41fac14b3a401")
+	assert.Equal(t, expectedSignature, signature)
 }
