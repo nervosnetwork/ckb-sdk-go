@@ -7,6 +7,7 @@ import (
 	"github.com/nervosnetwork/ckb-sdk-go/mocks"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 	"github.com/nervosnetwork/ckb-sdk-go/utils"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
@@ -108,4 +109,57 @@ func TestSingleSignTransaction(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
+}
+
+func TestMsgFromTxForMultiSig(t *testing.T) {
+	// https://pudge.explorer.nervos.org/transaction/0x8b9027c407ee95f043b158b4bb5fe685b2e6159723b48712d91ec733b3068a5c
+	tx := &types.Transaction{
+		Version: 0,
+		CellDeps: []*types.CellDep{
+			{
+				OutPoint: &types.OutPoint{
+					TxHash: types.HexToHash("0xf8de3bb47d055cdf460d93a2a6e1b05f7432f9777c8c474abf4eec1d4aee5d37"),
+					Index:  1,
+				},
+				DepType:  types.DepTypeDepGroup,
+			},
+		},
+		HeaderDeps: []types.Hash{},
+		Inputs: []*types.CellInput{
+			{
+				Since: 0,
+				PreviousOutput: &types.OutPoint{
+					TxHash: types.HexToHash("0xb8e52009fb4dc0d63dd2a0547909bb1d66dff83e14645c70b25222c1e04ec593"),
+					Index:  0,
+				},
+			},
+		},
+		Outputs: []*types.CellOutput{
+			{
+				Capacity: 10000000000,
+				Lock: &types.Script{
+					CodeHash: types.HexToHash("0x9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8"),
+					HashType: types.HashTypeType,
+					Args:     common.FromHex("0x6cfd0e42b63a6fccf5eda9cef74d5fd0537fd55a"),
+				},
+			},
+			{
+				Capacity: 989900000000,
+				Lock: &types.Script{
+					CodeHash: types.HexToHash("0x5c5069eb0857efc65e1bca0c07df34c31663b3622fd3876c876320fc9634e2a8"),
+					HashType: types.HashTypeType,
+					Args:     common.FromHex("0x35ed7b939b4ac9cb447b82340fd8f26d344f7a62"),
+				},
+			},
+		},
+		OutputsData: [][]byte{{}, {}},
+		Witnesses:   [][]byte{
+			[]byte{},
+			[]byte{0x12, 0x34},
+			},
+	}
+	multisigScript := common.FromHex("000002029b41c025515b00c24e2e2042df7b221af5c1891fe732dcd15b7618eb1d7a11e6a68e4579b5be0114")
+	hash, _ := MsgFromTxForMultiSig(tx, []int{0}, multisigScript);
+	expectedHash := common.FromHex("0x371fbe3cc22420117c77fc345c832eaf4e90111e20fdd4189fe680fcf469d289")
+	assert.Equal(t, expectedHash, hash)
 }
