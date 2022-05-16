@@ -193,7 +193,7 @@ func TestParse(t *testing.T) {
 
 		tParsedAddress, err = Parse("ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqdnnw7qkdnnclfkg59uzn8umtfd2kwxceqxwquc4")
 		assert.Nil(t, err)
-		assert.Equal(t, Testnet, tParsedAddress.Mode)
+		assert.Equal(t, Mainnet, tParsedAddress.Mode)
 		assert.Equal(t, FullBech32m, tParsedAddress.Type)
 	})
 
