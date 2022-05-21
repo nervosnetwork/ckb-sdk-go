@@ -367,3 +367,26 @@ func TestConvertPublickeyToBech32mFullAddress(t *testing.T) {
 	}
 	assert.Equal(t, address, "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqdnnw7qkdnnclfkg59uzn8umtfd2kwxceqxwquc4")
 }
+
+func TestInvalidAddressParse(t *testing.T) {
+	// These invalid address come form https://github.com/nervosnetwork/ckb-sdk-rust/pull/7/files
+	// INVALID bech32 encoding
+	_, err := Parse("ckb1qyqylv479ewscx3ms620sv34pgeuz6zagaaqh0knz7")
+	assert.NotNil(t, err)
+	// INVALID data length
+	_, err = Parse("ckb1qyqylv479ewscx3ms620sv34pgeuz6zagaarxdzvx03")
+	assert.NotNil(t, err)
+	// INVALID code hash index
+	_, err = Parse("ckb1qyg5lv479ewscx3ms620sv34pgeuz6zagaaqajch0c")
+	assert.NotNil(t, err)
+	// INVALID bech32m encoding
+	_, err = Parse("ckb1q2da0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsnajhch96rq68wrqn2tmhm")
+	assert.NotNil(t, err)
+	// Invalid ckb2021 format full address
+	_, err = Parse("ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq20k2lzuhgvrgacv4tmr88")
+	assert.NotNil(t, err)
+	_, err = Parse("ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqz0k2lzuhgvrgacvhcym08")
+	assert.NotNil(t, err)
+	_, err = Parse("ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqj0k2lzuhgvrgacvnhnzl8")
+	assert.NotNil(t, err)
+}
