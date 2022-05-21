@@ -11,25 +11,30 @@ const charset = "qpzry9x8gf2tvdw0s3jn54khce6mua7l"
 var gen = []int{0x3b6a57b2, 0x26508e6d, 0x1ea119fa, 0x3d4233dd, 0x2a1462b3}
 
 const BECH32M_CONST = 0x2bc830a3
+type Encoding uint
+const (
+	BECH32 Encoding = iota
+	BECH32M
+)
 
-func Decode(bech string) (string, []byte, error) {
+func Decode(bech string) (Encoding, string, []byte, error) {
 	for i := 0; i < len(bech); i++ {
 		if bech[i] < 33 || bech[i] > 126 {
-			return "", nil, fmt.Errorf("invalid character: '%c'", bech[i])
+			return BECH32, "", nil, fmt.Errorf("invalid character: '%c'", bech[i])
 		}
 	}
 
 	lower := strings.ToLower(bech)
 	upper := strings.ToUpper(bech)
 	if bech != lower && bech != upper {
-		return "", nil, errors.New("string not all lowercase or all uppercase")
+		return BECH32, "", nil, errors.New("string not all lowercase or all uppercase")
 	}
 
 	bech = lower
 
 	one := strings.LastIndexByte(bech, '1')
 	if one < 1 || one+7 > len(bech) {
-		return "", nil, fmt.Errorf("invalid index of 1")
+		return BECH32, "", nil, fmt.Errorf("invalid index of 1")
 	}
 
 	hrp := bech[:one]
@@ -37,7 +42,7 @@ func Decode(bech string) (string, []byte, error) {
 
 	decoded, err := toBytes(data)
 	if err != nil {
-		return "", nil, errors.New(fmt.Sprintf("failed converting data to bytes: %v", err))
+		return  BECH32, "", nil, errors.New(fmt.Sprintf("failed converting data to bytes: %v", err))
 	}
 
 	ints := make([]int, len(decoded))
@@ -48,7 +53,9 @@ func Decode(bech string) (string, []byte, error) {
 	polymod := append(bech32HrpExpand(hrp), ints...)
 	i := bech32Polymod(polymod)
 
+	var encoding Encoding
 	if i == 1 {
+		encoding = BECH32
 		if !bech32VerifyChecksum(hrp, decoded) {
 			moreInfo := ""
 			checksum := bech[len(bech)-6:]
@@ -57,9 +64,10 @@ func Decode(bech string) (string, []byte, error) {
 			if err == nil {
 				moreInfo = fmt.Sprintf("Expected %v, got %v.", expected, checksum)
 			}
-			return "", nil, errors.New("checksum failed. " + moreInfo)
+			return BECH32, "", nil, errors.New("checksum failed. " + moreInfo)
 		}
 	} else {
+		encoding = BECH32M
 		if !bech32VerifyChecksumWithBech32m(hrp, decoded) {
 			moreInfo := ""
 			checksum := bech[len(bech)-6:]
@@ -68,11 +76,11 @@ func Decode(bech string) (string, []byte, error) {
 			if err == nil {
 				moreInfo = fmt.Sprintf("Expected %v, got %v.", expected, checksum)
 			}
-			return "", nil, errors.New("checksum failed. " + moreInfo)
+			return BECH32M, "", nil, errors.New("checksum failed. " + moreInfo)
 		}
 	}
 
-	return hrp, decoded[:len(decoded)-6], nil
+	return encoding, hrp, decoded[:len(decoded)-6], nil
 }
 
 func Encode(hrp string, data []byte) (string, error) {
