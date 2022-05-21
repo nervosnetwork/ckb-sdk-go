@@ -184,17 +184,21 @@ func Parse(address string) (*ParsedAddress, error) {
 		if encoding != bech32.BECH32 {
 			return nil, errors.New("payload header 0x01 should have encoding BECH32")
 		}
-		if len(payload) != 22 {
-			return nil, errors.New("payload length of short address should be 22")
-		}
 		addressType = Short
 		if CodeHashIndexSingleSig == payload[2:4] {
+			if len(payload) != 44 {
+				return nil, errors.New("payload bytes length of secp256k1-sighash-all " +
+					"short address should be 22")
+			}
 			script = types.Script{
 				CodeHash: types.HexToHash(transaction.SECP256K1_BLAKE160_SIGHASH_ALL_TYPE_HASH),
 				HashType: types.HashTypeType,
 				Args:     common.Hex2Bytes(payload[4:]),
 			}
 		} else if CodeHashIndexAnyoneCanPay == payload[2:4] {
+			if len(payload) < 44 || len(payload) > 48 {
+				return nil, errors.New("payload bytes length of acp short address should between 22-24")
+			}
 			script = types.Script{
 				HashType: types.HashTypeType,
 				Args:     common.Hex2Bytes(payload[4:]),
@@ -205,6 +209,10 @@ func Parse(address string) (*ParsedAddress, error) {
 				script.CodeHash = types.HexToHash(utils.AnyoneCanPayCodeHashOnLina)
 			}
 		} else if CodeHashIndexMultisigSig == payload[2:4] {
+			if len(payload) != 44 {
+				return nil, errors.New("payload bytes length of secp256k1-multisig-all " +
+					"short address should be 22")
+			}
 			script = types.Script{
 				CodeHash: types.HexToHash(transaction.SECP256K1_BLAKE160_MULTISIG_ALL_TYPE_HASH),
 				HashType: types.HashTypeType,
