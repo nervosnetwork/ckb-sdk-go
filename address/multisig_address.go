@@ -9,6 +9,9 @@ import (
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 )
 
+// GenerateSecp256k1MultisigScript generate scep256k1 multisig script.
+// It can accept public key (in compressed format, 33 bytes each) array or public key hash (20 bytes) array, and
+// return error if giving none of them.
 func GenerateSecp256k1MultisigScript(requireN, threshold int, publicKeysOrHashes [][]byte) (*types.Script, []byte, error) {
 	if requireN < 0 || requireN > 255 {
 		return nil, nil, errors.New("requireN must ranging from 0 to 255")
