@@ -1,3 +1,9 @@
+# 1.0.3
+
+## 🚀 Features
+- Update Golang to 1.17 (#128)
+- feat: append outer witness for multisig (#129)
+
 # 1.0.2
 
 ## 🚀 Features
