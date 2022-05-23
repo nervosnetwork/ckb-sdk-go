@@ -9,18 +9,40 @@ import (
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 )
 
-func GenerateSecp256k1MultisigScript(requireN, threshold int, publicKeys [][]byte) (*types.Script, []byte, error) {
+func GenerateSecp256k1MultisigScript(requireN, threshold int, publicKeysOrHashes [][]byte) (*types.Script, []byte, error) {
 	if requireN < 0 || requireN > 255 {
 		return nil, nil, errors.New("requireN must ranging from 0 to 255")
 	}
 	if threshold < 0 || threshold > 255 {
 		return nil, nil, errors.New("requireN must ranging from 0 to 255")
 	}
-	if len(publicKeys) > 255 {
+	if len(publicKeysOrHashes) > 255 {
 		return nil, nil, errors.New("public keys size must be less than 256")
 	}
-	if len(publicKeys) < requireN || len(publicKeys) < threshold {
+	if len(publicKeysOrHashes) < requireN || len(publicKeysOrHashes) < threshold {
 		return nil, nil, errors.New("public keys error")
+	}
+
+	isPublicKeyHash := len(publicKeysOrHashes[0]) == 20
+	var publicKeysHash [][]byte
+	if isPublicKeyHash {
+		for _, publicKeyHash := range publicKeysOrHashes {
+			if len(publicKeyHash) != 20 {
+				return nil, nil, errors.New("public key hash length must be 20 bytes")
+			}
+			publicKeysHash = append(publicKeysHash, publicKeyHash)
+		}
+	} else {
+		for _, publicKey := range publicKeysOrHashes {
+			if len(publicKey) != 33 {
+				return nil, nil, errors.New("public key (compressed) length must be 33 bytes")
+			}
+			publicKeyHash, err := blake2b.Blake160(publicKey)
+			if err != nil {
+				return nil, nil, err
+			}
+			publicKeysHash = append(publicKeysHash, publicKeyHash)
+		}
 	}
 
 	var data []byte
@@ -35,14 +57,10 @@ func GenerateSecp256k1MultisigScript(requireN, threshold int, publicKeys [][]byt
 	data = append(data, b[:1]...)
 
 	b = make([]byte, 2)
-	binary.LittleEndian.PutUint16(b, uint16(len(publicKeys)))
+	binary.LittleEndian.PutUint16(b, uint16(len(publicKeysHash)))
 	data = append(data, b[:1]...)
 
-	for _, pub := range publicKeys {
-		hash, err := blake2b.Blake160(pub)
-		if err != nil {
-			return nil, nil, err
-		}
+	for _, hash := range publicKeysHash {
 		data = append(data, hash...)
 	}
 
