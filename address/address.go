@@ -168,7 +168,7 @@ func ConvertPublicToAddress(mode Mode, publicKey string) (string, error) {
 }
 
 func Parse(address string) (*ParsedAddress, error) {
-	hrp, decoded, err := bech32.Decode(address)
+	encoding, hrp, decoded, err := bech32.Decode(address)
 	if err != nil {
 		return nil, err
 	}
@@ -181,14 +181,24 @@ func Parse(address string) (*ParsedAddress, error) {
 	var addressType Type
 	var script types.Script
 	if strings.HasPrefix(payload, "01") {
+		if encoding != bech32.BECH32 {
+			return nil, errors.New("payload header 0x01 should have encoding BECH32")
+		}
 		addressType = Short
 		if CodeHashIndexSingleSig == payload[2:4] {
+			if len(payload) != 44 {
+				return nil, errors.New("payload bytes length of secp256k1-sighash-all " +
+					"short address should be 22")
+			}
 			script = types.Script{
 				CodeHash: types.HexToHash(transaction.SECP256K1_BLAKE160_SIGHASH_ALL_TYPE_HASH),
 				HashType: types.HashTypeType,
 				Args:     common.Hex2Bytes(payload[4:]),
 			}
 		} else if CodeHashIndexAnyoneCanPay == payload[2:4] {
+			if len(payload) < 44 || len(payload) > 48 {
+				return nil, errors.New("payload bytes length of acp short address should between 22-24")
+			}
 			script = types.Script{
 				HashType: types.HashTypeType,
 				Args:     common.Hex2Bytes(payload[4:]),
@@ -198,14 +208,23 @@ func Parse(address string) (*ParsedAddress, error) {
 			} else {
 				script.CodeHash = types.HexToHash(utils.AnyoneCanPayCodeHashOnLina)
 			}
-		} else {
+		} else if CodeHashIndexMultisigSig == payload[2:4] {
+			if len(payload) != 44 {
+				return nil, errors.New("payload bytes length of secp256k1-multisig-all " +
+					"short address should be 22")
+			}
 			script = types.Script{
 				CodeHash: types.HexToHash(transaction.SECP256K1_BLAKE160_MULTISIG_ALL_TYPE_HASH),
 				HashType: types.HashTypeType,
 				Args:     common.Hex2Bytes(payload[4:]),
 			}
+		} else {
+			return nil, errors.New("unknown code hash index " + payload[2:4])
 		}
 	} else if strings.HasPrefix(payload, "02") {
+		if encoding != bech32.BECH32 {
+			return nil, errors.New("payload header 0x02 should have encoding BECH32");
+		}
 		addressType = FullBech32
 		script = types.Script{
 			CodeHash: types.HexToHash(payload[2:66]),
@@ -213,6 +232,9 @@ func Parse(address string) (*ParsedAddress, error) {
 			Args:     common.Hex2Bytes(payload[66:]),
 		}
 	} else if strings.HasPrefix(payload, "04") {
+		if encoding != bech32.BECH32 {
+			return nil, errors.New("payload header 0x04 should have encoding BECH32");
+		}
 		addressType = FullBech32
 		script = types.Script{
 			CodeHash: types.HexToHash(payload[2:66]),
@@ -220,6 +242,9 @@ func Parse(address string) (*ParsedAddress, error) {
 			Args:     common.Hex2Bytes(payload[66:]),
 		}
 	} else if strings.HasPrefix(payload, "00") {
+		if encoding != bech32.BECH32M {
+			return nil, errors.New("payload header 0x00 should have encoding BECH32");
+		}
 		addressType = FullBech32m
 		script = types.Script{
 			CodeHash: types.HexToHash(payload[2:66]),
