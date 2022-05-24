@@ -26,27 +26,7 @@ func GenerateSecp256k1MultisigScript(requireN, threshold int, publicKeysOrHashes
 		return nil, nil, errors.New("public keys error")
 	}
 
-	isPublicKeyHash := len(publicKeysOrHashes[0]) == 20
-	var publicKeysHash [][]byte
-	if isPublicKeyHash {
-		for _, publicKeyHash := range publicKeysOrHashes {
-			if len(publicKeyHash) != 20 {
-				return nil, nil, errors.New("public key hash length must be 20 bytes")
-			}
-			publicKeysHash = append(publicKeysHash, publicKeyHash)
-		}
-	} else {
-		for _, publicKey := range publicKeysOrHashes {
-			if len(publicKey) != 33 {
-				return nil, nil, errors.New("public key (compressed) length must be 33 bytes")
-			}
-			publicKeyHash, err := blake2b.Blake160(publicKey)
-			if err != nil {
-				return nil, nil, err
-			}
-			publicKeysHash = append(publicKeysHash, publicKeyHash)
-		}
-	}
+
 
 	var data []byte
 	data = append(data, 0)
@@ -60,11 +40,28 @@ func GenerateSecp256k1MultisigScript(requireN, threshold int, publicKeysOrHashes
 	data = append(data, b[:1]...)
 
 	b = make([]byte, 2)
-	binary.LittleEndian.PutUint16(b, uint16(len(publicKeysHash)))
+	binary.LittleEndian.PutUint16(b, uint16(len(publicKeysOrHashes)))
 	data = append(data, b[:1]...)
 
-	for _, hash := range publicKeysHash {
-		data = append(data, hash...)
+	isPublicKeyHash := len(publicKeysOrHashes[0]) == 20
+	if isPublicKeyHash {
+		for _, publicKeyHash := range publicKeysOrHashes {
+			if len(publicKeyHash) != 20 {
+				return nil, nil, errors.New("public key hash length must be 20 bytes")
+			}
+			data = append(data, publicKeyHash...)
+		}
+	} else {
+		for _, publicKey := range publicKeysOrHashes {
+			if len(publicKey) != 33 {
+				return nil, nil, errors.New("public key (compressed) length must be 33 bytes")
+			}
+			publicKeyHash, err := blake2b.Blake160(publicKey)
+			if err != nil {
+				return nil, nil, err
+			}
+			data = append(data, publicKeyHash...)
+		}
 	}
 
 	args, err := blake2b.Blake160(data)
