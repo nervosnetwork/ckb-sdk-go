@@ -1,3 +1,14 @@
+# 1.0.4
+
+## 🚀 Features
+
+- feat: check address strictly (#133)
+- feat: Change GenerateSecp256k1MultisigScript parameter (#134)
+
+## 🧰 Maintenance
+
+- chore: run test on PR (#135)
+
 # 1.0.3
 
 ## 🚀 Features
