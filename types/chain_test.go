@@ -25,6 +25,21 @@ func TestJsonScript(t *testing.T) {
 	AssertJsonEqual(t, jsonText1, jsonText2)
 }
 
+func TestJsonOutPoint(t *testing.T) {
+	jsonText1 := []byte(`
+{
+    "index": "0x2",
+    "tx_hash": "0xf8de3bb47d055cdf460d93a2a6e1b05f7432f9777c8c474abf4eec1d4aee5d37"
+}`)
+	var v OutPoint
+	json.Unmarshal(jsonText1, &v)
+	assert.Equal(t, uint(2), v.Index)
+	assert.Equal(t, HexToHash("0xf8de3bb47d055cdf460d93a2a6e1b05f7432f9777c8c474abf4eec1d4aee5d37"), v.TxHash)
+
+	jsonText2, _ := json.Marshal(v)
+	AssertJsonEqual(t, jsonText1, jsonText2)
+}
+
 func AssertJsonEqual(t *testing.T, t1, t2 []byte) {
 	m1 := map[string]interface{}{}
 	m2 := map[string]interface{}{}
