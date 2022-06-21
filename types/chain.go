@@ -182,11 +182,38 @@ type CellOutput struct {
 	Lock     *Script `json:"lock"`
 	Type     *Script `json:"type"`
 }
+type cellOutputAlias CellOutput
+type jsonCellOutput struct {
+	cellOutputAlias
+	Capacity hexutil.Uint64 `json:"capacity"`
+}
 
-func (o CellOutput) OccupiedCapacity(outputData []byte) uint64 {
-	occupiedCapacity := 8 + uint64(len(outputData)) + o.Lock.OccupiedCapacity()
-	if o.Type != nil {
-		occupiedCapacity += o.Type.OccupiedCapacity()
+func (r CellOutput) MarshalJSON() ([]byte, error) {
+	jsonObj := &jsonCellOutput{
+		cellOutputAlias(r),
+		hexutil.Uint64(r.Capacity),
+	}
+	return json.Marshal(jsonObj)
+}
+
+func (r *CellOutput) UnmarshalJSON(input []byte) error {
+	var jsonObj jsonCellOutput
+	err := json.Unmarshal(input, &jsonObj)
+	if err != nil {
+		return err
+	}
+	*r = CellOutput{
+		Capacity: uint64(jsonObj.Capacity),
+		Lock:     jsonObj.Lock,
+		Type:     jsonObj.Type,
+	}
+	return nil
+}
+
+func (r CellOutput) OccupiedCapacity(outputData []byte) uint64 {
+	occupiedCapacity := 8 + uint64(len(outputData)) + r.Lock.OccupiedCapacity()
+	if r.Type != nil {
+		occupiedCapacity += r.Type.OccupiedCapacity()
 	}
 	return occupiedCapacity
 }

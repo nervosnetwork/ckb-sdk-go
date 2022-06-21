@@ -77,15 +77,15 @@ func (r *CellInput) Serialize() ([]byte, error) {
 }
 
 // Serialize cell output
-func (o *CellOutput) Serialize() ([]byte, error) {
-	c := SerializeUint64(o.Capacity)
+func (r *CellOutput) Serialize() ([]byte, error) {
+	c := SerializeUint64(r.Capacity)
 
-	l, err := o.Lock.Serialize()
+	l, err := r.Lock.Serialize()
 	if err != nil {
 		return nil, err
 	}
 
-	t, err := SerializeOption(o.Type)
+	t, err := SerializeOption(r.Type)
 	if err != nil {
 		return nil, err
 	}
