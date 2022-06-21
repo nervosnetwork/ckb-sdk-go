@@ -58,6 +58,30 @@ func TestJsonCellInput(t *testing.T) {
 	AssertJsonEqual(t, jsonText1, jsonText2)
 }
 
+func TestJsonCellOutput(t *testing.T) {
+	jsonText1 := []byte(`
+{
+    "capacity": "0x9502f9000",
+    "lock": {
+        "args": "0xa897829e60ee4e3fb0e4abe65549ec4a5ddafad7",
+        "code_hash": "0x9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8",
+        "hash_type": "type"
+    },
+    "type": {
+        "args": "0x02",
+        "code_hash": "0x554cff969f3148e3c620749384004e9692e67c429f621554d139b505a281c7b8",
+        "hash_type": "type"
+    }
+}`)
+	var v CellOutput
+	json.Unmarshal(jsonText1, &v)
+	assert.Equal(t, uint64(40000000000), v.Capacity)
+	assert.Equal(t, HexToHash("0x9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8"), v.Lock.CodeHash)
+	assert.Equal(t, HexToHash("0x554cff969f3148e3c620749384004e9692e67c429f621554d139b505a281c7b8"), v.Type.CodeHash)
+
+	jsonText2, _ := json.Marshal(v)
+	AssertJsonEqual(t, jsonText1, jsonText2)
+}
 
 func AssertJsonEqual(t *testing.T, t1, t2 []byte) {
 	m1 := map[string]interface{}{}
