@@ -1,6 +1,8 @@
 package types
 
 import (
+	"encoding/json"
+	"github.com/ethereum/go-ethereum/common/hexutil"
 	"math/big"
 
 	"github.com/nervosnetwork/ckb-sdk-go/crypto/blake2b"
@@ -62,13 +64,40 @@ type Script struct {
 	HashType ScriptHashType `json:"hash_type"`
 	Args     []byte         `json:"args"`
 }
-
-func (script *Script) OccupiedCapacity() uint64 {
-	return uint64(len(script.Args)) + uint64(len(script.CodeHash.Bytes())) + 1
+type scriptAlias Script
+type jsonScript struct {
+	scriptAlias
+	Args hexutil.Bytes `json:"args"`
 }
 
-func (script *Script) Hash() (Hash, error) {
-	data, err := script.Serialize()
+func (r Script) MarshalJSON() ([]byte, error) {
+	jsonObj := &jsonScript{
+		scriptAlias(r),
+		r.Args,
+	}
+	return json.Marshal(jsonObj)
+}
+
+func (r *Script) UnmarshalJSON(input []byte) error {
+	var jsonObj jsonScript
+	err := json.Unmarshal(input, &jsonObj)
+	if err != nil {
+		return err
+	}
+	*r = Script{
+		CodeHash: jsonObj.CodeHash,
+		HashType: jsonObj.HashType,
+		Args:     jsonObj.Args,
+	}
+	return nil
+}
+
+func (r *Script) OccupiedCapacity() uint64 {
+	return uint64(len(r.Args)) + uint64(len(r.CodeHash.Bytes())) + 1
+}
+
+func (r *Script) Hash() (Hash, error) {
+	data, err := r.Serialize()
 	if err != nil {
 		return Hash{}, err
 	}
@@ -81,12 +110,12 @@ func (script *Script) Hash() (Hash, error) {
 	return BytesToHash(hash), nil
 }
 
-func (script *Script) Equals(obj *Script) bool {
+func (r *Script) Equals(obj *Script) bool {
 	if obj == nil {
 		return false
 	}
 
-	sh, _ := script.Hash()
+	sh, _ := r.Hash()
 	oh, _ := obj.Hash()
 	return sh.String() == oh.String()
 }
