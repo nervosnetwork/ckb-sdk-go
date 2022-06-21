@@ -150,6 +150,32 @@ type CellInput struct {
 	Since          uint64    `json:"since"`
 	PreviousOutput *OutPoint `json:"previous_output"`
 }
+type cellInputAlias CellInput
+type jsonCellInput struct {
+	cellInputAlias
+	Since hexutil.Uint64 `json:"since"`
+}
+
+func (r CellInput) MarshalJSON() ([]byte, error) {
+	jsonObj := &jsonCellInput{
+		cellInputAlias(r),
+		hexutil.Uint64(r.Since),
+	}
+	return json.Marshal(jsonObj)
+}
+
+func (r *CellInput) UnmarshalJSON(input []byte) error {
+	var jsonObj jsonCellInput
+	err := json.Unmarshal(input, &jsonObj)
+	if err != nil {
+		return err
+	}
+	*r = CellInput{
+		Since:          uint64(jsonObj.Since),
+		PreviousOutput: jsonObj.PreviousOutput,
+	}
+	return nil
+}
 
 type CellOutput struct {
 	Capacity uint64  `json:"capacity"`

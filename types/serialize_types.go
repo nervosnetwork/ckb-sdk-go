@@ -65,10 +65,10 @@ func (r *OutPoint) Serialize() ([]byte, error) {
 }
 
 // Serialize cell input
-func (i *CellInput) Serialize() ([]byte, error) {
-	s := SerializeUint64(i.Since)
+func (r *CellInput) Serialize() ([]byte, error) {
+	s := SerializeUint64(r.Since)
 
-	o, err := i.PreviousOutput.Serialize()
+	o, err := r.PreviousOutput.Serialize()
 	if err != nil {
 		return nil, err
 	}
