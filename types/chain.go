@@ -53,6 +53,32 @@ type OutPoint struct {
 	TxHash Hash `json:"tx_hash"`
 	Index  uint `json:"index"`
 }
+type outPointAlias OutPoint
+type jsonOutPoint struct {
+	outPointAlias
+	Index hexutil.Uint `json:"index"`
+}
+
+func (r OutPoint) MarshalJSON() ([]byte, error) {
+	jsonObj := &jsonOutPoint{
+		outPointAlias(r),
+		hexutil.Uint(r.Index),
+	}
+	return json.Marshal(jsonObj)
+}
+
+func (r *OutPoint) UnmarshalJSON(input []byte) error {
+	var jsonObj jsonOutPoint
+	err := json.Unmarshal(input, &jsonObj)
+	if err != nil {
+		return err
+	}
+	*r = OutPoint{
+		TxHash: jsonObj.TxHash,
+		Index:  uint(jsonObj.Index),
+	}
+	return nil
+}
 
 type CellDep struct {
 	OutPoint *OutPoint `json:"out_point"`

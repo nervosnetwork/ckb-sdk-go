@@ -48,13 +48,13 @@ func (r *Script) Serialize() ([]byte, error) {
 }
 
 // Serialize outpoint
-func (o *OutPoint) Serialize() ([]byte, error) {
-	h, err := o.TxHash.Serialize()
+func (r *OutPoint) Serialize() ([]byte, error) {
+	h, err := r.TxHash.Serialize()
 	if err != nil {
 		return nil, err
 	}
 
-	i := SerializeUint(o.Index)
+	i := SerializeUint(r.Index)
 
 	b := new(bytes.Buffer)
 
