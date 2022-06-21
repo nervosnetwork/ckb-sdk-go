@@ -40,6 +40,25 @@ func TestJsonOutPoint(t *testing.T) {
 	AssertJsonEqual(t, jsonText1, jsonText2)
 }
 
+func TestJsonCellInput(t *testing.T) {
+	jsonText1 := []byte(`
+{
+    "previous_output": {
+        "index": "0xffffffff",
+        "tx_hash": "0x0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "since": "0x4fe230"
+}`)
+	var v CellInput
+	json.Unmarshal(jsonText1, &v)
+	assert.Equal(t, uint64(5235248), v.Since)
+	assert.NotNil(t, v.PreviousOutput)
+
+	jsonText2, _ := json.Marshal(v)
+	AssertJsonEqual(t, jsonText1, jsonText2)
+}
+
+
 func AssertJsonEqual(t *testing.T, t1, t2 []byte) {
 	m1 := map[string]interface{}{}
 	m2 := map[string]interface{}{}
