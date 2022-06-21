@@ -2,9 +2,36 @@ package types
 
 import (
 	"encoding/hex"
+	"encoding/json"
+	ethcommon "github.com/ethereum/go-ethereum/common"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
+
+func TestJsonScript(t *testing.T) {
+	jsonText1 := []byte(`
+{
+    "args": "0xa897829e60ee4e3fb0e4abe65549ec4a5ddafad7",
+    "code_hash": "0x9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8",
+    "hash_type": "type"
+}`)
+	var v Script
+	json.Unmarshal(jsonText1, &v)
+	assert.Equal(t, ethcommon.FromHex("0xa897829e60ee4e3fb0e4abe65549ec4a5ddafad7"), v.Args)
+	assert.Equal(t, HexToHash("0x9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8"), v.CodeHash)
+	assert.Equal(t, HashTypeType, v.HashType)
+
+	jsonText2, _ := json.Marshal(v)
+	AssertJsonEqual(t, jsonText1, jsonText2)
+}
+
+func AssertJsonEqual(t *testing.T, t1, t2 []byte) {
+	m1 := map[string]interface{}{}
+	m2 := map[string]interface{}{}
+	json.Unmarshal(t1, &m1)
+	json.Unmarshal(t2, &m2)
+	assert.Equal(t, m2, m1)
+}
 
 func TestScriptOccupiedCapacity(t *testing.T) {
 	args, _ := hex.DecodeString("3954acece65096bfa81258983ddb83915fc56bd8")
