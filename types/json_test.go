@@ -384,3 +384,23 @@ func TestJsonBlock(t *testing.T) {
 	jsonText2, _ := json.Marshal(v)
 	AssertJsonEqual(t, jsonText1, jsonText2)
 }
+
+func TestTransactionProof(t *testing.T) {
+	jsonText1 := []byte(`
+{
+    "block_hash": "0x151a28416008bd1f6ee7472e29db1641e626acfae97d8d53389e4184b359d82d",
+    "proof": {
+        "indices": ["0x4"],
+        "lemmas": [
+            "0xf268a2da588c5603295faf8dbae71efece10d829295587fc7be2852583839419",
+            "0xd41ec2a757311c56ae635e0bcb9d5caf2d5c5293b6685ba2e28757cea1b7b6e9"
+        ]
+    },
+    "witnesses_root": "0x06beb892d12c795d84e325c257750d79de29ee7e4fb583058ca5d8b1073e230d"
+}`)
+	var v TransactionProof
+	json.Unmarshal(jsonText1, &v)
+
+	jsonText2, _ := json.Marshal(v)
+	AssertJsonEqual(t, jsonText1, jsonText2)
+}
