@@ -313,7 +313,7 @@ func (r *Consensus) UnmarshalJSON(input []byte) error {
 	if err != nil {
 		return err
 	}
-	toHardForkFeatureArray := func(a []*jsonHardForkFeature) []*HardForkFeature{
+	toHardForkFeatureArray := func(a []*jsonHardForkFeature) []*HardForkFeature {
 		result := make([]*HardForkFeature, len(a))
 		for i, data := range a {
 			result[i] = &HardForkFeature{
@@ -348,7 +348,7 @@ func (r *Consensus) UnmarshalJSON(input []byte) error {
 		CellbaseMaturity:                  uint64(jsonObj.CellbaseMaturity),
 		MedianTimeBlockCount:              uint64(jsonObj.MedianTimeBlockCount),
 		MaxBlockCycles:                    uint64(jsonObj.MaxBlockCycles),
-		MaxBlockBytes: uint64(jsonObj.MaxBlockBytes),
+		MaxBlockBytes:                     uint64(jsonObj.MaxBlockBytes),
 		BlockVersion:                      uint(jsonObj.BlockVersion),
 		TxVersion:                         uint(jsonObj.TxVersion),
 		TypeIdCodeHash:                    jsonObj.TypeIdCodeHash,
@@ -356,6 +356,36 @@ func (r *Consensus) UnmarshalJSON(input []byte) error {
 		PrimaryEpochRewardHalvingInterval: uint64(jsonObj.PrimaryEpochRewardHalvingInterval),
 		PermanentDifficultyInDummy:        jsonObj.PermanentDifficultyInDummy,
 		HardforkFeatures:                  toHardForkFeatureArray(jsonObj.HardforkFeatures),
+	}
+	return nil
+}
+
+type jsonSyncState struct {
+	Ibd                     bool           `json:"ibd"`
+	BestKnownBlockNumber    hexutil.Uint64 `json:"best_known_block_number"`
+	BestKnownBlockTimestamp hexutil.Uint64 `json:"best_known_block_timestamp"`
+	OrphanBlocksCount       hexutil.Uint64 `json:"orphan_blocks_count"`
+	InflightBlocksCount     hexutil.Uint64 `json:"inflight_blocks_count"`
+	FastTime                hexutil.Uint64 `json:"fast_time"`
+	LowTime                 hexutil.Uint64 `json:"low_time"`
+	NormalTime              hexutil.Uint64 `json:"normal_time"`
+}
+
+func (t *SyncState) UnmarshalJSON(input []byte) error {
+	var jsonObj jsonSyncState
+	err := json.Unmarshal(input, &jsonObj)
+	if err != nil {
+		return err
+	}
+	*t = SyncState{
+		Ibd:                     jsonObj.Ibd,
+		BestKnownBlockNumber:    uint64(jsonObj.BestKnownBlockNumber),
+		BestKnownBlockTimestamp: uint64(jsonObj.BestKnownBlockTimestamp),
+		OrphanBlocksCount:       uint64(jsonObj.OrphanBlocksCount),
+		InflightBlocksCount:     uint64(jsonObj.InflightBlocksCount),
+		FastTime:                uint64(jsonObj.FastTime),
+		LowTime:                 uint64(jsonObj.LowTime),
+		NormalTime:              uint64(jsonObj.NormalTime),
 	}
 	return nil
 }
