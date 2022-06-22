@@ -261,12 +261,9 @@ type Consensus struct {
 	SecondaryEpochReward                 uint64             `json:"secondary_epoch_reward"`
 	MaxUnclesNum                         uint64             `json:"max_uncles_num"`
 	OrphanRateTarget                     RationalU256       `json:"orphan_rate_target"`
-
 	EpochDurationTarget                  uint64             `json:"epoch_duration_target"`
 	TxProposalWindow                     ProposalWindow     `json:"tx_proposal_window"`
-
 	ProposerRewardRatio                  RationalU256       `json:"proposer_reward_ratio"`
-
 	CellbaseMaturity                     uint64             `json:"cellbase_maturity"`
 	MedianTimeBlockCount                 uint64             `json:"median_time_block_count"`
 	MaxBlockCycles                       uint64             `json:"max_block_cycles"`
