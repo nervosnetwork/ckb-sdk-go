@@ -3,6 +3,7 @@ package indexer
 import (
 	"encoding/json"
 	ethcommon "github.com/ethereum/go-ethereum/common"
+	"github.com/nervosnetwork/ckb-sdk-go/types"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -38,4 +39,22 @@ func TestJsonLiveCell(t *testing.T) {
 	assert.Equal(t, uint(0x1), v.TxIndex)
 	assert.NotNil(t, v.OutPoint)
 	assert.NotNil(t, v.Output)
+}
+
+func TestJsonTransaction(t *testing.T) {
+	jsonText := []byte(`
+{
+    "block_number": "0x529381",
+    "io_index": "0x0",
+    "io_type": "output",
+    "tx_hash": "0xf9f01917312da067c235f790ba2d316cae884ce94f0131d7a3aee649dc1001c6",
+    "tx_index": "0x8"
+}`)
+	var v Transaction
+	json.Unmarshal(jsonText, &v)
+	assert.Equal(t, uint64(0x529381), v.BlockNumber)
+	assert.Equal(t, uint(0x0), v.IoIndex)
+	assert.Equal(t, IOTypeOut, v.IoType)
+	assert.Equal(t, types.HexToHash("0xf9f01917312da067c235f790ba2d316cae884ce94f0131d7a3aee649dc1001c6"), v.TxHash)
+	assert.Equal(t, uint(0x8), v.TxIndex)
 }
