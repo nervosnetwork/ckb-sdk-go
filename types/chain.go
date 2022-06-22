@@ -61,8 +61,8 @@ type jsonOutPoint struct {
 
 func (r OutPoint) MarshalJSON() ([]byte, error) {
 	jsonObj := &jsonOutPoint{
-		outPointAlias(r),
-		hexutil.Uint(r.Index),
+		outPointAlias: outPointAlias(r),
+		Index:         hexutil.Uint(r.Index),
 	}
 	return json.Marshal(jsonObj)
 }
@@ -98,8 +98,8 @@ type jsonScript struct {
 
 func (r Script) MarshalJSON() ([]byte, error) {
 	jsonObj := &jsonScript{
-		scriptAlias(r),
-		r.Args,
+		scriptAlias: scriptAlias(r),
+		Args:        r.Args,
 	}
 	return json.Marshal(jsonObj)
 }
@@ -158,8 +158,8 @@ type jsonCellInput struct {
 
 func (r CellInput) MarshalJSON() ([]byte, error) {
 	jsonObj := &jsonCellInput{
-		cellInputAlias(r),
-		hexutil.Uint64(r.Since),
+		cellInputAlias: cellInputAlias(r),
+		Since:          hexutil.Uint64(r.Since),
 	}
 	return json.Marshal(jsonObj)
 }
@@ -190,8 +190,8 @@ type jsonCellOutput struct {
 
 func (r CellOutput) MarshalJSON() ([]byte, error) {
 	jsonObj := &jsonCellOutput{
-		cellOutputAlias(r),
-		hexutil.Uint64(r.Capacity),
+		cellOutputAlias: cellOutputAlias(r),
+		Capacity:        hexutil.Uint64(r.Capacity),
 	}
 	return json.Marshal(jsonObj)
 }
