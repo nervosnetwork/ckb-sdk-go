@@ -423,3 +423,125 @@ func (r *Proof) UnmarshalJSON(input []byte) error {
 	}
 	return nil
 }
+
+func (r *RemoteNodeProtocol) UnmarshalJSON(input []byte) error {
+	var jsonObj struct {
+		ID      hexutil.Uint64 `json:"id"`
+		Version string         `json:"version"`
+	}
+
+	err := json.Unmarshal(input, &jsonObj)
+	if err != nil {
+		return err
+	}
+	*r = RemoteNodeProtocol{
+		ID:      uint64(jsonObj.ID),
+		Version: jsonObj.Version,
+	}
+	return nil
+}
+
+func (r *PeerSyncState) UnmarshalJSON(input []byte) error {
+	type PeerSyncStateAlias PeerSyncState
+	var jsonObj struct {
+		PeerSyncStateAlias
+		BestKnownHeaderNumber  hexutil.Uint64 `json:"best_known_header_number,omitempty"`
+		LastCommonHeaderNumber hexutil.Uint64 `json:"last_common_header_number,omitempty"`
+		UnknownHeaderListSize  hexutil.Uint64 `json:"unknown_header_list_size"`
+		InflightCount          hexutil.Uint64 `json:"inflight_count"`
+		CanFetchCount          hexutil.Uint64 `json:"can_fetch_count"`
+	}
+	err := json.Unmarshal(input, &jsonObj)
+	if err != nil {
+		return err
+	}
+	*r = PeerSyncState{
+		BestKnownHeaderHash:    jsonObj.BestKnownHeaderHash,
+		BestKnownHeaderNumber:  uint64(jsonObj.BestKnownHeaderNumber),
+		LastCommonHeaderHash:   jsonObj.LastCommonHeaderHash,
+		LastCommonHeaderNumber: uint64(jsonObj.LastCommonHeaderNumber),
+		UnknownHeaderListSize:  uint64(jsonObj.UnknownHeaderListSize),
+		InflightCount:          uint64(jsonObj.InflightCount),
+		CanFetchCount:          uint64(jsonObj.CanFetchCount),
+	}
+	return nil
+}
+
+func (r *NodeAddress) UnmarshalJSON(input []byte) error {
+	var jsonObj struct {
+		Address string         `json:"address"`
+		Score   hexutil.Uint64 `json:"score"`
+	}
+	err := json.Unmarshal(input, &jsonObj)
+	if err != nil {
+		return err
+	}
+	*r = NodeAddress{
+		Address: jsonObj.Address,
+		Score:   uint64(jsonObj.Score),
+	}
+	return nil
+}
+
+func (r *RemoteNode) UnmarshalJSON(input []byte) error {
+	type RemoteAlias RemoteNode
+	var jsonObj struct {
+		RemoteAlias
+		ConnectedDuration hexutil.Uint64 `json:"connected_duration"`
+		LastPingDuration  hexutil.Uint64 `json:"last_ping_duration,omitempty"`
+	}
+	err := json.Unmarshal(input, &jsonObj)
+	if err != nil {
+		return err
+	}
+	*r = RemoteNode{
+		Version:           jsonObj.Version,
+		NodeID:            jsonObj.NodeID,
+		Addresses:         jsonObj.Addresses,
+		IsOutbound:        jsonObj.IsOutbound,
+		ConnectedDuration: uint64(jsonObj.ConnectedDuration),
+		LastPingDuration:  uint64(jsonObj.LastPingDuration),
+		SyncState:         jsonObj.SyncState,
+		Protocols:         jsonObj.Protocols,
+	}
+	return nil
+}
+
+func (r *LocalNodeProtocol) UnmarshalJSON(input []byte) error {
+	type LocalNodeProtocolAlias LocalNodeProtocol
+	var jsonObj struct {
+		LocalNodeProtocolAlias
+		Id hexutil.Uint64 `json:"id"`
+	}
+	err := json.Unmarshal(input, &jsonObj)
+	if err != nil {
+		return err
+	}
+	*r = LocalNodeProtocol{
+		Id:              uint64(jsonObj.Id),
+		Name:            jsonObj.Name,
+		SupportVersions: jsonObj.SupportVersions,
+	}
+	return nil
+}
+
+func (r *LocalNode) UnmarshalJSON(input []byte) error {
+	type LocalNodeAlias LocalNode
+	var jsonObj struct {
+		LocalNodeAlias
+		Connections hexutil.Uint64 `json:"connections"`
+	}
+	err := json.Unmarshal(input, &jsonObj)
+	if err != nil {
+		return err
+	}
+	*r = LocalNode{
+		Version:     jsonObj.Version,
+		NodeId:      jsonObj.NodeId,
+		Active:      jsonObj.Active,
+		Addresses:   jsonObj.Addresses,
+		Protocols:   jsonObj.Protocols,
+		Connections: uint64(jsonObj.Connections),
+	}
+	return nil
+}
