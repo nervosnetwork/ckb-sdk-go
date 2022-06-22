@@ -33,7 +33,7 @@ func TestJsonOutPoint(t *testing.T) {
 }`)
 	var v OutPoint
 	json.Unmarshal(jsonText1, &v)
-	assert.Equal(t, uint(2), v.Index)
+	assert.Equal(t, uint(0x2), v.Index)
 	assert.Equal(t, HexToHash("0xf8de3bb47d055cdf460d93a2a6e1b05f7432f9777c8c474abf4eec1d4aee5d37"), v.TxHash)
 
 	jsonText2, _ := json.Marshal(v)
@@ -51,7 +51,7 @@ func TestJsonCellInput(t *testing.T) {
 }`)
 	var v CellInput
 	json.Unmarshal(jsonText1, &v)
-	assert.Equal(t, uint64(5235248), v.Since)
+	assert.Equal(t, uint64(0x4fe230), v.Since)
 	assert.NotNil(t, v.PreviousOutput)
 
 	jsonText2, _ := json.Marshal(v)
@@ -75,7 +75,7 @@ func TestJsonCellOutput(t *testing.T) {
 }`)
 	var v CellOutput
 	json.Unmarshal(jsonText1, &v)
-	assert.Equal(t, uint64(40000000000), v.Capacity)
+	assert.Equal(t, uint64(0x9502f9000), v.Capacity)
 	assert.Equal(t, HexToHash("0x9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8"), v.Lock.CodeHash)
 	assert.Equal(t, HexToHash("0x554cff969f3148e3c620749384004e9692e67c429f621554d139b505a281c7b8"), v.Type.CodeHash)
 
@@ -152,6 +152,25 @@ func TestJsonTransaction(t *testing.T) {
 }`)
 	var v Transaction
 	json.Unmarshal(jsonText1, &v)
+
+	jsonText2, _ := json.Marshal(v)
+	AssertJsonEqual(t, jsonText1, jsonText2)
+}
+
+func TestJsonEpoch(t *testing.T) {
+	jsonText1 := []byte(`
+{
+    "compact_target": "0x1d5f396f",
+    "length": "0x356",
+    "number": "0x100",
+    "start_number": "0x2b445"
+}`)
+	var v Epoch
+	json.Unmarshal(jsonText1, &v)
+	assert.Equal(t, uint64(0x1d5f396f), v.CompactTarget)
+	assert.Equal(t, uint64(0x356), v.Length)
+	assert.Equal(t, uint64(0x100), v.Number)
+	assert.Equal(t, uint64(0x2b445), v.StartNumber)
 
 	jsonText2, _ := json.Marshal(v)
 	AssertJsonEqual(t, jsonText1, jsonText2)
