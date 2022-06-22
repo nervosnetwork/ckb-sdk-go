@@ -245,3 +245,29 @@ func (t *Transaction) UnmarshalJSON(input []byte) error {
 	}
 	return nil
 }
+
+type jsonCellData struct {
+	Content hexutil.Bytes `json:"content"`
+	Hash    Hash          `json:"hash"`
+}
+
+func (r CellData) MarshalJSON() ([]byte, error) {
+	jsonObj := &jsonCellData{
+		Content: r.Content,
+		Hash:    r.Hash,
+	}
+	return json.Marshal(jsonObj)
+}
+
+func (r *CellData) UnmarshalJSON(input []byte) error {
+	var jsonObj jsonCellData
+	err := json.Unmarshal(input, &jsonObj)
+	if err != nil {
+		return err
+	}
+	*r = CellData{
+		Content: jsonObj.Content,
+		Hash:    jsonObj.Hash,
+	}
+	return nil
+}
