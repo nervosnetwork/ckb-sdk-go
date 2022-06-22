@@ -301,3 +301,27 @@ func TestJsonConsensus(t *testing.T) {
 	assert.Equal(t, false, v.PermanentDifficultyInDummy)
 	assert.Equal(t, 7, len(v.HardforkFeatures))
 }
+
+func TestJsonSyncState(t *testing.T) {
+	jsonText := []byte(`
+{
+    "best_known_block_number": "0x5829fe",
+    "best_known_block_timestamp": "0x1818919dfd6",
+    "fast_time": "0x1d11",
+    "ibd": false,
+    "inflight_blocks_count": "0x0",
+    "low_time": "0x9a4f",
+    "normal_time": "0x9877",
+    "orphan_blocks_count": "0x0"
+}`)
+	var v SyncState
+	json.Unmarshal(jsonText, &v)
+	assert.Equal(t, false, v.Ibd)
+	assert.Equal(t, uint64(0x5829fe), v.BestKnownBlockNumber)
+	assert.Equal(t, uint64(0x1818919dfd6), v.BestKnownBlockTimestamp)
+	assert.Equal(t, uint64(0x1d11), v.FastTime)
+	assert.Equal(t, uint64(0x0), v.InflightBlocksCount)
+	assert.Equal(t, uint64(0x9a4f), v.LowTime)
+	assert.Equal(t, uint64(0x9877), v.NormalTime)
+	assert.Equal(t, uint64(0x0), v.OrphanBlocksCount)
+}
