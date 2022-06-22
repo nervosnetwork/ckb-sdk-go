@@ -271,3 +271,91 @@ func (r *CellData) UnmarshalJSON(input []byte) error {
 	}
 	return nil
 }
+
+type jsonRationalU256 struct {
+	Denom hexutil.Big `json:"denom"`
+	Numer hexutil.Big `json:"numer"`
+}
+
+type jsonHardForkFeature struct {
+	Rfc         string         `json:"rfc"`
+	EpochNumber hexutil.Uint64 `json:"epoch_number,omitempty"`
+}
+
+type consensusAlias Consensus
+type jsonConsensus struct {
+	consensusAlias
+	InitialPrimaryEpochReward hexutil.Uint64   `json:"initial_primary_epoch_reward"`
+	SecondaryEpochReward      hexutil.Uint64   `json:"secondary_epoch_reward"`
+	MaxUnclesNum              hexutil.Uint64   `json:"max_uncles_num"`
+	OrphanRateTarget          jsonRationalU256 `json:"orphan_rate_target"`
+	EpochDurationTarget       hexutil.Uint64   `json:"epoch_duration_target"`
+	TxProposalWindow          struct {
+		Closest  hexutil.Uint64 `json:"closest"`
+		Farthest hexutil.Uint64 `json:"farthest"`
+	} `json:"tx_proposal_window"`
+	ProposerRewardRatio               jsonRationalU256       `json:"proposer_reward_ratio"`
+	CellbaseMaturity                  hexutil.Uint64         `json:"cellbase_maturity"`
+	MedianTimeBlockCount              hexutil.Uint64         `json:"median_time_block_count"`
+	MaxBlockCycles                    hexutil.Uint64         `json:"max_block_cycles"`
+	MaxBlockBytes                     hexutil.Uint64         `json:"max_block_bytes"`
+	BlockVersion                      hexutil.Uint           `json:"block_version"`
+	TxVersion                         hexutil.Uint           `json:"tx_version"`
+	MaxBlockProposalsLimit            hexutil.Uint64         `json:"max_block_proposals_limit"`
+	PrimaryEpochRewardHalvingInterval hexutil.Uint64         `json:"primary_epoch_reward_halving_interval"`
+	PermanentDifficultyInDummy        bool                   `json:"permanent_difficulty_in_dummy"`
+	HardforkFeatures                  []*jsonHardForkFeature `json:"hardfork_features"`
+}
+
+func (r *Consensus) UnmarshalJSON(input []byte) error {
+	var jsonObj jsonConsensus
+	err := json.Unmarshal(input, &jsonObj)
+	if err != nil {
+		return err
+	}
+	toHardForkFeatureArray := func(a []*jsonHardForkFeature) []*HardForkFeature{
+		result := make([]*HardForkFeature, len(a))
+		for i, data := range a {
+			result[i] = &HardForkFeature{
+				Rfc:         data.Rfc,
+				EpochNumber: uint64(data.EpochNumber),
+			}
+		}
+		return result
+	}
+	*r = Consensus{
+		Id:                                   jsonObj.Id,
+		GenesisHash:                          jsonObj.GenesisHash,
+		DaoTypeHash:                          jsonObj.DaoTypeHash,
+		Secp256k1Blake160SighashAllTypeHash:  jsonObj.Secp256k1Blake160SighashAllTypeHash,
+		Secp256k1Blake160MultisigAllTypeHash: jsonObj.Secp256k1Blake160MultisigAllTypeHash,
+		InitialPrimaryEpochReward:            uint64(jsonObj.InitialPrimaryEpochReward),
+		SecondaryEpochReward:                 uint64(jsonObj.SecondaryEpochReward),
+		MaxUnclesNum:                         uint64(jsonObj.MaxUnclesNum),
+		OrphanRateTarget: RationalU256{
+			Denom: (*big.Int)(&jsonObj.OrphanRateTarget.Denom),
+			Numer: (*big.Int)(&jsonObj.OrphanRateTarget.Numer),
+		},
+		EpochDurationTarget: uint64(jsonObj.EpochDurationTarget),
+		TxProposalWindow: ProposalWindow{
+			Closest:  uint64(jsonObj.TxProposalWindow.Closest),
+			Farthest: uint64(jsonObj.TxProposalWindow.Farthest),
+		},
+		ProposerRewardRatio: RationalU256{
+			Denom: (*big.Int)(&jsonObj.ProposerRewardRatio.Denom),
+			Numer: (*big.Int)(&jsonObj.ProposerRewardRatio.Numer),
+		},
+		CellbaseMaturity:                  uint64(jsonObj.CellbaseMaturity),
+		MedianTimeBlockCount:              uint64(jsonObj.MedianTimeBlockCount),
+		MaxBlockCycles:                    uint64(jsonObj.MaxBlockCycles),
+		MaxBlockBytes: uint64(jsonObj.MaxBlockBytes),
+		BlockVersion:                      uint(jsonObj.BlockVersion),
+		TxVersion:                         uint(jsonObj.TxVersion),
+		TypeIdCodeHash:                    jsonObj.TypeIdCodeHash,
+		MaxBlockProposalsLimit:            uint64(jsonObj.MaxBlockProposalsLimit),
+		PrimaryEpochRewardHalvingInterval: uint64(jsonObj.PrimaryEpochRewardHalvingInterval),
+		PermanentDifficultyInDummy:        jsonObj.PermanentDifficultyInDummy,
+		HardforkFeatures:                  toHardForkFeatureArray(jsonObj.HardforkFeatures),
+	}
+	return nil
+}
