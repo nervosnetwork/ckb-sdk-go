@@ -228,6 +228,56 @@ type Transaction struct {
 	OutputsData [][]byte      `json:"outputs_data"`
 	Witnesses   [][]byte      `json:"witnesses"`
 }
+type transactionAlias Transaction
+type jsonTransaction struct {
+	transactionAlias
+	Version     hexutil.Uint    `json:"version"`
+	OutputsData []hexutil.Bytes `json:"outputs_data"`
+	Witnesses   []hexutil.Bytes `json:"witnesses"`
+}
+
+func (t Transaction) MarshalJSON() ([]byte, error) {
+	toBytes := func(bytes [][]byte) []hexutil.Bytes {
+		result := make([]hexutil.Bytes, len(bytes))
+		for i, data := range bytes {
+			result[i] = data
+		}
+		return result
+	}
+	jsonObj := &jsonTransaction{
+		transactionAlias: transactionAlias(t),
+		Version:          hexutil.Uint(t.Version),
+		OutputsData:      toBytes(t.OutputsData),
+		Witnesses:        toBytes(t.Witnesses),
+	}
+	return json.Marshal(jsonObj)
+}
+
+func (t *Transaction) UnmarshalJSON(input []byte) error {
+	var jsonObj jsonTransaction
+	err := json.Unmarshal(input, &jsonObj)
+	if err != nil {
+		return err
+	}
+	toByteArray := func(byteArray []hexutil.Bytes) [][]byte {
+		result := make([][]byte, len(byteArray))
+		for i, data := range byteArray {
+			result[i] = data
+		}
+		return result
+	}
+	*t = Transaction{
+		Version:     uint(jsonObj.Version),
+		Hash:        jsonObj.Hash,
+		CellDeps:    jsonObj.CellDeps,
+		HeaderDeps:  jsonObj.HeaderDeps,
+		Inputs:      jsonObj.Inputs,
+		Outputs:     jsonObj.Outputs,
+		OutputsData: toByteArray(jsonObj.OutputsData),
+		Witnesses:   toByteArray(jsonObj.Witnesses),
+	}
+	return nil
+}
 
 func (t *Transaction) ComputeHash() (Hash, error) {
 	data, err := t.Serialize()
