@@ -2,10 +2,10 @@ package rpc
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"github.com/nervosnetwork/ckb-sdk-go/indexer"
 	"math/big"
+	"reflect"
 
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/rpc"
@@ -265,18 +265,13 @@ func (cli *client) GetBlockHash(ctx context.Context, number uint64) (*types.Hash
 }
 
 func (cli *client) GetBlock(ctx context.Context, hash types.Hash) (*types.Block, error) {
-	var raw json.RawMessage
-
-	err := cli.c.CallContext(ctx, &raw, "get_block", hash)
+	var result types.Block
+	err := cli.c.CallContext(ctx, &result, "get_block", hash)
 	if err != nil {
 		return nil, err
-	} else if len(raw) == 0 {
-		return nil, NotFound
 	}
-
-	var result types.Block
-	if err := json.Unmarshal(raw, &result); err != nil {
-		return nil, err
+	if (reflect.DeepEqual(result, types.Block{})) {
+		return nil, NotFound
 	}
 	return &result, nil
 }
@@ -338,20 +333,15 @@ func (cli *client) GetTransaction(ctx context.Context, hash types.Hash) (*types.
 }
 
 func (cli *client) GetBlockByNumber(ctx context.Context, number uint64) (*types.Block, error) {
-	var raw json.RawMessage
-
-	err := cli.c.CallContext(ctx, &raw, "get_block_by_number", hexutil.Uint64(number))
+	var result types.Block
+	err := cli.c.CallContext(ctx, &result, "get_block_by_number", hexutil.Uint64(number))
 	if err != nil {
 		return nil, err
-	} else if len(raw) == 0 {
+	}
+	if (reflect.DeepEqual(result, types.Block{})) {
 		return nil, NotFound
 	}
-
-	var block types.Block
-	if err := json.Unmarshal(raw, &block); err != nil {
-		return nil, err
-	}
-	return &block, nil
+	return &result, nil
 }
 
 func (cli *client) GetForkBlock(ctx context.Context, blockHash types.Hash) (*types.Block, error) {
