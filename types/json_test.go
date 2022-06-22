@@ -108,56 +108,62 @@ func TestJsonCellDep(t *testing.T) {
 	AssertJsonEqual(t, jsonText1, jsonText2)
 }
 
-func TestJsonTransaction(t *testing.T) {
+func TestJsonTransactionWithStatus(t *testing.T) {
 	jsonText1 := []byte(`
 {
-    "cell_deps": [
-        {
-            "dep_type": "dep_group",
-            "out_point": {
-                "index": "0x1",
-                "tx_hash": "0xf8de3bb47d055cdf460d93a2a6e1b05f7432f9777c8c474abf4eec1d4aee5d37"
+    "transaction": {
+        "cell_deps": [
+            {
+                "dep_type": "dep_group",
+                "out_point": {
+                    "index": "0x1",
+                    "tx_hash": "0xf8de3bb47d055cdf460d93a2a6e1b05f7432f9777c8c474abf4eec1d4aee5d37"
+                }
             }
-        }
-    ],
-    "hash": "0xb19806b3ccc091a19d929d0237e6dc6e9b128a468b5b33c121c1bc59ad87877a",
-    "header_deps": [],
-    "inputs": [
-        {
-            "previous_output": {
-                "index": "0x0",
-                "tx_hash": "0x0dff101e716d77507bddc5ca189dc24c80e0fb8c269775b988b3cdd64e4f3395"
+        ],
+        "hash": "0xb19806b3ccc091a19d929d0237e6dc6e9b128a468b5b33c121c1bc59ad87877a",
+        "header_deps": [],
+        "inputs": [
+            {
+                "previous_output": {
+                    "index": "0x0",
+                    "tx_hash": "0x0dff101e716d77507bddc5ca189dc24c80e0fb8c269775b988b3cdd64e4f3395"
+                },
+                "since": "0x0"
+            }
+        ],
+        "outputs": [
+            {
+                "capacity": "0xbaa315500",
+                "lock": {
+                    "args": "0x4049ed9cec8a0d39c7a1e899f0dacb8a8c28ad14",
+                    "code_hash": "0x9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8",
+                    "hash_type": "type"
+                },
+                "type": null
             },
-            "since": "0x0"
-        }
-    ],
-    "outputs": [
-        {
-            "capacity": "0xbaa315500",
-            "lock": {
-                "args": "0x4049ed9cec8a0d39c7a1e899f0dacb8a8c28ad14",
-                "code_hash": "0x9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8",
-                "hash_type": "type"
-            },
-            "type": null
-        },
-        {
-            "capacity": "0xdd2a73b8bf",
-            "lock": {
-                "args": "0xbc9818d8a149cfc0cd0323386c46ba07920a037f",
-                "code_hash": "0x5c5069eb0857efc65e1bca0c07df34c31663b3622fd3876c876320fc9634e2a8",
-                "hash_type": "type"
-            },
-            "type": null
-        }
-    ],
-    "outputs_data": ["0x", "0x"],
-    "version": "0x0",
-    "witnesses": [
-        "0xc200000010000000c2000000c2000000ae000000000002027336b0ba900684cb3cb00f0d46d4f64c0994a5625724c1e3925a5206944d753a6f3edaedf977d77f75ef2bf584ab0f400063964d5cddb3443fb5f11cbf00eedd76c64205f6c2d2ce342582871a010af6560bc6f559222852ffc44d3c9db9ae76092d843a05e39c0000ae2adec03512e320c2f0c087ec1d366c5fb43f7862fd1a7693284d356fbf56196e8f8ccd5cabe21bf3f0b2763d0c4f02c79af0d9993572eb3b752b09b08b6b1f00"
-    ]
+            {
+                "capacity": "0xdd2a73b8bf",
+                "lock": {
+                    "args": "0xbc9818d8a149cfc0cd0323386c46ba07920a037f",
+                    "code_hash": "0x5c5069eb0857efc65e1bca0c07df34c31663b3622fd3876c876320fc9634e2a8",
+                    "hash_type": "type"
+                },
+                "type": null
+            }
+        ],
+        "outputs_data": ["0x", "0x"],
+        "version": "0x0",
+        "witnesses": [
+            "0xc200000010000000c2000000c2000000ae000000000002027336b0ba900684cb3cb00f0d46d4f64c0994a5625724c1e3925a5206944d753a6f3edaedf977d77f75ef2bf584ab0f400063964d5cddb3443fb5f11cbf00eedd76c64205f6c2d2ce342582871a010af6560bc6f559222852ffc44d3c9db9ae76092d843a05e39c0000ae2adec03512e320c2f0c087ec1d366c5fb43f7862fd1a7693284d356fbf56196e8f8ccd5cabe21bf3f0b2763d0c4f02c79af0d9993572eb3b752b09b08b6b1f00"
+        ]
+    },
+    "tx_status": {
+        "block_hash": "0xe1ed2d2282aad742a95abe51c21d50b1c19e194f21fbd1ed2516f82bd042579a",
+        "status": "committed"
+    }
 }`)
-	var v Transaction
+	var v TransactionWithStatus
 	json.Unmarshal(jsonText1, &v)
 
 	jsonText2, _ := json.Marshal(v)
