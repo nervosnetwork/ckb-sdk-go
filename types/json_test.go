@@ -325,3 +325,62 @@ func TestJsonSyncState(t *testing.T) {
 	assert.Equal(t, uint64(0x9877), v.NormalTime)
 	assert.Equal(t, uint64(0x0), v.OrphanBlocksCount)
 }
+
+func TestJsonBlock(t *testing.T) {
+	jsonText1 := []byte(`
+{
+    "header": {
+        "compact_target": "0x1e015555",
+        "dao": "0x046d9f215d59a12eb612ba52fd8623008ffc0768330c000000906f0260fcfe06",
+        "epoch": "0x3e80100000000",
+        "extra_hash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "hash": "0x9584cfe1b317037028e487c46aebcfa6266c09d7f3ed7598d0011dbd6f612408",
+        "nonce": "0x5289f79360d80b3233f667c39cd03c9d",
+        "number": "0x100",
+        "parent_hash": "0x946c36de76de83cd517d78e43b09c5df18c8ec1d66868306171e14b80d0f714b",
+        "proposals_hash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "timestamp": "0x1723bae4a66",
+        "transactions_root": "0xae66b0df7bdcc194d509aeb908a734d0c0795b87e360b5e074ec6754a64fcb5d",
+        "version": "0x0"
+    },
+    "proposals": [],
+    "transactions": [
+        {
+            "cell_deps": [],
+            "hash": "0xae02c44fb5b78b4b1bfc6097d89e0563da323e316ed0551091912d3ddf3f5a19",
+            "header_deps": [],
+            "inputs": [
+                {
+                    "previous_output": {
+                        "index": "0xffffffff",
+                        "tx_hash": "0x0000000000000000000000000000000000000000000000000000000000000000"
+                    },
+                    "since": "0x100"
+                }
+            ],
+            "outputs": [
+                {
+                    "capacity": "0x2ecbd5c40a",
+                    "lock": {
+                        "args": "0xda648442dbb7347e467d1d09da13e5cd3a0ef0e1",
+                        "code_hash": "0x9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8",
+                        "hash_type": "type"
+                    },
+                    "type": null
+                }
+            ],
+            "outputs_data": ["0x"],
+            "version": "0x0",
+            "witnesses": [
+                "0x5d0000000c00000055000000490000001000000030000000310000009bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce80114000000da648442dbb7347e467d1d09da13e5cd3a0ef0e104000000deadbeef"
+            ]
+        }
+    ],
+    "uncles": []
+}`)
+	var v Block
+	json.Unmarshal(jsonText1, &v)
+
+	jsonText2, _ := json.Marshal(v)
+	AssertJsonEqual(t, jsonText1, jsonText2)
+}
