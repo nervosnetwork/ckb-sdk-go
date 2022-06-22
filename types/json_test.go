@@ -204,3 +204,34 @@ func TestJsonHeader(t *testing.T) {
 	jsonText2, _ := json.Marshal(v)
 	AssertJsonEqual(t, jsonText1, jsonText2)
 }
+
+func TestJsonCellWithStatus(t *testing.T) {
+	jsonText1 := []byte(`
+{
+    "cell": {
+        "data": {
+            "content": "0xf868560000000000",
+            "hash": "0x8933d7a3cb3f30a589b766ff8ac1314989f4909354c6688f89275f690d306c67"
+        },
+        "output": {
+            "capacity": "0xbdfd63e00",
+            "lock": {
+                "args": "0x4049ed9cec8a0d39c7a1e899f0dacb8a8c28ad14",
+                "code_hash": "0x9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8",
+                "hash_type": "type"
+            },
+            "type": {
+                "args": "0x",
+                "code_hash": "0x82d76d1b75fe2fd9a27dfbaa65a039221a380d76c926f378d3f81cf3e7e13f2e",
+                "hash_type": "type"
+            }
+        }
+    },
+    "status": "live"
+}`)
+	var v CellWithStatus
+	json.Unmarshal(jsonText1, &v)
+
+	jsonText2, _ := json.Marshal(v)
+	AssertJsonEqual(t, jsonText1, jsonText2)
+}
