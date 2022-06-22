@@ -527,15 +527,15 @@ func (_m *Client) GetLiveCell(ctx context.Context, outPoint *types.OutPoint, wit
 }
 
 // GetPeers provides a mock function with given fields: ctx
-func (_m *Client) GetPeers(ctx context.Context) ([]*types.Node, error) {
+func (_m *Client) GetPeers(ctx context.Context) ([]*types.RemoteNode, error) {
 	ret := _m.Called(ctx)
 
-	var r0 []*types.Node
-	if rf, ok := ret.Get(0).(func(context.Context) []*types.Node); ok {
+	var r0 []*types.RemoteNode
+	if rf, ok := ret.Get(0).(func(context.Context) []*types.RemoteNode); ok {
 		r0 = rf(ctx)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]*types.Node)
+			r0 = ret.Get(0).([]*types.RemoteNode)
 		}
 	}
 
@@ -663,15 +663,15 @@ func (_m *Client) GetTransactions(ctx context.Context, searchKey *indexer.Search
 }
 
 // LocalNodeInfo provides a mock function with given fields: ctx
-func (_m *Client) LocalNodeInfo(ctx context.Context) (*types.Node, error) {
+func (_m *Client) LocalNodeInfo(ctx context.Context) (*types.LocalNode, error) {
 	ret := _m.Called(ctx)
 
-	var r0 *types.Node
-	if rf, ok := ret.Get(0).(func(context.Context) *types.Node); ok {
+	var r0 *types.LocalNode
+	if rf, ok := ret.Get(0).(func(context.Context) *types.LocalNode); ok {
 		r0 = rf(ctx)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*types.Node)
+			r0 = ret.Get(0).(*types.LocalNode)
 		}
 	}
 

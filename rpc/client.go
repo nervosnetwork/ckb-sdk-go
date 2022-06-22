@@ -89,10 +89,10 @@ type Client interface {
 
 	////// Net
 	// LocalNodeInfo returns the local node information.
-	LocalNodeInfo(ctx context.Context) (*types.Node, error)
+	LocalNodeInfo(ctx context.Context) (*types.LocalNode, error)
 
 	// GetPeers returns the connected peers information.
-	GetPeers(ctx context.Context) ([]*types.Node, error)
+	GetPeers(ctx context.Context) ([]*types.RemoteNode, error)
 
 	// GetBannedAddresses returns all banned IPs/Subnets.
 	GetBannedAddresses(ctx context.Context) ([]*types.BannedAddress, error)
@@ -227,40 +227,30 @@ func (cli *client) GetTipBlockNumber(ctx context.Context) (uint64, error) {
 }
 
 func (cli *client) GetTipHeader(ctx context.Context) (*types.Header, error) {
-	var result header
+	var result types.Header
 	err := cli.c.CallContext(ctx, &result, "get_tip_header")
 	if err != nil {
 		return nil, err
 	}
-	return toHeader(result), err
+	return &result, nil
 }
 
 func (cli *client) GetCurrentEpoch(ctx context.Context) (*types.Epoch, error) {
-	var result epoch
+	var result types.Epoch
 	err := cli.c.CallContext(ctx, &result, "get_current_epoch")
 	if err != nil {
 		return nil, err
 	}
-	return &types.Epoch{
-		CompactTarget: uint64(result.CompactTarget),
-		Length:        uint64(result.Length),
-		Number:        uint64(result.Number),
-		StartNumber:   uint64(result.StartNumber),
-	}, err
+	return &result, nil
 }
 
 func (cli *client) GetEpochByNumber(ctx context.Context, number uint64) (*types.Epoch, error) {
-	var result epoch
+	var result types.Epoch
 	err := cli.c.CallContext(ctx, &result, "get_epoch_by_number", hexutil.Uint64(number))
 	if err != nil {
 		return nil, err
 	}
-	return &types.Epoch{
-		CompactTarget: uint64(result.CompactTarget),
-		Length:        uint64(result.Length),
-		Number:        uint64(result.Number),
-		StartNumber:   uint64(result.StartNumber),
-	}, err
+	return &result, nil
 }
 
 func (cli *client) GetBlockHash(ctx context.Context, number uint64) (*types.Hash, error) {
@@ -284,50 +274,44 @@ func (cli *client) GetBlock(ctx context.Context, hash types.Hash) (*types.Block,
 		return nil, NotFound
 	}
 
-	var block block
-	if err := json.Unmarshal(raw, &block); err != nil {
+	var result types.Block
+	if err := json.Unmarshal(raw, &result); err != nil {
 		return nil, err
 	}
-
-	return &types.Block{
-		Header:       toHeader(block.Header),
-		Proposals:    block.Proposals,
-		Transactions: toTransactions(block.Transactions),
-		Uncles:       toUncles(block.Uncles),
-	}, nil
+	return &result, nil
 }
 
 func (cli *client) GetHeader(ctx context.Context, hash types.Hash) (*types.Header, error) {
-	var result header
+	var result types.Header
 	err := cli.c.CallContext(ctx, &result, "get_header", hash)
 	if err != nil {
 		return nil, err
 	}
-	return toHeader(result), err
+	return &result, nil
 }
 
 func (cli *client) GetHeaderByNumber(ctx context.Context, number uint64) (*types.Header, error) {
-	var result header
+	var result types.Header
 	err := cli.c.CallContext(ctx, &result, "get_header_by_number", hexutil.Uint64(number))
 	if err != nil {
 		return nil, err
 	}
-	return toHeader(result), err
+	return &result, nil
 }
 
 func (cli *client) GetTransactionProof(ctx context.Context, txHashes []string, blockHash *types.Hash) (*types.TransactionProof, error) {
-	var transactionProof transactionProof
+	var transactionProof types.TransactionProof
 	err := cli.c.CallContext(ctx, &transactionProof, "get_transaction_proof", txHashes, blockHash)
 	if err != nil {
 		return nil, err
 	}
 
-	return toTransactionProof(transactionProof), err
+	return &transactionProof, err
 }
 
 func (cli *client) VerifyTransactionProof(ctx context.Context, proof *types.TransactionProof) ([]*types.Hash, error) {
 	var result []*types.Hash
-	err := cli.c.CallContext(ctx, &result, "verify_transaction_proof", toReqTransactionProof(*proof))
+	err := cli.c.CallContext(ctx, &result, "verify_transaction_proof", *proof)
 	if err != nil {
 		return result, err
 	}
@@ -336,30 +320,21 @@ func (cli *client) VerifyTransactionProof(ctx context.Context, proof *types.Tran
 }
 
 func (cli *client) GetLiveCell(ctx context.Context, point *types.OutPoint, withData bool) (*types.CellWithStatus, error) {
-	var result cellWithStatus
-	err := cli.c.CallContext(ctx, &result, "get_live_cell", outPoint{
-		TxHash: point.TxHash,
-		Index:  hexutil.Uint(point.Index),
-	}, withData)
+	var result types.CellWithStatus
+	err := cli.c.CallContext(ctx, &result, "get_live_cell", *point, withData)
 	if err != nil {
 		return nil, err
 	}
-	return toCellWithStatus(result), err
+	return &result, err
 }
 
 func (cli *client) GetTransaction(ctx context.Context, hash types.Hash) (*types.TransactionWithStatus, error) {
-	var result transactionWithStatus
+	var result types.TransactionWithStatus
 	err := cli.c.CallContext(ctx, &result, "get_transaction", hash)
 	if err != nil {
 		return nil, err
 	}
-	return &types.TransactionWithStatus{
-		Transaction: toTransaction(result.Transaction),
-		TxStatus: &types.TxStatus{
-			BlockHash: result.TxStatus.BlockHash,
-			Status:    result.TxStatus.Status,
-		},
-	}, err
+	return &result, nil
 }
 
 func (cli *client) GetBlockByNumber(ctx context.Context, number uint64) (*types.Block, error) {
@@ -372,21 +347,15 @@ func (cli *client) GetBlockByNumber(ctx context.Context, number uint64) (*types.
 		return nil, NotFound
 	}
 
-	var block block
+	var block types.Block
 	if err := json.Unmarshal(raw, &block); err != nil {
 		return nil, err
 	}
-
-	return &types.Block{
-		Header:       toHeader(block.Header),
-		Proposals:    block.Proposals,
-		Transactions: toTransactions(block.Transactions),
-		Uncles:       toUncles(block.Uncles),
-	}, nil
+	return &block, nil
 }
 
 func (cli *client) GetForkBlock(ctx context.Context, blockHash types.Hash) (*types.Block, error) {
-	var block block
+	var block types.Block
 	err := cli.c.CallContext(ctx, &block, "get_fork_block", blockHash)
 	if err != nil {
 		return nil, nil
@@ -395,18 +364,14 @@ func (cli *client) GetForkBlock(ctx context.Context, blockHash types.Hash) (*typ
 	if block.Header.Hash.String() == "0x0000000000000000000000000000000000000000000000000000000000000000" {
 		return nil, nil
 	}
-
-	return &types.Block{
-		Header:       toHeader(block.Header),
-		Proposals:    block.Proposals,
-		Transactions: toTransactions(block.Transactions),
-		Uncles:       toUncles(block.Uncles),
-	}, nil
+	return &block, nil
 }
 
 func (cli *client) DryRunTransaction(ctx context.Context, transaction *types.Transaction) (*types.DryRunTransactionResult, error) {
-	var result dryRunTransactionResult
-	err := cli.c.CallContext(ctx, &result, "dry_run_transaction", fromTransaction(transaction))
+	var result struct {
+		Cycles hexutil.Uint64 `json:"cycles"`
+	}
+	err := cli.c.CallContext(ctx, &result, "dry_run_transaction", *transaction)
 	if err != nil {
 		return nil, err
 	}
@@ -418,7 +383,7 @@ func (cli *client) DryRunTransaction(ctx context.Context, transaction *types.Tra
 
 func (cli *client) CalculateDaoMaximumWithdraw(ctx context.Context, point *types.OutPoint, hash types.Hash) (uint64, error) {
 	var result hexutil.Uint64
-	err := cli.c.CallContext(ctx, &result, "calculate_dao_maximum_withdraw", outPoint{TxHash: point.TxHash, Index: hexutil.Uint(point.Index)}, hash)
+	err := cli.c.CallContext(ctx, &result, "calculate_dao_maximum_withdraw", *point, hash)
 	if err != nil {
 		return 0, err
 	}
@@ -427,12 +392,12 @@ func (cli *client) CalculateDaoMaximumWithdraw(ctx context.Context, point *types
 }
 
 func (cli *client) GetConsensus(ctx context.Context) (*types.Consensus, error) {
-	var result consensus
+	var result types.Consensus
 	err := cli.c.CallContext(ctx, &result, "get_consensus")
 	if err != nil {
 		return nil, nil
 	}
-	return toConsensus(result), nil
+	return &result, nil
 }
 
 func (cli *client) GetBlockMedianTime(ctx context.Context, blockHash types.Hash) (uint64, error) {
@@ -445,7 +410,9 @@ func (cli *client) GetBlockMedianTime(ctx context.Context, blockHash types.Hash)
 }
 
 func (cli *client) EstimateFeeRate(ctx context.Context, blocks uint64) (*types.EstimateFeeRateResult, error) {
-	var result estimateFeeRateResult
+	var result struct {
+		FeeRate hexutil.Uint64 `json:"fee_rate"`
+	}
 
 	err := cli.c.CallContext(ctx, &result, "estimate_fee_rate", hexutil.Uint64(blocks))
 	if err != nil {
@@ -457,144 +424,35 @@ func (cli *client) EstimateFeeRate(ctx context.Context, blocks uint64) (*types.E
 	}, err
 }
 
-func (cli *client) IndexLockHash(ctx context.Context, lockHash types.Hash, indexFrom uint64) (*types.LockHashIndexState, error) {
-	var result lockHashIndexState
-
-	err := cli.c.CallContext(ctx, &result, "index_lock_hash", lockHash, hexutil.Uint64(indexFrom))
-	if err != nil {
-		return nil, err
-	}
-
-	return &types.LockHashIndexState{
-		BlockHash:   result.BlockHash,
-		BlockNumber: uint64(result.BlockNumber),
-		LockHash:    result.LockHash,
-	}, err
-}
-
-func (cli *client) GetLockHashIndexStates(ctx context.Context) ([]*types.LockHashIndexState, error) {
-	var result []lockHashIndexState
-
-	err := cli.c.CallContext(ctx, &result, "get_lock_hash_index_states")
-	if err != nil {
-		return nil, err
-	}
-
-	ret := make([]*types.LockHashIndexState, len(result))
-	for i := 0; i < len(result); i++ {
-		state := result[i]
-		ret[i] = &types.LockHashIndexState{
-			BlockHash:   state.BlockHash,
-			BlockNumber: uint64(state.BlockNumber),
-			LockHash:    state.LockHash,
-		}
-	}
-
-	return ret, err
-}
-
-func (cli *client) GetLiveCellsByLockHash(ctx context.Context, lockHash types.Hash, page uint, per uint, reverseOrder bool) ([]*types.LiveCell, error) {
-	var result []liveCell
-
-	err := cli.c.CallContext(ctx, &result, "get_live_cells_by_lock_hash", lockHash, hexutil.Uint(page), hexutil.Uint(per), reverseOrder)
-	if err != nil {
-		return nil, err
-	}
-
-	ret := make([]*types.LiveCell, len(result))
-
-	for i := 0; i < len(result); i++ {
-		cell := result[i]
-		ret[i] = &types.LiveCell{
-			CellOutput: &types.CellOutput{
-				Capacity: uint64(cell.CellOutput.Capacity),
-				Lock: &types.Script{
-					CodeHash: cell.CellOutput.Lock.CodeHash,
-					HashType: cell.CellOutput.Lock.HashType,
-					Args:     cell.CellOutput.Lock.Args,
-				},
-			},
-			CreatedBy: &types.TransactionPoint{
-				BlockNumber: uint64(cell.CreatedBy.BlockNumber),
-				Index:       uint(cell.CreatedBy.Index),
-				TxHash:      cell.CreatedBy.TxHash,
-			},
-		}
-		if cell.CellOutput.Type != nil {
-			ret[i].CellOutput.Type = &types.Script{
-				CodeHash: cell.CellOutput.Type.CodeHash,
-				HashType: cell.CellOutput.Type.HashType,
-				Args:     cell.CellOutput.Type.Args,
-			}
-		}
-	}
-
-	return ret, err
-}
-
-func (cli *client) GetTransactionsByLockHash(ctx context.Context, lockHash types.Hash, page uint, per uint, reverseOrder bool) ([]*types.CellTransaction, error) {
-	var result []cellTransaction
-
-	err := cli.c.CallContext(ctx, &result, "get_transactions_by_lock_hash", lockHash, hexutil.Uint(page), hexutil.Uint(per), reverseOrder)
-	if err != nil {
-		return nil, err
-	}
-
-	ret := make([]*types.CellTransaction, len(result))
-
-	for i := 0; i < len(result); i++ {
-		tx := result[i]
-		ret[i] = &types.CellTransaction{
-			CreatedBy: &types.TransactionPoint{
-				BlockNumber: uint64(tx.CreatedBy.BlockNumber),
-				Index:       uint(tx.CreatedBy.Index),
-				TxHash:      tx.CreatedBy.TxHash,
-			},
-		}
-		if tx.ConsumedBy != nil {
-			ret[i].ConsumedBy = &types.TransactionPoint{
-				BlockNumber: uint64(tx.ConsumedBy.BlockNumber),
-				Index:       uint(tx.ConsumedBy.Index),
-				TxHash:      tx.ConsumedBy.TxHash,
-			}
-		}
-	}
-	return ret, err
-}
-
-func (cli *client) DeindexLockHash(ctx context.Context, lockHash types.Hash) error {
-	return cli.c.CallContext(ctx, nil, "deindex_lock_hash", lockHash)
-}
-
-func (cli *client) LocalNodeInfo(ctx context.Context) (*types.Node, error) {
-	var result node
+func (cli *client) LocalNodeInfo(ctx context.Context) (*types.LocalNode, error) {
+	var result types.LocalNode
 
 	err := cli.c.CallContext(ctx, &result, "local_node_info")
 	if err != nil {
 		return nil, err
 	}
 
-	return toNode(result), err
+	return &result, err
 }
 
-func (cli *client) GetPeers(ctx context.Context) ([]*types.Node, error) {
-	var result []node
+func (cli *client) GetPeers(ctx context.Context) ([]*types.RemoteNode, error) {
+	var result []*types.RemoteNode
 
 	err := cli.c.CallContext(ctx, &result, "get_peers")
 	if err != nil {
 		return nil, err
 	}
 
-	ret := make([]*types.Node, len(result))
-	for i := 0; i < len(result); i++ {
-		ret[i] = toNode(result[i])
-	}
-
-	return ret, err
+	return result, err
 }
 
 func (cli *client) GetBannedAddresses(ctx context.Context) ([]*types.BannedAddress, error) {
-	var result []bannedAddress
+	var result []struct {
+		Address   string         `json:"address"`
+		BanReason string         `json:"ban_reason"`
+		BanUntil  hexutil.Uint64 `json:"ban_until"`
+		CreatedAt hexutil.Uint64 `json:"created_at"`
+	}
 
 	err := cli.c.CallContext(ctx, &result, "get_banned_addresses")
 	if err != nil {
@@ -623,13 +481,12 @@ func (cli *client) SetBan(ctx context.Context, address string, command string, b
 }
 
 func (cli *client) SyncState(ctx context.Context) (*types.SyncState, error) {
-	var syncState syncState
-	err := cli.c.CallContext(ctx, &syncState, "sync_state")
+	var result types.SyncState
+	err := cli.c.CallContext(ctx, &result, "sync_state")
 	if err != nil {
 		return nil, err
 	}
-
-	return toSyncState(syncState), err
+	return &result, nil
 }
 
 func (cli *client) SetNetworkActive(ctx context.Context, state bool) error {
@@ -667,7 +524,7 @@ func (cli *client) PingPeers(ctx context.Context) error {
 func (cli *client) SendTransaction(ctx context.Context, tx *types.Transaction) (*types.Hash, error) {
 	var result types.Hash
 
-	err := cli.c.CallContext(ctx, &result, "send_transaction", fromTransaction(tx), "passthrough")
+	err := cli.c.CallContext(ctx, &result, "send_transaction", *tx, "passthrough")
 	if err != nil {
 		return nil, err
 	}
@@ -678,7 +535,7 @@ func (cli *client) SendTransaction(ctx context.Context, tx *types.Transaction) (
 func (cli *client) SendTransactionNoneValidation(ctx context.Context, tx *types.Transaction) (*types.Hash, error) {
 	var result types.Hash
 
-	err := cli.c.CallContext(ctx, &result, "send_transaction", fromTransaction(tx), "passthrough")
+	err := cli.c.CallContext(ctx, &result, "send_transaction", *tx, "passthrough")
 	if err != nil {
 		return nil, err
 	}
@@ -687,7 +544,14 @@ func (cli *client) SendTransactionNoneValidation(ctx context.Context, tx *types.
 }
 
 func (cli *client) TxPoolInfo(ctx context.Context) (*types.TxPoolInfo, error) {
-	var result txPoolInfo
+	var result struct {
+		LastTxsUpdatedAt hexutil.Uint64 `json:"last_txs_updated_at"`
+		Orphan           hexutil.Uint64 `json:"orphan"`
+		Pending          hexutil.Uint64 `json:"pending"`
+		Proposed         hexutil.Uint64 `json:"proposed"`
+		TotalTxCycles    hexutil.Uint64 `json:"total_tx_cycles"`
+		TotalTxSize      hexutil.Uint64 `json:"total_tx_size"`
+	}
 
 	err := cli.c.CallContext(ctx, &result, "tx_pool_info")
 	if err != nil {
@@ -719,7 +583,19 @@ func (cli *client) ClearTxPool(ctx context.Context) error {
 }
 
 func (cli *client) GetBlockchainInfo(ctx context.Context) (*types.BlockchainInfo, error) {
-	var result blockchainInfo
+	var result struct {
+		Alerts []*struct {
+			Id          string         `json:"id"`
+			Message     string         `json:"message"`
+			NoticeUntil hexutil.Uint64 `json:"notice_until"`
+			Priority    string         `json:"priority"`
+		} `json:"alerts"`
+		Chain                  string         `json:"chain"`
+		Difficulty             hexutil.Big    `json:"difficulty"`
+		Epoch                  hexutil.Uint64 `json:"epoch"`
+		IsInitialBlockDownload bool           `json:"is_initial_block_download"`
+		MedianTime             hexutil.Uint64 `json:"median_time"`
+	}
 
 	err := cli.c.CallContext(ctx, &result, "get_blockchain_info")
 
@@ -756,7 +632,7 @@ func (cli *client) BatchTransactions(ctx context.Context, batch []types.BatchTra
 		args[0] = item.Hash
 		req[i] = rpc.BatchElem{
 			Method: "get_transaction",
-			Result: &transactionWithStatus{},
+			Result: &types.TransactionWithStatus{},
 			Args:   args,
 		}
 	}
@@ -769,13 +645,7 @@ func (cli *client) BatchTransactions(ctx context.Context, batch []types.BatchTra
 	for i, item := range req {
 		batch[i].Error = item.Error
 		if batch[i].Error == nil {
-			batch[i].Result = &types.TransactionWithStatus{
-				Transaction: toTransaction(item.Result.(*transactionWithStatus).Transaction),
-				TxStatus: &types.TxStatus{
-					BlockHash: item.Result.(*transactionWithStatus).TxStatus.BlockHash,
-					Status:    item.Result.(*transactionWithStatus).TxStatus.Status,
-				},
-			}
+			batch[i].Result = item.Result.(*types.TransactionWithStatus)
 		}
 	}
 
@@ -787,14 +657,11 @@ func (cli *client) BatchLiveCells(ctx context.Context, batch []types.BatchLiveCe
 
 	for i, item := range batch {
 		args := make([]interface{}, 2)
-		args[0] = outPoint{
-			TxHash: item.OutPoint.TxHash,
-			Index:  hexutil.Uint(item.OutPoint.Index),
-		}
+		args[0] = item.OutPoint
 		args[1] = item.WithData
 		req[i] = rpc.BatchElem{
 			Method: "get_live_cell",
-			Result: &cellWithStatus{},
+			Result: &types.CellWithStatus{},
 			Args:   args,
 		}
 	}
@@ -807,10 +674,7 @@ func (cli *client) BatchLiveCells(ctx context.Context, batch []types.BatchLiveCe
 	for i, item := range req {
 		batch[i].Error = item.Error
 		if batch[i].Error == nil {
-			result := item.Result.(*cellWithStatus)
-			batch[i].Result = toCellWithStatus(cellWithStatus{
-				Cell: result.Cell, Status: result.Status,
-			})
+			batch[i].Result = item.Result.(*types.CellWithStatus)
 		}
 	}
 	return nil
@@ -845,7 +709,20 @@ func (cli *client) GetTransactions(ctx context.Context, searchKey *indexer.Searc
 }
 
 func (cli *client) GetBlockEconomicState(ctx context.Context, blockHash types.Hash) (*types.BlockEconomicState, error) {
-	var result blockEconomicState
+	var result struct {
+		Issuance struct {
+			Primary   hexutil.Big `json:"primary"`
+			Secondary hexutil.Big `json:"secondary"`
+		} `json:"issuance"`
+		MinerReward struct {
+			Primary   hexutil.Big `json:"primary"`
+			Secondary hexutil.Big `json:"secondary"`
+			Committed hexutil.Big `json:"committed"`
+			Proposal  hexutil.Big `json:"proposal"`
+		} `json:"miner_reward"`
+		TxsFee      hexutil.Big `json:"txs_fee"`
+		FinalizedAt types.Hash  `json:"finalized_at"`
+	}
 	err := cli.c.CallContext(ctx, &result, "get_block_economic_state", blockHash)
 	if err != nil {
 		return nil, err
