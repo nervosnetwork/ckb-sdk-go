@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	ethcommon "github.com/ethereum/go-ethereum/common"
 	"github.com/stretchr/testify/assert"
+	"math/big"
 	"testing"
 )
 func AssertJsonEqual(t *testing.T, t1, t2 []byte) {
@@ -234,4 +235,69 @@ func TestJsonCellWithStatus(t *testing.T) {
 
 	jsonText2, _ := json.Marshal(v)
 	AssertJsonEqual(t, jsonText1, jsonText2)
+}
+
+func TestJsonConsensus(t *testing.T) {
+	jsonText := []byte(`
+{
+    "block_version": "0x0",
+    "cellbase_maturity": "0x10000000004",
+    "dao_type_hash": "0x82d76d1b75fe2fd9a27dfbaa65a039221a380d76c926f378d3f81cf3e7e13f2e",
+    "epoch_duration_target": "0x3840",
+    "genesis_hash": "0x10639e0895502b5688a6be8cf69460d76541bfa4821629d86d62ba0aae3f9606",
+    "hardfork_features": [
+        { "epoch_number": "0xc29", "rfc": "0028" },
+        { "epoch_number": "0xc29", "rfc": "0029" },
+        { "epoch_number": "0xc29", "rfc": "0030" },
+        { "epoch_number": "0xc29", "rfc": "0031" },
+        { "epoch_number": "0xc29", "rfc": "0032" },
+        { "epoch_number": "0xc29", "rfc": "0036" },
+        { "epoch_number": "0xc29", "rfc": "0038" }
+    ],
+    "id": "ckb_testnet",
+    "initial_primary_epoch_reward": "0xae6c73c3e070",
+    "max_block_bytes": "0x91c08",
+    "max_block_cycles": "0xd09dc300",
+    "max_block_proposals_limit": "0x5dc",
+    "max_uncles_num": "0x2",
+    "median_time_block_count": "0x25",
+    "orphan_rate_target": { "denom": "0x28", "numer": "0x1" },
+    "permanent_difficulty_in_dummy": false,
+    "primary_epoch_reward_halving_interval": "0x2238",
+    "proposer_reward_ratio": { "denom": "0xa", "numer": "0x4" },
+    "secondary_epoch_reward": "0x37d0c8e28542",
+    "secp256k1_blake160_multisig_all_type_hash": "0x5c5069eb0857efc65e1bca0c07df34c31663b3622fd3876c876320fc9634e2a8",
+    "secp256k1_blake160_sighash_all_type_hash": "0x9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8",
+    "tx_proposal_window": { "closest": "0x2", "farthest": "0xa" },
+    "tx_version": "0x0",
+    "type_id_code_hash": "0x00000000000000000000000000000000000000000000000000545950455f4944"
+}`)
+	var v Consensus
+	json.Unmarshal(jsonText, &v)
+	assert.Equal(t, "ckb_testnet", v.Id)
+	assert.Equal(t, HexToHash("0x10639e0895502b5688a6be8cf69460d76541bfa4821629d86d62ba0aae3f9606"), v.GenesisHash)
+	assert.Equal(t, HexToHash("0x82d76d1b75fe2fd9a27dfbaa65a039221a380d76c926f378d3f81cf3e7e13f2e"), v.DaoTypeHash)
+	assert.Equal(t, HexToHash("0x9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8"), v.Secp256k1Blake160SighashAllTypeHash)
+	assert.Equal(t, HexToHash("0x5c5069eb0857efc65e1bca0c07df34c31663b3622fd3876c876320fc9634e2a8"), v.Secp256k1Blake160MultisigAllTypeHash)
+	assert.Equal(t, uint64(0xae6c73c3e070), v.InitialPrimaryEpochReward)
+	assert.Equal(t, uint64(0x37d0c8e28542), v.SecondaryEpochReward)
+	assert.Equal(t, uint64(0x2), v.MaxUnclesNum)
+	assert.Equal(t, big.NewInt(0x28), v.OrphanRateTarget.Denom)
+	assert.Equal(t, big.NewInt(0x1), v.OrphanRateTarget.Numer)
+	assert.Equal(t, uint64(0x3840), v.EpochDurationTarget)
+	assert.Equal(t, uint64(0x2), v.TxProposalWindow.Closest)
+	assert.Equal(t, uint64(0xa), v.TxProposalWindow.Farthest)
+	assert.Equal(t, big.NewInt(0xa), v.ProposerRewardRatio.Denom)
+	assert.Equal(t, big.NewInt(0x4), v.ProposerRewardRatio.Numer)
+	assert.Equal(t, uint64(0x10000000004), v.CellbaseMaturity)
+	assert.Equal(t, uint64(0x25), v.MedianTimeBlockCount)
+	assert.Equal(t, uint64(0xd09dc300), v.MaxBlockCycles)
+	assert.Equal(t, uint64(0x91c08), v.MaxBlockBytes)
+	assert.Equal(t, uint(0x0), v.BlockVersion)
+	assert.Equal(t, uint(0x0), v.TxVersion)
+	assert.Equal(t, HexToHash("0x00000000000000000000000000000000000000000000000000545950455f4944"), v.TypeIdCodeHash)
+	assert.Equal(t, uint64(0x5dc), v.MaxBlockProposalsLimit)
+	assert.Equal(t, uint64(0x2238), v.PrimaryEpochRewardHalvingInterval)
+	assert.Equal(t, false, v.PermanentDifficultyInDummy)
+	assert.Equal(t, 7, len(v.HardforkFeatures))
 }
