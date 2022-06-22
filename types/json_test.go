@@ -391,7 +391,7 @@ func TestJsonBlock(t *testing.T) {
 	AssertJsonEqual(t, jsonText1, jsonText2)
 }
 
-func TestTransactionProof(t *testing.T) {
+func TestJsonTransactionProof(t *testing.T) {
 	jsonText1 := []byte(`
 {
     "block_hash": "0x151a28416008bd1f6ee7472e29db1641e626acfae97d8d53389e4184b359d82d",
@@ -409,4 +409,129 @@ func TestTransactionProof(t *testing.T) {
 
 	jsonText2, _ := json.Marshal(v)
 	AssertJsonEqual(t, jsonText1, jsonText2)
+}
+
+func TestJsonRemoteNode(t *testing.T) {
+	jsonText := []byte(`
+{
+    "addresses": [
+        {
+            "address": "/ip4/47.74.66.72/tcp/8111/p2p/QmPhgweKm2ciYq52LjtEDmKFqHxGcg2WQ8RLCayRRycanD",
+            "score": "0x64"
+        },
+        {
+            "address": "/ip4/47.74.66.72/tcp/8111/p2p/QmPhgweKm2ciYq52LjtEDmKFqHxGcg2WQ8RLCayRRycanD",
+            "score": "0x64"
+        }
+    ],
+    "connected_duration": "0x909ae7b6",
+    "is_outbound": true,
+    "last_ping_duration": "0x1a0",
+    "node_id": "QmPhgweKm2ciYq52LjtEDmKFqHxGcg2WQ8RLCayRRycanD",
+    "protocols": [
+        { "id": "0x1", "version": "2" },
+        { "id": "0x2", "version": "2" },
+        { "id": "0x67", "version": "2" },
+        { "id": "0x66", "version": "2" },
+        { "id": "0x6e", "version": "2" },
+        { "id": "0x64", "version": "2" },
+        { "id": "0x0", "version": "2" },
+        { "id": "0x4", "version": "2" }
+    ],
+    "sync_state": {
+        "best_known_header_hash": "0x1201e4a20d3cddc682173f892bea13127d6de3e00719a038d16a660968be067e",
+        "best_known_header_number": "0x583019",
+        "can_fetch_count": "0x10",
+        "inflight_count": "0x0",
+        "last_common_header_hash": "0x1201e4a20d3cddc682173f892bea13127d6de3e00719a038d16a660968be067e",
+        "last_common_header_number": "0x583019",
+        "unknown_header_list_size": "0x0"
+    },
+    "version": "0.103.0 (e77138e 2022-04-11)"
+}`)
+	var v RemoteNode
+	json.Unmarshal(jsonText, &v)
+	assert.Equal(t, 2, len(v.Addresses))
+	assert.Equal(t, "/ip4/47.74.66.72/tcp/8111/p2p/QmPhgweKm2ciYq52LjtEDmKFqHxGcg2WQ8RLCayRRycanD", v.Addresses[0].Address)
+	assert.Equal(t, uint64(0x64), v.Addresses[0].Score)
+	assert.Equal(t, uint64(0x909ae7b6), v.ConnectedDuration)
+	assert.Equal(t, uint64(0x1a0), v.LastPingDuration)
+	assert.Equal(t, "QmPhgweKm2ciYq52LjtEDmKFqHxGcg2WQ8RLCayRRycanD", v.NodeID)
+	assert.Equal(t, 8, len(v.Protocols))
+	assert.Equal(t, uint64(0x67), v.Protocols[2].ID)
+	assert.Equal(t, "2", v.Protocols[2].Version)
+	assert.Equal(t, HexToHash("0x1201e4a20d3cddc682173f892bea13127d6de3e00719a038d16a660968be067e"), v.SyncState.BestKnownHeaderHash)
+	assert.Equal(t, uint64(0x583019), v.SyncState.BestKnownHeaderNumber)
+	assert.Equal(t, uint64(0x10), v.SyncState.CanFetchCount)
+	assert.Equal(t, uint64(0x0), v.SyncState.InflightCount)
+	assert.Equal(t, HexToHash("0x1201e4a20d3cddc682173f892bea13127d6de3e00719a038d16a660968be067e"), v.SyncState.LastCommonHeaderHash)
+	assert.Equal(t, uint64(0x583019), v.SyncState.LastCommonHeaderNumber)
+	assert.Equal(t, uint64(0x0), v.SyncState.UnknownHeaderListSize)
+}
+
+
+func TestJsonLocalNode(t *testing.T) {
+	jsonText1 := []byte(`
+{
+    "active": true,
+    "addresses": [{ "address": "/ip4/0.0.0.0/tcp/8115", "score": "0x1" }],
+    "connections": "0x8",
+    "node_id": "Qmeubaw22HAiGh236uRuT17KPK8Jjfi8zv9Sz6VBjxgfqn",
+    "protocols": [
+        {
+            "id": "0x64",
+            "name": "/ckb/syn",
+            "support_versions": ["1", "2"]
+        },
+        { "id": "0x67", "name": "/ckb/relay", "support_versions": ["2"] },
+        { "id": "0x65", "name": "/ckb/rel", "support_versions": ["1"] },
+        {
+            "id": "0x66",
+            "name": "/ckb/tim",
+            "support_versions": ["1", "2"]
+        },
+        {
+            "id": "0x6e",
+            "name": "/ckb/alt",
+            "support_versions": ["1", "2"]
+        },
+        {
+            "id": "0x2",
+            "name": "/ckb/identify",
+            "support_versions": ["0.0.1", "2"]
+        },
+        {
+            "id": "0x0",
+            "name": "/ckb/ping",
+            "support_versions": ["0.0.1", "2"]
+        },
+        {
+            "id": "0x1",
+            "name": "/ckb/discovery",
+            "support_versions": ["0.0.1", "2"]
+        },
+        {
+            "id": "0x3",
+            "name": "/ckb/flr",
+            "support_versions": ["0.0.1", "2"]
+        },
+        {
+            "id": "0x4",
+            "name": "/ckb/disconnectmsg",
+            "support_versions": ["0.0.1", "2"]
+        }
+    ],
+    "version": "0.103.0 (e77138e 2022-04-11)"
+}`)
+	var v LocalNode
+	json.Unmarshal(jsonText1, &v)
+	assert.Equal(t, true, v.Active)
+	assert.Equal(t, 1, len(v.Addresses))
+	assert.Equal(t, uint64(0x8), v.Connections)
+	assert.Equal(t, "Qmeubaw22HAiGh236uRuT17KPK8Jjfi8zv9Sz6VBjxgfqn", v.NodeId)
+	assert.Equal(t, 10, len(v.Protocols))
+	assert.Equal(t, uint64(0x64), v.Protocols[0].Id)
+	assert.Equal(t, "/ckb/syn", v.Protocols[0].Name)
+	assert.Equal(t, []string{"1", "2"}, v.Protocols[0].SupportVersions)
+	assert.Equal(t, "0.103.0 (e77138e 2022-04-11)", v.Version)
 }
