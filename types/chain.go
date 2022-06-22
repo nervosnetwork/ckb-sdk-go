@@ -3,9 +3,8 @@ package types
 import (
 	"encoding/json"
 	"github.com/ethereum/go-ethereum/common/hexutil"
-	"math/big"
-
 	"github.com/nervosnetwork/ckb-sdk-go/crypto/blake2b"
+	"math/big"
 )
 
 type ScriptHashType string
@@ -78,6 +77,52 @@ type Header struct {
 	TransactionsRoot Hash     `json:"transactions_root"`
 	ExtraHash        Hash     `json:"extra_hash"`
 	Version          uint     `json:"version"`
+}
+type headerAlias Header
+type jsonHeader struct {
+	headerAlias
+	CompactTarget hexutil.Uint   `json:"compact_target"`
+	Epoch         hexutil.Uint64 `json:"epoch"`
+	Nonce         *hexutil.Big   `json:"nonce"`
+	Number        hexutil.Uint64 `json:"number"`
+	Timestamp     hexutil.Uint64 `json:"timestamp"`
+	Version       hexutil.Uint   `json:"version"`
+}
+
+func (r Header) MarshalJSON() ([]byte, error) {
+	jsonObj := &jsonHeader{
+		headerAlias:   headerAlias(r),
+		CompactTarget: hexutil.Uint(r.CompactTarget),
+		Epoch:         hexutil.Uint64(r.Epoch),
+		Nonce:         (*hexutil.Big)(r.Nonce),
+		Number:        hexutil.Uint64(r.Number),
+		Timestamp:     hexutil.Uint64(r.Timestamp),
+		Version:       hexutil.Uint(r.Version),
+	}
+	return json.Marshal(jsonObj)
+}
+
+func (r *Header) UnmarshalJSON(input []byte) error {
+	var jsonObj jsonHeader
+	err := json.Unmarshal(input, &jsonObj)
+	if err != nil {
+		return err
+	}
+	*r = Header{
+		CompactTarget:    uint(jsonObj.CompactTarget),
+		Dao:              jsonObj.Dao,
+		Epoch:            uint64(jsonObj.Epoch),
+		Hash:             jsonObj.Hash,
+		Nonce:            (*big.Int)(jsonObj.Nonce),
+		Number:           uint64(jsonObj.Number),
+		ParentHash:       jsonObj.ParentHash,
+		ProposalsHash:    jsonObj.ProposalsHash,
+		Timestamp:        uint64(jsonObj.Timestamp),
+		TransactionsRoot: jsonObj.TransactionsRoot,
+		ExtraHash:        jsonObj.ExtraHash,
+		Version:          uint(jsonObj.Version),
+	}
+	return nil
 }
 
 type OutPoint struct {
