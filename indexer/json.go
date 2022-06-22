@@ -62,7 +62,31 @@ func (r *LiveCell) UnmarshalJSON(input []byte) error {
 		OutPoint:    jsonObj.OutPoint,
 		Output:      jsonObj.Output,
 		OutputData:  jsonObj.OutputData,
-		TxIndex: uint(jsonObj.TxIndex),
+		TxIndex:     uint(jsonObj.TxIndex),
+	}
+	return nil
+}
+
+type jsonTransaction struct {
+	BlockNumber hexutil.Uint64 `json:"block_number"`
+	IoIndex     hexutil.Uint   `json:"io_index"`
+	IoType      IoType         `json:"io_type"`
+	TxHash      types.Hash     `json:"tx_hash"`
+	TxIndex     hexutil.Uint   `json:"tx_index"`
+}
+
+func (r *Transaction) UnmarshalJSON(input []byte) error {
+	var jsonObj jsonTransaction
+	err := json.Unmarshal(input, &jsonObj)
+	if err != nil {
+		return err
+	}
+	*r = Transaction{
+		BlockNumber: uint64(jsonObj.BlockNumber),
+		IoIndex:     uint(jsonObj.IoIndex),
+		IoType:      jsonObj.IoType,
+		TxHash:      jsonObj.TxHash,
+		TxIndex:     uint(jsonObj.TxIndex),
 	}
 	return nil
 }
