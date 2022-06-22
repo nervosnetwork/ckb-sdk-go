@@ -42,3 +42,27 @@ func (r SearchKey) MarshalJSON() ([]byte, error) {
 	}
 	return json.Marshal(jsonObj)
 }
+
+type liveCellAlias LiveCell
+type jsonLiveCell struct {
+	liveCellAlias
+	BlockNumber hexutil.Uint64 `json:"block_number"`
+	OutputData  hexutil.Bytes  `json:"output_data"`
+	TxIndex     hexutil.Uint   `json:"tx_index"`
+}
+
+func (r *LiveCell) UnmarshalJSON(input []byte) error {
+	var jsonObj jsonLiveCell
+	err := json.Unmarshal(input, &jsonObj)
+	if err != nil {
+		return err
+	}
+	*r = LiveCell{
+		BlockNumber: uint64(jsonObj.BlockNumber),
+		OutPoint:    jsonObj.OutPoint,
+		Output:      jsonObj.Output,
+		OutputData:  jsonObj.OutputData,
+		TxIndex: uint(jsonObj.TxIndex),
+	}
+	return nil
+}
