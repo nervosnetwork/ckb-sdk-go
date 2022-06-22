@@ -33,6 +33,37 @@ type Epoch struct {
 	Number        uint64 `json:"number"`
 	StartNumber   uint64 `json:"start_number"`
 }
+type jsonEpoch struct {
+	CompactTarget hexutil.Uint64 `json:"compact_target"`
+	Length        hexutil.Uint64 `json:"length"`
+	Number        hexutil.Uint64 `json:"number"`
+	StartNumber   hexutil.Uint64 `json:"start_number"`
+}
+
+func (r Epoch) MarshalJSON() ([]byte, error) {
+	jsonObj := &jsonEpoch{
+		CompactTarget: hexutil.Uint64(r.CompactTarget),
+		Length:        hexutil.Uint64(r.Length),
+		Number:        hexutil.Uint64(r.Number),
+		StartNumber:   hexutil.Uint64(r.StartNumber),
+	}
+	return json.Marshal(jsonObj)
+}
+
+func (r *Epoch) UnmarshalJSON(input []byte) error {
+	var jsonObj jsonEpoch
+	err := json.Unmarshal(input, &jsonObj)
+	if err != nil {
+		return err
+	}
+	*r = Epoch{
+		CompactTarget: uint64(jsonObj.CompactTarget),
+		Length:        uint64(jsonObj.Length),
+		Number:        uint64(jsonObj.Number),
+		StartNumber:   uint64(jsonObj.StartNumber),
+	}
+	return nil
+}
 
 type Header struct {
 	CompactTarget    uint     `json:"compact_target"`
