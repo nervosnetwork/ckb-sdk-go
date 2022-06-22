@@ -25,8 +25,7 @@ func (r Epoch) MarshalJSON() ([]byte, error) {
 
 func (r *Epoch) UnmarshalJSON(input []byte) error {
 	var jsonObj jsonEpoch
-	err := json.Unmarshal(input, &jsonObj)
-	if err != nil {
+	if err := json.Unmarshal(input, &jsonObj); err != nil {
 		return err
 	}
 	*r = Epoch{
@@ -64,8 +63,7 @@ func (r Header) MarshalJSON() ([]byte, error) {
 
 func (r *Header) UnmarshalJSON(input []byte) error {
 	var jsonObj jsonHeader
-	err := json.Unmarshal(input, &jsonObj)
-	if err != nil {
+	if err := json.Unmarshal(input, &jsonObj); err != nil {
 		return err
 	}
 	*r = Header{
@@ -101,8 +99,7 @@ func (r OutPoint) MarshalJSON() ([]byte, error) {
 
 func (r *OutPoint) UnmarshalJSON(input []byte) error {
 	var jsonObj jsonOutPoint
-	err := json.Unmarshal(input, &jsonObj)
-	if err != nil {
+	if err := json.Unmarshal(input, &jsonObj); err != nil {
 		return err
 	}
 	*r = OutPoint{
@@ -128,8 +125,7 @@ func (r Script) MarshalJSON() ([]byte, error) {
 
 func (r *Script) UnmarshalJSON(input []byte) error {
 	var jsonObj jsonScript
-	err := json.Unmarshal(input, &jsonObj)
-	if err != nil {
+	if err := json.Unmarshal(input, &jsonObj); err != nil {
 		return err
 	}
 	*r = Script{
@@ -156,8 +152,7 @@ func (r CellInput) MarshalJSON() ([]byte, error) {
 
 func (r *CellInput) UnmarshalJSON(input []byte) error {
 	var jsonObj jsonCellInput
-	err := json.Unmarshal(input, &jsonObj)
-	if err != nil {
+	if err := json.Unmarshal(input, &jsonObj); err != nil {
 		return err
 	}
 	*r = CellInput{
@@ -183,8 +178,7 @@ func (r CellOutput) MarshalJSON() ([]byte, error) {
 
 func (r *CellOutput) UnmarshalJSON(input []byte) error {
 	var jsonObj jsonCellOutput
-	err := json.Unmarshal(input, &jsonObj)
-	if err != nil {
+	if err := json.Unmarshal(input, &jsonObj); err != nil {
 		return err
 	}
 	*r = CellOutput{
@@ -222,8 +216,7 @@ func (t Transaction) MarshalJSON() ([]byte, error) {
 
 func (t *Transaction) UnmarshalJSON(input []byte) error {
 	var jsonObj jsonTransaction
-	err := json.Unmarshal(input, &jsonObj)
-	if err != nil {
+	if err := json.Unmarshal(input, &jsonObj); err != nil {
 		return err
 	}
 	toByteArray := func(byteArray []hexutil.Bytes) [][]byte {
@@ -261,8 +254,7 @@ func (r CellData) MarshalJSON() ([]byte, error) {
 
 func (r *CellData) UnmarshalJSON(input []byte) error {
 	var jsonObj jsonCellData
-	err := json.Unmarshal(input, &jsonObj)
-	if err != nil {
+	if err := json.Unmarshal(input, &jsonObj); err != nil {
 		return err
 	}
 	*r = CellData{
@@ -309,8 +301,7 @@ type jsonConsensus struct {
 
 func (r *Consensus) UnmarshalJSON(input []byte) error {
 	var jsonObj jsonConsensus
-	err := json.Unmarshal(input, &jsonObj)
-	if err != nil {
+	if err := json.Unmarshal(input, &jsonObj); err != nil {
 		return err
 	}
 	toHardForkFeatureArray := func(a []*jsonHardForkFeature) []*HardForkFeature {
@@ -373,8 +364,7 @@ type jsonSyncState struct {
 
 func (t *SyncState) UnmarshalJSON(input []byte) error {
 	var jsonObj jsonSyncState
-	err := json.Unmarshal(input, &jsonObj)
-	if err != nil {
+	if err := json.Unmarshal(input, &jsonObj); err != nil {
 		return err
 	}
 	*t = SyncState{
@@ -409,8 +399,7 @@ func (r Proof) MarshalJSON() ([]byte, error) {
 
 func (r *Proof) UnmarshalJSON(input []byte) error {
 	var jsonObj jsonProof
-	err := json.Unmarshal(input, &jsonObj)
-	if err != nil {
+	if err := json.Unmarshal(input, &jsonObj); err != nil {
 		return err
 	}
 	indices := make([]uint, len(jsonObj.Indices))
@@ -430,8 +419,7 @@ func (r *RemoteNodeProtocol) UnmarshalJSON(input []byte) error {
 		Version string         `json:"version"`
 	}
 
-	err := json.Unmarshal(input, &jsonObj)
-	if err != nil {
+	if err := json.Unmarshal(input, &jsonObj); err != nil {
 		return err
 	}
 	*r = RemoteNodeProtocol{
@@ -451,8 +439,7 @@ func (r *PeerSyncState) UnmarshalJSON(input []byte) error {
 		InflightCount          hexutil.Uint64 `json:"inflight_count"`
 		CanFetchCount          hexutil.Uint64 `json:"can_fetch_count"`
 	}
-	err := json.Unmarshal(input, &jsonObj)
-	if err != nil {
+	if err := json.Unmarshal(input, &jsonObj); err != nil {
 		return err
 	}
 	*r = PeerSyncState{
@@ -472,8 +459,7 @@ func (r *NodeAddress) UnmarshalJSON(input []byte) error {
 		Address string         `json:"address"`
 		Score   hexutil.Uint64 `json:"score"`
 	}
-	err := json.Unmarshal(input, &jsonObj)
-	if err != nil {
+	if err := json.Unmarshal(input, &jsonObj); err != nil {
 		return err
 	}
 	*r = NodeAddress{
@@ -490,8 +476,7 @@ func (r *RemoteNode) UnmarshalJSON(input []byte) error {
 		ConnectedDuration hexutil.Uint64 `json:"connected_duration"`
 		LastPingDuration  hexutil.Uint64 `json:"last_ping_duration,omitempty"`
 	}
-	err := json.Unmarshal(input, &jsonObj)
-	if err != nil {
+	if err := json.Unmarshal(input, &jsonObj); err != nil {
 		return err
 	}
 	*r = RemoteNode{
@@ -513,8 +498,7 @@ func (r *LocalNodeProtocol) UnmarshalJSON(input []byte) error {
 		LocalNodeProtocolAlias
 		Id hexutil.Uint64 `json:"id"`
 	}
-	err := json.Unmarshal(input, &jsonObj)
-	if err != nil {
+	if err := json.Unmarshal(input, &jsonObj); err != nil {
 		return err
 	}
 	*r = LocalNodeProtocol{
@@ -531,8 +515,7 @@ func (r *LocalNode) UnmarshalJSON(input []byte) error {
 		LocalNodeAlias
 		Connections hexutil.Uint64 `json:"connections"`
 	}
-	err := json.Unmarshal(input, &jsonObj)
-	if err != nil {
+	if err := json.Unmarshal(input, &jsonObj); err != nil {
 		return err
 	}
 	*r = LocalNode{

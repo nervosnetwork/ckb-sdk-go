@@ -53,8 +53,7 @@ type jsonLiveCell struct {
 
 func (r *LiveCell) UnmarshalJSON(input []byte) error {
 	var jsonObj jsonLiveCell
-	err := json.Unmarshal(input, &jsonObj)
-	if err != nil {
+	if err := json.Unmarshal(input, &jsonObj); err != nil {
 		return err
 	}
 	*r = LiveCell{
@@ -77,8 +76,7 @@ type jsonTransaction struct {
 
 func (r *Transaction) UnmarshalJSON(input []byte) error {
 	var jsonObj jsonTransaction
-	err := json.Unmarshal(input, &jsonObj)
-	if err != nil {
+	if err := json.Unmarshal(input, &jsonObj); err != nil {
 		return err
 	}
 	*r = Transaction{
