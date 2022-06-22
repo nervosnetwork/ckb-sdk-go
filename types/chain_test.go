@@ -83,6 +83,24 @@ func TestJsonCellOutput(t *testing.T) {
 	AssertJsonEqual(t, jsonText1, jsonText2)
 }
 
+func TestJsonCellDep(t *testing.T) {
+	jsonText1 := []byte(`
+{
+    "dep_type": "code",
+    "out_point": {
+        "index": "0x2",
+        "tx_hash": "0x8f8c79eb6671709633fe6a46de93c0fedc9c1b8a6527a18d3983879542635c9f"
+    }
+}`)
+	var v CellDep
+	json.Unmarshal(jsonText1, &v)
+	assert.Equal(t, DepTypeCode, v.DepType)
+	assert.NotNil(t, v.OutPoint)
+
+	jsonText2, _ := json.Marshal(v)
+	AssertJsonEqual(t, jsonText1, jsonText2)
+}
+
 func AssertJsonEqual(t *testing.T, t1, t2 []byte) {
 	m1 := map[string]interface{}{}
 	m2 := map[string]interface{}{}
