@@ -176,6 +176,29 @@ func TestJsonEpoch(t *testing.T) {
 	AssertJsonEqual(t, jsonText1, jsonText2)
 }
 
+func TestJsonHeader(t *testing.T) {
+	jsonText1 := []byte(`
+{
+    "compact_target": "0x1d43106d",
+    "dao": "0x0e6beebedbb7962fb1389bfef5b32300a47716f7b5ae3200005910b7600e0507",
+    "epoch": "0x28c0033000111",
+    "extra_hash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+    "hash": "0x9f2b44451708cd7dcf671613cf30409b7b2f94dc32a35babb7cdca085a8062e7",
+    "nonce": "0xae986fa353b387f912f1b181439f26fe",
+    "number": "0x2e60b",
+    "parent_hash": "0xf45e0ba01bce37a285b3b649ee59fc3dfbe115ead2c2367cb96ba0ea97f3e8a1",
+    "proposals_hash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+    "timestamp": "0x1732486bcfe",
+    "transactions_root": "0xb73f9303351a7bd0f81ae8cbda665ace579be0f801bdbed8b52904e768b45f46",
+    "version": "0x0"
+}`)
+	var v Header
+	json.Unmarshal(jsonText1, &v)
+
+	jsonText2, _ := json.Marshal(v)
+	AssertJsonEqual(t, jsonText1, jsonText2)
+}
+
 func AssertJsonEqual(t *testing.T, t1, t2 []byte) {
 	m1 := map[string]interface{}{}
 	m2 := map[string]interface{}{}
