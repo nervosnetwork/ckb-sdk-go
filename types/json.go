@@ -389,3 +389,37 @@ func (t *SyncState) UnmarshalJSON(input []byte) error {
 	}
 	return nil
 }
+
+type jsonProof struct {
+	Indices []hexutil.Uint `json:"indices"`
+	Lemmas  []Hash         `json:"lemmas"`
+}
+
+func (r Proof) MarshalJSON() ([]byte, error) {
+	indices := make([]hexutil.Uint, len(r.Indices))
+	for i, v := range r.Indices {
+		indices[i] = hexutil.Uint(v)
+	}
+	jsonObj := &jsonProof{
+		Indices: indices,
+		Lemmas:  r.Lemmas,
+	}
+	return json.Marshal(jsonObj)
+}
+
+func (r *Proof) UnmarshalJSON(input []byte) error {
+	var jsonObj jsonProof
+	err := json.Unmarshal(input, &jsonObj)
+	if err != nil {
+		return err
+	}
+	indices := make([]uint, len(jsonObj.Indices))
+	for i, v := range jsonObj.Indices {
+		indices[i] = uint(v)
+	}
+	*r = Proof{
+		Indices: indices,
+		Lemmas:  jsonObj.Lemmas,
+	}
+	return nil
+}
