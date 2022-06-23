@@ -612,3 +612,18 @@ func TestJsonTxPoolInfo(t *testing.T) {
 	assert.Equal(t, uint64(0x219), v.TotalTxCycles)
 	assert.Equal(t, uint64(0x112), v.TotalTxSize)
 }
+
+func TestJsonBannedAddress(t *testing.T) {
+	jsonText := []byte(`
+{
+    "address": "192.168.0.2/32",
+    "ban_reason": "",
+    "ban_until": "0x1ac89236180",
+    "created_at": "0x16bde533338"
+}`)
+	var v BannedAddress
+	json.Unmarshal(jsonText, &v)
+	assert.Equal(t, "192.168.0.2/32", v.Address)
+	assert.Equal(t, uint64(0x1ac89236180), v.BanUntil)
+	assert.Equal(t, uint64(0x16bde533338), v.CreatedAt)
+}
