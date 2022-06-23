@@ -528,3 +528,38 @@ func (r *LocalNode) UnmarshalJSON(input []byte) error {
 	}
 	return nil
 }
+
+func (r *BlockEconomicState) BlockEconomicState(input []byte) error {
+	var jsonObj struct {
+		Issuance struct {
+			Primary   hexutil.Big `json:"primary"`
+			Secondary hexutil.Big `json:"secondary"`
+		} `json:"issuance"`
+		MinerReward struct {
+			Primary   hexutil.Big `json:"primary"`
+			Secondary hexutil.Big `json:"secondary"`
+			Committed hexutil.Big `json:"committed"`
+			Proposal  hexutil.Big `json:"proposal"`
+		} `json:"miner_reward"`
+		TxsFee      hexutil.Big `json:"txs_fee"`
+		FinalizedAt Hash        `json:"finalized_at"`
+	}
+	if err := json.Unmarshal(input, &jsonObj); err != nil {
+		return err
+	}
+	*r = BlockEconomicState{
+		Issuance: BlockIssuance{
+			Primary:   (*big.Int)(&jsonObj.Issuance.Primary),
+			Secondary: (*big.Int)(&jsonObj.Issuance.Secondary),
+		},
+		MinerReward: MinerReward{
+			Primary:   (*big.Int)(&jsonObj.MinerReward.Primary),
+			Secondary: (*big.Int)(&jsonObj.MinerReward.Secondary),
+			Committed: (*big.Int)(&jsonObj.MinerReward.Committed),
+			Proposal:  (*big.Int)(&jsonObj.MinerReward.Proposal),
+		},
+		TxsFee:      (*big.Int)(&jsonObj.TxsFee),
+		FinalizedAt: jsonObj.FinalizedAt,
+	}
+	return nil
+}
