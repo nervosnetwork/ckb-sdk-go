@@ -535,3 +535,27 @@ func TestJsonLocalNode(t *testing.T) {
 	assert.Equal(t, []string{"1", "2"}, v.Protocols[0].SupportVersions)
 	assert.Equal(t, "0.103.0 (e77138e 2022-04-11)", v.Version)
 }
+
+func TestJsonBlockEconomicState(t *testing.T) {
+	jsonText := []byte(`
+{
+    "finalized_at": "0xb2b45d98c93bfcf95a3edaabc4ddd784b208923448fc474339b0f016ab8e6b42",
+    "issuance": { "primary": "0x18ce922bca", "secondary": "0x7f02ec655" },
+    "miner_reward": {
+        "committed": "0x0",
+        "primary": "0x18ce922bca",
+        "proposal": "0x190",
+        "secondary": "0x109c18998"
+    },
+    "txs_fee": "0x100"
+}`)
+	var v BlockEconomicState
+	json.Unmarshal(jsonText, &v)
+	assert.Equal(t, HexToHash("0xb2b45d98c93bfcf95a3edaabc4ddd784b208923448fc474339b0f016ab8e6b42"), v.FinalizedAt)
+	assert.Equal(t, uint64(0x18ce922bca), v.Issuance.Primary)
+	assert.Equal(t, uint64(0x7f02ec655), v.Issuance.Secondary)
+	assert.Equal(t, uint64(0x18ce922bca), v.MinerReward.Primary)
+	assert.Equal(t, uint64(0x190), v.MinerReward.Proposal)
+	assert.Equal(t, uint64(0x109c18998), v.MinerReward.Secondary)
+	assert.Equal(t, uint64(0x100), v.TxsFee)
+}
