@@ -559,3 +559,32 @@ func TestJsonBlockEconomicState(t *testing.T) {
 	assert.Equal(t, uint64(0x109c18998), v.MinerReward.Secondary)
 	assert.Equal(t, uint64(0x100), v.TxsFee)
 }
+
+func TestJsonBlockchainInfo(t *testing.T) {
+	jsonText := []byte(`
+{
+    "alerts": [
+        {
+            "id": "0x2a",
+            "message": "An example alert message!",
+            "notice_until": "0x24bcca57c00",
+            "priority": "0x1"
+        }
+    ],
+    "chain": "ckb",
+    "difficulty": "0x1f4003",
+    "epoch": "0x7080018000001",
+    "is_initial_block_download": true,
+    "median_time": "0x5cd2b105"
+}`)
+	var v BlockchainInfo
+	json.Unmarshal(jsonText, &v)
+	assert.Equal(t, 1, len(v.Alerts))
+	assert.Equal(t, uint32(0x2a), v.Alerts[0].Id)
+	assert.Equal(t, "An example alert message!", v.Alerts[0].Message)
+	assert.Equal(t, "ckb", v.Chain)
+	assert.Equal(t, big.NewInt(0x1f4003), v.Difficulty)
+	assert.Equal(t, uint64(0x7080018000001), v.Epoch)
+	assert.Equal(t, true, v.IsInitialBlockDownload)
+	assert.Equal(t, uint64(0x5cd2b105), v.MedianTime)
+}
