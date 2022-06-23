@@ -2,6 +2,7 @@ package mercury
 
 import (
 	"context"
+	"github.com/nervosnetwork/ckb-sdk-go/types"
 
 	"github.com/ethereum/go-ethereum/rpc"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model"
@@ -18,7 +19,7 @@ type Client interface {
 	BuildAdjustAccountTransaction(*model.BuildAdjustAccountPayload) (*resp.TransferCompletionResponse, error)
 	BuildSudtIssueTransaction(payload *model.BuildSudtIssueTransactionPayload) (*resp.TransferCompletionResponse, error)
 	RegisterAddresses(normalAddresses []string) ([]string, error)
-	GetTransactionInfo(txHash string) (*resp.GetTransactionInfoResponse, error)
+	GetTransactionInfo(txHash types.Hash) (*resp.GetTransactionInfoResponse, error)
 	GetSpentTransactionWithTransactionInfo(*model.GetSpentTransactionPayload) (*resp.TransactionInfoWrapper, error)
 	GetSpentTransactionWithTransactionView(*model.GetSpentTransactionPayload) (*resp.TransactionViewWrapper, error)
 	GetBlockInfo(payload *model.GetBlockInfoPayload) (*resp.BlockInfo, error)
@@ -180,7 +181,7 @@ func (cli *client) GetAccountInfo(payload *model.GetAccountInfoPayload) (*resp.A
 	return &account, err
 }
 
-func (cli *client) GetTransactionInfo(txHash string) (*resp.GetTransactionInfoResponse, error) {
+func (cli *client) GetTransactionInfo(txHash types.Hash) (*resp.GetTransactionInfoResponse, error) {
 	var tx *resp.GetTransactionInfoResponse
 	err := cli.c.Call(&tx, "get_transaction_info", txHash)
 	if err != nil {
