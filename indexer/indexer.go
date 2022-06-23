@@ -2,8 +2,6 @@ package indexer
 
 import (
 	"context"
-	"github.com/nervosnetwork/ckb-sdk-go/types"
-
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/rpc"
 )
@@ -80,33 +78,19 @@ func (cli *client) GetTransactions(ctx context.Context, searchKey *SearchKey, or
 }
 
 func (cli *client) GetTip(ctx context.Context) (*TipHeader, error) {
-	var result struct {
-		BlockHash   types.Hash     `json:"block_hash"`
-		BlockNumber hexutil.Uint64 `json:"block_number"`
-	}
+	var result TipHeader
 	err := cli.c.CallContext(ctx, &result, "get_tip")
 	if err != nil {
 		return nil, err
 	}
-	return &TipHeader{
-		BlockHash:   result.BlockHash,
-		BlockNumber: uint64(result.BlockNumber),
-	}, nil
+	return &result, nil
 }
 
 func (cli *client) GetCellsCapacity(ctx context.Context, searchKey *SearchKey) (*Capacity, error) {
-	var result struct {
-		Capacity    hexutil.Uint64 `json:"capacity"`
-		BlockHash   types.Hash     `json:"block_hash"`
-		BlockNumber hexutil.Uint64 `json:"block_number"`
-	}
+	var result Capacity
 	err := cli.c.CallContext(ctx, &result, "get_cells_capacity", searchKey)
 	if err != nil {
 		return nil, err
 	}
-	return &Capacity{
-		Capacity:    uint64(result.Capacity),
-		BlockHash:   result.BlockHash,
-		BlockNumber: uint64(result.BlockNumber),
-	}, nil
+	return &result, nil
 }
