@@ -198,7 +198,7 @@ type jsonTransaction struct {
 }
 
 func (t Transaction) MarshalJSON() ([]byte, error) {
-	toBytes := func(bytes [][]byte) []hexutil.Bytes {
+	toBytesArray := func(bytes [][]byte) []hexutil.Bytes {
 		result := make([]hexutil.Bytes, len(bytes))
 		for i, data := range bytes {
 			result[i] = data
@@ -208,8 +208,8 @@ func (t Transaction) MarshalJSON() ([]byte, error) {
 	jsonObj := &jsonTransaction{
 		transactionAlias: transactionAlias(t),
 		Version:          hexutil.Uint(t.Version),
-		OutputsData:      toBytes(t.OutputsData),
-		Witnesses:        toBytes(t.Witnesses),
+		OutputsData:      toBytesArray(t.OutputsData),
+		Witnesses:        toBytesArray(t.Witnesses),
 	}
 	return json.Marshal(jsonObj)
 }
@@ -219,7 +219,7 @@ func (t *Transaction) UnmarshalJSON(input []byte) error {
 	if err := json.Unmarshal(input, &jsonObj); err != nil {
 		return err
 	}
-	toByteArray := func(byteArray []hexutil.Bytes) [][]byte {
+	toBytesArray := func(byteArray []hexutil.Bytes) [][]byte {
 		result := make([][]byte, len(byteArray))
 		for i, data := range byteArray {
 			result[i] = data
@@ -233,8 +233,8 @@ func (t *Transaction) UnmarshalJSON(input []byte) error {
 		HeaderDeps:  jsonObj.HeaderDeps,
 		Inputs:      jsonObj.Inputs,
 		Outputs:     jsonObj.Outputs,
-		OutputsData: toByteArray(jsonObj.OutputsData),
-		Witnesses:   toByteArray(jsonObj.Witnesses),
+		OutputsData: toBytesArray(jsonObj.OutputsData),
+		Witnesses:   toBytesArray(jsonObj.Witnesses),
 	}
 	return nil
 }
