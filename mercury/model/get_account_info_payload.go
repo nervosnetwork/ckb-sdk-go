@@ -2,19 +2,20 @@ package model
 
 import (
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/common"
+	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/req"
 )
 
 type GetAccountInfoPayload struct {
-	Item      interface{}       `json:"item"`
+	Item      *req.Item         `json:"item"`
 	AssetInfo *common.AssetInfo `json:"asset_info"`
 }
 
 type GetAccountInfoPayloadBuilder struct {
-	Item      interface{}       `json:"item"`
+	Item      *req.Item         `json:"item"`
 	AssetInfo *common.AssetInfo `json:"asset_info"`
 }
 
-func (b *GetAccountInfoPayloadBuilder) SetItem(item interface{}) *GetAccountInfoPayloadBuilder {
+func (b *GetAccountInfoPayloadBuilder) SetItem(item *req.Item) *GetAccountInfoPayloadBuilder {
 	b.Item = item
 	return b
 }

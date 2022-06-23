@@ -2,13 +2,11 @@ package mercury
 
 import (
 	"context"
+	"github.com/nervosnetwork/ckb-sdk-go/types"
 
 	"github.com/ethereum/go-ethereum/rpc"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model"
-	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/common"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/resp"
-	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/source"
-	"github.com/pkg/errors"
 )
 
 type Client interface {
@@ -18,7 +16,7 @@ type Client interface {
 	BuildAdjustAccountTransaction(*model.BuildAdjustAccountPayload) (*resp.TransferCompletionResponse, error)
 	BuildSudtIssueTransaction(payload *model.BuildSudtIssueTransactionPayload) (*resp.TransferCompletionResponse, error)
 	RegisterAddresses(normalAddresses []string) ([]string, error)
-	GetTransactionInfo(txHash string) (*resp.GetTransactionInfoResponse, error)
+	GetTransactionInfo(txHash types.Hash) (*resp.GetTransactionInfoResponse, error)
 	GetSpentTransactionWithTransactionInfo(*model.GetSpentTransactionPayload) (*resp.TransactionInfoWrapper, error)
 	GetSpentTransactionWithTransactionView(*model.GetSpentTransactionPayload) (*resp.TransactionViewWrapper, error)
 	GetBlockInfo(payload *model.GetBlockInfoPayload) (*resp.BlockInfo, error)
@@ -107,10 +105,6 @@ func (cli *client) GetBalance(payload *model.GetBalancePayload) (*resp.GetBalanc
 }
 
 func (cli *client) BuildTransferTransaction(payload *model.TransferPayload) (*resp.TransferCompletionResponse, error) {
-	if payload.From.Source == source.Claimable && payload.AssetInfo.AssetType == common.CKB {
-		return nil, errors.New("The transaction does not support ckb")
-	}
-
 	var resp resp.TransferCompletionResponse
 	err := cli.c.Call(&resp, "build_transfer_transaction", payload)
 	if err != nil {
@@ -180,7 +174,7 @@ func (cli *client) GetAccountInfo(payload *model.GetAccountInfoPayload) (*resp.A
 	return &account, err
 }
 
-func (cli *client) GetTransactionInfo(txHash string) (*resp.GetTransactionInfoResponse, error) {
+func (cli *client) GetTransactionInfo(txHash types.Hash) (*resp.GetTransactionInfoResponse, error) {
 	var tx *resp.GetTransactionInfoResponse
 	err := cli.c.Call(&tx, "get_transaction_info", txHash)
 	if err != nil {

@@ -3,18 +3,30 @@ package model
 import (
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/common"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/mode"
+	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/req"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/source"
+	"math/big"
 )
 
 type TransferPayload struct {
-	AssetInfo *common.AssetInfo `json:"asset_info,omitempty"`
-	From      *From             `json:"from"`
-	To        *To               `json:"to"`
-	PayFee    string            `json:"pay_fee,omitempty"`
-	Change    string            `json:"change,omitempty"`
-	FeeRate   uint              `json:"fee_rate"`
-	Since     *SinceConfig      `json:"since,omitempty"`
+	AssetInfo              *common.AssetInfo      `json:"asset_info,omitempty"`
+	From                   []*req.Item            `json:"from"`
+	To                     *ToInfo                `json:"to"`
+	OutputCapacityProvider OutputCapacityProvider `json:"output_capacity_provider,omitempty"`
+	PayFee                 PayFee                 `json:"pay_fee,omitempty"`
+	FeeRate                uint64                 `json:"fee_rate,omitempty"`
+	Since                  *SinceConfig           `json:"since,omitempty"`
 }
+
+type PayFee string
+type OutputCapacityProvider string
+
+const (
+	PayFeeFrom                 PayFee = "From"
+	PayFeeTo                   PayFee = "To"
+	OutputCapacityProviderFrom        = "From"
+	OutputCapacityProviderTo          = "To"
+)
 
 type From struct {
 	Items  []interface{} `json:"items"`
@@ -22,8 +34,8 @@ type From struct {
 }
 
 type ToInfo struct {
-	Address string `json:"address"`
-	Amount  *U128  `json:"amount"`
+	Address string   `json:"address"`
+	Amount  *big.Int `json:"amount"`
 }
 
 type To struct {
@@ -31,10 +43,11 @@ type To struct {
 	Mode    mode.Mode `json:"mode"`
 }
 
+// TODO: change method signature?
 func NewToInfo(address string, amount *U128) *ToInfo {
 	return &ToInfo{
 		Address: address,
-		Amount:  amount,
+		Amount:  &amount.Int,
 	}
 }
 
@@ -60,43 +73,41 @@ const (
 )
 
 type transferBuilder struct {
-	AssetInfo *common.AssetInfo
-	From      *From
-	To        *To
-	PayFee    string
-	Change    string
-	FeeRate   uint
-	Since     *SinceConfig
+	AssetInfo              *common.AssetInfo
+	From                   []*req.Item
+	To                     *ToInfo
+	OutputCapacityProvider OutputCapacityProvider
+	PayFee                 PayFee
+	FeeRate                uint64
+	Since                  *SinceConfig
 }
 
 func (builder *transferBuilder) AddAssetInfo(assetInfo *common.AssetInfo) {
 	builder.AssetInfo = assetInfo
 }
 
+// TODO: fix
 func (builder *transferBuilder) AddFrom(source source.Source, items ...interface{}) {
-	builder.From = &From{
-		Items:  items,
-		Source: source,
-	}
+	//builder.From = &From{
+	//	Items:  items,
+	//	Source: source,
+	//}
 }
 
+// TODO: fix
 func (builder *transferBuilder) AddTo(mode mode.Mode, toInfos ...*ToInfo) {
-	builder.To = &To{
-		ToInfos: toInfos,
-		Mode:    mode,
-	}
+	//builder.To = &To{
+	//	ToInfos: toInfos,
+	//	Mode:    mode,
+	//}
 }
 
-func (builder *transferBuilder) AddPayFee(address string) {
-	builder.PayFee = address
-}
-
-func (builder *transferBuilder) AddChange(address string) {
-	builder.Change = address
+func (builder *transferBuilder) AddPayFee(payFee PayFee) {
+	builder.PayFee = payFee
 }
 
 func (builder *transferBuilder) AddFeeRate(feeRate uint) {
-	builder.FeeRate = feeRate
+	builder.FeeRate = uint64(feeRate)
 }
 
 func (builder *transferBuilder) AddSince(since *SinceConfig) {
@@ -105,13 +116,13 @@ func (builder *transferBuilder) AddSince(since *SinceConfig) {
 
 func (builder *transferBuilder) Build() *TransferPayload {
 	return &TransferPayload{
-		AssetInfo: builder.AssetInfo,
-		From:      builder.From,
-		To:        builder.To,
-		PayFee:    builder.PayFee,
-		Change:    builder.Change,
-		FeeRate:   builder.FeeRate,
-		Since:     builder.Since,
+		AssetInfo:              builder.AssetInfo,
+		From:                   builder.From,
+		To:                     builder.To,
+		OutputCapacityProvider: builder.OutputCapacityProvider,
+		PayFee:                 builder.PayFee,
+		FeeRate:                builder.FeeRate,
+		Since:                  builder.Since,
 	}
 }
 

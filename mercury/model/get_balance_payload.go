@@ -8,7 +8,7 @@ import (
 type GetBalancePayload struct {
 	AssetInfos     []*common.AssetInfo `json:"asset_infos"`
 	TipBlockNumber uint64              `json:"tip_block_number,omitempty"`
-	Item           interface{}         `json:"item"`
+	Item           *req.Item           `json:"item"`
 }
 
 type getBalancePayloadBuilder struct {

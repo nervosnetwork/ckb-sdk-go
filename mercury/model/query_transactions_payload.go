@@ -1,16 +1,16 @@
 package model
 
 import (
-	"github.com/ethereum/go-ethereum/common/math"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/common"
+	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/req"
 )
 
 type QueryTransactionsPayload struct {
-	Item          interface{}             `json:"item"`
+	Item          *req.Item               `json:"item"`
 	AssetInfos    []*common.AssetInfo     `json:"asset_infos"`
-	Extra         *common.ExtraFilterType `json:"extra"`
-	BlockRange    *BlockRange             `json:"block_range"`
-	Pagination    PaginationRequest       `json:"pagination"`
+	Extra         *common.ExtraFilterType `json:"extra,omitempty"`
+	BlockRange    *BlockRange             `json:"block_range,omitempty"`
+	Pagination    *PaginationRequest      `json:"pagination"`
 	StructureType StructureType           `json:"structure_type"`
 }
 
@@ -24,30 +24,29 @@ type BlockRange struct {
 }
 
 type PaginationRequest struct {
-	Cursor      []int  `json:"cursor"`
+	Cursor      uint64 `json:"cursor,omitempty"`
 	Order       Order  `json:"order"`
-	Limit       uint64 `json:"limit"`
-	Skip        uint64 `json:"skip"`
+	Limit       uint64 `json:"limit,omitempty"`
 	ReturnCount bool   `json:"return_count"`
 }
 
 type Order string
 
 const (
-	ASC  Order = "asc"
-	DESC Order = "desc"
+	ASC  Order = "Asc"
+	DESC Order = "Desc"
 )
 
 type QueryTransactionsPayloadBuilder struct {
-	Item          interface{}
+	Item          *req.Item
 	AssetInfos    []*common.AssetInfo
 	Extra         *common.ExtraFilterType
 	BlockRange    *BlockRange
-	Pagination    PaginationRequest
+	Pagination    *PaginationRequest
 	StructureType StructureType
 }
 
-func (b *QueryTransactionsPayloadBuilder) SetItem(item interface{}) *QueryTransactionsPayloadBuilder {
+func (b *QueryTransactionsPayloadBuilder) SetItem(item *req.Item) *QueryTransactionsPayloadBuilder {
 	b.Item = item
 	return b
 }
@@ -65,7 +64,7 @@ func (b *QueryTransactionsPayloadBuilder) AddBlockRange(blockRangerange *BlockRa
 	return b
 }
 
-func (b *QueryTransactionsPayloadBuilder) SetCursor(cursor []int) *QueryTransactionsPayloadBuilder {
+func (b *QueryTransactionsPayloadBuilder) SetCursor(cursor uint64) *QueryTransactionsPayloadBuilder {
 	b.Pagination.Cursor = cursor
 	return b
 }
@@ -80,18 +79,13 @@ func (b *QueryTransactionsPayloadBuilder) SetLimit(limit uint64) *QueryTransacti
 	return b
 }
 
-func (b *QueryTransactionsPayloadBuilder) SetPageNumber(skip uint64) *QueryTransactionsPayloadBuilder {
-	b.Pagination.Skip = skip
-	return b
-}
-
 func NewQueryTransactionsPayloadBuilder() *QueryTransactionsPayloadBuilder {
 	return &QueryTransactionsPayloadBuilder{
 		Item:       nil,
 		AssetInfos: []*common.AssetInfo{},
 		Extra:      nil,
 		BlockRange: nil,
-		Pagination: PaginationRequest{
+		Pagination: &PaginationRequest{
 			Order:       DESC,
 			Limit:       50,
 			ReturnCount: false,
@@ -108,13 +102,8 @@ func (b QueryTransactionsPayloadBuilder) Build() *QueryTransactionsPayload {
 		Pagination:    b.Pagination,
 		StructureType: b.StructureType,
 	}
-	if b.Pagination.Skip != 0 {
-		x, _ := math.SafeMul(payload.Pagination.Limit, payload.Pagination.Skip)
-		y, _ := math.SafeSub(x, payload.Pagination.Limit)
-		payload.Pagination.Skip = y
-	}
-	if payload.Pagination.Cursor == nil && payload.Pagination.Order == DESC {
-		payload.Pagination.Cursor = []int{127, 255, 255, 255, 255, 255, 255, 254}
+	if payload.Pagination.Cursor == 0 && payload.Pagination.Order == DESC {
+		payload.Pagination.Cursor = 0x7ffffffffffffffe
 	}
 	return payload
 }

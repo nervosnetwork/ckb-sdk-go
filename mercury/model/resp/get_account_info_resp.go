@@ -8,7 +8,7 @@ const (
 )
 
 type AccountInfo struct {
-	AccountNumber  uint64      `json:"account_number"`
+	AccountNumber  uint32      `json:"account_number"`
 	AccountAddress string      `json:"account_address"`
 	AccountType    AccountType `json:"account_type"`
 }

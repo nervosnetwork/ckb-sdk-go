@@ -1,18 +1,20 @@
 package model
 
+import "github.com/nervosnetwork/ckb-sdk-go/mercury/model/req"
+
 type DaoClaimPayload struct {
-	From    interface{} `json:"from"`
-	To      string      `json:"to,omitempty"`
-	FeeRate uint64      `json:"fee_rate"`
+	From    *req.Item `json:"from"`
+	To      string    `json:"to,omitempty"`
+	FeeRate uint64    `json:"fee_rate,omitempty"`
 }
 
 type daoClaimPayloadBuilder struct {
-	From    interface{}
+	From    *req.Item
 	To      string
 	FeeRate uint64
 }
 
-func (builder *daoClaimPayloadBuilder) AddItem(item interface{}) {
+func (builder *daoClaimPayloadBuilder) AddItem(item *req.Item) {
 	builder.From = item
 }
 

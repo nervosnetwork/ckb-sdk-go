@@ -1,10 +1,12 @@
 package model
 
-import "github.com/nervosnetwork/ckb-sdk-go/mercury/model/common"
+import (
+	"github.com/nervosnetwork/ckb-sdk-go/types"
+)
 
 type GetSpentTransactionPayload struct {
-	OutPoint      common.OutPoint `json:"outpoint"`
-	StructureType StructureType   `json:"structure_type"`
+	OutPoint      types.OutPoint `json:"outpoint"`
+	StructureType StructureType  `json:"structure_type"`
 }
 
 type StructureType string

@@ -86,7 +86,7 @@ func (cli *DefaultCkbApi) RegisterAddresses(normalAddresses []string) ([]string,
 	return cli.mercury.RegisterAddresses(normalAddresses)
 }
 
-func (cli *DefaultCkbApi) GetTransactionInfo(txHash string) (*resp.GetTransactionInfoResponse, error) {
+func (cli *DefaultCkbApi) GetTransactionInfo(txHash types.Hash) (*resp.GetTransactionInfoResponse, error) {
 	return cli.mercury.GetTransactionInfo(txHash)
 }
 

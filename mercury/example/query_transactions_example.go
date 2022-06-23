@@ -181,7 +181,7 @@ func TestQueryTransactionsWithPage1(t *testing.T) {
 	printJson(transactions)
 
 	for {
-		if transactions.NextCursor == nil {
+		if transactions.NextCursor == 0 {
 			break
 		}
 		payload.Pagination.Cursor = transactions.NextCursor
@@ -200,7 +200,6 @@ func TestQueryTransactionsWithPage2(t *testing.T) {
 	payload := model.NewQueryTransactionsPayloadBuilder().
 		SetItem(item).
 		SetLimit(1).
-		SetPageNumber(1).
 		Build()
 
 	printJson(payload)

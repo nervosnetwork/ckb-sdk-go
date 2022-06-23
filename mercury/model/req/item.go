@@ -1,17 +1,14 @@
 package req
 
 import (
-	"bytes"
-	ethcommon "github.com/ethereum/go-ethereum/common"
+	"errors"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	address2 "github.com/nervosnetwork/ckb-sdk-go/address"
-	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/common"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
-	"unicode/utf8"
 )
 
 const (
-	IDENTITY_FLAGS_CKB = "0x00"
+	IdentityFlagsCkb byte = 0x00
 )
 
 func NewAddressItem(addr string) (*Item, error) {
@@ -21,31 +18,46 @@ func NewAddressItem(addr string) (*Item, error) {
 	}, nil
 }
 
-func NewIdentityItemByCkb(pubKey string) (*Item, error) {
-	return &Item{
-		ItemIdentity,
-		toIdentity(IDENTITY_FLAGS_CKB, ethcommon.FromHex(pubKey)),
-	}, nil
+func NewIdentityItemByCkb(publicKeyHash string) (*Item, error) {
+	hash, err := hexutil.Decode(publicKeyHash)
+	if err != nil {
+		return nil, err
+	}
+	identity, err := toIdentity(IdentityFlagsCkb, hash)
+	if err != nil {
+		return nil, err
+	}
+	return &Item{ItemIdentity, identity}, nil
 }
 
 func NewIdentityItemByAddress(address string) (*Item, error) {
+	// TODO: check address type
 	parse, err := address2.Parse(address)
 	if err != nil {
 		return nil, err
 	}
+	identity, err := toIdentity(IdentityFlagsCkb, parse.Script.Args)
+	if err != nil {
+		return nil, err
+	}
 
-	return &Item{
-		ItemIdentity,
-		toIdentity(IDENTITY_FLAGS_CKB, parse.Script.Args),
-	}, nil
+	return &Item{ItemIdentity, identity}, nil
 }
 
-func toIdentity(flag string, pubKey []byte) string {
-	byteArr := make([][]byte, 2)
-	byteArr[0] = ethcommon.FromHex(flag)
-	byteArr[1] = pubKey
+func toIdentity(flag byte, content []byte) (string, error) {
+	if len(content) != 20 {
+		return "", errors.New("identity content should be 20 bytes length")
+	}
+	identity := append([]byte{flag}, content...)
+	return hexutil.Encode(identity), nil
+}
 
-	return hexutil.Encode(bytes.Join(byteArr, []byte("")))
+func NewOutPointItem(txHash types.Hash, index uint) *Item {
+	outPoint := types.OutPoint{TxHash: txHash, Index: index}
+	return &Item{
+		ItemOutPoint,
+		outPoint,
+	}
 }
 
 type Item struct {
@@ -60,37 +72,3 @@ const (
 	ItemIdentity          = "Identity"
 	ItemOutPoint          = "OutPoint"
 )
-
-func NewOutPointItem(txHash types.Hash, index uint) *Item {
-	outPoint := common.OutPoint{txHash, hexutil.Uint(index)}
-	return &Item{
-		ItemOutPoint,
-		outPoint,
-	}
-}
-
-func intToByteArray(num uint) []byte {
-	byteArr := make([]byte, 4)
-	byteArr[3] = (byte)(num & 0xFF)
-	byteArr[2] = (byte)(num & 0xFF00)
-	byteArr[1] = (byte)(num & 0xFF0000)
-	byteArr[0] = (byte)(num & 0xFF000000)
-
-	return byteArr
-}
-
-func runesToUTF8Manual(rs []rune) []byte {
-	size := 0
-	for _, r := range rs {
-		size += utf8.RuneLen(r)
-	}
-
-	bs := make([]byte, size)
-
-	count := 0
-	for _, r := range rs {
-		count += utf8.EncodeRune(bs[count:], r)
-	}
-
-	return bs
-}

@@ -47,17 +47,17 @@ type ExtraFilterType string
 
 const (
 	ExtraFilterDao      ExtraFilterType = "Dao"
-	ExtraFilterCellBase                 = "CellBase"
+	ExtraFilterCellBase ExtraFilterType = "CellBase"
 )
 
 type TransactionWithRichStatus struct {
-	Transaction Transaction  `json:"transaction"`
-	TxStatus    TxRichStatus `json:"tx_status"`
+	Transaction types.Transaction `json:"transaction,omitempty"`
+	TxStatus    TxRichStatus      `json:"tx_status"`
 }
 
 type TxRichStatus struct {
 	Status    types.TransactionStatus `json:"status"`
-	BlockHash string                  `json:"block_hash"`
-	Reason    string                  `json:"reason"`
-	Timestamp uint64                  `json:"timestamp"`
+	BlockHash types.Hash              `json:"block_hash,omitempty"`
+	Reason    string                  `json:"reason,omitempty"`
+	Timestamp uint64                  `json:"timestamp,omitempty"`
 }
