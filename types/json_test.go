@@ -588,3 +588,27 @@ func TestJsonBlockchainInfo(t *testing.T) {
 	assert.Equal(t, true, v.IsInitialBlockDownload)
 	assert.Equal(t, uint64(0x5cd2b105), v.MedianTime)
 }
+
+func TestJsonTxPoolInfo(t *testing.T) {
+	jsonText := []byte(`
+{
+    "last_txs_updated_at": "0x0",
+    "min_fee_rate": "0x0",
+    "orphan": "0x0",
+    "pending": "0x1",
+    "proposed": "0x0",
+    "tip_hash": "0xa5f5c85987a15de25661e5a214f2c1449cd803f071acc7999820f25246471f40",
+    "tip_number": "0x400",
+    "total_tx_cycles": "0x219",
+    "total_tx_size": "0x112"
+}`)
+	var v TxPoolInfo
+	json.Unmarshal(jsonText, &v)
+	assert.Equal(t, HexToHash("0xa5f5c85987a15de25661e5a214f2c1449cd803f071acc7999820f25246471f40"), v.TipHash)
+	assert.Equal(t, uint64(0x0), v.LastTxsUpdatedAt)
+	assert.Equal(t, uint64(0x0), v.MinFeeRate)
+	assert.Equal(t, uint64(0x1), v.Pending)
+	assert.Equal(t, uint64(0x400), v.TipNumber)
+	assert.Equal(t, uint64(0x219), v.TotalTxCycles)
+	assert.Equal(t, uint64(0x112), v.TotalTxSize)
+}
