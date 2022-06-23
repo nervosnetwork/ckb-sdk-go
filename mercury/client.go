@@ -6,10 +6,7 @@ import (
 
 	"github.com/ethereum/go-ethereum/rpc"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model"
-	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/common"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/resp"
-	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/source"
-	"github.com/pkg/errors"
 )
 
 type Client interface {
@@ -108,10 +105,6 @@ func (cli *client) GetBalance(payload *model.GetBalancePayload) (*resp.GetBalanc
 }
 
 func (cli *client) BuildTransferTransaction(payload *model.TransferPayload) (*resp.TransferCompletionResponse, error) {
-	if payload.From.Source == source.Claimable && payload.AssetInfo.AssetType == common.CKB {
-		return nil, errors.New("The transaction does not support ckb")
-	}
-
 	var resp resp.TransferCompletionResponse
 	err := cli.c.Call(&resp, "build_transfer_transaction", payload)
 	if err != nil {

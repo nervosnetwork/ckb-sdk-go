@@ -33,7 +33,7 @@ func (builder *simpleTransferPayloadBuilder) AddFrom(from string) {
 }
 
 func (builder *simpleTransferPayloadBuilder) AddToInfo(address string, amount *U128) {
-	builder.To = append(builder.To, &ToInfo{address, amount})
+	builder.To = append(builder.To, &ToInfo{address, &amount.Int})
 }
 
 func (builder *simpleTransferPayloadBuilder) AddPayFee(address string) {
