@@ -2,10 +2,10 @@ package resp
 
 import (
 	"encoding/json"
-	"github.com/nervosnetwork/ckb-sdk-go/mercury/model"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/common"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 	"github.com/pkg/errors"
+	"math/big"
 	"reflect"
 )
 
@@ -16,26 +16,26 @@ type GetTransactionInfoResponse struct {
 }
 
 type TransactionInfo struct {
-	TxHash    string      `json:"tx_hash"`
-	Records   []Record    `json:"records"`
-	Fee       int64       `json:"fee"`
+	TxHash    types.Hash  `json:"tx_hash"`
+	Records   []*Record   `json:"records"`
+	Fee       uint64      `json:"fee"`
 	Burn      []*BurnInfo `json:"burn"`
-	Timestamp int64       `json:"timestamp"`
+	Timestamp uint64      `json:"timestamp"`
 }
 
 type BurnInfo struct {
-	UdtHash string      `json:"udt_hash"`
-	Amount  *model.U128 `json:"amount"`
+	UdtHash types.Hash `json:"udt_hash"`
+	Amount  *big.Int   `json:"amount"`
 }
 
 type Record struct {
-	OutPoint    *common.OutPoint  `json:"out_point"`
-	Ownership   *common.Ownership `json:"ownership"`
-	Amount      *model.U128       `json:"amount"`
-	Occupied    *model.U128       `json:"occupied"`
+	OutPoint    *types.OutPoint   `json:"out_point"`
+	Ownership   string            `json:"ownership"`
+	IoType      IoType            `json:"io_type"`
+	Amount      *big.Int          `json:"amount"`
+	Occupied    *big.Int          `json:"occupied"`
 	AssetInfo   *common.AssetInfo `json:"asset_info"`
-	Status      RecordStatus      `json:"status"`
-	Extra       ExtraFilter       `json:"extra"`
+	Extra       ExtraFilter       `json:"extra,omitempty"`
 	BlockNumber uint64            `json:"block_number"`
 	EpochNumber uint64            `json:"epoch_number"`
 }
@@ -46,22 +46,23 @@ type RecordStatus struct {
 }
 
 type RecordStatusType string
+type IoType string
 
 const (
 	RecordStatusFixed     RecordStatusType = "Fixed"
-	RecordStatusClaimable                  = "Claimable"
+	RecordStatusClaimable RecordStatusType = "Claimable"
+	IoTypeInput           IoType           = "Input"
+	IoTypeOutput          IoType           = "Output"
 )
 
 type ExtraFilter struct {
 	Type  ExtraFilterType `json:"type"`
-	Value *DaoInfo        `json:"value"`
+	Value *DaoInfo        `json:"value,omitempty"`
 }
 
 type DaoInfo struct {
-	DepositBlockNumber  uint64   `json:"deposit_block_number,omitempty"`
-	WithdrawBlockNumber uint64   `json:"withdraw_block_number,omitempty"`
-	DaoState            DaoState `json:"state"`
-	Reward              uint64   `json:"reward"`
+	State  DaoState `json:"state"`
+	Reward uint64   `json:"reward"`
 }
 
 type DaoState struct {
@@ -107,13 +108,6 @@ type ExtraFilterType string
 
 const (
 	ExtraFilterDao      ExtraFilterType = "Dao"
-	ExtraFilterCellBase                 = "CellBase"
-	ExtraFilterFreeze                   = "Freeze"
-)
-
-type AssetStatus string
-
-const (
-	Claimable AssetStatus = "Claimable"
-	Fixed     AssetStatus = "Fixed"
+	ExtraFilterCellBase ExtraFilterType = "Cellbase"
+	ExtraFilterFreeze   ExtraFilterType = "Frozen"
 )
