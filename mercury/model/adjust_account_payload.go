@@ -2,30 +2,31 @@ package model
 
 import (
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/common"
+	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/req"
 )
 
 type BuildAdjustAccountPayload struct {
-	Item          interface{}       `json:"item"`
-	From          []interface{}     `json:"from"`
+	Item          *req.Item         `json:"item"`
+	From          []*req.Item       `json:"from"`
 	AssetInfo     *common.AssetInfo `json:"asset_info"`
-	AccountNumber uint32            `json:"account_number"`
+	AccountNumber uint32            `json:"account_number,omitempty"`
 	ExtraCKB      uint64            `json:"extra_ckb,omitempty"`
-	FeeRate       uint64            `json:"fee_rate"`
+	FeeRate       uint64            `json:"fee_rate,omitempty"`
 }
 
 type buildAdjustAccountPayloadBuilder struct {
-	Item          interface{}
-	From          []interface{}
+	Item          *req.Item
+	From          []*req.Item
 	AssetInfo     *common.AssetInfo
 	AccountNumber uint32
 	ExtraCKB      uint64
 	FeeRate       uint64
 }
 
-func (builder *buildAdjustAccountPayloadBuilder) AddItem(item interface{}) {
+func (builder *buildAdjustAccountPayloadBuilder) AddItem(item *req.Item) {
 	builder.Item = item
 }
-func (builder *buildAdjustAccountPayloadBuilder) AddFrom(items ...interface{}) {
+func (builder *buildAdjustAccountPayloadBuilder) AddFrom(items ...*req.Item) {
 	builder.From = items
 }
 
@@ -59,6 +60,6 @@ func (builder *buildAdjustAccountPayloadBuilder) Build() *BuildAdjustAccountPayl
 func NewBuildAdjustAccountPayloadBuilder() *buildAdjustAccountPayloadBuilder {
 	return &buildAdjustAccountPayloadBuilder{
 		FeeRate: 1000,
-		From:    make([]interface{}, 0),
+		From:    make([]*req.Item, 0),
 	}
 }
