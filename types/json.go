@@ -633,20 +633,20 @@ func (r *TxPoolInfo) UnmarshalJSON(input []byte) error {
 }
 
 func (r *BannedAddress) UnmarshalJSON(input []byte) error {
-	var result struct {
+	var jsonObj struct {
 		Address   string         `json:"address"`
 		BanReason string         `json:"ban_reason"`
 		BanUntil  hexutil.Uint64 `json:"ban_until"`
 		CreatedAt hexutil.Uint64 `json:"created_at"`
 	}
-	if err := json.Unmarshal(input, &result); err != nil {
+	if err := json.Unmarshal(input, &jsonObj); err != nil {
 		return err
 	}
 	*r = BannedAddress{
-		Address:   result.Address,
-		BanReason: result.BanReason,
-		BanUntil:  uint64(result.BanUntil),
-		CreatedAt: uint64(result.CreatedAt),
+		Address:   jsonObj.Address,
+		BanReason: jsonObj.BanReason,
+		BanUntil:  uint64(jsonObj.BanUntil),
+		CreatedAt: uint64(jsonObj.CreatedAt),
 	}
 	return nil
 }
