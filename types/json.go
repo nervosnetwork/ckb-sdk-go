@@ -542,7 +542,7 @@ func (r *BlockEconomicState) UnmarshalJSON(input []byte) error {
 			Proposal  hexutil.Uint64 `json:"proposal"`
 		} `json:"miner_reward"`
 		TxsFee      hexutil.Uint64 `json:"txs_fee"`
-		FinalizedAt Hash        `json:"finalized_at"`
+		FinalizedAt Hash           `json:"finalized_at"`
 	}
 	if err := json.Unmarshal(input, &jsonObj); err != nil {
 		return err
@@ -558,19 +558,19 @@ func (r *BlockEconomicState) UnmarshalJSON(input []byte) error {
 			Committed: uint64(jsonObj.MinerReward.Committed),
 			Proposal:  uint64(jsonObj.MinerReward.Proposal),
 		},
-		TxsFee: uint64(jsonObj.TxsFee),
+		TxsFee:      uint64(jsonObj.TxsFee),
 		FinalizedAt: jsonObj.FinalizedAt,
 	}
 	return nil
 }
 
 func (r *BlockchainInfo) UnmarshalJSON(input []byte) error {
-	var result struct {
+	var jsonObj struct {
 		Alerts []*struct {
-			Id          string         `json:"id"`
+			Id          hexutil.Uint   `json:"id"`
 			Message     string         `json:"message"`
 			NoticeUntil hexutil.Uint64 `json:"notice_until"`
-			Priority    string         `json:"priority"`
+			Priority    hexutil.Uint   `json:"priority"`
 		} `json:"alerts"`
 		Chain                  string         `json:"chain"`
 		Difficulty             hexutil.Big    `json:"difficulty"`
@@ -578,26 +578,27 @@ func (r *BlockchainInfo) UnmarshalJSON(input []byte) error {
 		IsInitialBlockDownload bool           `json:"is_initial_block_download"`
 		MedianTime             hexutil.Uint64 `json:"median_time"`
 	}
-	if err := json.Unmarshal(input, &result); err != nil {
+	if err := json.Unmarshal(input, &jsonObj); err != nil {
 		return err
 	}
 
-	alerts := make([]*AlertMessage, len(result.Alerts))
-	for i := 0; i < len(result.Alerts); i++ {
+	alerts := make([]*AlertMessage, len(jsonObj.Alerts))
+	for i := 0; i < len(jsonObj.Alerts); i++ {
 		alerts[i] = &AlertMessage{
-			Id:          result.Alerts[i].Id,
-			Message:     result.Alerts[i].Message,
-			NoticeUntil: uint64(result.Alerts[i].NoticeUntil),
-			Priority:    result.Alerts[i].Priority,
+			Id:          uint32(jsonObj.Alerts[i].Id),
+			Message:     jsonObj.Alerts[i].Message,
+			NoticeUntil: uint64(jsonObj.Alerts[i].NoticeUntil),
+			Priority:    uint32(jsonObj.Alerts[i].Priority),
 		}
 	}
+
 	*r = BlockchainInfo{
 		Alerts:                 alerts,
-		Chain:                  result.Chain,
-		Difficulty:             (*big.Int)(&result.Difficulty),
-		Epoch:                  uint64(result.Epoch),
-		IsInitialBlockDownload: result.IsInitialBlockDownload,
-		MedianTime:             uint64(result.MedianTime),
+		Chain:                  jsonObj.Chain,
+		Difficulty:             (*big.Int)(&jsonObj.Difficulty),
+		Epoch:                  uint64(jsonObj.Epoch),
+		IsInitialBlockDownload: jsonObj.IsInitialBlockDownload,
+		MedianTime:             uint64(jsonObj.MedianTime),
 	}
 	return nil
 }
