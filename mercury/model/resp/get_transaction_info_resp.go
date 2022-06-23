@@ -10,9 +10,8 @@ import (
 )
 
 type GetTransactionInfoResponse struct {
-	Transaction  *TransactionInfo        `json:"transaction"`
+	Transaction  *TransactionInfo        `json:"transaction,omitempty"`
 	Status       types.TransactionStatus `json:"status"`
-	RejectReason uint8                   `json:"reject_reason"`
 }
 
 type TransactionInfo struct {
