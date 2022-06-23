@@ -8,8 +8,6 @@ type SimpleTransferPayload struct {
 	AssetInfo *common.AssetInfo `json:"asset_info"`
 	From      []string          `json:"from"`
 	To        []*ToInfo         `json:"to"`
-	PayFee    string            `json:"pay_fee,omitempty"`
-	Change    string            `json:"change,omitempty"`
 	FeeRate   uint64            `json:"fee_rate"`
 	Since     *SinceConfig      `json:"since,omitempty"`
 }
@@ -57,8 +55,6 @@ func (builder *simpleTransferPayloadBuilder) Build() *SimpleTransferPayload {
 		AssetInfo: builder.AssetInfo,
 		From:      builder.From,
 		To:        builder.To,
-		PayFee:    builder.PayFee,
-		Change:    builder.Change,
 		FeeRate:   builder.FeeRate,
 		Since:     builder.Since,
 	}
