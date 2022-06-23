@@ -105,3 +105,18 @@ func (r *Capacity) UnmarshalJSON(input []byte) error {
 	}
 	return nil
 }
+
+func (r *TipHeader) UnmarshalJSON(input []byte) error {
+	var jsonObj struct {
+		BlockHash   types.Hash     `json:"block_hash"`
+		BlockNumber hexutil.Uint64 `json:"block_number"`
+	}
+	if err := json.Unmarshal(input, &jsonObj); err != nil {
+		return err
+	}
+	*r = TipHeader{
+		BlockHash:   jsonObj.BlockHash,
+		BlockNumber: uint64(jsonObj.BlockNumber),
+	}
+	return nil
+}
