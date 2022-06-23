@@ -31,30 +31,30 @@ func (t DepType) Serialize() ([]byte, error) {
 }
 
 // Serialize script
-func (script *Script) Serialize() ([]byte, error) {
-	h, err := script.CodeHash.Serialize()
+func (r *Script) Serialize() ([]byte, error) {
+	h, err := r.CodeHash.Serialize()
 	if err != nil {
 		return nil, err
 	}
 
-	t, err := script.HashType.Serialize()
+	t, err := r.HashType.Serialize()
 	if err != nil {
 		return nil, err
 	}
 
-	a := SerializeBytes(script.Args)
+	a := SerializeBytes(r.Args)
 
 	return SerializeTable([][]byte{h, t, a}), nil
 }
 
 // Serialize outpoint
-func (o *OutPoint) Serialize() ([]byte, error) {
-	h, err := o.TxHash.Serialize()
+func (r *OutPoint) Serialize() ([]byte, error) {
+	h, err := r.TxHash.Serialize()
 	if err != nil {
 		return nil, err
 	}
 
-	i := SerializeUint(o.Index)
+	i := SerializeUint(r.Index)
 
 	b := new(bytes.Buffer)
 
@@ -65,10 +65,10 @@ func (o *OutPoint) Serialize() ([]byte, error) {
 }
 
 // Serialize cell input
-func (i *CellInput) Serialize() ([]byte, error) {
-	s := SerializeUint64(i.Since)
+func (r *CellInput) Serialize() ([]byte, error) {
+	s := SerializeUint64(r.Since)
 
-	o, err := i.PreviousOutput.Serialize()
+	o, err := r.PreviousOutput.Serialize()
 	if err != nil {
 		return nil, err
 	}
@@ -77,15 +77,15 @@ func (i *CellInput) Serialize() ([]byte, error) {
 }
 
 // Serialize cell output
-func (o *CellOutput) Serialize() ([]byte, error) {
-	c := SerializeUint64(o.Capacity)
+func (r *CellOutput) Serialize() ([]byte, error) {
+	c := SerializeUint64(r.Capacity)
 
-	l, err := o.Lock.Serialize()
+	l, err := r.Lock.Serialize()
 	if err != nil {
 		return nil, err
 	}
 
-	t, err := SerializeOption(o.Type)
+	t, err := SerializeOption(r.Type)
 	if err != nil {
 		return nil, err
 	}

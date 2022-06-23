@@ -158,28 +158,6 @@ func (_m *Client) DryRunTransaction(ctx context.Context, transaction *types.Tran
 	return r0, r1
 }
 
-// EstimateFeeRate provides a mock function with given fields: ctx, blocks
-func (_m *Client) EstimateFeeRate(ctx context.Context, blocks uint64) (*types.EstimateFeeRateResult, error) {
-	ret := _m.Called(ctx, blocks)
-
-	var r0 *types.EstimateFeeRateResult
-	if rf, ok := ret.Get(0).(func(context.Context, uint64) *types.EstimateFeeRateResult); ok {
-		r0 = rf(ctx, blocks)
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*types.EstimateFeeRateResult)
-		}
-	}
-
-	var r1 error
-	if rf, ok := ret.Get(1).(func(context.Context, uint64) error); ok {
-		r1 = rf(ctx, blocks)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
 
 // GetBannedAddresses provides a mock function with given fields: ctx
 func (_m *Client) GetBannedAddresses(ctx context.Context) ([]*types.BannedAddress, error) {
@@ -527,15 +505,15 @@ func (_m *Client) GetLiveCell(ctx context.Context, outPoint *types.OutPoint, wit
 }
 
 // GetPeers provides a mock function with given fields: ctx
-func (_m *Client) GetPeers(ctx context.Context) ([]*types.Node, error) {
+func (_m *Client) GetPeers(ctx context.Context) ([]*types.RemoteNode, error) {
 	ret := _m.Called(ctx)
 
-	var r0 []*types.Node
-	if rf, ok := ret.Get(0).(func(context.Context) []*types.Node); ok {
+	var r0 []*types.RemoteNode
+	if rf, ok := ret.Get(0).(func(context.Context) []*types.RemoteNode); ok {
 		r0 = rf(ctx)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]*types.Node)
+			r0 = ret.Get(0).([]*types.RemoteNode)
 		}
 	}
 
@@ -663,15 +641,15 @@ func (_m *Client) GetTransactions(ctx context.Context, searchKey *indexer.Search
 }
 
 // LocalNodeInfo provides a mock function with given fields: ctx
-func (_m *Client) LocalNodeInfo(ctx context.Context) (*types.Node, error) {
+func (_m *Client) LocalNodeInfo(ctx context.Context) (*types.LocalNode, error) {
 	ret := _m.Called(ctx)
 
-	var r0 *types.Node
-	if rf, ok := ret.Get(0).(func(context.Context) *types.Node); ok {
+	var r0 *types.LocalNode
+	if rf, ok := ret.Get(0).(func(context.Context) *types.LocalNode); ok {
 		r0 = rf(ctx)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*types.Node)
+			r0 = ret.Get(0).(*types.LocalNode)
 		}
 	}
 

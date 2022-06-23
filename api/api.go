@@ -174,15 +174,11 @@ func (cli *DefaultCkbApi) CalculateDaoMaximumWithdraw(ctx context.Context, point
 	return cli.ckb.CalculateDaoMaximumWithdraw(ctx, point, hash)
 }
 
-func (cli *DefaultCkbApi) EstimateFeeRate(ctx context.Context, blocks uint64) (*types.EstimateFeeRateResult, error) {
-	return cli.ckb.EstimateFeeRate(ctx, blocks)
-}
-
-func (cli *DefaultCkbApi) LocalNodeInfo(ctx context.Context) (*types.Node, error) {
+func (cli *DefaultCkbApi) LocalNodeInfo(ctx context.Context) (*types.LocalNode, error) {
 	return cli.ckb.LocalNodeInfo(ctx)
 }
 
-func (cli *DefaultCkbApi) GetPeers(ctx context.Context) ([]*types.Node, error) {
+func (cli *DefaultCkbApi) GetPeers(ctx context.Context) ([]*types.RemoteNode, error) {
 	return cli.ckb.GetPeers(ctx)
 }
 

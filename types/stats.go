@@ -3,10 +3,10 @@ package types
 import "math/big"
 
 type AlertMessage struct {
-	Id          string `json:"id"`
+	Id          uint32 `json:"id"`
 	Message     string `json:"message"`
 	NoticeUntil uint64 `json:"notice_until"`
-	Priority    string `json:"priority"`
+	Priority    uint32 `json:"priority"`
 }
 
 type BlockchainInfo struct {
