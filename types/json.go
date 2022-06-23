@@ -663,3 +663,16 @@ func (r *EstimateFeeRateResult) UnmarshalJSON(input []byte) error {
 	}
 	return nil
 }
+
+func (r *DryRunTransactionResult) UnmarshalJSON(input []byte) error {
+	var result struct {
+		Cycles hexutil.Uint64 `json:"cycles"`
+	}
+	if err := json.Unmarshal(input, &result); err != nil {
+		return err
+	}
+	*r = DryRunTransactionResult{
+		Cycles: uint64(result.Cycles),
+	}
+	return nil
+}
