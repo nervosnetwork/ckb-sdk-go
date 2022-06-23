@@ -602,3 +602,32 @@ func (r *BlockchainInfo) UnmarshalJSON(input []byte) error {
 	}
 	return nil
 }
+
+func (r *TxPoolInfo) UnmarshalJSON(input []byte) error {
+	var jsonObj struct {
+		TipHash          Hash           `json:"tip_hash"`
+		TipNumber        hexutil.Uint64 `json:"tip_number"`
+		Pending          hexutil.Uint64 `json:"pending"`
+		Proposed         hexutil.Uint64 `json:"proposed"`
+		Orphan           hexutil.Uint64 `json:"orphan"`
+		TotalTxSize      hexutil.Uint64 `json:"total_tx_size"`
+		TotalTxCycles    hexutil.Uint64 `json:"total_tx_cycles"`
+		MinFeeRate       hexutil.Uint64 `json:"min_fee_rate"`
+		LastTxsUpdatedAt hexutil.Uint64 `json:"last_txs_updated_at"`
+	}
+	if err := json.Unmarshal(input, &jsonObj); err != nil {
+		return err
+	}
+	*r = TxPoolInfo{
+		TipHash:          jsonObj.TipHash,
+		TipNumber:        uint64(jsonObj.TipNumber),
+		Pending:          uint64(jsonObj.Pending),
+		Proposed:         uint64(jsonObj.Proposed),
+		Orphan:           uint64(jsonObj.Orphan),
+		TotalTxSize:      uint64(jsonObj.TotalTxSize),
+		TotalTxCycles:    uint64(jsonObj.TotalTxCycles),
+		MinFeeRate:       uint64(jsonObj.MinFeeRate),
+		LastTxsUpdatedAt: uint64(jsonObj.LastTxsUpdatedAt),
+	}
+	return nil
+}
