@@ -651,19 +651,6 @@ func (r *BannedAddress) UnmarshalJSON(input []byte) error {
 	return nil
 }
 
-func (r *EstimateFeeRateResult) UnmarshalJSON(input []byte) error {
-	var jsonObj struct {
-		FeeRate hexutil.Uint64 `json:"fee_rate"`
-	}
-	if err := json.Unmarshal(input, &jsonObj); err != nil {
-		return err
-	}
-	*r = EstimateFeeRateResult{
-		FeeRate: uint64(jsonObj.FeeRate),
-	}
-	return nil
-}
-
 func (r *DryRunTransactionResult) UnmarshalJSON(input []byte) error {
 	var result struct {
 		Cycles hexutil.Uint64 `json:"cycles"`

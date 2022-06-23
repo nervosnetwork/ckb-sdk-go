@@ -83,9 +83,6 @@ type Client interface {
 	// CalculateDaoMaximumWithdraw calculate the maximum withdraw one can get, given a referenced DAO cell, and a withdraw block hash.
 	CalculateDaoMaximumWithdraw(ctx context.Context, point *types.OutPoint, hash types.Hash) (uint64, error)
 
-	// EstimateFeeRate Estimate a fee rate (capacity/KB) for a transaction that to be committed in expect blocks.
-	EstimateFeeRate(ctx context.Context, blocks uint64) (*types.EstimateFeeRateResult, error)
-
 	////// Net
 	// LocalNodeInfo returns the local node information.
 	LocalNodeInfo(ctx context.Context) (*types.LocalNode, error)
@@ -394,15 +391,6 @@ func (cli *client) GetBlockMedianTime(ctx context.Context, blockHash types.Hash)
 	return uint64(result), nil
 }
 
-func (cli *client) EstimateFeeRate(ctx context.Context, blocks uint64) (*types.EstimateFeeRateResult, error) {
-	var result types.EstimateFeeRateResult
-	err := cli.c.CallContext(ctx, &result, "estimate_fee_rate", hexutil.Uint64(blocks))
-	if err != nil {
-		return nil, err
-	}
-	return &result, nil
-}
-
 func (cli *client) LocalNodeInfo(ctx context.Context) (*types.LocalNode, error) {
 	var result types.LocalNode
 
@@ -495,6 +483,7 @@ func (cli *client) SendTransaction(ctx context.Context, tx *types.Transaction) (
 	return &result, err
 }
 
+// TODO: remove?
 func (cli *client) SendTransactionNoneValidation(ctx context.Context, tx *types.Transaction) (*types.Hash, error) {
 	var result types.Hash
 

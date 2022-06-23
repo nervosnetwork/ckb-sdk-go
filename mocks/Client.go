@@ -158,28 +158,6 @@ func (_m *Client) DryRunTransaction(ctx context.Context, transaction *types.Tran
 	return r0, r1
 }
 
-// EstimateFeeRate provides a mock function with given fields: ctx, blocks
-func (_m *Client) EstimateFeeRate(ctx context.Context, blocks uint64) (*types.EstimateFeeRateResult, error) {
-	ret := _m.Called(ctx, blocks)
-
-	var r0 *types.EstimateFeeRateResult
-	if rf, ok := ret.Get(0).(func(context.Context, uint64) *types.EstimateFeeRateResult); ok {
-		r0 = rf(ctx, blocks)
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*types.EstimateFeeRateResult)
-		}
-	}
-
-	var r1 error
-	if rf, ok := ret.Get(1).(func(context.Context, uint64) error); ok {
-		r1 = rf(ctx, blocks)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
 
 // GetBannedAddresses provides a mock function with given fields: ctx
 func (_m *Client) GetBannedAddresses(ctx context.Context) ([]*types.BannedAddress, error) {
