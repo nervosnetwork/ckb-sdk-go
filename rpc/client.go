@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"github.com/nervosnetwork/ckb-sdk-go/indexer"
-	"math/big"
 	"reflect"
 
 	"github.com/ethereum/go-ethereum/common/hexutil"
@@ -358,17 +357,13 @@ func (cli *client) GetForkBlock(ctx context.Context, blockHash types.Hash) (*typ
 }
 
 func (cli *client) DryRunTransaction(ctx context.Context, transaction *types.Transaction) (*types.DryRunTransactionResult, error) {
-	var result struct {
-		Cycles hexutil.Uint64 `json:"cycles"`
-	}
+	var result types.DryRunTransactionResult
 	err := cli.c.CallContext(ctx, &result, "dry_run_transaction", *transaction)
 	if err != nil {
 		return nil, err
 	}
 
-	return &types.DryRunTransactionResult{
-		Cycles: uint64(result.Cycles),
-	}, err
+	return &result, nil
 }
 
 func (cli *client) CalculateDaoMaximumWithdraw(ctx context.Context, point *types.OutPoint, hash types.Hash) (uint64, error) {
@@ -400,18 +395,12 @@ func (cli *client) GetBlockMedianTime(ctx context.Context, blockHash types.Hash)
 }
 
 func (cli *client) EstimateFeeRate(ctx context.Context, blocks uint64) (*types.EstimateFeeRateResult, error) {
-	var result struct {
-		FeeRate hexutil.Uint64 `json:"fee_rate"`
-	}
-
+	var result types.EstimateFeeRateResult
 	err := cli.c.CallContext(ctx, &result, "estimate_fee_rate", hexutil.Uint64(blocks))
 	if err != nil {
 		return nil, err
 	}
-
-	return &types.EstimateFeeRateResult{
-		FeeRate: uint64(result.FeeRate),
-	}, err
+	return &result, nil
 }
 
 func (cli *client) LocalNodeInfo(ctx context.Context) (*types.LocalNode, error) {
@@ -437,29 +426,13 @@ func (cli *client) GetPeers(ctx context.Context) ([]*types.RemoteNode, error) {
 }
 
 func (cli *client) GetBannedAddresses(ctx context.Context) ([]*types.BannedAddress, error) {
-	var result []struct {
-		Address   string         `json:"address"`
-		BanReason string         `json:"ban_reason"`
-		BanUntil  hexutil.Uint64 `json:"ban_until"`
-		CreatedAt hexutil.Uint64 `json:"created_at"`
-	}
-
+	var result []*types.BannedAddress
 	err := cli.c.CallContext(ctx, &result, "get_banned_addresses")
 	if err != nil {
 		return nil, err
 	}
 
-	ret := make([]*types.BannedAddress, len(result))
-	for i := 0; i < len(result); i++ {
-		ret[i] = &types.BannedAddress{
-			Address:   result[i].Address,
-			BanReason: result[i].BanReason,
-			BanUntil:  uint64(result[i].BanUntil),
-			CreatedAt: uint64(result[i].CreatedAt),
-		}
-	}
-
-	return ret, err
+	return result, nil
 }
 
 func (cli *client) ClearBannedAddresses(ctx context.Context) error {
@@ -534,28 +507,12 @@ func (cli *client) SendTransactionNoneValidation(ctx context.Context, tx *types.
 }
 
 func (cli *client) TxPoolInfo(ctx context.Context) (*types.TxPoolInfo, error) {
-	var result struct {
-		LastTxsUpdatedAt hexutil.Uint64 `json:"last_txs_updated_at"`
-		Orphan           hexutil.Uint64 `json:"orphan"`
-		Pending          hexutil.Uint64 `json:"pending"`
-		Proposed         hexutil.Uint64 `json:"proposed"`
-		TotalTxCycles    hexutil.Uint64 `json:"total_tx_cycles"`
-		TotalTxSize      hexutil.Uint64 `json:"total_tx_size"`
-	}
-
+	var result types.TxPoolInfo
 	err := cli.c.CallContext(ctx, &result, "tx_pool_info")
 	if err != nil {
 		return nil, err
 	}
-
-	return &types.TxPoolInfo{
-		LastTxsUpdatedAt: uint64(result.LastTxsUpdatedAt),
-		Orphan:           uint64(result.Orphan),
-		Pending:          uint64(result.Pending),
-		Proposed:         uint64(result.Proposed),
-		TotalTxCycles:    uint64(result.TotalTxCycles),
-		TotalTxSize:      uint64(result.TotalTxSize),
-	}, err
+	return &result, nil
 }
 
 func (cli *client) GetRawTxPool(ctx context.Context) (*types.RawTxPool, error) {
@@ -573,45 +530,12 @@ func (cli *client) ClearTxPool(ctx context.Context) error {
 }
 
 func (cli *client) GetBlockchainInfo(ctx context.Context) (*types.BlockchainInfo, error) {
-	var result struct {
-		Alerts []*struct {
-			Id          string         `json:"id"`
-			Message     string         `json:"message"`
-			NoticeUntil hexutil.Uint64 `json:"notice_until"`
-			Priority    string         `json:"priority"`
-		} `json:"alerts"`
-		Chain                  string         `json:"chain"`
-		Difficulty             hexutil.Big    `json:"difficulty"`
-		Epoch                  hexutil.Uint64 `json:"epoch"`
-		IsInitialBlockDownload bool           `json:"is_initial_block_download"`
-		MedianTime             hexutil.Uint64 `json:"median_time"`
-	}
-
+	var result types.BlockchainInfo
 	err := cli.c.CallContext(ctx, &result, "get_blockchain_info")
-
 	if err != nil {
 		return nil, err
 	}
-
-	ret := &types.BlockchainInfo{
-		Chain:                  result.Chain,
-		Difficulty:             (*big.Int)(&result.Difficulty),
-		Epoch:                  uint64(result.Epoch),
-		IsInitialBlockDownload: result.IsInitialBlockDownload,
-		MedianTime:             uint64(result.MedianTime),
-	}
-
-	ret.Alerts = make([]*types.AlertMessage, len(result.Alerts))
-	for i := 0; i < len(result.Alerts); i++ {
-		ret.Alerts[i] = &types.AlertMessage{
-			Id:          result.Alerts[i].Id,
-			Message:     result.Alerts[i].Message,
-			NoticeUntil: uint64(result.Alerts[i].NoticeUntil),
-			Priority:    result.Alerts[i].Priority,
-		}
-	}
-
-	return ret, err
+	return &result, nil
 }
 
 func (cli *client) BatchTransactions(ctx context.Context, batch []types.BatchTransactionItem) error {
@@ -699,20 +623,7 @@ func (cli *client) GetTransactions(ctx context.Context, searchKey *indexer.Searc
 }
 
 func (cli *client) GetBlockEconomicState(ctx context.Context, blockHash types.Hash) (*types.BlockEconomicState, error) {
-	var result struct {
-		Issuance struct {
-			Primary   hexutil.Big `json:"primary"`
-			Secondary hexutil.Big `json:"secondary"`
-		} `json:"issuance"`
-		MinerReward struct {
-			Primary   hexutil.Big `json:"primary"`
-			Secondary hexutil.Big `json:"secondary"`
-			Committed hexutil.Big `json:"committed"`
-			Proposal  hexutil.Big `json:"proposal"`
-		} `json:"miner_reward"`
-		TxsFee      hexutil.Big `json:"txs_fee"`
-		FinalizedAt types.Hash  `json:"finalized_at"`
-	}
+	var result types.BlockEconomicState
 	err := cli.c.CallContext(ctx, &result, "get_block_economic_state", blockHash)
 	if err != nil {
 		return nil, err
@@ -722,19 +633,5 @@ func (cli *client) GetBlockEconomicState(ctx context.Context, blockHash types.Ha
 	if result.FinalizedAt == types.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000000") {
 		return nil, nil
 	}
-
-	return &types.BlockEconomicState{
-		Issuance: types.BlockIssuance{
-			Primary:   (*big.Int)(&result.Issuance.Primary),
-			Secondary: (*big.Int)(&result.Issuance.Secondary),
-		},
-		MinerReward: types.MinerReward{
-			Primary:   (*big.Int)(&result.MinerReward.Primary),
-			Secondary: (*big.Int)(&result.MinerReward.Secondary),
-			Committed: (*big.Int)(&result.MinerReward.Committed),
-			Proposal:  (*big.Int)(&result.MinerReward.Proposal),
-		},
-		TxsFee:      (*big.Int)(&result.TxsFee),
-		FinalizedAt: result.FinalizedAt,
-	}, err
+	return &result, nil
 }
