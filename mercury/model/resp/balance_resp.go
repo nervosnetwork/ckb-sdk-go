@@ -1,17 +1,16 @@
 package resp
 
 import (
-	"github.com/nervosnetwork/ckb-sdk-go/mercury/model"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/common"
+	"math/big"
 )
 
 type Balance struct {
-	Ownership *common.Ownership `json:"ownership"`
+	Ownership string            `json:"ownership"`
 	AssetInfo *common.AssetInfo `json:"asset_info"`
-	Free      *model.U128       `json:"free"`
-	Occupied  *model.U128       `json:"occupied"`
-	Frozen    *model.U128       `json:"frozen"`
-	Claimable *model.U128       `json:"claimable"`
+	Free      *big.Int          `json:"free"`
+	Occupied  *big.Int          `json:"occupied"`
+	Frozen    *big.Int          `json:"frozen"`
 }
 
 type GetBalanceResponse struct {
