@@ -116,13 +116,13 @@ func (builder *transferBuilder) AddSince(since *SinceConfig) {
 
 func (builder *transferBuilder) Build() *TransferPayload {
 	return &TransferPayload{
-		AssetInfo: builder.AssetInfo,
-		From:      builder.From,
-		To:        builder.To,
+		AssetInfo:              builder.AssetInfo,
+		From:                   builder.From,
+		To:                     builder.To,
 		OutputCapacityProvider: builder.OutputCapacityProvider,
-		PayFee:    builder.PayFee,
-		FeeRate:   builder.FeeRate,
-		Since:     builder.Since,
+		PayFee:                 builder.PayFee,
+		FeeRate:                builder.FeeRate,
+		Since:                  builder.Since,
 	}
 }
 
