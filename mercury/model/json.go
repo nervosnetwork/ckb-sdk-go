@@ -57,3 +57,22 @@ func (r PaginationRequest) MarshalJSON() ([]byte, error) {
 	}
 	return json.Marshal(jsonObj)
 }
+
+func (r BuildAdjustAccountPayload) MarshalJSON() ([]byte, error) {
+	jsonObj := &struct {
+		Item          *req.Item         `json:"item"`
+		From          []*req.Item       `json:"from"`
+		AssetInfo     *common.AssetInfo `json:"asset_info"`
+		AccountNumber hexutil.Uint64    `json:"account_number,omitempty"`
+		ExtraCKB      hexutil.Uint64    `json:"extra_ckb,omitempty"`
+		FeeRate       hexutil.Uint64    `json:"fee_rate,omitempty"`
+	}{
+		Item:          r.Item,
+		From:          r.From,
+		AssetInfo:     r.AssetInfo,
+		AccountNumber: hexutil.Uint64(r.AccountNumber),
+		ExtraCKB:      hexutil.Uint64(r.ExtraCKB),
+		FeeRate:       hexutil.Uint64(r.FeeRate),
+	}
+	return json.Marshal(jsonObj)
+}
