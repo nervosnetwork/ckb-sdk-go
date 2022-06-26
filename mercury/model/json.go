@@ -76,3 +76,39 @@ func (r BuildAdjustAccountPayload) MarshalJSON() ([]byte, error) {
 	}
 	return json.Marshal(jsonObj)
 }
+
+func (r SinceConfig) MarshalJSON() ([]byte, error) {
+	jsonObj := &struct {
+		Flag  SinceFlag      `json:"flag"`
+		Type  SinceType      `json:"type_"`
+		Value hexutil.Uint64 `json:"value"`
+	}{
+		Flag:  r.Flag,
+		Type:  r.Type,
+		Value: hexutil.Uint64(r.Value),
+	}
+	return json.Marshal(jsonObj)
+}
+
+func (r ToInfo) MarshalJSON() ([]byte, error) {
+	jsonObj := &struct {
+		Address string       `json:"address"`
+		Amount  *hexutil.Big `json:"amount"`
+	}{
+		Address: r.Address,
+		Amount:  (*hexutil.Big)(r.Amount),
+	}
+	return json.Marshal(jsonObj)
+}
+
+func (r TransferPayload) MarshalJSON() ([]byte, error) {
+	type transferPayloadAlias TransferPayload
+	jsonObj := &struct {
+		transferPayloadAlias
+		FeeRate hexutil.Uint64 `json:"fee_rate,omitempty"`
+	}{
+		transferPayloadAlias: transferPayloadAlias(r),
+		FeeRate:              hexutil.Uint64(r.FeeRate),
+	}
+	return json.Marshal(jsonObj)
+}
