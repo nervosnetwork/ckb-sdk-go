@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/common"
+	"github.com/nervosnetwork/ckb-sdk-go/types"
+	"math/big"
 )
 
 func (r *Balance) UnmarshalJSON(input []byte) error {
@@ -40,6 +42,68 @@ func (r *GetBalanceResponse) UnmarshalJSON(input []byte) error {
 	*r = GetBalanceResponse{
 		Balances:       r.Balances,
 		TipBlockNumber: r.TipBlockNumber,
+	}
+	return nil
+}
+
+func (r *BurnInfo) UnmarshalJSON(input []byte) error {
+	var jsonObj struct {
+		UdtHash types.Hash   `json:"udt_hash"`
+		Amount  *hexutil.Big `json:"amount"`
+	}
+	if err := json.Unmarshal(input, &jsonObj); err != nil {
+		return err
+	}
+	*r = BurnInfo{
+		UdtHash: jsonObj.UdtHash,
+		Amount:  (*big.Int)(jsonObj.Amount),
+	}
+	return nil
+}
+
+func (r *Record) UnmarshalJSON(input []byte) error {
+	type recordAlias Record
+	var jsonObj struct {
+		recordAlias
+		Amount      *hexutil.Big   `json:"amount"`
+		Occupied    *hexutil.Big   `json:"occupied"`
+		BlockNumber hexutil.Uint64 `json:"block_number"`
+		EpochNumber hexutil.Uint64 `json:"epoch_number"`
+	}
+	if err := json.Unmarshal(input, &jsonObj); err != nil {
+		return err
+	}
+	*r = Record{
+		OutPoint:    jsonObj.OutPoint,
+		Ownership:   jsonObj.Ownership,
+		IoType:      jsonObj.IoType,
+		Amount:      (*big.Int)(jsonObj.Amount),
+		Occupied:    (*big.Int)(jsonObj.Occupied),
+		AssetInfo:   jsonObj.AssetInfo,
+		Extra:       jsonObj.Extra,
+		BlockNumber: uint64(jsonObj.BlockNumber),
+		EpochNumber: uint64(jsonObj.EpochNumber),
+	}
+	return nil
+}
+
+func (r *TransactionInfo) UnmarshalJSON(input []byte) error {
+	type transactionInfoAlias TransactionInfo
+	var jsonObj struct {
+		transactionInfoAlias
+		Fee       hexutil.Uint64 `json:"fee"`
+		Timestamp hexutil.Uint64 `json:"timestamp"`
+	}
+
+	if err := json.Unmarshal(input, &jsonObj); err != nil {
+		return err
+	}
+	*r = TransactionInfo{
+		TxHash:    jsonObj.TxHash,
+		Records:   jsonObj.Records,
+		Fee:       uint64(jsonObj.Fee),
+		Burn:      jsonObj.Burn,
+		Timestamp: uint64(jsonObj.Timestamp),
 	}
 	return nil
 }
