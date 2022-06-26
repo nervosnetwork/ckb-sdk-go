@@ -117,10 +117,22 @@ func (r SimpleTransferPayload) MarshalJSON() ([]byte, error) {
 	type simpleTransferPayloadAlias SimpleTransferPayload
 	jsonObj := &struct {
 		simpleTransferPayloadAlias
-		FeeRate hexutil.Uint64 `json:"fee_rate"`
+		FeeRate hexutil.Uint64 `json:"fee_rate,omitempty"`
 	}{
 		simpleTransferPayloadAlias: simpleTransferPayloadAlias(r),
 		FeeRate:                    hexutil.Uint64(r.FeeRate),
+	}
+	return json.Marshal(jsonObj)
+}
+
+func (r BuildSudtIssueTransactionPayload) MarshalJSON() ([]byte, error) {
+	type buildSudtIssueTransactionPayload BuildSudtIssueTransactionPayload
+	jsonObj := &struct {
+		buildSudtIssueTransactionPayload
+		FeeRate hexutil.Uint64 `json:"fee_rate,omitempty"`
+	}{
+		buildSudtIssueTransactionPayload: buildSudtIssueTransactionPayload(r),
+		FeeRate:                          hexutil.Uint64(r.FeeRate),
 	}
 	return json.Marshal(jsonObj)
 }
