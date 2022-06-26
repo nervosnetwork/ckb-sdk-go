@@ -94,7 +94,6 @@ func (r *TransactionInfo) UnmarshalJSON(input []byte) error {
 		Fee       hexutil.Uint64 `json:"fee"`
 		Timestamp hexutil.Uint64 `json:"timestamp"`
 	}
-
 	if err := json.Unmarshal(input, &jsonObj); err != nil {
 		return err
 	}
@@ -114,7 +113,6 @@ func (r *PaginationResponseTransactionView) UnmarshalJSON(input []byte) error {
 		Count      hexutil.Uint64            `json:"count,omitempty"`
 		NextCursor hexutil.Uint64            `json:"next_cursor,omitempty"`
 	}
-
 	if err := json.Unmarshal(input, &jsonObj); err != nil {
 		return err
 	}
@@ -132,7 +130,6 @@ func (r *PaginationResponseTransactionInfo) UnmarshalJSON(input []byte) error {
 		Count      hexutil.Uint64            `json:"count,omitempty"`
 		NextCursor hexutil.Uint64            `json:"next_cursor,omitempty"`
 	}
-
 	if err := json.Unmarshal(input, &jsonObj); err != nil {
 		return err
 	}
@@ -140,6 +137,23 @@ func (r *PaginationResponseTransactionInfo) UnmarshalJSON(input []byte) error {
 		Response:   jsonObj.Response,
 		Count:      uint64(jsonObj.Count),
 		NextCursor: uint64(jsonObj.NextCursor),
+	}
+	return nil
+}
+
+func (r *AccountInfo) UnmarshalJSON(input []byte) error {
+	var jsonObj struct {
+		AccountNumber  hexutil.Uint `json:"account_number"`
+		AccountAddress string       `json:"account_address"`
+		AccountType    AccountType  `json:"account_type"`
+	}
+	if err := json.Unmarshal(input, &jsonObj); err != nil {
+		return err
+	}
+	*r = AccountInfo{
+		AccountNumber: uint32(jsonObj.AccountNumber),
+		AccountAddress: jsonObj.AccountAddress,
+		AccountType:    jsonObj.AccountType,
 	}
 	return nil
 }
