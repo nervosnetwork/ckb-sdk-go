@@ -107,6 +107,26 @@ func (r *TransactionInfo) UnmarshalJSON(input []byte) error {
 	return nil
 }
 
+func (r *BlockInfo) UnmarshalJSON(input []byte) error {
+	type blockInfoAlias BlockInfo
+	var jsonObj struct {
+		blockInfoAlias
+		BlockNumber hexutil.Uint64 `json:"block_number"`
+		Timestamp   hexutil.Uint64 `json:"timestamp"`
+	}
+	if err := json.Unmarshal(input, &jsonObj); err != nil {
+		return err
+	}
+	*r = BlockInfo{
+		BlockNumber:  uint64(jsonObj.BlockNumber),
+		BlockHash:    jsonObj.BlockHash,
+		ParentHash:   jsonObj.ParentHash,
+		Timestamp:    uint64(jsonObj.Timestamp),
+		Transactions: jsonObj.Transactions,
+	}
+	return nil
+}
+
 func (r *PaginationResponseTransactionView) UnmarshalJSON(input []byte) error {
 	var jsonObj struct {
 		Response   []*TransactionViewWrapper `json:"response"`
