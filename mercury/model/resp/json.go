@@ -21,11 +21,11 @@ func (r *Balance) UnmarshalJSON(input []byte) error {
 		return err
 	}
 	*r = Balance{
-		Ownership: r.Ownership,
-		AssetInfo: r.AssetInfo,
-		Free:      r.Free,
-		Occupied:  r.Occupied,
-		Frozen:    r.Frozen,
+		Ownership: jsonObj.Ownership,
+		AssetInfo: jsonObj.AssetInfo,
+		Free:      (*big.Int)(jsonObj.Free),
+		Occupied:  (*big.Int)(jsonObj.Occupied),
+		Frozen:    (*big.Int)(jsonObj.Frozen),
 	}
 	return nil
 }
@@ -40,8 +40,8 @@ func (r *GetBalanceResponse) UnmarshalJSON(input []byte) error {
 		return err
 	}
 	*r = GetBalanceResponse{
-		Balances:       r.Balances,
-		TipBlockNumber: r.TipBlockNumber,
+		Balances:       jsonObj.Balances,
+		TipBlockNumber: uint64(jsonObj.TipBlockNumber),
 	}
 	return nil
 }
