@@ -124,3 +124,17 @@ func (r SimpleTransferPayload) MarshalJSON() ([]byte, error) {
 	}
 	return json.Marshal(jsonObj)
 }
+
+func (r DaoDepositPayload) MarshalJSON() ([]byte, error) {
+	type daoDepositPayloadAlias DaoDepositPayload
+	jsonObj := &struct {
+		daoDepositPayloadAlias
+		Amount  hexutil.Uint64 `json:"amount"`
+		FeeRate hexutil.Uint64 `json:"fee_rate,omitempty"`
+	}{
+		daoDepositPayloadAlias: daoDepositPayloadAlias(r),
+		Amount:                 hexutil.Uint64(r.Amount),
+		FeeRate:                hexutil.Uint64(r.FeeRate),
+	}
+	return json.Marshal(jsonObj)
+}
