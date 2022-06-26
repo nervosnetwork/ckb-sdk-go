@@ -42,3 +42,18 @@ func (r BlockRange) MarshalJSON() ([]byte, error) {
 	}
 	return json.Marshal(jsonObj)
 }
+
+func (r PaginationRequest) MarshalJSON() ([]byte, error) {
+	jsonObj := &struct {
+		Cursor      hexutil.Uint64 `json:"cursor,omitempty"`
+		Order       Order          `json:"order"`
+		Limit       hexutil.Uint64 `json:"limit,omitempty"`
+		ReturnCount bool           `json:"return_count"`
+	}{
+		Cursor:      hexutil.Uint64(r.Cursor),
+		Order:       r.Order,
+		Limit:       hexutil.Uint64(r.Limit),
+		ReturnCount: r.ReturnCount,
+	}
+	return json.Marshal(jsonObj)
+}
