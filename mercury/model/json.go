@@ -31,3 +31,14 @@ func (r GetBlockInfoPayload) MarshalJSON() ([]byte, error) {
 	}
 	return json.Marshal(jsonObj)
 }
+
+func (r BlockRange) MarshalJSON() ([]byte, error) {
+	jsonObj := &struct {
+		From hexutil.Uint64 `json:"from"`
+		To   hexutil.Uint64 `json:"to"`
+	}{
+		From: hexutil.Uint64(r.From),
+		To:   hexutil.Uint64(r.To),
+	}
+	return json.Marshal(jsonObj)
+}
