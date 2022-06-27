@@ -63,3 +63,27 @@ func TestBuildSudtIssueTransaction(t *testing.T) {
 	assert.NotNil(t, resp.TxView)
 	assert.NotNil(t, resp.ScriptGroups)
 }
+
+func TestBuildSimpleTransferTransaction(t *testing.T) {
+	payload := &model.SimpleTransferPayload{
+		AssetInfo: common.NewCkbAsset(),
+		From:      []string{"ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqfqyerlanzmnkxtmd9ww9n7gr66k8jt4tclm9jnk"},
+		To: []*model.ToInfo{
+			{
+				Address: "ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqg958atl2zdh8jn3ch8lc72nt0cf864ecqdxm9zf",
+				Amount:  big.NewInt(10000000000),
+			},
+		},
+		FeeRate:   500,
+	}
+	resp, err := c.BuildSimpleTransferTransaction(payload)
+	checkError(t, err)
+	assert.NotNil(t, resp.TxView)
+	assert.NotNil(t, resp.ScriptGroups)
+}
+
+func checkError(t *testing.T, err error) {
+	if err != nil {
+		assert.FailNow(t, err.Error())
+	}
+}
