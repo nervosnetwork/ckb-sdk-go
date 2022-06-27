@@ -80,9 +80,31 @@ func TestBuildSimpleTransferTransaction(t *testing.T) {
 				Amount:  big.NewInt(10000000000),
 			},
 		},
-		FeeRate:   500,
+		FeeRate: 500,
 	}
 	resp, err := c.BuildSimpleTransferTransaction(payload)
+	checkError(t, err)
+	assert.NotNil(t, resp.TxView)
+	assert.NotNil(t, resp.ScriptGroups)
+}
+
+func TestBuildTransferTransaction(t *testing.T) {
+	address := "ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqfqyerlanzmnkxtmd9ww9n7gr66k8jt4tclm9jnk"
+	item, err := req.NewAddressItem(address)
+	checkError(t, err)
+	payload := &model.TransferPayload{
+		AssetInfo: common.NewCkbAsset(),
+		From:      []*req.Item{item},
+		To: []*model.ToInfo{
+			{
+				Address: "ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqg958atl2zdh8jn3ch8lc72nt0cf864ecqdxm9zf",
+				Amount:  big.NewInt(100),
+			},
+		},
+		PayFee:  model.PayFeeFrom,
+		FeeRate: 1100,
+	}
+	resp, err := c.BuildTransferTransaction(payload)
 	checkError(t, err)
 	assert.NotNil(t, resp.TxView)
 	assert.NotNil(t, resp.ScriptGroups)
