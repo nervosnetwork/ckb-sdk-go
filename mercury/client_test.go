@@ -6,6 +6,7 @@ import (
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/req"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 	"github.com/stretchr/testify/assert"
+	"math/big"
 	"testing"
 )
 
@@ -41,4 +42,24 @@ func TestGetBalance(t *testing.T) {
 	assert.Equal(t, 2, len(resp.Balances))
 	assert.Equal(t, types.HexToHash("0xf21e7350fa9518ed3cbb008e0e8c941d7e01a12181931d5608aa366ee22228bd"),
 		resp.Balances[0].AssetInfo.UdtHash)
+}
+
+func TestBuildSudtIssueTransaction(t *testing.T) {
+	address := "ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqg958atl2zdh8jn3ch8lc72nt0cf864ecqdxm9zf"
+	item, _ := req.NewIdentityItemByAddress(address)
+	payload := &model.BuildSudtIssueTransactionPayload{
+		Owner: address,
+		From:  []*req.Item{item},
+		To: []*model.ToInfo{
+			{
+				Address: "ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqg6flmrtx8y8tuu6s3jf2ahv4l6sjw9hsc3t4tqv",
+				Amount:  big.NewInt(1),
+			},
+		},
+		OutputCapacityProvider: model.OutputCapacityProviderFrom,
+		FeeRate:                1000,
+	}
+	resp, _ := c.BuildSudtIssueTransaction(payload)
+	assert.NotNil(t, resp.TxView)
+	assert.NotNil(t, resp.ScriptGroups)
 }
