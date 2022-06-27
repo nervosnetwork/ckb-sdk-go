@@ -152,6 +152,20 @@ func TestBuildDaoClaimTransaction(t *testing.T) {
 	assert.NotNil(t, resp.ScriptGroups)
 }
 
+func TestGetAccountInfo(t *testing.T) {
+	item, err := req.NewAddressItem("ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq06y24q4tc4tfkgze35cc23yprtpzfrzygljdjh9")
+	checkError(t, err)
+	payload := &model.GetAccountInfoPayload{
+		Item:      item,
+		AssetInfo: common.NewUdtAsset1(types.HexToHash("0xf21e7350fa9518ed3cbb008e0e8c941d7e01a12181931d5608aa366ee22228bd")),
+	}
+	resp, err := c.GetAccountInfo(payload)
+	checkError(t, err)
+	// asset not nil
+	assert.NotEqual(t, "", resp.AccountAddress)
+	assert.NotEqual(t, "", resp.AccountType)
+}
+
 func checkError(t *testing.T, err error) {
 	if err != nil {
 		t.Error(err, string(debug.Stack()))
