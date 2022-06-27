@@ -6,8 +6,8 @@ import (
 )
 
 type TransferCompletionResponse struct {
-	TxView           *types.Transaction `json:"tx_view"`
-	SignatureActions []*ScriptGroup     `json:"signature_actions"`
+	TxView       *types.Transaction `json:"tx_view"`
+	ScriptGroups []*ScriptGroup     `json:"script_groups"`
 }
 
 type ScriptGroup struct {
