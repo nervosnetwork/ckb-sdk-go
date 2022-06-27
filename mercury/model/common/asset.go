@@ -21,9 +21,17 @@ func NewCkbAsset() *AssetInfo {
 	}
 }
 
+// TODO: remove
 func NewUdtAsset(udtHash string) *AssetInfo {
 	return &AssetInfo{
 		AssetType: UDT,
 		UdtHash:   types.HexToHash(udtHash),
+	}
+}
+
+func NewUdtAsset1(udtHash types.Hash) *AssetInfo {
+	return &AssetInfo{
+		AssetType: UDT,
+		UdtHash:   udtHash,
 	}
 }
