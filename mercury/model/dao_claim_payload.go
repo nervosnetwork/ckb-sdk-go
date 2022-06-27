@@ -3,9 +3,9 @@ package model
 import "github.com/nervosnetwork/ckb-sdk-go/mercury/model/req"
 
 type DaoClaimPayload struct {
-	From    *req.Item `json:"from"`
-	To      string    `json:"to,omitempty"`
-	FeeRate uint64    `json:"fee_rate,omitempty"`
+	From    []*req.Item `json:"from"`
+	To      string      `json:"to,omitempty"`
+	FeeRate uint64      `json:"fee_rate,omitempty"`
 }
 
 type daoClaimPayloadBuilder struct {
@@ -28,7 +28,7 @@ func (builder *daoClaimPayloadBuilder) AddFeeRate(feeRate uint64) {
 
 func (builder *daoClaimPayloadBuilder) Build() *DaoClaimPayload {
 	return &DaoClaimPayload{
-		From:    builder.From,
+		From:    nil,
 		To:      builder.To,
 		FeeRate: builder.FeeRate,
 	}

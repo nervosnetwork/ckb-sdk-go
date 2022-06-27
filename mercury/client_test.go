@@ -138,6 +138,19 @@ func TestBuildDaoWithdrawTransaction(t *testing.T) {
 	assert.NotNil(t, resp.ScriptGroups)
 }
 
+func TestBuildDaoClaimTransaction(t *testing.T) {
+	from, err := req.NewAddressItem("ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqfqyerlanzmnkxtmd9ww9n7gr66k8jt4tclm9jnk")
+	checkError(t, err)
+	payload := &model.DaoClaimPayload{
+		From:    []*req.Item{from},
+		FeeRate: 1100,
+	}
+	resp, err := c.BuildDaoClaimTransaction(payload)
+	checkError(t, err)
+	assert.NotNil(t, resp.TxView)
+	assert.NotNil(t, resp.ScriptGroups)
+}
+
 func checkError(t *testing.T, err error) {
 	if err != nil {
 		assert.FailNow(t, err.Error())
