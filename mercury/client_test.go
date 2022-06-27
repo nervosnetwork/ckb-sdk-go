@@ -28,3 +28,17 @@ func TestBuildAdjustAccountTransaction(t *testing.T) {
 	assert.NotNil(t, tx.ScriptGroups)
 	assert.True(t, len(tx.ScriptGroups) >= 1)
 }
+
+func TestGetBalance(t *testing.T) {
+	item, _ := req.NewIdentityItemByPublicKeyHash("0x839f1806e85b40c13d3c73866045476cc9a8c214")
+	payload := &model.GetBalancePayload{
+		Item: item,
+		AssetInfos: []*common.AssetInfo{
+			common.NewUdtAsset1(types.HexToHash("0xf21e7350fa9518ed3cbb008e0e8c941d7e01a12181931d5608aa366ee22228bd"))},
+		TipBlockNumber: 0,
+	}
+	resp, _ := c.GetBalance(payload)
+	assert.Equal(t, 2, len(resp.Balances))
+	assert.Equal(t, types.HexToHash("0xf21e7350fa9518ed3cbb008e0e8c941d7e01a12181931d5608aa366ee22228bd"),
+		resp.Balances[0].AssetInfo.UdtHash)
+}
