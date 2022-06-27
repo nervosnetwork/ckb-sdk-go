@@ -6,10 +6,10 @@ import (
 )
 
 type DaoDepositPayload struct {
-	From    *req.Item `json:"from"`
-	To      string    `json:"to,omitempty"`
-	Amount  uint64    `json:"amount"`
-	FeeRate uint64    `json:"fee_rate,omitempty"`
+	From    []*req.Item `json:"from"`
+	To      string      `json:"to,omitempty"`
+	Amount  uint64      `json:"amount"`
+	FeeRate uint64      `json:"fee_rate,omitempty"`
 }
 
 type daoDepositPayloadBuilder struct {
@@ -41,7 +41,7 @@ func (builder *daoDepositPayloadBuilder) AddFeeRate(feeRate uint64) {
 
 func (builder *daoDepositPayloadBuilder) Build() *DaoDepositPayload {
 	return &DaoDepositPayload{
-		From:    builder.From,
+		From:    nil,
 		To:      builder.To,
 		Amount:  builder.Amount,
 		FeeRate: builder.FeeRate,

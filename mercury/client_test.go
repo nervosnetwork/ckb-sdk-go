@@ -110,6 +110,21 @@ func TestBuildTransferTransaction(t *testing.T) {
 	assert.NotNil(t, resp.ScriptGroups)
 }
 
+func TestBuildDaoDepositTransaction(t *testing.T) {
+	from, err := req.NewAddressItem("ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqfqyerlanzmnkxtmd9ww9n7gr66k8jt4tclm9jnk")
+	checkError(t, err)
+	payload := &model.DaoDepositPayload{
+		From:    []*req.Item{from},
+		To:      "ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqvrnuvqd6zmgrqn60rnsesy23mvex5vy9q0g8hfd",
+		Amount: 20000000000,
+		FeeRate: 1100,
+	}
+	resp, err := c.BuildDaoDepositTransaction(payload)
+	checkError(t, err)
+	assert.NotNil(t, resp.TxView)
+	assert.NotNil(t, resp.ScriptGroups)
+}
+
 func checkError(t *testing.T, err error) {
 	if err != nil {
 		assert.FailNow(t, err.Error())
