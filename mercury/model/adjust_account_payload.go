@@ -14,6 +14,38 @@ type BuildAdjustAccountPayload struct {
 	FeeRate       uint64            `json:"fee_rate,omitempty"`
 }
 
+func NewBuildAdjustAccountPayload() *BuildAdjustAccountPayload{
+	return &BuildAdjustAccountPayload{
+		From:          make([]*req.Item, 0),
+		AssetInfo:     common.NewCkbAsset(),
+	}
+}
+
+func (r *BuildAdjustAccountPayload) SetItem(item *req.Item) {
+	r.Item = item
+}
+
+func (r *BuildAdjustAccountPayload) AddFrom(item *req.Item) {
+	r.From = append(r.From, item)
+}
+
+func (r *BuildAdjustAccountPayload) SetAssetInfo(assetInfo *common.AssetInfo) {
+	r.AssetInfo = assetInfo
+}
+
+func (r *BuildAdjustAccountPayload) SetAccountNumber(accountNumber uint32) {
+	r.AccountNumber = accountNumber
+}
+
+func (r *BuildAdjustAccountPayload) SetExtraCKB(extraCKB uint64) {
+	r.ExtraCKB = extraCKB
+}
+
+func (r *BuildAdjustAccountPayload) SetFeeRate(feeRate uint64) {
+	r.FeeRate = feeRate
+}
+
+
 type buildAdjustAccountPayloadBuilder struct {
 	Item          *req.Item
 	From          []*req.Item

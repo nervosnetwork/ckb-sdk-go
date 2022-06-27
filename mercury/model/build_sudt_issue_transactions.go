@@ -14,6 +14,13 @@ type BuildSudtIssueTransactionPayload struct {
 	Since                  *SinceConfig           `json:"since,omitempty"`
 }
 
+func NewBuildSudtIssueTransactionPayload() *BuildSudtIssueTransactionPayload {
+	return &BuildSudtIssueTransactionPayload{
+		From:                   make([]*req.Item, 0),
+		To:                     make([]*ToInfo, 0),
+	}
+}
+
 type buildSudtIssueTransactionPayloadBuilder struct {
 	Owner                  string
 	From                   []*req.Item
