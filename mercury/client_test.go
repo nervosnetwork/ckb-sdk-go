@@ -7,6 +7,7 @@ import (
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 	"github.com/stretchr/testify/assert"
 	"math/big"
+	"runtime/debug"
 	"testing"
 )
 
@@ -153,6 +154,6 @@ func TestBuildDaoClaimTransaction(t *testing.T) {
 
 func checkError(t *testing.T, err error) {
 	if err != nil {
-		assert.FailNow(t, err.Error())
+		t.Error(err, string(debug.Stack()))
 	}
 }
