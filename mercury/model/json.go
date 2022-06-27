@@ -6,6 +6,7 @@ import (
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/common"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/req"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
+	"reflect"
 )
 
 func (r GetBalancePayload) MarshalJSON() ([]byte, error) {
@@ -24,10 +25,13 @@ func (r GetBalancePayload) MarshalJSON() ([]byte, error) {
 func (r GetBlockInfoPayload) MarshalJSON() ([]byte, error) {
 	jsonObj := &struct {
 		BlockNumber hexutil.Uint64 `json:"block_number,omitempty"`
-		BlockHash   types.Hash     `json:"block_hash,omitempty"`
+		BlockHash   *types.Hash    `json:"block_hash,omitempty"`
 	}{
 		BlockNumber: hexutil.Uint64(r.BlockNumber),
-		BlockHash:   r.BlockHash,
+	}
+	// omit for empty hash
+	if (!reflect.DeepEqual(r.BlockHash, types.Hash{})) {
+		jsonObj.BlockHash = &r.BlockHash
 	}
 	return json.Marshal(jsonObj)
 }
@@ -153,7 +157,7 @@ func (r DaoDepositPayload) MarshalJSON() ([]byte, error) {
 
 func (r DaoWithdrawPayload) MarshalJSON() ([]byte, error) {
 	jsonObj := &struct {
-		From    []*req.Item      `json:"from"`
+		From    []*req.Item    `json:"from"`
 		FeeRate hexutil.Uint64 `json:"fee_rate,omitempty"`
 	}{
 		From:    r.From,
@@ -164,7 +168,7 @@ func (r DaoWithdrawPayload) MarshalJSON() ([]byte, error) {
 
 func (r DaoClaimPayload) MarshalJSON() ([]byte, error) {
 	jsonObj := &struct {
-		From    []*req.Item      `json:"from"`
+		From    []*req.Item    `json:"from"`
 		To      string         `json:"to,omitempty"`
 		FeeRate hexutil.Uint64 `json:"fee_rate,omitempty"`
 	}{

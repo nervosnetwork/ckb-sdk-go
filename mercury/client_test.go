@@ -166,6 +166,30 @@ func TestGetAccountInfo(t *testing.T) {
 	assert.NotEqual(t, "", resp.AccountType)
 }
 
+func TestGetBlockInfoByNumber(t *testing.T) {
+	payload := &model.GetBlockInfoPayload{
+		BlockNumber: 2172093,
+	}
+	resp, err := c.GetBlockInfo(payload)
+	checkError(t, err)
+	assert.NotNil(t, resp)
+	assert.NotEqual(t, types.Hash{}, resp.ParentHash)
+	assert.NotEqual(t, types.Hash{}, resp.BlockHash)
+	assert.Equal(t, 3, len(resp.Transactions))
+}
+
+func TestGetBlockInfoByHash(t *testing.T) {
+	payload := &model.GetBlockInfoPayload{
+		BlockHash: types.HexToHash("0xee8adba356105149cb9dc1cb0d09430a6bd01182868787ace587961c0d64e742"),
+	}
+	resp, err := c.GetBlockInfo(payload)
+	checkError(t, err)
+	assert.NotNil(t, resp)
+	assert.NotEqual(t, types.Hash{}, resp.ParentHash)
+	assert.NotEqual(t, types.Hash{}, resp.BlockHash)
+	assert.Equal(t, 3, len(resp.Transactions))
+}
+
 func checkError(t *testing.T, err error) {
 	if err != nil {
 		t.Error(err, string(debug.Stack()))
