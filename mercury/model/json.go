@@ -153,7 +153,7 @@ func (r DaoDepositPayload) MarshalJSON() ([]byte, error) {
 
 func (r DaoWithdrawPayload) MarshalJSON() ([]byte, error) {
 	jsonObj := &struct {
-		From    *req.Item      `json:"from"`
+		From    []*req.Item      `json:"from"`
 		FeeRate hexutil.Uint64 `json:"fee_rate,omitempty"`
 	}{
 		From:    r.From,

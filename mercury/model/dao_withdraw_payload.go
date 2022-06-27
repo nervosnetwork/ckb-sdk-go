@@ -3,8 +3,8 @@ package model
 import "github.com/nervosnetwork/ckb-sdk-go/mercury/model/req"
 
 type DaoWithdrawPayload struct {
-	From    *req.Item `json:"from"`
-	FeeRate uint64    `json:"fee_rate,omitempty"`
+	From    []*req.Item `json:"from"`
+	FeeRate uint64      `json:"fee_rate,omitempty"`
 }
 
 type daoWithdrawPayloadBuilder struct {
@@ -27,7 +27,7 @@ func (builder *daoWithdrawPayloadBuilder) AddFeeRate(address uint64) {
 
 func (builder *daoWithdrawPayloadBuilder) Build() *DaoWithdrawPayload {
 	return &DaoWithdrawPayload{
-		From:    builder.From,
+		From:    nil,
 		FeeRate: builder.FeeRate,
 	}
 }
