@@ -11,7 +11,7 @@ import (
 type TransferPayload struct {
 	AssetInfo              *common.AssetInfo      `json:"asset_info,omitempty"`
 	From                   []*req.Item            `json:"from"`
-	To                     *ToInfo                `json:"to"`
+	To                     []*ToInfo                `json:"to"`
 	OutputCapacityProvider OutputCapacityProvider `json:"output_capacity_provider,omitempty"`
 	PayFee                 PayFee                 `json:"pay_fee,omitempty"`
 	FeeRate                uint64                 `json:"fee_rate,omitempty"`
@@ -118,7 +118,7 @@ func (builder *transferBuilder) Build() *TransferPayload {
 	return &TransferPayload{
 		AssetInfo:              builder.AssetInfo,
 		From:                   builder.From,
-		To:                     builder.To,
+		To:                     nil,
 		OutputCapacityProvider: builder.OutputCapacityProvider,
 		PayFee:                 builder.PayFee,
 		FeeRate:                builder.FeeRate,
