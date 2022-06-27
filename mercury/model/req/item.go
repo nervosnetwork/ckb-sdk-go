@@ -18,6 +18,18 @@ func NewAddressItem(addr string) (*Item, error) {
 	}, nil
 }
 
+func NewIdentityItemByPublicKeyHash(publicKeyHash string) (*Item, error) {
+	hash, err := hexutil.Decode(publicKeyHash)
+	if err != nil {
+		return nil, err
+	}
+	identity, err := toIdentity(IdentityFlagsCkb, hash[:20])
+	if err != nil {
+		return nil, err
+	}
+	return &Item{ItemIdentity, identity}, nil
+}
+
 func NewIdentityItemByCkb(publicKeyHash string) (*Item, error) {
 	hash, err := hexutil.Decode(publicKeyHash)
 	if err != nil {
