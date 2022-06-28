@@ -178,6 +178,21 @@ func TestGetBlockInfoByNumber(t *testing.T) {
 	assert.Equal(t, 3, len(resp.Transactions))
 }
 
+func TestGetSpentTransactionWithTransactionView(t *testing.T) {
+	payload := &model.GetSpentTransactionPayload{
+		OutPoint:      types.OutPoint{
+			TxHash: types.HexToHash("0xb2e952a30656b68044e1d5eed69f1967347248967785449260e3942443cbeece"),
+			Index:  1,
+		},
+	}
+	resp, err := c.GetSpentTransactionWithTransactionView(payload)
+	checkError(t, err)
+	assert.NotNil(t, resp.Value.Transaction)
+	assert.Equal(t, types.HexToHash("0x407033c3baa6104c9f46d3c7948b812274556148d74b0db251f50fc6e7507233"), resp.Value.TxStatus.BlockHash)
+	assert.Equal(t, types.TransactionStatusCommitted, resp.Value.TxStatus.Status)
+	assert.Equal(t, uint64(0x17bc67c4078), resp.Value.TxStatus.Timestamp)
+}
+
 func TestGetBlockInfoByHash(t *testing.T) {
 	payload := &model.GetBlockInfoPayload{
 		BlockHash: types.HexToHash("0xee8adba356105149cb9dc1cb0d09430a6bd01182868787ace587961c0d64e742"),
