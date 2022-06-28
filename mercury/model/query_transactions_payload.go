@@ -6,13 +6,20 @@ import (
 )
 
 type QueryTransactionsPayload struct {
-	Item          *req.Item               `json:"item"`
-	AssetInfos    []*common.AssetInfo     `json:"asset_infos"`
-	Extra         *common.ExtraFilterType `json:"extra,omitempty"`
-	BlockRange    *BlockRange             `json:"block_range,omitempty"`
-	Pagination    *PaginationRequest      `json:"pagination"`
-	StructureType StructureType           `json:"structure_type"`
+	Item          *req.Item           `json:"item"`
+	AssetInfos    []*common.AssetInfo `json:"asset_infos"`
+	Extra         *ExtraFilterType    `json:"extra,omitempty"`
+	BlockRange    *BlockRange         `json:"block_range,omitempty"`
+	Pagination    *PaginationRequest  `json:"pagination"`
+	StructureType StructureType       `json:"structure_type"`
 }
+
+type ExtraFilterType string
+
+const (
+	ExtraFilterDao      ExtraFilterType = "Dao"
+	ExtraFilterCellBase ExtraFilterType = "CellBase"
+)
 
 func (v *QueryTransactionsPayload) AddAssetInfo(assetInfo *common.AssetInfo) {
 	v.AssetInfos = append(v.AssetInfos, assetInfo)
@@ -40,7 +47,7 @@ const (
 type QueryTransactionsPayloadBuilder struct {
 	Item          *req.Item
 	AssetInfos    []*common.AssetInfo
-	Extra         *common.ExtraFilterType
+	Extra         *ExtraFilterType
 	BlockRange    *BlockRange
 	Pagination    *PaginationRequest
 	StructureType StructureType
@@ -54,7 +61,7 @@ func (b *QueryTransactionsPayloadBuilder) AddAssetInfo(assetInfo *common.AssetIn
 	b.AssetInfos = append(b.AssetInfos, assetInfo)
 	return b
 }
-func (b *QueryTransactionsPayloadBuilder) SetExtra(extra *common.ExtraFilterType) *QueryTransactionsPayloadBuilder {
+func (b *QueryTransactionsPayloadBuilder) SetExtra(extra *ExtraFilterType) *QueryTransactionsPayloadBuilder {
 	b.Extra = extra
 	return b
 }
