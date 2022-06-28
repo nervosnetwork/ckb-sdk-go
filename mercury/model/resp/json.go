@@ -130,16 +130,20 @@ func (r *BlockInfo) UnmarshalJSON(input []byte) error {
 func (r *PaginationResponseTransactionView) UnmarshalJSON(input []byte) error {
 	var jsonObj struct {
 		Response   []*TransactionViewWrapper `json:"response"`
-		Count      hexutil.Uint64            `json:"count,omitempty"`
-		NextCursor hexutil.Uint64            `json:"next_cursor,omitempty"`
+		Count      *hexutil.Uint64           `json:"count,omitempty"`
+		NextCursor *hexutil.Uint64           `json:"next_cursor,omitempty"`
 	}
 	if err := json.Unmarshal(input, &jsonObj); err != nil {
 		return err
 	}
 	*r = PaginationResponseTransactionView{
-		Response:   jsonObj.Response,
-		Count:      uint64(jsonObj.Count),
-		NextCursor: uint64(jsonObj.NextCursor),
+		Response: jsonObj.Response,
+	}
+	if jsonObj.Count != nil {
+		r.Count = uint64(*jsonObj.Count)
+	}
+	if jsonObj.NextCursor != nil {
+		r.NextCursor = uint64(*jsonObj.NextCursor)
 	}
 	return nil
 }
@@ -147,16 +151,20 @@ func (r *PaginationResponseTransactionView) UnmarshalJSON(input []byte) error {
 func (r *PaginationResponseTransactionInfo) UnmarshalJSON(input []byte) error {
 	var jsonObj struct {
 		Response   []*TransactionInfoWrapper `json:"response"`
-		Count      hexutil.Uint64            `json:"count,omitempty"`
-		NextCursor hexutil.Uint64            `json:"next_cursor,omitempty"`
+		Count      *hexutil.Uint64           `json:"count,omitempty"`
+		NextCursor *hexutil.Uint64           `json:"next_cursor,omitempty"`
 	}
 	if err := json.Unmarshal(input, &jsonObj); err != nil {
 		return err
 	}
 	*r = PaginationResponseTransactionInfo{
-		Response:   jsonObj.Response,
-		Count:      uint64(jsonObj.Count),
-		NextCursor: uint64(jsonObj.NextCursor),
+		Response: jsonObj.Response,
+	}
+	if jsonObj.Count != nil {
+		r.Count = uint64(*jsonObj.Count)
+	}
+	if jsonObj.NextCursor != nil {
+		r.NextCursor = uint64(*jsonObj.NextCursor)
 	}
 	return nil
 }

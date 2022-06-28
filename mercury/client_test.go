@@ -200,6 +200,67 @@ func TestGetSpentTransactionWithTransactionInfo(t *testing.T) {
 	assert.Equal(t, uint64(0x17bc67c4078), resp.Value.Timestamp)
 }
 
+func TestQueryTransactions(t *testing.T) {
+	item, err := req.NewAddressItem("ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqg6flmrtx8y8tuu6s3jf2ahv4l6sjw9hsc3t4tqv")
+	checkError(t, err)
+	payload := &model.QueryTransactionsPayload{
+		Item:       item,
+		AssetInfos: []*common.AssetInfo{common.NewCkbAsset()},
+		BlockRange: &model.BlockRange{
+			From: 2778100,
+			To:   3636218,
+		},
+		Pagination: &model.PaginationRequest{
+			Order:       model.ASC,
+			Limit:       2,
+			ReturnCount: true,
+		},
+	}
+	resp1, err := c.QueryTransactionsWithTransactionView(payload)
+	checkError(t, err)
+	assert.NotNil(t, uint64(0x02), resp1.Count)
+	assert.NotNil(t, 2, len(resp1.Response))
+	resp2, err := c.QueryTransactionsWithTransactionInfo(payload)
+	checkError(t, err)
+	assert.NotNil(t, uint64(0x02), resp2.Count)
+	assert.NotNil(t, 2, len(resp2.Response))
+}
+
+func TestQueryTransactionsWithPage(t *testing.T) {
+	item, err := req.NewIdentityItemByPublicKeyHash("0x1a4ff63598e43af9cd42324abb7657fa849c5bc3")
+	checkError(t, err)
+	payload := &model.QueryTransactionsPayload{
+		Item:       item,
+		AssetInfos: []*common.AssetInfo{},
+		Pagination: &model.PaginationRequest{
+			Order:       model.DESC,
+			Limit:       1,
+			ReturnCount: true,
+		},
+	}
+	resp, err := c.QueryTransactionsWithTransactionView(payload)
+	checkError(t, err)
+	assert.Equal(t, 1, len(resp.Response))
+
+	payload = &model.QueryTransactionsPayload{
+		Item:       item,
+		AssetInfos: []*common.AssetInfo{},
+		Pagination: &model.PaginationRequest{
+			Cursor:      resp.NextCursor,
+			Order:       model.DESC,
+			Limit:       2,
+			ReturnCount: true,
+		},
+	}
+	resp, err = c.QueryTransactionsWithTransactionView(payload)
+	checkError(t, err)
+	assert.Equal(t, 2, len(resp.Response))
+	assert.Equal(t, types.HexToHash("0x88638e32403336912f8387ab5298ac3d3e1588082361d2fc0840808671467e54"),
+		resp.Response[0].Value.Transaction.Hash)
+	assert.Equal(t, types.HexToHash("0xeedfaf24add85ceea295b46a30c0b0c88bb5006edbbddb069092eb39f77a0f66"),
+		resp.Response[1].Value.Transaction.Hash)
+}
+
 func TestGetTransactionInfo(t *testing.T) {
 	resp, err := c.GetTransactionInfo(types.HexToHash("0x4329e4c751c95384a51072d4cbc9911a101fd08fc32c687353d016bf38b8b22c"))
 	checkError(t, err)
