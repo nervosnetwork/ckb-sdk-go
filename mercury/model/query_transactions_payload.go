@@ -21,10 +21,6 @@ const (
 	ExtraFilterCellBase ExtraFilterType = "CellBase"
 )
 
-func (v *QueryTransactionsPayload) AddAssetInfo(assetInfo *common.AssetInfo) {
-	v.AssetInfos = append(v.AssetInfos, assetInfo)
-}
-
 type BlockRange struct {
 	From uint64 `json:"from"`
 	To   uint64 `json:"to"`
@@ -43,74 +39,3 @@ const (
 	ASC  Order = "Asc"
 	DESC Order = "Desc"
 )
-
-type QueryTransactionsPayloadBuilder struct {
-	Item          *req.Item
-	AssetInfos    []*common.AssetInfo
-	Extra         *ExtraFilterType
-	BlockRange    *BlockRange
-	Pagination    *PaginationRequest
-	StructureType StructureType
-}
-
-func (b *QueryTransactionsPayloadBuilder) SetItem(item *req.Item) *QueryTransactionsPayloadBuilder {
-	b.Item = item
-	return b
-}
-func (b *QueryTransactionsPayloadBuilder) AddAssetInfo(assetInfo *common.AssetInfo) *QueryTransactionsPayloadBuilder {
-	b.AssetInfos = append(b.AssetInfos, assetInfo)
-	return b
-}
-func (b *QueryTransactionsPayloadBuilder) SetExtra(extra *ExtraFilterType) *QueryTransactionsPayloadBuilder {
-	b.Extra = extra
-	return b
-}
-
-func (b *QueryTransactionsPayloadBuilder) AddBlockRange(blockRangerange *BlockRange) *QueryTransactionsPayloadBuilder {
-	b.BlockRange = blockRangerange
-	return b
-}
-
-func (b *QueryTransactionsPayloadBuilder) SetCursor(cursor uint64) *QueryTransactionsPayloadBuilder {
-	b.Pagination.Cursor = cursor
-	return b
-}
-
-func (b *QueryTransactionsPayloadBuilder) SetOrder(order Order) *QueryTransactionsPayloadBuilder {
-	b.Pagination.Order = order
-	return b
-}
-
-func (b *QueryTransactionsPayloadBuilder) SetLimit(limit uint64) *QueryTransactionsPayloadBuilder {
-	b.Pagination.Limit = limit
-	return b
-}
-
-func NewQueryTransactionsPayloadBuilder() *QueryTransactionsPayloadBuilder {
-	return &QueryTransactionsPayloadBuilder{
-		Item:       nil,
-		AssetInfos: []*common.AssetInfo{},
-		Extra:      nil,
-		BlockRange: nil,
-		Pagination: &PaginationRequest{
-			Order:       DESC,
-			Limit:       50,
-			ReturnCount: false,
-		},
-	}
-}
-
-func (b QueryTransactionsPayloadBuilder) Build() *QueryTransactionsPayload {
-	payload := &QueryTransactionsPayload{
-		Item:          b.Item,
-		AssetInfos:    b.AssetInfos,
-		Extra:         b.Extra,
-		BlockRange:    b.BlockRange,
-		Pagination:    b.Pagination,
-		StructureType: b.StructureType,
-	}
-	if payload.Pagination.Cursor == 0 && payload.Pagination.Order == DESC {
-		payload.Pagination.Cursor = 0x7ffffffffffffffe
-	}
-	return payload
-}
