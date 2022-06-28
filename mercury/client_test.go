@@ -190,6 +190,13 @@ func TestGetBlockInfoByHash(t *testing.T) {
 	assert.Equal(t, 3, len(resp.Transactions))
 }
 
+func TestGetDbInfo(t *testing.T) {
+	resp, err := c.GetDbInfo()
+	checkError(t, err)
+	assert.NotEqual(t, "", resp.Version)
+	assert.NotEqual(t, 0, resp.ConnSize)
+}
+
 func checkError(t *testing.T, err error) {
 	if err != nil {
 		t.Error(err, string(debug.Stack()))
