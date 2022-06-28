@@ -13,7 +13,7 @@ const (
 
 func NewAddressItem(addr string) (*Item, error) {
 	return &Item{
-		ItemAddress,
+		ItemTypeAddress,
 		addr,
 	}, nil
 }
@@ -27,7 +27,7 @@ func NewIdentityItemByPublicKeyHash(publicKeyHash string) (*Item, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Item{ItemIdentity, identity}, nil
+	return &Item{ItemTypeIdentity, identity}, nil
 }
 
 func NewIdentityItemByCkb(publicKeyHash string) (*Item, error) {
@@ -39,7 +39,7 @@ func NewIdentityItemByCkb(publicKeyHash string) (*Item, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Item{ItemIdentity, identity}, nil
+	return &Item{ItemTypeIdentity, identity}, nil
 }
 
 func NewIdentityItemByAddress(address string) (*Item, error) {
@@ -53,7 +53,7 @@ func NewIdentityItemByAddress(address string) (*Item, error) {
 		return nil, err
 	}
 
-	return &Item{ItemIdentity, identity}, nil
+	return &Item{ItemTypeIdentity, identity}, nil
 }
 
 func toIdentity(flag byte, content []byte) (string, error) {
@@ -67,7 +67,7 @@ func toIdentity(flag byte, content []byte) (string, error) {
 func NewOutPointItem(txHash types.Hash, index uint) *Item {
 	outPoint := types.OutPoint{TxHash: txHash, Index: index}
 	return &Item{
-		ItemOutPoint,
+		ItemTypeOutPoint,
 		outPoint,
 	}
 }
@@ -80,7 +80,7 @@ type Item struct {
 type ItemType string
 
 const (
-	ItemAddress  ItemType = "Address"
-	ItemIdentity          = "Identity"
-	ItemOutPoint          = "OutPoint"
+	ItemTypeAddress  ItemType = "Address"
+	ItemTypeIdentity          = "Identity"
+	ItemTypeOutPoint          = "OutPoint"
 )

@@ -20,11 +20,11 @@ func TestJsonDaoState(t *testing.T) {
 
 	jsonText = []byte(`
 {
-	"type": "Deposit",
+	"type": "Withdraw",
 	"value": ["0x100", "0x400"]
 }`)
 	json.Unmarshal(jsonText, &v)
-	assert.Equal(t, DaoStateTypeDeposit, v.Type)
+	assert.Equal(t, DaoStateTypeWithdraw, v.Type)
 	assert.Equal(t, 2, len(v.Value))
 	assert.Equal(t, uint64(0x100), v.Value[0])
 	assert.Equal(t, uint64(0x400), v.Value[1])
