@@ -146,7 +146,7 @@ func (cli *client) BuildSudtIssueTransaction(payload *model.BuildSudtIssueTransa
 
 func (cli *client) RegisterAddresses(normalAddresses []string) ([]string, error) {
 	var scriptHash []string
-	err := cli.c.Call(&scriptHash, "register_address", normalAddresses)
+	err := cli.c.Call(&scriptHash, "register_addresses", normalAddresses)
 	if err != nil {
 		return scriptHash, err
 	}

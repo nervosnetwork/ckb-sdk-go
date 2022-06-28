@@ -313,6 +313,13 @@ func TestSyncStateInfo(t *testing.T) {
 	checkError(t, err)
 	assert.NotEqual(t, "", resp.State)
 }
+func TestRegisterAddresses(t *testing.T) {
+	resp, err := c.RegisterAddresses([]string{
+		"ckt1qq6pngwqn6e9vlm92th84rk0l4jp2h8lurchjmnwv8kq3rt5psf4vqdrhpvcu82numz73852ed45cdxn4kcn72cvxh4jt",
+	})
+	checkError(t, err)
+	assert.True(t, len(resp) >= 1)
+}
 
 func checkError(t *testing.T, err error) {
 	if err != nil {
