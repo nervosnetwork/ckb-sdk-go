@@ -21,7 +21,7 @@ func TestBuildAdjustAccountTransaction(t *testing.T) {
 	payload := &model.BuildAdjustAccountPayload{
 		Item:          item,
 		From:          []*req.Item{from},
-		AssetInfo:     common.NewUdtAsset1(types.HexToHash("0xf21e7350fa9518ed3cbb008e0e8c941d7e01a12181931d5608aa366ee22228bd")),
+		AssetInfo:     common.NewUdtAsset(types.HexToHash("0xf21e7350fa9518ed3cbb008e0e8c941d7e01a12181931d5608aa366ee22228bd")),
 		AccountNumber: 1,
 		ExtraCKB:      20000000000,
 		FeeRate:       1000,
@@ -39,7 +39,7 @@ func TestGetBalance(t *testing.T) {
 	payload := &model.GetBalancePayload{
 		Item: item,
 		AssetInfos: []*common.AssetInfo{
-			common.NewUdtAsset1(types.HexToHash("0xf21e7350fa9518ed3cbb008e0e8c941d7e01a12181931d5608aa366ee22228bd"))},
+			common.NewUdtAsset(types.HexToHash("0xf21e7350fa9518ed3cbb008e0e8c941d7e01a12181931d5608aa366ee22228bd"))},
 		TipBlockNumber: 0,
 	}
 	resp, err := c.GetBalance(payload)
@@ -157,7 +157,7 @@ func TestGetAccountInfo(t *testing.T) {
 	checkError(t, err)
 	payload := &model.GetAccountInfoPayload{
 		Item:      item,
-		AssetInfo: common.NewUdtAsset1(types.HexToHash("0xf21e7350fa9518ed3cbb008e0e8c941d7e01a12181931d5608aa366ee22228bd")),
+		AssetInfo: common.NewUdtAsset(types.HexToHash("0xf21e7350fa9518ed3cbb008e0e8c941d7e01a12181931d5608aa366ee22228bd")),
 	}
 	resp, err := c.GetAccountInfo(payload)
 	checkError(t, err)
