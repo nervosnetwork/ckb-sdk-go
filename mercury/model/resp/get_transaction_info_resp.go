@@ -10,8 +10,8 @@ import (
 )
 
 type GetTransactionInfoResponse struct {
-	Transaction  *TransactionInfo        `json:"transaction,omitempty"`
-	Status       types.TransactionStatus `json:"status"`
+	Transaction *TransactionInfo        `json:"transaction,omitempty"`
+	Status      types.TransactionStatus `json:"status"`
 }
 
 type TransactionInfo struct {
@@ -34,7 +34,7 @@ type Record struct {
 	Amount      *big.Int          `json:"amount"`
 	Occupied    *big.Int          `json:"occupied"`
 	AssetInfo   *common.AssetInfo `json:"asset_info"`
-	Extra       ExtraFilter       `json:"extra,omitempty"`
+	Extra       *ExtraFilter      `json:"extra,omitempty"`
 	BlockNumber uint64            `json:"block_number"`
 	EpochNumber uint64            `json:"epoch_number"`
 }

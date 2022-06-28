@@ -117,7 +117,7 @@ func TestBuildDaoDepositTransaction(t *testing.T) {
 	payload := &model.DaoDepositPayload{
 		From:    []*req.Item{from},
 		To:      "ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqvrnuvqd6zmgrqn60rnsesy23mvex5vy9q0g8hfd",
-		Amount: 20000000000,
+		Amount:  20000000000,
 		FeeRate: 1100,
 	}
 	resp, err := c.BuildDaoDepositTransaction(payload)
@@ -180,7 +180,7 @@ func TestGetBlockInfoByNumber(t *testing.T) {
 
 func TestGetSpentTransactionWithTransactionView(t *testing.T) {
 	payload := &model.GetSpentTransactionPayload{
-		OutPoint:      types.OutPoint{
+		OutPoint: types.OutPoint{
 			TxHash: types.HexToHash("0xb2e952a30656b68044e1d5eed69f1967347248967785449260e3942443cbeece"),
 			Index:  1,
 		},
@@ -191,6 +191,25 @@ func TestGetSpentTransactionWithTransactionView(t *testing.T) {
 	assert.Equal(t, types.HexToHash("0x407033c3baa6104c9f46d3c7948b812274556148d74b0db251f50fc6e7507233"), resp.Value.TxStatus.BlockHash)
 	assert.Equal(t, types.TransactionStatusCommitted, resp.Value.TxStatus.Status)
 	assert.Equal(t, uint64(0x17bc67c4078), resp.Value.TxStatus.Timestamp)
+}
+
+func TestGetSpentTransactionWithTransactionInfo(t *testing.T) {
+	payload := &model.GetSpentTransactionPayload{
+		OutPoint: types.OutPoint{
+			TxHash: types.HexToHash("0xb2e952a30656b68044e1d5eed69f1967347248967785449260e3942443cbeece"),
+			Index:  1,
+		},
+	}
+	resp, err := c.GetSpentTransactionWithTransactionInfo(payload)
+	checkError(t, err)
+	assert.Equal(t, types.HexToHash("0x2c4e242e034e70a7b8ae5f899686c256dad2a816cc36ddfe2c1460cbbbbaaaed"), resp.Value.TxHash)
+	assert.Equal(t, 3, len(resp.Value.Records))
+	assert.Equal(t, big.NewInt(0xd9ac33e984), resp.Value.Records[0].Amount)
+	assert.Equal(t, uint64(0x2877b6), resp.Value.Records[0].BlockNumber)
+	assert.Equal(t, uint64(0x70804bf000af6), resp.Value.Records[0].EpochNumber)
+	assert.Equal(t, 3, len(resp.Value.Records))
+	assert.Equal(t, uint64(0x1f5), resp.Value.Fee)
+	assert.Equal(t, uint64(0x17bc67c4078), resp.Value.Timestamp)
 }
 
 func TestGetBlockInfoByHash(t *testing.T) {
