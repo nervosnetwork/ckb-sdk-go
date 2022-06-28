@@ -5,7 +5,9 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
+	"github.com/pkg/errors"
 	"math/big"
+	"reflect"
 )
 
 func (r *Balance) UnmarshalJSON(input []byte) error {
@@ -208,6 +210,50 @@ func (r *ScriptGroup) UnmarshalJSON(input []byte) error {
 		GroupType:     jsonObj.GroupType,
 		InputIndices:  toUint32Array(jsonObj.InputIndices),
 		OutputIndices: toUint32Array(jsonObj.OutputIndices),
+	}
+	return nil
+}
+
+func (r *TxRichStatus) UnmarshalJSON(input []byte) error {
+	type txRichStatusAlias TxRichStatus
+	var jsonObj struct {
+		txRichStatusAlias
+		Timestamp hexutil.Uint64 `json:"timestamp,omitempty"`
+	}
+	if err := json.Unmarshal(input, &jsonObj); err != nil {
+		return err
+	}
+	*r = TxRichStatus{
+		Status:    jsonObj.Status,
+		BlockHash: jsonObj.BlockHash,
+		Reason:    jsonObj.Reason,
+		Timestamp: uint64(jsonObj.Timestamp),
+	}
+	return nil
+}
+
+func (e *DaoState) UnmarshalJSON(bytes []byte) error {
+	var data map[string]interface{}
+
+	if err := json.Unmarshal(bytes, &data); err != nil {
+		return err
+	}
+
+	e.Type = data["type"].(string)
+
+	var v = data["value"]
+	switch reflect.ValueOf(v).Kind() {
+	case reflect.Float64:
+		e.Value = make([]uint64, 1)
+		e.Value[0] = uint64(v.(float64))
+	case reflect.Slice:
+		vv := v.([]interface{})
+		e.Value = make([]uint64, len(vv))
+		for i := range vv {
+			e.Value[i] = uint64(vv[i].(float64))
+		}
+	default:
+		return errors.New("invalid type while unmarshal DaoState")
 	}
 	return nil
 }
