@@ -22,10 +22,10 @@ type PayFee string
 type OutputCapacityProvider string
 
 const (
-	PayFeeFrom                 PayFee = "From"
-	PayFeeTo                   PayFee = "To"
-	OutputCapacityProviderFrom        = "From"
-	OutputCapacityProviderTo          = "To"
+	PayFeeFrom                 PayFee                 = "From"
+	PayFeeTo                   PayFee                 = "To"
+	OutputCapacityProviderFrom OutputCapacityProvider = "From"
+	OutputCapacityProviderTo   OutputCapacityProvider = "To"
 )
 
 type From struct {

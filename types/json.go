@@ -2,8 +2,10 @@ package types
 
 import (
 	"encoding/json"
+	"errors"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"math/big"
+	"strings"
 )
 
 type jsonEpoch struct {
@@ -235,6 +237,30 @@ func (t *Transaction) UnmarshalJSON(input []byte) error {
 		Outputs:     jsonObj.Outputs,
 		OutputsData: toBytesArray(jsonObj.OutputsData),
 		Witnesses:   toBytesArray(jsonObj.Witnesses),
+	}
+	return nil
+}
+
+func (r *TransactionStatus) UnmarshalJSON(input []byte) error {
+	var jsonObj string
+	if err := json.Unmarshal(input, &jsonObj); err != nil {
+		return err
+	}
+	switch strings.ToLower(jsonObj) {
+	case "":
+		*r = ""
+	case strings.ToLower(string(TransactionStatusPending)):
+		*r = TransactionStatusPending
+	case strings.ToLower(string(TransactionStatusProposed)):
+		*r = TransactionStatusProposed
+	case strings.ToLower(string(TransactionStatusCommitted)):
+		*r = TransactionStatusCommitted
+	case strings.ToLower(string(TransactionStatusUnknown)):
+		*r = TransactionStatusUnknown
+	case strings.ToLower(string(TransactionStatusRejected)):
+		*r = TransactionStatusRejected
+	default:
+		return errors.New("can't unmarshal json from unknown transaction status value " + jsonObj)
 	}
 	return nil
 }
