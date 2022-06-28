@@ -166,18 +166,6 @@ func TestGetAccountInfo(t *testing.T) {
 	assert.NotEqual(t, "", resp.AccountType)
 }
 
-func TestGetBlockInfoByNumber(t *testing.T) {
-	payload := &model.GetBlockInfoPayload{
-		BlockNumber: 2172093,
-	}
-	resp, err := c.GetBlockInfo(payload)
-	checkError(t, err)
-	assert.NotNil(t, resp)
-	assert.NotEqual(t, types.Hash{}, resp.ParentHash)
-	assert.NotEqual(t, types.Hash{}, resp.BlockHash)
-	assert.Equal(t, 3, len(resp.Transactions))
-}
-
 func TestGetSpentTransactionWithTransactionView(t *testing.T) {
 	payload := &model.GetSpentTransactionPayload{
 		OutPoint: types.OutPoint{
@@ -210,6 +198,26 @@ func TestGetSpentTransactionWithTransactionInfo(t *testing.T) {
 	assert.Equal(t, 3, len(resp.Value.Records))
 	assert.Equal(t, uint64(0x1f5), resp.Value.Fee)
 	assert.Equal(t, uint64(0x17bc67c4078), resp.Value.Timestamp)
+}
+
+func TestGetTransactionInfo(t *testing.T) {
+	resp, err := c.GetTransactionInfo(types.HexToHash("0x4329e4c751c95384a51072d4cbc9911a101fd08fc32c687353d016bf38b8b22c"))
+	checkError(t, err)
+	assert.NotNil(t, resp.Transaction)
+	assert.Equal(t, types.HexToHash("0x4329e4c751c95384a51072d4cbc9911a101fd08fc32c687353d016bf38b8b22c"), resp.Transaction.TxHash)
+	assert.Equal(t, types.TransactionStatusCommitted, resp.Status)
+}
+
+func TestGetBlockInfoByNumber(t *testing.T) {
+	payload := &model.GetBlockInfoPayload{
+		BlockNumber: 2172093,
+	}
+	resp, err := c.GetBlockInfo(payload)
+	checkError(t, err)
+	assert.NotNil(t, resp)
+	assert.NotEqual(t, types.Hash{}, resp.ParentHash)
+	assert.NotEqual(t, types.Hash{}, resp.BlockHash)
+	assert.Equal(t, 3, len(resp.Transactions))
 }
 
 func TestGetBlockInfoByHash(t *testing.T) {
