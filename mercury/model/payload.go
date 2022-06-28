@@ -14,8 +14,10 @@ type SinceType string
 type SinceFlag string
 
 const (
-	ExtraFilterTypeDao         ExtraFilterType        = "Dao"
-	ExtraFilterTypeCellBase    ExtraFilterType        = "CellBase"
+	ExtraFilterTypeDao      ExtraFilterType = "Dao"
+	ExtraFilterTypeCellbase ExtraFilterType = "Cellbase"
+	ExtraFilterTypeFrozen   ExtraFilterType = "Frozen"
+
 	OrderAsc                   Order                  = "Asc"
 	OrderDesc                  Order                  = "Desc"
 	PayFeeFrom                 PayFee                 = "From"

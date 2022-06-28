@@ -1,4 +1,4 @@
-package resp
+package model
 
 import (
 	"github.com/nervosnetwork/ckb-sdk-go/crypto"

@@ -1,9 +1,8 @@
-package resp
+package model
 
 import (
 	"encoding/json"
 	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/nervosnetwork/ckb-sdk-go/mercury/model"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 	"github.com/pkg/errors"
 	"math/big"
@@ -12,11 +11,11 @@ import (
 
 func (r *Balance) UnmarshalJSON(input []byte) error {
 	var jsonObj struct {
-		Ownership string           `json:"ownership"`
-		AssetInfo *model.AssetInfo `json:"asset_info"`
-		Free      *hexutil.Big     `json:"free"`
-		Occupied  *hexutil.Big     `json:"occupied"`
-		Frozen    *hexutil.Big     `json:"frozen"`
+		Ownership string       `json:"ownership"`
+		AssetInfo *AssetInfo   `json:"asset_info"`
+		Free      *hexutil.Big `json:"free"`
+		Occupied  *hexutil.Big `json:"occupied"`
+		Frozen    *hexutil.Big `json:"frozen"`
 	}
 
 	if err := json.Unmarshal(input, &jsonObj); err != nil {

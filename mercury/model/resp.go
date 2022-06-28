@@ -1,7 +1,6 @@
-package resp
+package model
 
 import (
-	"github.com/nervosnetwork/ckb-sdk-go/mercury/model"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 	"math/big"
 )
@@ -12,7 +11,6 @@ type DBDriver string
 type NetworkType string
 type SyncState string
 type AccountType string
-type ExtraFilterType string
 
 const (
 	IoTypeInput          IoType       = "Input"
@@ -27,10 +25,6 @@ const (
 	DBDriverMySQL      DBDriver = "MySQL"
 	DBDriverSQLite     DBDriver = "SQLite"
 
-	ExtraFilterDao      ExtraFilterType = "Dao"
-	ExtraFilterCellBase ExtraFilterType = "Cellbase"
-	ExtraFilterFreeze   ExtraFilterType = "Frozen"
-
 	NetworkTypeMainnet NetworkType = "Mainnet"
 	NetworkTypeTestnet NetworkType = "Testnet"
 	NetworkTypeStaging NetworkType = "Staging"
@@ -43,11 +37,11 @@ const (
 )
 
 type Balance struct {
-	Ownership string           `json:"ownership"`
-	AssetInfo *model.AssetInfo `json:"asset_info"`
-	Free      *big.Int         `json:"free"`
-	Occupied  *big.Int         `json:"occupied"`
-	Frozen    *big.Int         `json:"frozen"`
+	Ownership string     `json:"ownership"`
+	AssetInfo *AssetInfo `json:"asset_info"`
+	Free      *big.Int   `json:"free"`
+	Occupied  *big.Int   `json:"occupied"`
+	Frozen    *big.Int   `json:"frozen"`
 }
 
 type GetBalanceResponse struct {
@@ -113,15 +107,15 @@ type BurnInfo struct {
 }
 
 type Record struct {
-	OutPoint    *types.OutPoint  `json:"out_point"`
-	Ownership   string           `json:"ownership"`
-	IoType      IoType           `json:"io_type"`
-	Amount      *big.Int         `json:"amount"`
-	Occupied    *big.Int         `json:"occupied"`
-	AssetInfo   *model.AssetInfo `json:"asset_info"`
-	Extra       *ExtraFilter     `json:"extra,omitempty"`
-	BlockNumber uint64           `json:"block_number"`
-	EpochNumber uint64           `json:"epoch_number"`
+	OutPoint    *types.OutPoint `json:"out_point"`
+	Ownership   string          `json:"ownership"`
+	IoType      IoType          `json:"io_type"`
+	Amount      *big.Int        `json:"amount"`
+	Occupied    *big.Int        `json:"occupied"`
+	AssetInfo   *AssetInfo      `json:"asset_info"`
+	Extra       *ExtraFilter    `json:"extra,omitempty"`
+	BlockNumber uint64          `json:"block_number"`
+	EpochNumber uint64          `json:"epoch_number"`
 }
 
 type ExtraFilter struct {
@@ -138,7 +132,6 @@ type DaoState struct {
 	Type  DaoStateType `json:"type"`
 	Value []uint64     `json:"value"`
 }
-
 
 type TransactionWithRichStatus struct {
 	Transaction types.Transaction `json:"transaction,omitempty"`

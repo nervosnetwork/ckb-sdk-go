@@ -6,36 +6,35 @@ import (
 
 	"github.com/ethereum/go-ethereum/rpc"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model"
-	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/resp"
 )
 
 type Client interface {
-	GetBalance(payload *model.GetBalancePayload) (*resp.GetBalanceResponse, error)
-	BuildTransferTransaction(payload *model.TransferPayload) (*resp.TransferCompletionResponse, error)
-	BuildSimpleTransferTransaction(payload *model.SimpleTransferPayload) (*resp.TransferCompletionResponse, error)
-	BuildAdjustAccountTransaction(*model.BuildAdjustAccountPayload) (*resp.TransferCompletionResponse, error)
-	BuildSudtIssueTransaction(payload *model.BuildSudtIssueTransactionPayload) (*resp.TransferCompletionResponse, error)
+	GetBalance(payload *model.GetBalancePayload) (*model.GetBalanceResponse, error)
+	BuildTransferTransaction(payload *model.TransferPayload) (*model.TransferCompletionResponse, error)
+	BuildSimpleTransferTransaction(payload *model.SimpleTransferPayload) (*model.TransferCompletionResponse, error)
+	BuildAdjustAccountTransaction(*model.BuildAdjustAccountPayload) (*model.TransferCompletionResponse, error)
+	BuildSudtIssueTransaction(payload *model.BuildSudtIssueTransactionPayload) (*model.TransferCompletionResponse, error)
 	RegisterAddresses(normalAddresses []string) ([]string, error)
-	GetTransactionInfo(txHash types.Hash) (*resp.GetTransactionInfoResponse, error)
-	GetSpentTransactionWithTransactionInfo(*model.GetSpentTransactionPayload) (*resp.TransactionInfoWrapper, error)
-	GetSpentTransactionWithTransactionView(*model.GetSpentTransactionPayload) (*resp.TransactionViewWrapper, error)
-	GetBlockInfo(payload *model.GetBlockInfoPayload) (*resp.BlockInfo, error)
-	GetAccountInfo(payload *model.GetAccountInfoPayload) (*resp.AccountInfo, error)
-	QueryTransactionsWithTransactionInfo(payload *model.QueryTransactionsPayload) (*resp.PaginationResponseTransactionInfo, error)
-	QueryTransactionsWithTransactionView(payload *model.QueryTransactionsPayload) (*resp.PaginationResponseTransactionView, error)
-	GetDbInfo() (*resp.DBInfo, error)
-	GetMercuryInfo() (*resp.MercuryInfo, error)
-	GetSyncState() (*resp.MercurySyncState, error)
-	BuildDaoDepositTransaction(payload *model.DaoDepositPayload) (*resp.TransferCompletionResponse, error)
-	BuildDaoWithdrawTransaction(payload *model.DaoWithdrawPayload) (*resp.TransferCompletionResponse, error)
-	BuildDaoClaimTransaction(payload *model.DaoClaimPayload) (*resp.TransferCompletionResponse, error)
+	GetTransactionInfo(txHash types.Hash) (*model.GetTransactionInfoResponse, error)
+	GetSpentTransactionWithTransactionInfo(*model.GetSpentTransactionPayload) (*model.TransactionInfoWrapper, error)
+	GetSpentTransactionWithTransactionView(*model.GetSpentTransactionPayload) (*model.TransactionViewWrapper, error)
+	GetBlockInfo(payload *model.GetBlockInfoPayload) (*model.BlockInfo, error)
+	GetAccountInfo(payload *model.GetAccountInfoPayload) (*model.AccountInfo, error)
+	QueryTransactionsWithTransactionInfo(payload *model.QueryTransactionsPayload) (*model.PaginationResponseTransactionInfo, error)
+	QueryTransactionsWithTransactionView(payload *model.QueryTransactionsPayload) (*model.PaginationResponseTransactionView, error)
+	GetDbInfo() (*model.DBInfo, error)
+	GetMercuryInfo() (*model.MercuryInfo, error)
+	GetSyncState() (*model.MercurySyncState, error)
+	BuildDaoDepositTransaction(payload *model.DaoDepositPayload) (*model.TransferCompletionResponse, error)
+	BuildDaoWithdrawTransaction(payload *model.DaoWithdrawPayload) (*model.TransferCompletionResponse, error)
+	BuildDaoClaimTransaction(payload *model.DaoClaimPayload) (*model.TransferCompletionResponse, error)
 }
 type client struct {
 	c *rpc.Client
 }
 
-func (cli *client) BuildDaoDepositTransaction(payload *model.DaoDepositPayload) (*resp.TransferCompletionResponse, error) {
-	var resp resp.TransferCompletionResponse
+func (cli *client) BuildDaoDepositTransaction(payload *model.DaoDepositPayload) (*model.TransferCompletionResponse, error) {
+	var resp model.TransferCompletionResponse
 	err := cli.c.Call(&resp, "build_dao_deposit_transaction", payload)
 	if err != nil {
 		return nil, err
@@ -44,8 +43,8 @@ func (cli *client) BuildDaoDepositTransaction(payload *model.DaoDepositPayload) 
 	return &resp, err
 }
 
-func (cli *client) BuildDaoWithdrawTransaction(payload *model.DaoWithdrawPayload) (*resp.TransferCompletionResponse, error) {
-	var resp resp.TransferCompletionResponse
+func (cli *client) BuildDaoWithdrawTransaction(payload *model.DaoWithdrawPayload) (*model.TransferCompletionResponse, error) {
+	var resp model.TransferCompletionResponse
 	err := cli.c.Call(&resp, "build_dao_withdraw_transaction", payload)
 	if err != nil {
 		return nil, err
@@ -54,8 +53,8 @@ func (cli *client) BuildDaoWithdrawTransaction(payload *model.DaoWithdrawPayload
 	return &resp, err
 }
 
-func (cli *client) BuildDaoClaimTransaction(payload *model.DaoClaimPayload) (*resp.TransferCompletionResponse, error) {
-	var resp resp.TransferCompletionResponse
+func (cli *client) BuildDaoClaimTransaction(payload *model.DaoClaimPayload) (*model.TransferCompletionResponse, error) {
+	var resp model.TransferCompletionResponse
 	err := cli.c.Call(&resp, "build_dao_claim_transaction", payload)
 	if err != nil {
 		return nil, err
@@ -64,8 +63,8 @@ func (cli *client) BuildDaoClaimTransaction(payload *model.DaoClaimPayload) (*re
 	return &resp, err
 }
 
-func (cli *client) GetDbInfo() (*resp.DBInfo, error) {
-	var resp resp.DBInfo
+func (cli *client) GetDbInfo() (*model.DBInfo, error) {
+	var resp model.DBInfo
 	err := cli.c.Call(&resp, "get_db_info")
 	if err != nil {
 		return nil, err
@@ -74,8 +73,8 @@ func (cli *client) GetDbInfo() (*resp.DBInfo, error) {
 	return &resp, err
 }
 
-func (cli *client) GetMercuryInfo() (*resp.MercuryInfo, error) {
-	var resp resp.MercuryInfo
+func (cli *client) GetMercuryInfo() (*model.MercuryInfo, error) {
+	var resp model.MercuryInfo
 	err := cli.c.Call(&resp, "get_mercury_info")
 	if err != nil {
 		return nil, err
@@ -84,8 +83,8 @@ func (cli *client) GetMercuryInfo() (*resp.MercuryInfo, error) {
 	return &resp, err
 }
 
-func (cli *client) GetSyncState() (*resp.MercurySyncState, error) {
-	var resp resp.MercurySyncState
+func (cli *client) GetSyncState() (*model.MercurySyncState, error) {
+	var resp model.MercurySyncState
 	err := cli.c.Call(&resp, "get_sync_state")
 	if err != nil {
 		return nil, err
@@ -94,8 +93,8 @@ func (cli *client) GetSyncState() (*resp.MercurySyncState, error) {
 	return &resp, err
 }
 
-func (cli *client) GetBalance(payload *model.GetBalancePayload) (*resp.GetBalanceResponse, error) {
-	var balance resp.GetBalanceResponse
+func (cli *client) GetBalance(payload *model.GetBalancePayload) (*model.GetBalanceResponse, error) {
+	var balance model.GetBalanceResponse
 	err := cli.c.Call(&balance, "get_balance", payload)
 	if err != nil {
 		return nil, err
@@ -104,8 +103,8 @@ func (cli *client) GetBalance(payload *model.GetBalancePayload) (*resp.GetBalanc
 	return &balance, err
 }
 
-func (cli *client) BuildTransferTransaction(payload *model.TransferPayload) (*resp.TransferCompletionResponse, error) {
-	var resp resp.TransferCompletionResponse
+func (cli *client) BuildTransferTransaction(payload *model.TransferPayload) (*model.TransferCompletionResponse, error) {
+	var resp model.TransferCompletionResponse
 	err := cli.c.Call(&resp, "build_transfer_transaction", payload)
 	if err != nil {
 		return &resp, err
@@ -114,8 +113,8 @@ func (cli *client) BuildTransferTransaction(payload *model.TransferPayload) (*re
 	return &resp, err
 }
 
-func (cli *client) BuildSimpleTransferTransaction(payload *model.SimpleTransferPayload) (*resp.TransferCompletionResponse, error) {
-	var resp resp.TransferCompletionResponse
+func (cli *client) BuildSimpleTransferTransaction(payload *model.SimpleTransferPayload) (*model.TransferCompletionResponse, error) {
+	var resp model.TransferCompletionResponse
 	err := cli.c.Call(&resp, "build_simple_transfer_transaction", payload)
 	if err != nil {
 		return &resp, err
@@ -124,8 +123,8 @@ func (cli *client) BuildSimpleTransferTransaction(payload *model.SimpleTransferP
 	return &resp, err
 }
 
-func (cli *client) BuildAdjustAccountTransaction(payload *model.BuildAdjustAccountPayload) (*resp.TransferCompletionResponse, error) {
-	var resp resp.TransferCompletionResponse
+func (cli *client) BuildAdjustAccountTransaction(payload *model.BuildAdjustAccountPayload) (*model.TransferCompletionResponse, error) {
+	var resp model.TransferCompletionResponse
 	err := cli.c.Call(&resp, "build_adjust_account_transaction", payload)
 	if err != nil {
 		return &resp, err
@@ -134,8 +133,8 @@ func (cli *client) BuildAdjustAccountTransaction(payload *model.BuildAdjustAccou
 	return &resp, err
 }
 
-func (cli *client) BuildSudtIssueTransaction(payload *model.BuildSudtIssueTransactionPayload) (*resp.TransferCompletionResponse, error) {
-	var resp resp.TransferCompletionResponse
+func (cli *client) BuildSudtIssueTransaction(payload *model.BuildSudtIssueTransactionPayload) (*model.TransferCompletionResponse, error) {
+	var resp model.TransferCompletionResponse
 	err := cli.c.Call(&resp, "build_sudt_issue_transaction", payload)
 	if err != nil {
 		return &resp, err
@@ -154,8 +153,8 @@ func (cli *client) RegisterAddresses(normalAddresses []string) ([]string, error)
 	return scriptHash, err
 }
 
-func (cli *client) GetBlockInfo(payload *model.GetBlockInfoPayload) (*resp.BlockInfo, error) {
-	var block resp.BlockInfo
+func (cli *client) GetBlockInfo(payload *model.GetBlockInfoPayload) (*model.BlockInfo, error) {
+	var block model.BlockInfo
 	err := cli.c.Call(&block, "get_block_info", payload)
 	if err != nil {
 		return nil, err
@@ -164,8 +163,8 @@ func (cli *client) GetBlockInfo(payload *model.GetBlockInfoPayload) (*resp.Block
 	return &block, err
 }
 
-func (cli *client) GetAccountInfo(payload *model.GetAccountInfoPayload) (*resp.AccountInfo, error) {
-	var account resp.AccountInfo
+func (cli *client) GetAccountInfo(payload *model.GetAccountInfoPayload) (*model.AccountInfo, error) {
+	var account model.AccountInfo
 	err := cli.c.Call(&account, "get_account_info", payload)
 	if err != nil {
 		return nil, err
@@ -174,8 +173,8 @@ func (cli *client) GetAccountInfo(payload *model.GetAccountInfoPayload) (*resp.A
 	return &account, err
 }
 
-func (cli *client) GetTransactionInfo(txHash types.Hash) (*resp.GetTransactionInfoResponse, error) {
-	var tx *resp.GetTransactionInfoResponse
+func (cli *client) GetTransactionInfo(txHash types.Hash) (*model.GetTransactionInfoResponse, error) {
+	var tx *model.GetTransactionInfoResponse
 	err := cli.c.Call(&tx, "get_transaction_info", txHash)
 	if err != nil {
 		return nil, err
@@ -183,9 +182,9 @@ func (cli *client) GetTransactionInfo(txHash types.Hash) (*resp.GetTransactionIn
 	return tx, err
 }
 
-func (cli *client) GetSpentTransactionWithTransactionInfo(payload *model.GetSpentTransactionPayload) (*resp.TransactionInfoWrapper, error) {
+func (cli *client) GetSpentTransactionWithTransactionInfo(payload *model.GetSpentTransactionPayload) (*model.TransactionInfoWrapper, error) {
 	payload.StructureType = model.StructureTypeDoubleEntry
-	var tx *resp.TransactionInfoWrapper
+	var tx *model.TransactionInfoWrapper
 	err := cli.c.Call(&tx, "get_spent_transaction", payload)
 	if err != nil {
 		return nil, err
@@ -193,9 +192,9 @@ func (cli *client) GetSpentTransactionWithTransactionInfo(payload *model.GetSpen
 	return tx, err
 }
 
-func (cli *client) GetSpentTransactionWithTransactionView(payload *model.GetSpentTransactionPayload) (*resp.TransactionViewWrapper, error) {
+func (cli *client) GetSpentTransactionWithTransactionView(payload *model.GetSpentTransactionPayload) (*model.TransactionViewWrapper, error) {
 	payload.StructureType = model.StructureTypeNative
-	var tx *resp.TransactionViewWrapper
+	var tx *model.TransactionViewWrapper
 	err := cli.c.Call(&tx, "get_spent_transaction", payload)
 	if err != nil {
 		return nil, err
@@ -203,9 +202,9 @@ func (cli *client) GetSpentTransactionWithTransactionView(payload *model.GetSpen
 	return tx, err
 }
 
-func (cli *client) QueryTransactionsWithTransactionView(payload *model.QueryTransactionsPayload) (*resp.PaginationResponseTransactionView, error) {
+func (cli *client) QueryTransactionsWithTransactionView(payload *model.QueryTransactionsPayload) (*model.PaginationResponseTransactionView, error) {
 	payload.StructureType = model.StructureTypeNative
-	var resp resp.PaginationResponseTransactionView
+	var resp model.PaginationResponseTransactionView
 	err := cli.c.Call(&resp, "query_transactions", payload)
 	if err != nil {
 		return &resp, err
@@ -214,9 +213,9 @@ func (cli *client) QueryTransactionsWithTransactionView(payload *model.QueryTran
 	return &resp, err
 }
 
-func (cli *client) QueryTransactionsWithTransactionInfo(payload *model.QueryTransactionsPayload) (*resp.PaginationResponseTransactionInfo, error) {
+func (cli *client) QueryTransactionsWithTransactionInfo(payload *model.QueryTransactionsPayload) (*model.PaginationResponseTransactionInfo, error) {
 	payload.StructureType = model.StructureTypeDoubleEntry
-	var resp resp.PaginationResponseTransactionInfo
+	var resp model.PaginationResponseTransactionInfo
 	err := cli.c.Call(&resp, "query_transactions", payload)
 	if err != nil {
 		return &resp, err
