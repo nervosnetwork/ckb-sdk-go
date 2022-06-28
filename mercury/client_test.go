@@ -211,7 +211,7 @@ func TestQueryTransactions(t *testing.T) {
 			To:   3636218,
 		},
 		Pagination: &model.PaginationRequest{
-			Order:       model.ASC,
+			Order:       model.OrderAsc,
 			Limit:       2,
 			ReturnCount: true,
 		},
@@ -233,7 +233,7 @@ func TestQueryTransactionsWithPage(t *testing.T) {
 		Item:       item,
 		AssetInfos: []*common.AssetInfo{},
 		Pagination: &model.PaginationRequest{
-			Order:       model.DESC,
+			Order:       model.OrderDesc,
 			Limit:       1,
 			ReturnCount: true,
 		},
@@ -247,7 +247,7 @@ func TestQueryTransactionsWithPage(t *testing.T) {
 		AssetInfos: []*common.AssetInfo{},
 		Pagination: &model.PaginationRequest{
 			Cursor:      resp.NextCursor,
-			Order:       model.DESC,
+			Order:       model.OrderDesc,
 			Limit:       2,
 			ReturnCount: true,
 		},

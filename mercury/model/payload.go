@@ -16,22 +16,23 @@ type SinceType string
 type SinceFlag string
 
 const (
-	ExtraFilterDao             ExtraFilterType        = "Dao"
-	ExtraFilterCellBase        ExtraFilterType        = "CellBase"
-	ASC                        Order                  = "Asc"
-	DESC                       Order                  = "Desc"
+	ExtraFilterTypeDao         ExtraFilterType        = "Dao"
+	ExtraFilterTypeCellBase    ExtraFilterType        = "CellBase"
+	OrderAsc                   Order                  = "Asc"
+	OrderDesc                  Order                  = "Desc"
 	PayFeeFrom                 PayFee                 = "From"
 	PayFeeTo                   PayFee                 = "To"
 	OutputCapacityProviderFrom OutputCapacityProvider = "From"
 	OutputCapacityProviderTo   OutputCapacityProvider = "To"
-	Native                     StructureType          = "Native"
-	DoubleEntry                StructureType          = "DoubleEntry"
 
-	BlockNumber SinceType = "BlockNumber"
-	EpochNumber SinceType = "EpochNumber"
-	Timestamp   SinceType = "Timestamp"
-	Relative    SinceFlag = "Relative"
-	Absolute    SinceFlag = "Absolute"
+	StructureTypeNative      StructureType = "Native"
+	StructureTypeDoubleEntry StructureType = "DoubleEntry"
+
+	SinceTypeBlockNumber SinceType = "BlockNumber"
+	SinceTypeEpochNumber SinceType = "EpochNumber"
+	SinceTypeTimestamp   SinceType = "Timestamp"
+	SinceFlagRelative    SinceFlag = "Relative"
+	SinceFlagAbsolute    SinceFlag = "Absolute"
 )
 
 type GetAccountInfoPayload struct {

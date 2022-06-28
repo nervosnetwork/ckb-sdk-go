@@ -184,7 +184,7 @@ func (cli *client) GetTransactionInfo(txHash types.Hash) (*resp.GetTransactionIn
 }
 
 func (cli *client) GetSpentTransactionWithTransactionInfo(payload *model.GetSpentTransactionPayload) (*resp.TransactionInfoWrapper, error) {
-	payload.StructureType = model.DoubleEntry
+	payload.StructureType = model.StructureTypeDoubleEntry
 	var tx *resp.TransactionInfoWrapper
 	err := cli.c.Call(&tx, "get_spent_transaction", payload)
 	if err != nil {
@@ -194,7 +194,7 @@ func (cli *client) GetSpentTransactionWithTransactionInfo(payload *model.GetSpen
 }
 
 func (cli *client) GetSpentTransactionWithTransactionView(payload *model.GetSpentTransactionPayload) (*resp.TransactionViewWrapper, error) {
-	payload.StructureType = model.Native
+	payload.StructureType = model.StructureTypeNative
 	var tx *resp.TransactionViewWrapper
 	err := cli.c.Call(&tx, "get_spent_transaction", payload)
 	if err != nil {
@@ -204,7 +204,7 @@ func (cli *client) GetSpentTransactionWithTransactionView(payload *model.GetSpen
 }
 
 func (cli *client) QueryTransactionsWithTransactionView(payload *model.QueryTransactionsPayload) (*resp.PaginationResponseTransactionView, error) {
-	payload.StructureType = model.Native
+	payload.StructureType = model.StructureTypeNative
 	var resp resp.PaginationResponseTransactionView
 	err := cli.c.Call(&resp, "query_transactions", payload)
 	if err != nil {
@@ -215,7 +215,7 @@ func (cli *client) QueryTransactionsWithTransactionView(payload *model.QueryTran
 }
 
 func (cli *client) QueryTransactionsWithTransactionInfo(payload *model.QueryTransactionsPayload) (*resp.PaginationResponseTransactionInfo, error) {
-	payload.StructureType = model.DoubleEntry
+	payload.StructureType = model.StructureTypeDoubleEntry
 	var resp resp.PaginationResponseTransactionInfo
 	err := cli.c.Call(&resp, "query_transactions", payload)
 	if err != nil {
