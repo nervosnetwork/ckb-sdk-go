@@ -205,6 +205,12 @@ func TestMercuryInfo(t *testing.T) {
 	assert.NotEqual(t, "", resp.NetworkType)
 }
 
+func TestSyncStateInfo(t *testing.T) {
+	resp, err := c.GetSyncState()
+	checkError(t, err)
+	assert.NotEqual(t, "", resp.State)
+}
+
 func checkError(t *testing.T, err error) {
 	if err != nil {
 		t.Error(err, string(debug.Stack()))
