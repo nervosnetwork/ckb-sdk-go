@@ -2,7 +2,7 @@ package resp
 
 import (
 	"encoding/json"
-	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/common"
+	"github.com/nervosnetwork/ckb-sdk-go/mercury/model"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 	"github.com/pkg/errors"
 	"math/big"
@@ -28,15 +28,15 @@ type BurnInfo struct {
 }
 
 type Record struct {
-	OutPoint    *types.OutPoint   `json:"out_point"`
-	Ownership   string            `json:"ownership"`
-	IoType      IoType            `json:"io_type"`
-	Amount      *big.Int          `json:"amount"`
-	Occupied    *big.Int          `json:"occupied"`
-	AssetInfo   *common.AssetInfo `json:"asset_info"`
-	Extra       *ExtraFilter      `json:"extra,omitempty"`
-	BlockNumber uint64            `json:"block_number"`
-	EpochNumber uint64            `json:"epoch_number"`
+	OutPoint    *types.OutPoint  `json:"out_point"`
+	Ownership   string           `json:"ownership"`
+	IoType      IoType           `json:"io_type"`
+	Amount      *big.Int         `json:"amount"`
+	Occupied    *big.Int         `json:"occupied"`
+	AssetInfo   *model.AssetInfo `json:"asset_info"`
+	Extra       *ExtraFilter     `json:"extra,omitempty"`
+	BlockNumber uint64           `json:"block_number"`
+	EpochNumber uint64           `json:"epoch_number"`
 }
 
 type RecordStatus struct {

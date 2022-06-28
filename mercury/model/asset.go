@@ -1,4 +1,4 @@
-package common
+package model
 
 import "github.com/nervosnetwork/ckb-sdk-go/types"
 

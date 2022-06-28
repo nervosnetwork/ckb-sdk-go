@@ -1,8 +1,6 @@
 package model
 
 import (
-	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/common"
-	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/req"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 	"math/big"
 )
@@ -36,14 +34,14 @@ const (
 )
 
 type GetAccountInfoPayload struct {
-	Item      *req.Item         `json:"item"`
-	AssetInfo *common.AssetInfo `json:"asset_info"`
+	Item      *Item      `json:"item"`
+	AssetInfo *AssetInfo `json:"asset_info"`
 }
 
 type GetBalancePayload struct {
-	AssetInfos     []*common.AssetInfo `json:"asset_infos"`
-	TipBlockNumber uint64              `json:"tip_block_number,omitempty"`
-	Item           *req.Item           `json:"item"`
+	AssetInfos     []*AssetInfo `json:"asset_infos"`
+	TipBlockNumber uint64       `json:"tip_block_number,omitempty"`
+	Item           *Item        `json:"item"`
 }
 
 type GetBlockInfoPayload struct {
@@ -52,17 +50,17 @@ type GetBlockInfoPayload struct {
 }
 
 type BuildAdjustAccountPayload struct {
-	Item          *req.Item         `json:"item"`
-	From          []*req.Item       `json:"from"`
-	AssetInfo     *common.AssetInfo `json:"asset_info"`
-	AccountNumber uint32            `json:"account_number,omitempty"`
-	ExtraCKB      uint64            `json:"extra_ckb,omitempty"`
-	FeeRate       uint64            `json:"fee_rate,omitempty"`
+	Item          *Item      `json:"item"`
+	From          []*Item    `json:"from"`
+	AssetInfo     *AssetInfo `json:"asset_info"`
+	AccountNumber uint32     `json:"account_number,omitempty"`
+	ExtraCKB      uint64     `json:"extra_ckb,omitempty"`
+	FeeRate       uint64     `json:"fee_rate,omitempty"`
 }
 
 type BuildSudtIssueTransactionPayload struct {
 	Owner                  string                 `json:"owner"`
-	From                   []*req.Item            `json:"from"`
+	From                   []*Item                `json:"from"`
 	To                     []*ToInfo              `json:"to"`
 	OutputCapacityProvider OutputCapacityProvider `json:"output_capacity_provider,omitempty"`
 	FeeRate                uint64                 `json:"fee_rate,omitempty"`
@@ -70,16 +68,16 @@ type BuildSudtIssueTransactionPayload struct {
 }
 
 type SimpleTransferPayload struct {
-	AssetInfo *common.AssetInfo `json:"asset_info"`
-	From      []string          `json:"from"`
-	To        []*ToInfo         `json:"to"`
-	FeeRate   uint64            `json:"fee_rate,omitempty"`
-	Since     *SinceConfig      `json:"since,omitempty"`
+	AssetInfo *AssetInfo   `json:"asset_info"`
+	From      []string     `json:"from"`
+	To        []*ToInfo    `json:"to"`
+	FeeRate   uint64       `json:"fee_rate,omitempty"`
+	Since     *SinceConfig `json:"since,omitempty"`
 }
 
 type TransferPayload struct {
-	AssetInfo              *common.AssetInfo      `json:"asset_info,omitempty"`
-	From                   []*req.Item            `json:"from"`
+	AssetInfo              *AssetInfo             `json:"asset_info,omitempty"`
+	From                   []*Item                `json:"from"`
 	To                     []*ToInfo              `json:"to"`
 	OutputCapacityProvider OutputCapacityProvider `json:"output_capacity_provider,omitempty"`
 	PayFee                 PayFee                 `json:"pay_fee,omitempty"`
@@ -99,21 +97,21 @@ type SinceConfig struct {
 }
 
 type DaoDepositPayload struct {
-	From    []*req.Item `json:"from"`
-	To      string      `json:"to,omitempty"`
-	Amount  uint64      `json:"amount"`
-	FeeRate uint64      `json:"fee_rate,omitempty"`
+	From    []*Item `json:"from"`
+	To      string  `json:"to,omitempty"`
+	Amount  uint64  `json:"amount"`
+	FeeRate uint64  `json:"fee_rate,omitempty"`
 }
 
 type DaoWithdrawPayload struct {
-	From    []*req.Item `json:"from"`
-	FeeRate uint64      `json:"fee_rate,omitempty"`
+	From    []*Item `json:"from"`
+	FeeRate uint64  `json:"fee_rate,omitempty"`
 }
 
 type DaoClaimPayload struct {
-	From    []*req.Item `json:"from"`
-	To      string      `json:"to,omitempty"`
-	FeeRate uint64      `json:"fee_rate,omitempty"`
+	From    []*Item `json:"from"`
+	To      string  `json:"to,omitempty"`
+	FeeRate uint64  `json:"fee_rate,omitempty"`
 }
 
 type GetSpentTransactionPayload struct {
@@ -122,12 +120,12 @@ type GetSpentTransactionPayload struct {
 }
 
 type QueryTransactionsPayload struct {
-	Item          *req.Item           `json:"item"`
-	AssetInfos    []*common.AssetInfo `json:"asset_infos"`
-	Extra         *ExtraFilterType    `json:"extra,omitempty"`
-	BlockRange    *BlockRange         `json:"block_range,omitempty"`
-	Pagination    *PaginationRequest  `json:"pagination"`
-	StructureType StructureType       `json:"structure_type"`
+	Item          *Item              `json:"item"`
+	AssetInfos    []*AssetInfo       `json:"asset_infos"`
+	Extra         *ExtraFilterType   `json:"extra,omitempty"`
+	BlockRange    *BlockRange        `json:"block_range,omitempty"`
+	Pagination    *PaginationRequest `json:"pagination"`
+	StructureType StructureType      `json:"structure_type"`
 }
 
 type BlockRange struct {

@@ -2,8 +2,6 @@ package mercury
 
 import (
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model"
-	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/common"
-	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/req"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 	"github.com/stretchr/testify/assert"
 	"math/big"
@@ -14,14 +12,14 @@ import (
 var c, _ = Dial("https://mercury-testnet.ckbapp.dev/0.4")
 
 func TestBuildAdjustAccountTransaction(t *testing.T) {
-	item, err := req.NewIdentityItemByPublicKeyHash("0xb0f8a32e7f9e8f3ab3a641f6eb02fcdb921d5589")
+	item, err := model.NewIdentityItemByPublicKeyHash("0xb0f8a32e7f9e8f3ab3a641f6eb02fcdb921d5589")
 	checkError(t, err)
-	from, err := req.NewIdentityItemByPublicKeyHash("0x202647fecc5b9d8cbdb4ae7167e40f5ab1e4baaf")
+	from, err := model.NewIdentityItemByPublicKeyHash("0x202647fecc5b9d8cbdb4ae7167e40f5ab1e4baaf")
 	checkError(t, err)
 	payload := &model.BuildAdjustAccountPayload{
 		Item:          item,
-		From:          []*req.Item{from},
-		AssetInfo:     common.NewUdtAsset(types.HexToHash("0xf21e7350fa9518ed3cbb008e0e8c941d7e01a12181931d5608aa366ee22228bd")),
+		From:          []*model.Item{from},
+		AssetInfo:     model.NewUdtAsset(types.HexToHash("0xf21e7350fa9518ed3cbb008e0e8c941d7e01a12181931d5608aa366ee22228bd")),
 		AccountNumber: 1,
 		ExtraCKB:      20000000000,
 		FeeRate:       1000,
@@ -34,12 +32,12 @@ func TestBuildAdjustAccountTransaction(t *testing.T) {
 }
 
 func TestGetBalance(t *testing.T) {
-	item, err := req.NewIdentityItemByPublicKeyHash("0x839f1806e85b40c13d3c73866045476cc9a8c214")
+	item, err := model.NewIdentityItemByPublicKeyHash("0x839f1806e85b40c13d3c73866045476cc9a8c214")
 	checkError(t, err)
 	payload := &model.GetBalancePayload{
 		Item: item,
-		AssetInfos: []*common.AssetInfo{
-			common.NewUdtAsset(types.HexToHash("0xf21e7350fa9518ed3cbb008e0e8c941d7e01a12181931d5608aa366ee22228bd"))},
+		AssetInfos: []*model.AssetInfo{
+			model.NewUdtAsset(types.HexToHash("0xf21e7350fa9518ed3cbb008e0e8c941d7e01a12181931d5608aa366ee22228bd"))},
 		TipBlockNumber: 0,
 	}
 	resp, err := c.GetBalance(payload)
@@ -51,11 +49,11 @@ func TestGetBalance(t *testing.T) {
 
 func TestBuildSudtIssueTransaction(t *testing.T) {
 	address := "ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqg958atl2zdh8jn3ch8lc72nt0cf864ecqdxm9zf"
-	item, err := req.NewIdentityItemByAddress(address)
+	item, err := model.NewIdentityItemByAddress(address)
 	checkError(t, err)
 	payload := &model.BuildSudtIssueTransactionPayload{
 		Owner: address,
-		From:  []*req.Item{item},
+		From:  []*model.Item{item},
 		To: []*model.ToInfo{
 			{
 				Address: "ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqg6flmrtx8y8tuu6s3jf2ahv4l6sjw9hsc3t4tqv",
@@ -73,7 +71,7 @@ func TestBuildSudtIssueTransaction(t *testing.T) {
 
 func TestBuildSimpleTransferTransaction(t *testing.T) {
 	payload := &model.SimpleTransferPayload{
-		AssetInfo: common.NewCkbAsset(),
+		AssetInfo: model.NewCkbAsset(),
 		From:      []string{"ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqfqyerlanzmnkxtmd9ww9n7gr66k8jt4tclm9jnk"},
 		To: []*model.ToInfo{
 			{
@@ -91,11 +89,11 @@ func TestBuildSimpleTransferTransaction(t *testing.T) {
 
 func TestBuildTransferTransaction(t *testing.T) {
 	address := "ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqfqyerlanzmnkxtmd9ww9n7gr66k8jt4tclm9jnk"
-	item, err := req.NewAddressItem(address)
+	item, err := model.NewAddressItem(address)
 	checkError(t, err)
 	payload := &model.TransferPayload{
-		AssetInfo: common.NewCkbAsset(),
-		From:      []*req.Item{item},
+		AssetInfo: model.NewCkbAsset(),
+		From:      []*model.Item{item},
 		To: []*model.ToInfo{
 			{
 				Address: "ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqg958atl2zdh8jn3ch8lc72nt0cf864ecqdxm9zf",
@@ -112,10 +110,10 @@ func TestBuildTransferTransaction(t *testing.T) {
 }
 
 func TestBuildDaoDepositTransaction(t *testing.T) {
-	from, err := req.NewAddressItem("ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqfqyerlanzmnkxtmd9ww9n7gr66k8jt4tclm9jnk")
+	from, err := model.NewAddressItem("ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqfqyerlanzmnkxtmd9ww9n7gr66k8jt4tclm9jnk")
 	checkError(t, err)
 	payload := &model.DaoDepositPayload{
-		From:    []*req.Item{from},
+		From:    []*model.Item{from},
 		To:      "ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqvrnuvqd6zmgrqn60rnsesy23mvex5vy9q0g8hfd",
 		Amount:  20000000000,
 		FeeRate: 1100,
@@ -127,10 +125,10 @@ func TestBuildDaoDepositTransaction(t *testing.T) {
 }
 
 func TestBuildDaoWithdrawTransaction(t *testing.T) {
-	from, err := req.NewAddressItem("ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqfqyerlanzmnkxtmd9ww9n7gr66k8jt4tclm9jnk")
+	from, err := model.NewAddressItem("ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqfqyerlanzmnkxtmd9ww9n7gr66k8jt4tclm9jnk")
 	checkError(t, err)
 	payload := &model.DaoWithdrawPayload{
-		From:    []*req.Item{from},
+		From:    []*model.Item{from},
 		FeeRate: 1100,
 	}
 	resp, err := c.BuildDaoWithdrawTransaction(payload)
@@ -140,10 +138,10 @@ func TestBuildDaoWithdrawTransaction(t *testing.T) {
 }
 
 func TestBuildDaoClaimTransaction(t *testing.T) {
-	from, err := req.NewAddressItem("ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqfqyerlanzmnkxtmd9ww9n7gr66k8jt4tclm9jnk")
+	from, err := model.NewAddressItem("ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqfqyerlanzmnkxtmd9ww9n7gr66k8jt4tclm9jnk")
 	checkError(t, err)
 	payload := &model.DaoClaimPayload{
-		From:    []*req.Item{from},
+		From:    []*model.Item{from},
 		FeeRate: 1100,
 	}
 	resp, err := c.BuildDaoClaimTransaction(payload)
@@ -153,11 +151,11 @@ func TestBuildDaoClaimTransaction(t *testing.T) {
 }
 
 func TestGetAccountInfo(t *testing.T) {
-	item, err := req.NewAddressItem("ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq06y24q4tc4tfkgze35cc23yprtpzfrzygljdjh9")
+	item, err := model.NewAddressItem("ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq06y24q4tc4tfkgze35cc23yprtpzfrzygljdjh9")
 	checkError(t, err)
 	payload := &model.GetAccountInfoPayload{
 		Item:      item,
-		AssetInfo: common.NewUdtAsset(types.HexToHash("0xf21e7350fa9518ed3cbb008e0e8c941d7e01a12181931d5608aa366ee22228bd")),
+		AssetInfo: model.NewUdtAsset(types.HexToHash("0xf21e7350fa9518ed3cbb008e0e8c941d7e01a12181931d5608aa366ee22228bd")),
 	}
 	resp, err := c.GetAccountInfo(payload)
 	checkError(t, err)
@@ -201,11 +199,11 @@ func TestGetSpentTransactionWithTransactionInfo(t *testing.T) {
 }
 
 func TestQueryTransactions(t *testing.T) {
-	item, err := req.NewAddressItem("ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqg6flmrtx8y8tuu6s3jf2ahv4l6sjw9hsc3t4tqv")
+	item, err := model.NewAddressItem("ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqg6flmrtx8y8tuu6s3jf2ahv4l6sjw9hsc3t4tqv")
 	checkError(t, err)
 	payload := &model.QueryTransactionsPayload{
 		Item:       item,
-		AssetInfos: []*common.AssetInfo{common.NewCkbAsset()},
+		AssetInfos: []*model.AssetInfo{model.NewCkbAsset()},
 		BlockRange: &model.BlockRange{
 			From: 2778100,
 			To:   3636218,
@@ -227,11 +225,11 @@ func TestQueryTransactions(t *testing.T) {
 }
 
 func TestQueryTransactionsWithPage(t *testing.T) {
-	item, err := req.NewIdentityItemByPublicKeyHash("0x1a4ff63598e43af9cd42324abb7657fa849c5bc3")
+	item, err := model.NewIdentityItemByPublicKeyHash("0x1a4ff63598e43af9cd42324abb7657fa849c5bc3")
 	checkError(t, err)
 	payload := &model.QueryTransactionsPayload{
 		Item:       item,
-		AssetInfos: []*common.AssetInfo{},
+		AssetInfos: []*model.AssetInfo{},
 		Pagination: &model.PaginationRequest{
 			Order:       model.OrderDesc,
 			Limit:       1,
@@ -244,7 +242,7 @@ func TestQueryTransactionsWithPage(t *testing.T) {
 
 	payload = &model.QueryTransactionsPayload{
 		Item:       item,
-		AssetInfos: []*common.AssetInfo{},
+		AssetInfos: []*model.AssetInfo{},
 		Pagination: &model.PaginationRequest{
 			Cursor:      resp.NextCursor,
 			Order:       model.OrderDesc,

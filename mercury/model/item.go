@@ -1,4 +1,4 @@
-package req
+package model
 
 import (
 	"errors"
