@@ -231,25 +231,31 @@ func (r *TxRichStatus) UnmarshalJSON(input []byte) error {
 	return nil
 }
 
-func (e *DaoState) UnmarshalJSON(bytes []byte) error {
+func (e *DaoState) UnmarshalJSON(input []byte) error {
 	var data map[string]interface{}
-
-	if err := json.Unmarshal(bytes, &data); err != nil {
+	if err := json.Unmarshal(input, &data); err != nil {
 		return err
 	}
-
-	e.Type = data["type"].(string)
-
-	var v = data["value"]
-	switch reflect.ValueOf(v).Kind() {
-	case reflect.Float64:
-		e.Value = make([]uint64, 1)
-		e.Value[0] = uint64(v.(float64))
+	switch reflect.ValueOf(data["value"]).Kind() {
+	case reflect.String:
+		var jsonObj struct {
+			Type  DaoStateType   `json:"type"`
+			Value hexutil.Uint64 `json:"value"`
+		}
+		json.Unmarshal(input, &jsonObj)
+		*e = DaoState{
+			Type:  jsonObj.Type,
+			Value: []uint64{uint64(jsonObj.Value)},
+		}
 	case reflect.Slice:
-		vv := v.([]interface{})
-		e.Value = make([]uint64, len(vv))
-		for i := range vv {
-			e.Value[i] = uint64(vv[i].(float64))
+		var jsonObj struct {
+			Type  DaoStateType     `json:"type"`
+			Value []hexutil.Uint64 `json:"value"`
+		}
+		json.Unmarshal(input, &jsonObj)
+		*e = DaoState{
+			Type:  jsonObj.Type,
+			Value: []uint64{uint64(jsonObj.Value[0]), uint64(jsonObj.Value[1])},
 		}
 	default:
 		return errors.New("invalid type while unmarshal DaoState")
