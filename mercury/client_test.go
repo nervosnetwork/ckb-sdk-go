@@ -197,6 +197,14 @@ func TestGetDbInfo(t *testing.T) {
 	assert.NotEqual(t, 0, resp.ConnSize)
 }
 
+func TestMercuryInfo(t *testing.T) {
+	resp, err := c.GetMercuryInfo()
+	checkError(t, err)
+	assert.NotEqual(t, "", resp.MercuryVersion)
+	assert.NotEqual(t, "", resp.CkbNodeVersion)
+	assert.NotEqual(t, "", resp.NetworkType)
+}
+
 func checkError(t *testing.T, err error) {
 	if err != nil {
 		t.Error(err, string(debug.Stack()))
