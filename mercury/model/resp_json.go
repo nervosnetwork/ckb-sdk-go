@@ -242,7 +242,9 @@ func (e *DaoState) UnmarshalJSON(input []byte) error {
 			Type  DaoStateType   `json:"type"`
 			Value hexutil.Uint64 `json:"value"`
 		}
-		json.Unmarshal(input, &jsonObj)
+		if err := json.Unmarshal(input, &jsonObj); err != nil {
+			return err
+		}
 		*e = DaoState{
 			Type:  jsonObj.Type,
 			Value: []uint64{uint64(jsonObj.Value)},
@@ -252,7 +254,9 @@ func (e *DaoState) UnmarshalJSON(input []byte) error {
 			Type  DaoStateType     `json:"type"`
 			Value []hexutil.Uint64 `json:"value"`
 		}
-		json.Unmarshal(input, &jsonObj)
+		if err := json.Unmarshal(input, &jsonObj); err != nil {
+			return err
+		}
 		*e = DaoState{
 			Type:  jsonObj.Type,
 			Value: []uint64{uint64(jsonObj.Value[0]), uint64(jsonObj.Value[1])},
