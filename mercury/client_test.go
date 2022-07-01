@@ -253,10 +253,7 @@ func TestQueryTransactionsWithPage(t *testing.T) {
 	resp, err = c.QueryTransactionsWithTransactionView(payload)
 	checkError(t, err)
 	assert.Equal(t, 2, len(resp.Response))
-	assert.Equal(t, types.HexToHash("0x88638e32403336912f8387ab5298ac3d3e1588082361d2fc0840808671467e54"),
-		resp.Response[0].Value.Transaction.Hash)
-	assert.Equal(t, types.HexToHash("0xeedfaf24add85ceea295b46a30c0b0c88bb5006edbbddb069092eb39f77a0f66"),
-		resp.Response[1].Value.Transaction.Hash)
+	assert.NotEqual(t, types.Hash{}, resp.Response[0].Value.Transaction.Hash)
 }
 
 func TestGetTransactionInfo(t *testing.T) {
