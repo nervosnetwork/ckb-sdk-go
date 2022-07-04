@@ -11,6 +11,7 @@ type DBDriver string
 type NetworkType string
 type SyncState string
 type AccountType string
+type TxViewType string
 
 const (
 	IoTypeInput          IoType       = "Input"
@@ -34,6 +35,9 @@ const (
 	SyncStateSerial              SyncState = "Serial"
 	SyncStateParallelFirstStage  SyncState = "ParallelFirstStage"
 	SyncStateParallelSecondStage SyncState = "ParallelSecondStage"
+
+	TxViewTypeTransactionWithRichStatus TxViewType = "TransactionWithRichStatus"
+	TxViewTypeTransactionInfo           TxViewType = "TransactionInfo"
 )
 
 type Balance struct {
@@ -72,21 +76,14 @@ type BlockInfo struct {
 }
 
 type TransactionInfoWrapper struct {
-	Type  TransactionType  `json:"type"`
+	Type  TxViewType       `json:"type"`
 	Value *TransactionInfo `json:"value"`
 }
 
 type TransactionViewWrapper struct {
-	Type  TransactionType            `json:"type"`
+	Type  TxViewType                 `json:"type"`
 	Value *TransactionWithRichStatus `json:"value"`
 }
-
-type TransactionType string
-
-const (
-	TransactionTransactionView TransactionType = "TransactionWithRichStatus"
-	TransactionTransactionInfo TransactionType = "TransactionInfo"
-)
 
 type GetTransactionInfoResponse struct {
 	Transaction *TransactionInfo        `json:"transaction,omitempty"`
