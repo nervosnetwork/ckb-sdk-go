@@ -7,7 +7,6 @@ import (
 	"github.com/nervosnetwork/ckb-sdk-go/indexer"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model"
-	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/resp"
 	C "github.com/nervosnetwork/ckb-sdk-go/rpc"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 )
@@ -22,27 +21,27 @@ type DefaultCkbApi struct {
 	mercury mercury.Client
 }
 
-func (cli *DefaultCkbApi) BuildSimpleTransferTransaction(payload *model.SimpleTransferPayload) (*resp.TransferCompletionResponse, error) {
+func (cli *DefaultCkbApi) BuildSimpleTransferTransaction(payload *model.SimpleTransferPayload) (*model.TransferCompletionResponse, error) {
 	return cli.mercury.BuildSimpleTransferTransaction(payload)
 }
 
-func (cli *DefaultCkbApi) BuildDaoDepositTransaction(payload *model.DaoDepositPayload) (*resp.TransferCompletionResponse, error) {
+func (cli *DefaultCkbApi) BuildDaoDepositTransaction(payload *model.DaoDepositPayload) (*model.TransferCompletionResponse, error) {
 	return cli.mercury.BuildDaoDepositTransaction(payload)
 }
 
-func (cli *DefaultCkbApi) BuildDaoWithdrawTransaction(payload *model.DaoWithdrawPayload) (*resp.TransferCompletionResponse, error) {
+func (cli *DefaultCkbApi) BuildDaoWithdrawTransaction(payload *model.DaoWithdrawPayload) (*model.TransferCompletionResponse, error) {
 	return cli.mercury.BuildDaoWithdrawTransaction(payload)
 }
 
-func (cli *DefaultCkbApi) BuildDaoClaimTransaction(payload *model.DaoClaimPayload) (*resp.TransferCompletionResponse, error) {
+func (cli *DefaultCkbApi) BuildDaoClaimTransaction(payload *model.DaoClaimPayload) (*model.TransferCompletionResponse, error) {
 	return cli.mercury.BuildDaoClaimTransaction(payload)
 }
 
-func (cli *DefaultCkbApi) GetSpentTransactionWithTransactionInfo(payload *model.GetSpentTransactionPayload) (*resp.TransactionInfoWrapper, error) {
+func (cli *DefaultCkbApi) GetSpentTransactionWithTransactionInfo(payload *model.GetSpentTransactionPayload) (*model.TransactionInfoWrapper, error) {
 	return cli.mercury.GetSpentTransactionWithTransactionInfo(payload)
 }
 
-func (cli *DefaultCkbApi) GetSpentTransactionWithTransactionView(payload *model.GetSpentTransactionPayload) (*resp.TransactionViewWrapper, error) {
+func (cli *DefaultCkbApi) GetSpentTransactionWithTransactionView(payload *model.GetSpentTransactionPayload) (*model.TransactionWithRichStatusWrapper, error) {
 	return cli.mercury.GetSpentTransactionWithTransactionView(payload)
 }
 
@@ -54,31 +53,31 @@ func (cli *DefaultCkbApi) VerifyTransactionProof(ctx context.Context, proof *typ
 	return cli.ckb.VerifyTransactionProof(ctx, proof)
 }
 
-func (cli *DefaultCkbApi) GetDbInfo() (*resp.DBInfo, error) {
+func (cli *DefaultCkbApi) GetDbInfo() (*model.DBInfo, error) {
 	return cli.mercury.GetDbInfo()
 }
 
-func (cli *DefaultCkbApi) GetMercuryInfo() (*resp.MercuryInfo, error) {
+func (cli *DefaultCkbApi) GetMercuryInfo() (*model.MercuryInfo, error) {
 	return cli.mercury.GetMercuryInfo()
 }
 
-func (cli *DefaultCkbApi) GetSyncState() (*resp.MercurySyncState, error) {
+func (cli *DefaultCkbApi) GetSyncState() (*model.MercurySyncState, error) {
 	return cli.mercury.GetSyncState()
 }
 
-func (cli *DefaultCkbApi) GetBalance(payload *model.GetBalancePayload) (*resp.GetBalanceResponse, error) {
+func (cli *DefaultCkbApi) GetBalance(payload *model.GetBalancePayload) (*model.GetBalanceResponse, error) {
 	return cli.mercury.GetBalance(payload)
 }
 
-func (cli *DefaultCkbApi) BuildTransferTransaction(payload *model.TransferPayload) (*resp.TransferCompletionResponse, error) {
+func (cli *DefaultCkbApi) BuildTransferTransaction(payload *model.TransferPayload) (*model.TransferCompletionResponse, error) {
 	return cli.mercury.BuildTransferTransaction(payload)
 }
 
-func (cli *DefaultCkbApi) BuildAdjustAccountTransaction(payload *model.BuildAdjustAccountPayload) (*resp.TransferCompletionResponse, error) {
+func (cli *DefaultCkbApi) BuildAdjustAccountTransaction(payload *model.BuildAdjustAccountPayload) (*model.TransferCompletionResponse, error) {
 	return cli.mercury.BuildAdjustAccountTransaction(payload)
 }
 
-func (cli *DefaultCkbApi) BuildSudtIssueTransaction(payload *model.BuildSudtIssueTransactionPayload) (*resp.TransferCompletionResponse, error) {
+func (cli *DefaultCkbApi) BuildSudtIssueTransaction(payload *model.BuildSudtIssueTransactionPayload) (*model.TransferCompletionResponse, error) {
 	return cli.mercury.BuildSudtIssueTransaction(payload)
 }
 
@@ -86,15 +85,15 @@ func (cli *DefaultCkbApi) RegisterAddresses(normalAddresses []string) ([]string,
 	return cli.mercury.RegisterAddresses(normalAddresses)
 }
 
-func (cli *DefaultCkbApi) GetTransactionInfo(txHash types.Hash) (*resp.GetTransactionInfoResponse, error) {
+func (cli *DefaultCkbApi) GetTransactionInfo(txHash types.Hash) (*model.GetTransactionInfoResponse, error) {
 	return cli.mercury.GetTransactionInfo(txHash)
 }
 
-func (cli *DefaultCkbApi) GetBlockInfo(payload *model.GetBlockInfoPayload) (*resp.BlockInfo, error) {
+func (cli *DefaultCkbApi) GetBlockInfo(payload *model.GetBlockInfoPayload) (*model.BlockInfo, error) {
 	return cli.mercury.GetBlockInfo(payload)
 }
 
-func (cli *DefaultCkbApi) GetAccountInfo(payload *model.GetAccountInfoPayload) (*resp.AccountInfo, error) {
+func (cli *DefaultCkbApi) GetAccountInfo(payload *model.GetAccountInfoPayload) (*model.AccountInfo, error) {
 	return cli.mercury.GetAccountInfo(payload)
 }
 
@@ -158,11 +157,11 @@ func (cli *DefaultCkbApi) GetBlockMedianTime(ctx context.Context, blockHash type
 	return cli.ckb.GetBlockMedianTime(ctx, blockHash)
 }
 
-func (cli *DefaultCkbApi) QueryTransactionsWithTransactionInfo(payload *model.QueryTransactionsPayload) (*resp.PaginationResponseTransactionInfo, error) {
+func (cli *DefaultCkbApi) QueryTransactionsWithTransactionInfo(payload *model.QueryTransactionsPayload) (*model.PaginationResponseTransactionInfo, error) {
 	return cli.mercury.QueryTransactionsWithTransactionInfo(payload)
 }
 
-func (cli *DefaultCkbApi) QueryTransactionsWithTransactionView(payload *model.QueryTransactionsPayload) (*resp.PaginationResponseTransactionView, error) {
+func (cli *DefaultCkbApi) QueryTransactionsWithTransactionView(payload *model.QueryTransactionsPayload) (*model.PaginationResponseTransactionWithRichStatus, error) {
 	return cli.mercury.QueryTransactionsWithTransactionView(payload)
 }
 

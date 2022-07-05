@@ -1,20 +1,21 @@
-package resp
+package model
 
 import (
 	"encoding/json"
 	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/common"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
+	"github.com/pkg/errors"
 	"math/big"
+	"reflect"
 )
 
 func (r *Balance) UnmarshalJSON(input []byte) error {
 	var jsonObj struct {
-		Ownership string            `json:"ownership"`
-		AssetInfo *common.AssetInfo `json:"asset_info"`
-		Free      *hexutil.Big      `json:"free"`
-		Occupied  *hexutil.Big      `json:"occupied"`
-		Frozen    *hexutil.Big      `json:"frozen"`
+		Ownership string       `json:"ownership"`
+		AssetInfo *AssetInfo   `json:"asset_info"`
+		Free      *hexutil.Big `json:"free"`
+		Occupied  *hexutil.Big `json:"occupied"`
+		Frozen    *hexutil.Big `json:"frozen"`
 	}
 
 	if err := json.Unmarshal(input, &jsonObj); err != nil {
@@ -127,19 +128,23 @@ func (r *BlockInfo) UnmarshalJSON(input []byte) error {
 	return nil
 }
 
-func (r *PaginationResponseTransactionView) UnmarshalJSON(input []byte) error {
+func (r *PaginationResponseTransactionWithRichStatus) UnmarshalJSON(input []byte) error {
 	var jsonObj struct {
-		Response   []*TransactionViewWrapper `json:"response"`
-		Count      hexutil.Uint64            `json:"count,omitempty"`
-		NextCursor hexutil.Uint64            `json:"next_cursor,omitempty"`
+		Response   []*TransactionWithRichStatusWrapper `json:"response"`
+		Count      *hexutil.Uint64                     `json:"count,omitempty"`
+		NextCursor *hexutil.Uint64                     `json:"next_cursor,omitempty"`
 	}
 	if err := json.Unmarshal(input, &jsonObj); err != nil {
 		return err
 	}
-	*r = PaginationResponseTransactionView{
-		Response:   jsonObj.Response,
-		Count:      uint64(jsonObj.Count),
-		NextCursor: uint64(jsonObj.NextCursor),
+	*r = PaginationResponseTransactionWithRichStatus{
+		Response: jsonObj.Response,
+	}
+	if jsonObj.Count != nil {
+		r.Count = uint64(*jsonObj.Count)
+	}
+	if jsonObj.NextCursor != nil {
+		r.NextCursor = uint64(*jsonObj.NextCursor)
 	}
 	return nil
 }
@@ -147,16 +152,20 @@ func (r *PaginationResponseTransactionView) UnmarshalJSON(input []byte) error {
 func (r *PaginationResponseTransactionInfo) UnmarshalJSON(input []byte) error {
 	var jsonObj struct {
 		Response   []*TransactionInfoWrapper `json:"response"`
-		Count      hexutil.Uint64            `json:"count,omitempty"`
-		NextCursor hexutil.Uint64            `json:"next_cursor,omitempty"`
+		Count      *hexutil.Uint64           `json:"count,omitempty"`
+		NextCursor *hexutil.Uint64           `json:"next_cursor,omitempty"`
 	}
 	if err := json.Unmarshal(input, &jsonObj); err != nil {
 		return err
 	}
 	*r = PaginationResponseTransactionInfo{
-		Response:   jsonObj.Response,
-		Count:      uint64(jsonObj.Count),
-		NextCursor: uint64(jsonObj.NextCursor),
+		Response: jsonObj.Response,
+	}
+	if jsonObj.Count != nil {
+		r.Count = uint64(*jsonObj.Count)
+	}
+	if jsonObj.NextCursor != nil {
+		r.NextCursor = uint64(*jsonObj.NextCursor)
 	}
 	return nil
 }
@@ -200,6 +209,60 @@ func (r *ScriptGroup) UnmarshalJSON(input []byte) error {
 		GroupType:     jsonObj.GroupType,
 		InputIndices:  toUint32Array(jsonObj.InputIndices),
 		OutputIndices: toUint32Array(jsonObj.OutputIndices),
+	}
+	return nil
+}
+
+func (r *TxRichStatus) UnmarshalJSON(input []byte) error {
+	type txRichStatusAlias TxRichStatus
+	var jsonObj struct {
+		txRichStatusAlias
+		Timestamp hexutil.Uint64 `json:"timestamp,omitempty"`
+	}
+	if err := json.Unmarshal(input, &jsonObj); err != nil {
+		return err
+	}
+	*r = TxRichStatus{
+		Status:    jsonObj.Status,
+		BlockHash: jsonObj.BlockHash,
+		Reason:    jsonObj.Reason,
+		Timestamp: uint64(jsonObj.Timestamp),
+	}
+	return nil
+}
+
+func (e *DaoState) UnmarshalJSON(input []byte) error {
+	var data map[string]interface{}
+	if err := json.Unmarshal(input, &data); err != nil {
+		return err
+	}
+	switch reflect.ValueOf(data["value"]).Kind() {
+	case reflect.String:
+		var jsonObj struct {
+			Type  DaoStateType   `json:"type"`
+			Value hexutil.Uint64 `json:"value"`
+		}
+		if err := json.Unmarshal(input, &jsonObj); err != nil {
+			return err
+		}
+		*e = DaoState{
+			Type:  jsonObj.Type,
+			Value: []uint64{uint64(jsonObj.Value)},
+		}
+	case reflect.Slice:
+		var jsonObj struct {
+			Type  DaoStateType     `json:"type"`
+			Value []hexutil.Uint64 `json:"value"`
+		}
+		if err := json.Unmarshal(input, &jsonObj); err != nil {
+			return err
+		}
+		*e = DaoState{
+			Type:  jsonObj.Type,
+			Value: []uint64{uint64(jsonObj.Value[0]), uint64(jsonObj.Value[1])},
+		}
+	default:
+		return errors.New("invalid type while unmarshal DaoState")
 	}
 	return nil
 }

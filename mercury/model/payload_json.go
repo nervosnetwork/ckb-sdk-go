@@ -3,16 +3,15 @@ package model
 import (
 	"encoding/json"
 	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/common"
-	"github.com/nervosnetwork/ckb-sdk-go/mercury/model/req"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
+	"reflect"
 )
 
 func (r GetBalancePayload) MarshalJSON() ([]byte, error) {
 	jsonObj := &struct {
-		AssetInfos     []*common.AssetInfo `json:"asset_infos"`
-		TipBlockNumber hexutil.Uint64      `json:"tip_block_number,omitempty"`
-		Item           *req.Item           `json:"item"`
+		AssetInfos     []*AssetInfo   `json:"asset_infos"`
+		TipBlockNumber hexutil.Uint64 `json:"tip_block_number,omitempty"`
+		Item           *Item          `json:"item"`
 	}{
 		AssetInfos:     r.AssetInfos,
 		TipBlockNumber: hexutil.Uint64(r.TipBlockNumber),
@@ -24,10 +23,13 @@ func (r GetBalancePayload) MarshalJSON() ([]byte, error) {
 func (r GetBlockInfoPayload) MarshalJSON() ([]byte, error) {
 	jsonObj := &struct {
 		BlockNumber hexutil.Uint64 `json:"block_number,omitempty"`
-		BlockHash   types.Hash     `json:"block_hash,omitempty"`
+		BlockHash   *types.Hash    `json:"block_hash,omitempty"`
 	}{
 		BlockNumber: hexutil.Uint64(r.BlockNumber),
-		BlockHash:   r.BlockHash,
+	}
+	// omit for empty hash
+	if (!reflect.DeepEqual(r.BlockHash, types.Hash{})) {
+		jsonObj.BlockHash = &r.BlockHash
 	}
 	return json.Marshal(jsonObj)
 }
@@ -60,12 +62,12 @@ func (r PaginationRequest) MarshalJSON() ([]byte, error) {
 
 func (r BuildAdjustAccountPayload) MarshalJSON() ([]byte, error) {
 	jsonObj := &struct {
-		Item          *req.Item         `json:"item"`
-		From          []*req.Item       `json:"from"`
-		AssetInfo     *common.AssetInfo `json:"asset_info"`
-		AccountNumber hexutil.Uint64    `json:"account_number,omitempty"`
-		ExtraCKB      hexutil.Uint64    `json:"extra_ckb,omitempty"`
-		FeeRate       hexutil.Uint64    `json:"fee_rate,omitempty"`
+		Item          *Item          `json:"item"`
+		From          []*Item        `json:"from"`
+		AssetInfo     *AssetInfo     `json:"asset_info"`
+		AccountNumber hexutil.Uint64 `json:"account_number,omitempty"`
+		ExtraCKB      hexutil.Uint64 `json:"extra_ckb,omitempty"`
+		FeeRate       hexutil.Uint64 `json:"fee_rate,omitempty"`
 	}{
 		Item:          r.Item,
 		From:          r.From,
@@ -153,7 +155,7 @@ func (r DaoDepositPayload) MarshalJSON() ([]byte, error) {
 
 func (r DaoWithdrawPayload) MarshalJSON() ([]byte, error) {
 	jsonObj := &struct {
-		From    *req.Item      `json:"from"`
+		From    []*Item        `json:"from"`
 		FeeRate hexutil.Uint64 `json:"fee_rate,omitempty"`
 	}{
 		From:    r.From,
@@ -164,7 +166,7 @@ func (r DaoWithdrawPayload) MarshalJSON() ([]byte, error) {
 
 func (r DaoClaimPayload) MarshalJSON() ([]byte, error) {
 	jsonObj := &struct {
-		From    *req.Item      `json:"from"`
+		From    []*Item        `json:"from"`
 		To      string         `json:"to,omitempty"`
 		FeeRate hexutil.Uint64 `json:"fee_rate,omitempty"`
 	}{

@@ -1,12 +1,12 @@
-package common
+package model
 
 import "github.com/nervosnetwork/ckb-sdk-go/types"
 
 type AssetType string
 
 const (
-	CKB AssetType = "CKB"
-	UDT AssetType = "UDT"
+	AssetTypeCKB AssetType = "CKB"
+	AssetTypeUDT AssetType = "UDT"
 )
 
 type AssetInfo struct {
@@ -16,14 +16,14 @@ type AssetInfo struct {
 
 func NewCkbAsset() *AssetInfo {
 	return &AssetInfo{
-		AssetType: CKB,
+		AssetType: AssetTypeCKB,
 		UdtHash:   types.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000000"),
 	}
 }
 
-func NewUdtAsset(udtHash string) *AssetInfo {
+func NewUdtAsset(udtHash types.Hash) *AssetInfo {
 	return &AssetInfo{
-		AssetType: UDT,
-		UdtHash:   types.HexToHash(udtHash),
+		AssetType: AssetTypeUDT,
+		UdtHash:   udtHash,
 	}
 }
