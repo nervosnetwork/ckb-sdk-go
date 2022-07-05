@@ -3,7 +3,6 @@ package transaction
 import (
 	"github.com/nervosnetwork/ckb-sdk-go/crypto/secp256k1"
 	"github.com/pkg/errors"
-	"strings"
 )
 
 type Context struct {
@@ -12,9 +11,6 @@ type Context struct {
 }
 
 func NewContext(ecPrivateKey string) (*Context, error) {
-	if strings.HasPrefix(ecPrivateKey, "0x") {
-		ecPrivateKey = ecPrivateKey[2:]
-	}
 	key, err := secp256k1.HexToKey(ecPrivateKey)
 	if err != nil {
 		return nil, errors.WithMessage(err, ecPrivateKey)

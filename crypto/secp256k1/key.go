@@ -7,10 +7,9 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
-	"math/big"
-
 	"github.com/ethereum/go-ethereum/common/math"
 	"github.com/ethereum/go-ethereum/crypto/secp256k1"
+	"math/big"
 
 	"github.com/nervosnetwork/ckb-sdk-go/crypto"
 	"github.com/nervosnetwork/ckb-sdk-go/crypto/blake2b"
@@ -78,11 +77,18 @@ func RandomNew() (*Secp256k1Key, error) {
 }
 
 func HexToKey(hexkey string) (*Secp256k1Key, error) {
+	if has0xPrefix(hexkey) {
+		hexkey = hexkey[2:]
+	}
 	b, err := hex.DecodeString(hexkey)
 	if err != nil {
 		return nil, errors.New("invalid hex string")
 	}
 	return ToKey(b)
+}
+
+func has0xPrefix(input string) bool {
+	return len(input) >= 2 && input[0] == '0' && (input[1] == 'x' || input[1] == 'X')
 }
 
 func ToKey(d []byte) (*Secp256k1Key, error) {
