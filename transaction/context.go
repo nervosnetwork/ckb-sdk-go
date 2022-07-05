@@ -7,7 +7,7 @@ import (
 )
 
 type Context struct {
-	Key     secp256k1.Secp256k1Key
+	Key     *secp256k1.Secp256k1Key
 	Payload interface{}
 }
 
@@ -20,7 +20,7 @@ func NewContext(ecPrivateKey string) (*Context, error) {
 		return nil, errors.WithMessage(err, ecPrivateKey)
 	}
 	return &Context{
-		Key:     *key,
+		Key:     key,
 		Payload: nil,
 	}, nil
 }
