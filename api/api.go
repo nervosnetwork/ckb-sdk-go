@@ -21,19 +21,19 @@ type DefaultCkbApi struct {
 	mercury mercury.Client
 }
 
-func (cli *DefaultCkbApi) BuildSimpleTransferTransaction(payload *model.SimpleTransferPayload) (*model.TransferCompletionResponse, error) {
+func (cli *DefaultCkbApi) BuildSimpleTransferTransaction(payload *model.SimpleTransferPayload) (*model.TransactionWithScriptGroups, error) {
 	return cli.mercury.BuildSimpleTransferTransaction(payload)
 }
 
-func (cli *DefaultCkbApi) BuildDaoDepositTransaction(payload *model.DaoDepositPayload) (*model.TransferCompletionResponse, error) {
+func (cli *DefaultCkbApi) BuildDaoDepositTransaction(payload *model.DaoDepositPayload) (*model.TransactionWithScriptGroups, error) {
 	return cli.mercury.BuildDaoDepositTransaction(payload)
 }
 
-func (cli *DefaultCkbApi) BuildDaoWithdrawTransaction(payload *model.DaoWithdrawPayload) (*model.TransferCompletionResponse, error) {
+func (cli *DefaultCkbApi) BuildDaoWithdrawTransaction(payload *model.DaoWithdrawPayload) (*model.TransactionWithScriptGroups, error) {
 	return cli.mercury.BuildDaoWithdrawTransaction(payload)
 }
 
-func (cli *DefaultCkbApi) BuildDaoClaimTransaction(payload *model.DaoClaimPayload) (*model.TransferCompletionResponse, error) {
+func (cli *DefaultCkbApi) BuildDaoClaimTransaction(payload *model.DaoClaimPayload) (*model.TransactionWithScriptGroups, error) {
 	return cli.mercury.BuildDaoClaimTransaction(payload)
 }
 
@@ -69,15 +69,15 @@ func (cli *DefaultCkbApi) GetBalance(payload *model.GetBalancePayload) (*model.G
 	return cli.mercury.GetBalance(payload)
 }
 
-func (cli *DefaultCkbApi) BuildTransferTransaction(payload *model.TransferPayload) (*model.TransferCompletionResponse, error) {
+func (cli *DefaultCkbApi) BuildTransferTransaction(payload *model.TransferPayload) (*model.TransactionWithScriptGroups, error) {
 	return cli.mercury.BuildTransferTransaction(payload)
 }
 
-func (cli *DefaultCkbApi) BuildAdjustAccountTransaction(payload *model.BuildAdjustAccountPayload) (*model.TransferCompletionResponse, error) {
+func (cli *DefaultCkbApi) BuildAdjustAccountTransaction(payload *model.BuildAdjustAccountPayload) (*model.TransactionWithScriptGroups, error) {
 	return cli.mercury.BuildAdjustAccountTransaction(payload)
 }
 
-func (cli *DefaultCkbApi) BuildSudtIssueTransaction(payload *model.BuildSudtIssueTransactionPayload) (*model.TransferCompletionResponse, error) {
+func (cli *DefaultCkbApi) BuildSudtIssueTransaction(payload *model.BuildSudtIssueTransactionPayload) (*model.TransactionWithScriptGroups, error) {
 	return cli.mercury.BuildSudtIssueTransaction(payload)
 }
 

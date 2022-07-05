@@ -5,7 +5,7 @@ import (
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 )
 
-type TransferCompletionResponse struct {
+type TransactionWithScriptGroups struct {
 	TxView       *types.Transaction `json:"tx_view"`
 	ScriptGroups []*ScriptGroup     `json:"script_groups"`
 }
