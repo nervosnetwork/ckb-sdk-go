@@ -187,32 +187,6 @@ func (r *AccountInfo) UnmarshalJSON(input []byte) error {
 	return nil
 }
 
-func (r *ScriptGroup) UnmarshalJSON(input []byte) error {
-	var jsonObj struct {
-		Script        types.Script   `json:"script"`
-		GroupType     GroupType      `json:"group_type"`
-		InputIndices  []hexutil.Uint `json:"input_indices"`
-		OutputIndices []hexutil.Uint `json:"output_indices"`
-	}
-	if err := json.Unmarshal(input, &jsonObj); err != nil {
-		return err
-	}
-	toUint32Array := func(a []hexutil.Uint) []uint32 {
-		result := make([]uint32, len(a))
-		for i, data := range a {
-			result[i] = uint32(data)
-		}
-		return result
-	}
-	*r = ScriptGroup{
-		Script:        jsonObj.Script,
-		GroupType:     jsonObj.GroupType,
-		InputIndices:  toUint32Array(jsonObj.InputIndices),
-		OutputIndices: toUint32Array(jsonObj.OutputIndices),
-	}
-	return nil
-}
-
 func (r *TxRichStatus) UnmarshalJSON(input []byte) error {
 	type txRichStatusAlias TxRichStatus
 	var jsonObj struct {
