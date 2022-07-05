@@ -25,7 +25,40 @@ func (s Secp256k1Blake160SighashAllSigner) SignTransaction(transaction *types.Tr
 	}
 }
 
-func (s Secp256k1Blake160SighashAllSigner) signTransaction(transaction *types.Transaction, group *transaction.ScriptGroup, key *secp256k1.Secp256k1Key) (bool, error) {
+func (s *Secp256k1Blake160SighashAllSigner) signTransaction(tx *types.Transaction, group *transaction.ScriptGroup, key *secp256k1.Secp256k1Key) (bool, error) {
+	txHash, err := tx.ComputeHash()
+	if err != nil {
+		return false, err
+	}
+	data := txHash.Bytes()
+	for _, v := range group.InputIndices {
+		witness := tx.Witnesses[v]
+		data = append(data, types.SerializeUint64(uint64(len(witness)))...)
+		data = append(data, witness...)
+	}
+	for i := len(tx.Inputs); i < len(tx.Witnesses); i++ {
+		witness := tx.Witnesses[i]
+		data = append(data, types.SerializeUint64(uint64(len(witness)))...)
+		data = append(data, witness...)
+	}
+	message, err := blake2b.Blake256(data)
+	if err != nil {
+		return false, err
+	}
+	signature, err := key.Sign(message)
+	if err != nil {
+		return false, err
+	}
+	i := group.InputIndices[0]
+	w := tx.Witnesses[i]
+	witnessArgs, err := types.DeserializeWitnessArgs(w)
+	if err != nil {
+		return false, err
+	}
+	witnessArgs.Lock = signature
+	if tx.Witnesses[i], err = witnessArgs.Serialize(); err != nil {
+		return false, err
+	}
 	return true, nil
 }
 
