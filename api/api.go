@@ -41,7 +41,7 @@ func (cli *DefaultCkbApi) GetSpentTransactionWithTransactionInfo(payload *model.
 	return cli.mercury.GetSpentTransactionWithTransactionInfo(payload)
 }
 
-func (cli *DefaultCkbApi) GetSpentTransactionWithTransactionView(payload *model.GetSpentTransactionPayload) (*model.TransactionViewWrapper, error) {
+func (cli *DefaultCkbApi) GetSpentTransactionWithTransactionView(payload *model.GetSpentTransactionPayload) (*model.TransactionWithRichStatusWrapper, error) {
 	return cli.mercury.GetSpentTransactionWithTransactionView(payload)
 }
 
@@ -161,7 +161,7 @@ func (cli *DefaultCkbApi) QueryTransactionsWithTransactionInfo(payload *model.Qu
 	return cli.mercury.QueryTransactionsWithTransactionInfo(payload)
 }
 
-func (cli *DefaultCkbApi) QueryTransactionsWithTransactionView(payload *model.QueryTransactionsPayload) (*model.PaginationResponseTransactionView, error) {
+func (cli *DefaultCkbApi) QueryTransactionsWithTransactionView(payload *model.QueryTransactionsPayload) (*model.PaginationResponseTransactionWithRichStatus, error) {
 	return cli.mercury.QueryTransactionsWithTransactionView(payload)
 }
 

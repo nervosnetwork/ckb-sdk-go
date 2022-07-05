@@ -17,11 +17,11 @@ type Client interface {
 	RegisterAddresses(normalAddresses []string) ([]string, error)
 	GetTransactionInfo(txHash types.Hash) (*model.GetTransactionInfoResponse, error)
 	GetSpentTransactionWithTransactionInfo(*model.GetSpentTransactionPayload) (*model.TransactionInfoWrapper, error)
-	GetSpentTransactionWithTransactionView(*model.GetSpentTransactionPayload) (*model.TransactionViewWrapper, error)
+	GetSpentTransactionWithTransactionView(*model.GetSpentTransactionPayload) (*model.TransactionWithRichStatusWrapper, error)
 	GetBlockInfo(payload *model.GetBlockInfoPayload) (*model.BlockInfo, error)
 	GetAccountInfo(payload *model.GetAccountInfoPayload) (*model.AccountInfo, error)
 	QueryTransactionsWithTransactionInfo(payload *model.QueryTransactionsPayload) (*model.PaginationResponseTransactionInfo, error)
-	QueryTransactionsWithTransactionView(payload *model.QueryTransactionsPayload) (*model.PaginationResponseTransactionView, error)
+	QueryTransactionsWithTransactionView(payload *model.QueryTransactionsPayload) (*model.PaginationResponseTransactionWithRichStatus, error)
 	GetDbInfo() (*model.DBInfo, error)
 	GetMercuryInfo() (*model.MercuryInfo, error)
 	GetSyncState() (*model.MercurySyncState, error)
@@ -192,9 +192,9 @@ func (cli *client) GetSpentTransactionWithTransactionInfo(payload *model.GetSpen
 	return tx, err
 }
 
-func (cli *client) GetSpentTransactionWithTransactionView(payload *model.GetSpentTransactionPayload) (*model.TransactionViewWrapper, error) {
+func (cli *client) GetSpentTransactionWithTransactionView(payload *model.GetSpentTransactionPayload) (*model.TransactionWithRichStatusWrapper, error) {
 	payload.StructureType = model.StructureTypeNative
-	var tx *model.TransactionViewWrapper
+	var tx *model.TransactionWithRichStatusWrapper
 	err := cli.c.Call(&tx, "get_spent_transaction", payload)
 	if err != nil {
 		return nil, err
@@ -202,9 +202,9 @@ func (cli *client) GetSpentTransactionWithTransactionView(payload *model.GetSpen
 	return tx, err
 }
 
-func (cli *client) QueryTransactionsWithTransactionView(payload *model.QueryTransactionsPayload) (*model.PaginationResponseTransactionView, error) {
+func (cli *client) QueryTransactionsWithTransactionView(payload *model.QueryTransactionsPayload) (*model.PaginationResponseTransactionWithRichStatus, error) {
 	payload.StructureType = model.StructureTypeNative
-	var resp model.PaginationResponseTransactionView
+	var resp model.PaginationResponseTransactionWithRichStatus
 	err := cli.c.Call(&resp, "query_transactions", payload)
 	if err != nil {
 		return &resp, err

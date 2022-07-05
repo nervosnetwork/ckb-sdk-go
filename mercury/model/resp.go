@@ -80,7 +80,7 @@ type TransactionInfoWrapper struct {
 	Value *TransactionInfo `json:"value"`
 }
 
-type TransactionViewWrapper struct {
+type TransactionWithRichStatusWrapper struct {
 	Type  TxViewType                 `json:"type"`
 	Value *TransactionWithRichStatus `json:"value"`
 }
@@ -142,10 +142,10 @@ type TxRichStatus struct {
 	Timestamp uint64                  `json:"timestamp,omitempty"`
 }
 
-type PaginationResponseTransactionView struct {
-	Response   []*TransactionViewWrapper `json:"response"`
-	Count      uint64                    `json:"count,omitempty"`
-	NextCursor uint64                    `json:"next_cursor,omitempty"`
+type PaginationResponseTransactionWithRichStatus struct {
+	Response   []*TransactionWithRichStatusWrapper `json:"response"`
+	Count      uint64                              `json:"count,omitempty"`
+	NextCursor uint64                              `json:"next_cursor,omitempty"`
 }
 
 type PaginationResponseTransactionInfo struct {

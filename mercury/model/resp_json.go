@@ -128,16 +128,16 @@ func (r *BlockInfo) UnmarshalJSON(input []byte) error {
 	return nil
 }
 
-func (r *PaginationResponseTransactionView) UnmarshalJSON(input []byte) error {
+func (r *PaginationResponseTransactionWithRichStatus) UnmarshalJSON(input []byte) error {
 	var jsonObj struct {
-		Response   []*TransactionViewWrapper `json:"response"`
-		Count      *hexutil.Uint64           `json:"count,omitempty"`
-		NextCursor *hexutil.Uint64           `json:"next_cursor,omitempty"`
+		Response   []*TransactionWithRichStatusWrapper `json:"response"`
+		Count      *hexutil.Uint64                     `json:"count,omitempty"`
+		NextCursor *hexutil.Uint64                     `json:"next_cursor,omitempty"`
 	}
 	if err := json.Unmarshal(input, &jsonObj); err != nil {
 		return err
 	}
-	*r = PaginationResponseTransactionView{
+	*r = PaginationResponseTransactionWithRichStatus{
 		Response: jsonObj.Response,
 	}
 	if jsonObj.Count != nil {
