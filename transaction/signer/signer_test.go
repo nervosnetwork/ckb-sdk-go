@@ -94,6 +94,10 @@ func TestSecp256k1Blake160MultisigAllSigner(t *testing.T) {
 	testSignAndCheck(t, "secp256k1_blake160_multisig_all_second.json")
 }
 
+func TestAnyoneCanPaySigner(t *testing.T) {
+	testSignAndCheck(t, "acp_one_input.json")
+}
+
 func testSignAndCheck(t *testing.T, fileName string) {
 	checker, err := fromFile(fileName)
 	if err != nil {
