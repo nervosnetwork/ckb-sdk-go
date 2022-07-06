@@ -37,6 +37,51 @@ func TestIsMatch(t *testing.T) {
 	assert.NotNil(t, err)
 }
 
+func TestMultiScriptDecode(t *testing.T) {
+	bytes := common.FromHex("0x000002029b41c025515b00c24e2e2042df7b221af5c1891fe732dcd15b7618eb1d7a11e6a68e4579b5be0114")
+	m, err := DecodeToMultisigScript(bytes)
+	if err != nil {
+		t.Error(err)
+	}
+	assert.Equal(t, byte(0), m.FirstN)
+	assert.Equal(t, byte(2), m.Threshold)
+	assert.Equal(t, getKeysHashes(), m.KeysHashes)
+
+	bytes = common.FromHex("0x000002039b41c025515b00c24e2e2042df7b221af5c1891fe732dcd15b7618eb1d7a11e6a68e4579b5be0114")
+	_, err = DecodeToMultisigScript(bytes)
+	assert.Error(t, err)
+
+	bytes = common.FromHex("0x000002029b41c025515b00c24e2e2042df7b221af5c1891f")
+	_, err = DecodeToMultisigScript(bytes)
+	assert.Error(t, err)
+}
+
+func TestMultiScriptEncode(t *testing.T) {
+	m := &MultisigScript{
+		Version:    0,
+		FirstN:     0,
+		Threshold:  2,
+		KeysHashes: getKeysHashes(),
+	}
+	encoded := m.encode()
+	assert.Equal(t, common.FromHex("0x000002029b41c025515b00c24e2e2042df7b221af5c1891fe732dcd15b7618eb1d7a11e6a68e4579b5be0114"), encoded)
+	hash, err := m.ComputeHash()
+	if err != nil {
+		t.Error(err)
+	}
+	assert.Equal(t, common.FromHex("0x35ed7b939b4ac9cb447b82340fd8f26d344f7a62"), hash[:])
+}
+
+func getKeysHashes() [][20]byte {
+	keysHashes := make([][20]byte, 0)
+	b := [20]byte{}
+	copy(b[:], common.FromHex("0x9b41c025515b00c24e2e2042df7b221af5c1891f"))
+	keysHashes = append(keysHashes, b)
+	copy(b[:], common.FromHex("0xe732dcd15b7618eb1d7a11e6a68e4579b5be0114"))
+	keysHashes = append(keysHashes, b)
+	return keysHashes
+}
+
 func TestSecp256k1Blake160SighashAllSigner(t *testing.T) {
 	testSignAndCheck(t, "secp256k1_blake160_sighash_all_one_input.json")
 	testSignAndCheck(t, "secp256k1_blake160_sighash_all_one_group.json")
