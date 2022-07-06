@@ -28,6 +28,9 @@ func GetTransactionSignerInstance(network types.Network) *TransactionSigner {
 			testInstance = NewTransactionSigner()
 			testInstance.RegisterLockSigner(
 				types.GetCodeHash(types.BuiltinScriptSecp256k1Blake160SighashAll, network), Secp256k1Blake160SighashAllSigner{})
+			testInstance.RegisterLockSigner(
+				types.GetCodeHash(types.BuiltinScriptSecp256k1Blake160MultisigAll, network), Secp256k1Blake160MultisigAllSigner{})
+
 		}
 		return testInstance
 	} else if network == types.NetworkMain {
@@ -35,6 +38,8 @@ func GetTransactionSignerInstance(network types.Network) *TransactionSigner {
 			mainInstance = NewTransactionSigner()
 			mainInstance.RegisterLockSigner(
 				types.GetCodeHash(types.BuiltinScriptSecp256k1Blake160SighashAll, network), Secp256k1Blake160SighashAllSigner{})
+			testInstance.RegisterLockSigner(
+				types.GetCodeHash(types.BuiltinScriptSecp256k1Blake160MultisigAll, network), Secp256k1Blake160MultisigAllSigner{})
 		}
 		return mainInstance
 	}
