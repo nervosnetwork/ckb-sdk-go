@@ -37,6 +37,13 @@ func TestIsMatch(t *testing.T) {
 	assert.NotNil(t, err)
 }
 
+func TestSecp256k1Blake160SighashAllSigner(t *testing.T) {
+	testSignAndCheck(t, "secp256k1_blake160_sighash_all_one_input.json")
+	testSignAndCheck(t, "secp256k1_blake160_sighash_all_one_group.json")
+	testSignAndCheck(t, "secp256k1_blake160_sighash_all_two_groups.json")
+	testSignAndCheck(t, "secp256k1_blake160_sighash_all_extra_witness.json")
+}
+
 func testSignAndCheck(t *testing.T, fileName string) {
 	checker, err := fromFile(fileName)
 	if err != nil {
