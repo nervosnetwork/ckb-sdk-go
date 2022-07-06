@@ -75,12 +75,10 @@ func DecodeToMultisigScript(in []byte) (*MultisigScript, error) {
 	return m, nil
 }
 
-func (r *MultisigScript) ComputeHash() ([20]byte, error) {
+func (r *MultisigScript) ComputeHash() ([]byte, error) {
 	hash, err := blake2b.Blake160(r.encode()[:])
 	if err != nil {
-		return [20]byte{}, err
+		return nil, err
 	}
-	var arr [20]byte
-	copy(arr[:], hash[:20])
-	return arr, nil
+	return hash, nil
 }

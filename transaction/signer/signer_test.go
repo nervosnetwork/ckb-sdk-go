@@ -69,7 +69,7 @@ func TestMultiScriptEncode(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	assert.Equal(t, common.FromHex("0x35ed7b939b4ac9cb447b82340fd8f26d344f7a62"), hash[:])
+	assert.Equal(t, common.FromHex("0x35ed7b939b4ac9cb447b82340fd8f26d344f7a62"), hash)
 }
 
 func getKeysHashes() [][20]byte {
