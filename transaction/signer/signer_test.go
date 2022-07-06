@@ -89,6 +89,11 @@ func TestSecp256k1Blake160SighashAllSigner(t *testing.T) {
 	testSignAndCheck(t, "secp256k1_blake160_sighash_all_extra_witness.json")
 }
 
+func TestSecp256k1Blake160MultisigAllSigner(t *testing.T) {
+	testSignAndCheck(t, "secp256k1_blake160_multisig_all_first.json")
+	testSignAndCheck(t, "secp256k1_blake160_multisig_all_second.json")
+}
+
 func testSignAndCheck(t *testing.T, fileName string) {
 	checker, err := fromFile(fileName)
 	if err != nil {
@@ -110,7 +115,7 @@ func testSignAndCheck(t *testing.T, fileName string) {
 	}
 	assert.Equal(t, len(checker.ExpectedWitnesses), len(tx.TxView.Witnesses))
 	for i, w := range checker.ExpectedWitnesses {
-		assert.Equal(t, hexutil.Encode(tx.TxView.Witnesses[i]), w)
+		assert.Equal(t, w, hexutil.Encode(tx.TxView.Witnesses[i]))
 	}
 }
 
@@ -156,8 +161,16 @@ func (r *signerChecker) UnmarshalJSON(input []byte) error {
 		} else {
 			return errors.New("not find private_key")
 		}
-		if _, ok := c["multisig_script"]; ok {
-			// TODO: unmarshall multisig script
+		if val, ok := c["multisig_script"]; ok {
+			v := val.(map[string]interface{})
+			m := NewMultisigScript(byte(v["first_n"].(float64)),
+				byte(v["threshold"].(float64)))
+			for _, h := range v["key_hashes"].([]interface{}) {
+				if err := m.AddKeyHashBySlice(common.FromHex(h.(string))); err != nil {
+					return err
+				}
+			}
+			ctx.Payload = m
 		}
 		r.Contexts.Add(ctx)
 	}
