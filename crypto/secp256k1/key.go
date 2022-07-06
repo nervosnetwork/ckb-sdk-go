@@ -3,6 +3,7 @@ package secp256k1
 import (
 	"bytes"
 	"crypto/ecdsa"
+	"crypto/elliptic"
 	"crypto/rand"
 	"encoding/hex"
 	"errors"
@@ -59,6 +60,14 @@ func (k *Secp256k1Key) PubKey() []byte {
 	}
 
 	return secp256k1.CompressPubkey(pub.X, pub.Y)
+}
+
+func (k *Secp256k1Key) PubKeyUncompressed() []byte {
+	pub := &k.PrivateKey.PublicKey
+	if pub == nil || pub.X == nil || pub.Y == nil {
+		return nil
+	}
+	return elliptic.Marshal(pub.Curve, pub.X, pub.Y)
 }
 
 func RandomNew() (*Secp256k1Key, error) {
