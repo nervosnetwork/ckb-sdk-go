@@ -3,6 +3,7 @@ package transaction
 import (
 	"errors"
 	"github.com/nervosnetwork/ckb-sdk-go/crypto/blake2b"
+	"github.com/nervosnetwork/ckb-sdk-go/transaction/signer"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 )
 
@@ -12,6 +13,32 @@ type ScriptSigner interface {
 
 type TransactionSigner struct {
 	signers map[types.Hash]ScriptSigner
+}
+
+func NewTransactionSigner() *TransactionSigner {
+	return &TransactionSigner{signers: make(map[types.Hash]ScriptSigner)}
+}
+
+var testInstance *TransactionSigner
+var mainInstance *TransactionSigner
+
+func GetTransactionSignerInstance(network types.Network) *TransactionSigner {
+	if network == types.NetworkTest {
+		if testInstance == nil {
+			testInstance = NewTransactionSigner()
+			testInstance.RegisterLockSigner(
+				types.GetCodeHash(types.BuiltinScriptSecp256k1Blake160SighashAll, network), signer.Secp256k1Blake160SighashAllSigner{})
+		}
+		return testInstance
+	} else if network == types.NetworkMain {
+		if mainInstance == nil {
+			mainInstance = NewTransactionSigner()
+			mainInstance.RegisterLockSigner(
+				types.GetCodeHash(types.BuiltinScriptSecp256k1Blake160SighashAll, network), signer.Secp256k1Blake160SighashAllSigner{})
+		}
+		return mainInstance
+	}
+	return nil
 }
 
 func (r *TransactionSigner) RegisterSigner(codeHash types.Hash, scriptType ScriptType, signer ScriptSigner) error {
