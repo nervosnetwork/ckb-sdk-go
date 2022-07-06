@@ -23,27 +23,31 @@ var testInstance *TransactionSigner
 var mainInstance *TransactionSigner
 
 func GetTransactionSignerInstance(network types.Network) *TransactionSigner {
+	var instance *TransactionSigner
+	var isInitialized = true
 	if network == types.NetworkTest {
 		if testInstance == nil {
 			testInstance = NewTransactionSigner()
-			testInstance.RegisterLockSigner(
-				types.GetCodeHash(types.BuiltinScriptSecp256k1Blake160SighashAll, network), Secp256k1Blake160SighashAllSigner{})
-			testInstance.RegisterLockSigner(
-				types.GetCodeHash(types.BuiltinScriptSecp256k1Blake160MultisigAll, network), Secp256k1Blake160MultisigAllSigner{})
-
+			isInitialized = false
 		}
-		return testInstance
+		instance = testInstance
 	} else if network == types.NetworkMain {
 		if mainInstance == nil {
 			mainInstance = NewTransactionSigner()
-			mainInstance.RegisterLockSigner(
-				types.GetCodeHash(types.BuiltinScriptSecp256k1Blake160SighashAll, network), Secp256k1Blake160SighashAllSigner{})
-			testInstance.RegisterLockSigner(
-				types.GetCodeHash(types.BuiltinScriptSecp256k1Blake160MultisigAll, network), Secp256k1Blake160MultisigAllSigner{})
+			isInitialized = false
 		}
-		return mainInstance
+		instance = mainInstance
+	} else {
+		return nil
 	}
-	return nil
+
+	if !isInitialized {
+		instance.RegisterLockSigner(
+			types.GetCodeHash(types.BuiltinScriptSecp256k1Blake160SighashAll, network), Secp256k1Blake160SighashAllSigner{})
+		instance.RegisterLockSigner(
+			types.GetCodeHash(types.BuiltinScriptSecp256k1Blake160MultisigAll, network), Secp256k1Blake160MultisigAllSigner{})
+	}
+	return instance
 }
 
 func (r *TransactionSigner) RegisterSigner(codeHash types.Hash, scriptType transaction.ScriptType, signer ScriptSigner) error {
