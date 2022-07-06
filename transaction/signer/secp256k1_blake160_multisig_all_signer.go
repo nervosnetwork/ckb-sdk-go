@@ -29,13 +29,13 @@ func (s Secp256k1Blake160MultisigAllSigner) SignTransaction(transaction *types.T
 		return false, err
 	}
 	if matched {
-		return s.signTransaction(transaction, group, ctx.Key, m)
+		return MultiSignTransaction(transaction, group, ctx.Key, m)
 	} else {
 		return false, nil
 	}
 }
 
-func (s *Secp256k1Blake160MultisigAllSigner) signTransaction(tx *types.Transaction, group *transaction.ScriptGroup, key *secp256k1.Secp256k1Key, m *MultisigScript) (bool, error) {
+func MultiSignTransaction(tx *types.Transaction, group *transaction.ScriptGroup, key *secp256k1.Secp256k1Key, m *MultisigScript) (bool, error) {
 	txHash, err := tx.ComputeHash()
 	if err != nil {
 		return false, err

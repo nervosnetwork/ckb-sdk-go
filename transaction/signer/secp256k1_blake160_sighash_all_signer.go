@@ -19,13 +19,13 @@ func (s Secp256k1Blake160SighashAllSigner) SignTransaction(transaction *types.Tr
 		return false, err
 	}
 	if matched {
-		return s.signTransaction(transaction, group, key)
+		return SingleSignTransaction(transaction, group, key)
 	} else {
 		return false, nil
 	}
 }
 
-func (s *Secp256k1Blake160SighashAllSigner) signTransaction(tx *types.Transaction, group *transaction.ScriptGroup, key *secp256k1.Secp256k1Key) (bool, error) {
+func SingleSignTransaction(tx *types.Transaction, group *transaction.ScriptGroup, key *secp256k1.Secp256k1Key) (bool, error) {
 	txHash, err := tx.ComputeHash()
 	if err != nil {
 		return false, err
