@@ -1,14 +1,14 @@
-package transaction
+package signer
 
 import (
 	"errors"
 	"github.com/nervosnetwork/ckb-sdk-go/crypto/blake2b"
-	"github.com/nervosnetwork/ckb-sdk-go/transaction/signer"
+	"github.com/nervosnetwork/ckb-sdk-go/transaction"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 )
 
 type ScriptSigner interface {
-	SignTransaction(transaction *types.Transaction, group *ScriptGroup, ctx *Context) (bool, error)
+	SignTransaction(transaction *types.Transaction, group *transaction.ScriptGroup, ctx *transaction.Context) (bool, error)
 }
 
 type TransactionSigner struct {
@@ -27,21 +27,21 @@ func GetTransactionSignerInstance(network types.Network) *TransactionSigner {
 		if testInstance == nil {
 			testInstance = NewTransactionSigner()
 			testInstance.RegisterLockSigner(
-				types.GetCodeHash(types.BuiltinScriptSecp256k1Blake160SighashAll, network), signer.Secp256k1Blake160SighashAllSigner{})
+				types.GetCodeHash(types.BuiltinScriptSecp256k1Blake160SighashAll, network), Secp256k1Blake160SighashAllSigner{})
 		}
 		return testInstance
 	} else if network == types.NetworkMain {
 		if mainInstance == nil {
 			mainInstance = NewTransactionSigner()
 			mainInstance.RegisterLockSigner(
-				types.GetCodeHash(types.BuiltinScriptSecp256k1Blake160SighashAll, network), signer.Secp256k1Blake160SighashAllSigner{})
+				types.GetCodeHash(types.BuiltinScriptSecp256k1Blake160SighashAll, network), Secp256k1Blake160SighashAllSigner{})
 		}
 		return mainInstance
 	}
 	return nil
 }
 
-func (r *TransactionSigner) RegisterSigner(codeHash types.Hash, scriptType ScriptType, signer ScriptSigner) error {
+func (r *TransactionSigner) RegisterSigner(codeHash types.Hash, scriptType transaction.ScriptType, signer ScriptSigner) error {
 	hash, err := hash(codeHash, scriptType)
 	if err != nil {
 		return err
@@ -51,14 +51,14 @@ func (r *TransactionSigner) RegisterSigner(codeHash types.Hash, scriptType Scrip
 }
 
 func (r *TransactionSigner) RegisterTypeSigner(codeHash types.Hash, signer ScriptSigner) error {
-	return r.RegisterSigner(codeHash, ScriptTypeType, signer)
+	return r.RegisterSigner(codeHash, transaction.ScriptTypeType, signer)
 }
 
 func (r *TransactionSigner) RegisterLockSigner(codeHash types.Hash, signer ScriptSigner) error {
-	return r.RegisterSigner(codeHash, ScriptTypeLock, signer)
+	return r.RegisterSigner(codeHash, transaction.ScriptTypeLock, signer)
 }
 
-func hash(codeHash types.Hash, scriptType ScriptType) (types.Hash, error) {
+func hash(codeHash types.Hash, scriptType transaction.ScriptType) (types.Hash, error) {
 	data := codeHash.Bytes()
 	data = append(data, []byte(scriptType)...)
 	hash, err := blake2b.Blake256(data)
@@ -68,7 +68,7 @@ func hash(codeHash types.Hash, scriptType ScriptType) (types.Hash, error) {
 	return types.BytesToHash(hash), nil
 }
 
-func (r *TransactionSigner) signTransaction(transaction *TransactionWithScriptGroups, contexts Contexts) ([]int, error) {
+func (r *TransactionSigner) signTransaction(transaction *transaction.TransactionWithScriptGroups, contexts transaction.Contexts) ([]int, error) {
 	signedIndex := make([]int, 0)
 	for i, group := range transaction.ScriptGroups {
 		if err := checkScriptGroup(group); err != nil {
@@ -95,16 +95,16 @@ func (r *TransactionSigner) signTransaction(transaction *TransactionWithScriptGr
 	return signedIndex, nil
 }
 
-func checkScriptGroup(group *ScriptGroup) error {
+func checkScriptGroup(group *transaction.ScriptGroup) error {
 	if group == nil {
 		return errors.New("nil ScriptGroup")
 	}
 	switch group.GroupType {
-	case ScriptTypeType:
+	case transaction.ScriptTypeType:
 		if len(group.OutputIndices) == 0 {
 			return errors.New("groupType is Lock but OutputIndices is empty")
 		}
-	case ScriptTypeLock:
+	case transaction.ScriptTypeLock:
 		if len(group.InputIndices) == 0 {
 			return errors.New("groupType is Type but InputIndices is empty")
 		}
