@@ -14,7 +14,7 @@ type Secp256k1Blake160SighashAllSigner struct {
 
 func (s Secp256k1Blake160SighashAllSigner) SignTransaction(transaction *types.Transaction, group *transaction.ScriptGroup, ctx *transaction.Context) (bool, error) {
 	key := ctx.Key
-	matched, err := IsMatch(key, group.Script.Args)
+	matched, err := IsSingleSigMatched(key, group.Script.Args)
 	if err != nil {
 		return false, err
 	}
@@ -62,7 +62,7 @@ func (s *Secp256k1Blake160SighashAllSigner) signTransaction(tx *types.Transactio
 	return true, nil
 }
 
-func IsMatch(key *secp256k1.Secp256k1Key, scriptArgs []byte) (bool, error) {
+func IsSingleSigMatched(key *secp256k1.Secp256k1Key, scriptArgs []byte) (bool, error) {
 	if key == nil || scriptArgs == nil {
 		return false, errors.New("key or scriptArgs is nil")
 	}

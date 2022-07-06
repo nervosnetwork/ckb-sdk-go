@@ -24,7 +24,7 @@ func (s Secp256k1Blake160MultisigAllSigner) SignTransaction(transaction *types.T
 	default:
 		return false, nil
 	}
-	matched, err := IsMatchMultisig(ctx.Key, m, group.Script.Args)
+	matched, err := IsMultiSigMatched(ctx.Key, m, group.Script.Args)
 	if err != nil {
 		return false, err
 	}
@@ -94,7 +94,7 @@ func setSignatureToWitness(witness []byte, signature []byte, m *MultisigScript) 
 	return w, err
 }
 
-func IsMatchMultisig(key *secp256k1.Secp256k1Key, multisigScript *MultisigScript, scriptArgs []byte) (bool, error) {
+func IsMultiSigMatched(key *secp256k1.Secp256k1Key, multisigScript *MultisigScript, scriptArgs []byte) (bool, error) {
 	if key == nil || scriptArgs == nil {
 		return false, errors.New("key or scriptArgs is nil")
 	}
