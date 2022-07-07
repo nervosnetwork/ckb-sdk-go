@@ -48,6 +48,8 @@ func GetTransactionSignerInstance(network types.Network) *TransactionSigner {
 			types.GetCodeHash(types.BuiltinScriptSecp256k1Blake160MultisigAll, network), Secp256k1Blake160MultisigAllSigner{})
 		instance.RegisterLockSigner(
 			types.GetCodeHash(types.BuiltinScriptAnyoneCanPay, network), AnyCanPaySigner{})
+		instance.RegisterLockSigner(
+			types.GetCodeHash(types.BuiltinScriptPWLock, network), PWLockSigner{})
 	}
 	return instance
 }
