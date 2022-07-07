@@ -12,7 +12,7 @@ import (
 type PWLockSigner struct {
 }
 
-func (s PWLockSigner) SignTransaction(transaction *types.Transaction, group *transaction.ScriptGroup, ctx *transaction.Context) (bool, error) {
+func (s *PWLockSigner) SignTransaction(transaction *types.Transaction, group *transaction.ScriptGroup, ctx *transaction.Context) (bool, error) {
 	key := ctx.Key
 	matched := IsPWLockMatched(key, group.Script.Args)
 	if matched {

@@ -13,7 +13,7 @@ import (
 type Secp256k1Blake160MultisigAllSigner struct {
 }
 
-func (s Secp256k1Blake160MultisigAllSigner) SignTransaction(transaction *types.Transaction, group *transaction.ScriptGroup, ctx *transaction.Context) (bool, error) {
+func (s *Secp256k1Blake160MultisigAllSigner) SignTransaction(transaction *types.Transaction, group *transaction.ScriptGroup, ctx *transaction.Context) (bool, error) {
 	var m *MultisigScript
 	switch ctx.Payload.(type) {
 	case MultisigScript:

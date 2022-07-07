@@ -9,7 +9,7 @@ import (
 type AnyCanPaySigner struct {
 }
 
-func (s AnyCanPaySigner) SignTransaction(transaction *types.Transaction, group *transaction.ScriptGroup, ctx *transaction.Context) (bool, error) {
+func (s *AnyCanPaySigner) SignTransaction(transaction *types.Transaction, group *transaction.ScriptGroup, ctx *transaction.Context) (bool, error) {
 	key := ctx.Key
 	matched, err := IsAnyCanPayMatched(key, group.Script.Args)
 	if err != nil {

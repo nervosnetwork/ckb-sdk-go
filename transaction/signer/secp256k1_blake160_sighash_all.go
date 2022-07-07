@@ -12,7 +12,7 @@ import (
 type Secp256k1Blake160SighashAllSigner struct {
 }
 
-func (s Secp256k1Blake160SighashAllSigner) SignTransaction(transaction *types.Transaction, group *transaction.ScriptGroup, ctx *transaction.Context) (bool, error) {
+func (s *Secp256k1Blake160SighashAllSigner) SignTransaction(transaction *types.Transaction, group *transaction.ScriptGroup, ctx *transaction.Context) (bool, error) {
 	key := ctx.Key
 	matched, err := IsSingleSigMatched(key, group.Script.Args)
 	if err != nil {
