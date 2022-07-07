@@ -112,6 +112,10 @@ func TestAnyoneCanPaySigner(t *testing.T) {
 	testSignAndCheck(t, "acp_one_input.json")
 }
 
+func TestPWLockSigner(t *testing.T) {
+	testSignAndCheck(t, "pw_one_group.json")
+}
+
 func testSignAndCheck(t *testing.T, fileName string) {
 	checker, err := fromFile(fileName)
 	if err != nil {
