@@ -39,11 +39,11 @@ func PWLockSignTransaction(tx *types.Transaction, group *transaction.ScriptGroup
 		data = append(data, types.SerializeUint64(uint64(len(witness)))...)
 		data = append(data, witness...)
 	}
-	message := crypto.Keccak256(data)
-	prefix := []byte("\u0019Ethereum Signed Message:\n" + strconv.Itoa(len(message)))
-	message = append(prefix, message...)
-	message = crypto.Keccak256(message)
-	signature, err := key.Sign(message)
+	msg := crypto.Keccak256(data)
+	prefix := []byte("\u0019Ethereum Signed Message:\n" + strconv.Itoa(len(msg)))
+	msg = append(prefix, msg...)
+	msg = crypto.Keccak256(msg)
+	signature, err := key.Sign(msg)
 	if err != nil {
 		return false, err
 	}

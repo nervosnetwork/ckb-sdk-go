@@ -41,11 +41,11 @@ func SingleSignTransaction(tx *types.Transaction, group *transaction.ScriptGroup
 		data = append(data, types.SerializeUint64(uint64(len(witness)))...)
 		data = append(data, witness...)
 	}
-	message, err := blake2b.Blake256(data)
+	msg, err := blake2b.Blake256(data)
 	if err != nil {
 		return false, err
 	}
-	signature, err := key.Sign(message)
+	signature, err := key.Sign(msg)
 	if err != nil {
 		return false, err
 	}
