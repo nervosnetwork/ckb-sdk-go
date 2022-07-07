@@ -15,7 +15,7 @@ import (
 	"testing"
 )
 
-func TestIsMatch(t *testing.T) {
+func TestIsSingleSigMatched(t *testing.T) {
 	key, _ := secp256k1.HexToKey("9d8ca87d75d150692211fa62b0d30de4d1ee6c530d5678b40b8cedacf0750d0f")
 	args := common.FromHex("af0b41c627807fbddcee75afa174d5a7e5135ebd")
 	actual, err := IsSingleSigMatched(key, args)
@@ -35,6 +35,20 @@ func TestIsMatch(t *testing.T) {
 	actual, err = IsSingleSigMatched(key, nil)
 	assert.Equal(t, false, actual)
 	assert.NotNil(t, err)
+}
+
+func TestIsPWLockMatched(t *testing.T) {
+	k, err := secp256k1.HexToKey("f8f8a2f43c8376ccb0871305060d7b27b0554d2cc72bccf41b2705608452f315")
+	if err != nil {
+		t.Error(err)
+	}
+	assert.True(t, IsPWLockMatched(k, common.FromHex("001d3f1ef827552ae1114027bd3ecf1f086ba0f9")))
+
+	k, err = secp256k1.HexToKey("e0ccb2548af279947b452efda4535dd4bcadf756d919701fcd4c382833277f85")
+	if err != nil {
+		t.Error(err)
+	}
+	assert.True(t, IsPWLockMatched(k, common.FromHex("adabffb9c27cb4af100ce7bca6903315220e87a2")))
 }
 
 func TestMultiScriptDecode(t *testing.T) {
