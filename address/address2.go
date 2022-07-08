@@ -131,11 +131,11 @@ func decodeLongBech32M(payload []byte, network types.Network) (*Address, error) 
 	}, nil
 }
 
-func (a *Address) Encode() (string, error) {
+func (a Address) Encode() (string, error) {
 	return a.EncodeFullBech32m()
 }
 
-func (a *Address) EncodeShort() (string, error) {
+func (a Address) EncodeShort() (string, error) {
 	payload := make([]byte, 0)
 	payload = append(payload, 0x01)
 	if a.Script.CodeHash == types.GetCodeHash(types.BuiltinScriptSecp256k1Blake160SighashAll, a.Network) {
@@ -159,7 +159,7 @@ func (a *Address) EncodeShort() (string, error) {
 	return bech32.Encode(hrp, payload)
 }
 
-func (a *Address) EncodeFullBech32() (string, error) {
+func (a Address) EncodeFullBech32() (string, error) {
 	payload := make([]byte, 0)
 	if a.Script.HashType == types.HashTypeType {
 		payload = append(payload, 0x04)
@@ -181,7 +181,7 @@ func (a *Address) EncodeFullBech32() (string, error) {
 	return bech32.Encode(hrp, payload)
 }
 
-func (a *Address) EncodeFullBech32m() (string, error) {
+func (a Address) EncodeFullBech32m() (string, error) {
 	payload := make([]byte, 0)
 	payload = append(payload, 0x00)
 	payload = append(payload, a.Script.CodeHash.Bytes()...)
