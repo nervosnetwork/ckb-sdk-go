@@ -42,7 +42,6 @@ func Decode(s string) (*Address, error) {
 		}
 		return decodeLongBech32(data, network)
 	default:
-		fmt.Println("Unkown")
 		return nil, errors.New("unknown address format type")
 	}
 }
@@ -137,15 +136,69 @@ func (a *Address) Encode() (string, error) {
 }
 
 func (a *Address) EncodeShort() (string, error) {
-	return "", nil
+	payload := make([]byte, 0)
+	payload = append(payload, 0x01)
+	if a.Script.CodeHash == types.GetCodeHash(types.BuiltinScriptSecp256k1Blake160SighashAll, a.Network) {
+		payload = append(payload, 0x00)
+	} else if a.Script.CodeHash == types.GetCodeHash(types.BuiltinScriptSecp256k1Blake160MultisigAll, a.Network) {
+		payload = append(payload, 0x01)
+	} else if a.Script.CodeHash == types.GetCodeHash(types.BuiltinScriptAnyoneCanPay, a.Network) {
+		payload = append(payload, 0x02)
+	} else {
+		return "", errors.New("encoding to short address for given script is unsupported")
+	}
+	payload = append(payload, a.Script.Args...)
+	payload, err := bech32.ConvertBits(payload, 8, 5, true)
+	if err != nil {
+		return "", err
+	}
+	hrp, err := toHrp(a.Network)
+	if err != nil {
+		return "", err
+	}
+	return bech32.Encode(hrp, payload)
 }
 
 func (a *Address) EncodeFullBech32() (string, error) {
-	return "", nil
+	payload := make([]byte, 0)
+	if a.Script.HashType == types.HashTypeType {
+		payload = append(payload, 0x04)
+	} else if a.Script.HashType == types.HashTypeData {
+		payload = append(payload, 0x02)
+	} else {
+		return "", errors.New(string("unknown hash type " + a.Script.HashType))
+	}
+	payload = append(payload, a.Script.CodeHash.Bytes()...)
+	payload = append(payload, a.Script.Args...)
+	payload, err := bech32.ConvertBits(payload, 8, 5, true)
+	if err != nil {
+		return "", err
+	}
+	hrp, err := toHrp(a.Network)
+	if err != nil {
+		return "", err
+	}
+	return bech32.Encode(hrp, payload)
 }
 
 func (a *Address) EncodeFullBech32m() (string, error) {
-	return "", nil
+	payload := make([]byte, 0)
+	payload = append(payload, 0x00)
+	payload = append(payload, a.Script.CodeHash.Bytes()...)
+	hashType, err := types.SerializeHashTypeByte(a.Script.HashType)
+	if err != nil {
+		return "", err
+	}
+	payload = append(payload, hashType)
+	payload = append(payload, a.Script.Args...)
+	if payload, err = bech32.ConvertBits(payload, 8, 5, true); err != nil {
+		return "", err
+	}
+	hrp, err := toHrp(a.Network)
+	if err != nil {
+		return "", err
+	}
+	return bech32.EncodeWithBech32m(hrp, payload)
 }
 
 func toHrp(network types.Network) (string, error) {
