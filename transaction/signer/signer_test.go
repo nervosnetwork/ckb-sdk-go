@@ -123,7 +123,7 @@ func testSignAndCheck(t *testing.T, fileName string) {
 	}
 	txSigner := GetTransactionSignerInstance(types.NetworkTest)
 	tx := checker.Transaction
-	signed, err := txSigner.signTransaction(tx, checker.Contexts)
+	signed, err := txSigner.SignTransaction(tx, checker.Contexts)
 	if err != nil {
 		t.Error(err, string(debug.Stack()))
 	}

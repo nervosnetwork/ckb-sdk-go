@@ -81,7 +81,7 @@ func hash(codeHash types.Hash, scriptType transaction.ScriptType) (types.Hash, e
 	return types.BytesToHash(hash), nil
 }
 
-func (r *TransactionSigner) signTransaction(transaction *transaction.TransactionWithScriptGroups, contexts transaction.Contexts) ([]int, error) {
+func (r *TransactionSigner) SignTransaction(transaction *transaction.TransactionWithScriptGroups, contexts transaction.Contexts) ([]int, error) {
 	signedIndex := make([]int, 0)
 	for i, group := range transaction.ScriptGroups {
 		if err := checkScriptGroup(group); err != nil {
