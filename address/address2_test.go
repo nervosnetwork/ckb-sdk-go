@@ -25,10 +25,10 @@ var acpScript = types.Script{
 	Args:     common.FromHex("bd07d9f32bce34d27152a6a0391d324f79aab854"),
 }
 
-var singleSigScriptTypeData = types.Script{
-	CodeHash: types.HexToHash("9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8"),
+var scriptWithHashTypeData = types.Script{
+	CodeHash: types.HexToHash("0x709f3fda12f561cfacf92273c57a98fede188a3f1a59b1f888d113f9cce08649"),
 	HashType: types.HashTypeData,
-	Args:     common.FromHex("b39bbc0b3673c7d36450bc14cfcdad2d559c6c64"),
+	Args:     common.FromHex("0xb73961e46d9eb118d3de1d1e8f30b3af7bbf3160"),
 }
 
 func TestDecode(t *testing.T) {
@@ -49,10 +49,10 @@ func TestDecode(t *testing.T) {
 	testDecode(t, "ckb1qypt6p7e7v4uudxjw9f2dgper5ey77d2hp2qxz4u4u", &Address{acpScript, types.NetworkMain})
 
 	// hashType DATA
-	testDecode(t, "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq9nnw7qkdnnclfkg59uzn8umtfd2kwxceqvguktl",
-		&Address{singleSigScriptTypeData, types.NetworkMain})
-	testDecode(t, "ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq9nnw7qkdnnclfkg59uzn8umtfd2kwxceqz6hep8",
-		&Address{singleSigScriptTypeData, types.NetworkTest})
+	testDecode(t, "ckb1qfcf7076zt6krnavly3883t6nrlduxy28ud9nv0c3rg387wvuzryndeev8jxm843rrfau8g73uct8tmmhuckqy57acj",
+		&Address{scriptWithHashTypeData, types.NetworkMain})
+	testDecode(t, "ckb1qpcf7076zt6krnavly3883t6nrlduxy28ud9nv0c3rg387wvuzryjq9h89s7gmv7kyvd8hsar68npva00wlnzcqgh76tz",
+		&Address{scriptWithHashTypeData, types.NetworkMain})
 }
 
 func testDecode(t *testing.T, encoded string, address *Address) {
@@ -76,10 +76,10 @@ func TestEncode(t *testing.T) {
 	testEncode(t, "ckb1qypt6p7e7v4uudxjw9f2dgper5ey77d2hp2qxz4u4u", acpScript, types.NetworkMain, Address.EncodeShort)
 
 	// hashType DATA
-	testEncode(t, "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq9nnw7qkdnnclfkg59uzn8umtfd2kwxceqvguktl",
-		singleSigScriptTypeData, types.NetworkMain, Address.EncodeFullBech32m)
-	testEncode(t, "ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq9nnw7qkdnnclfkg59uzn8umtfd2kwxceqz6hep8",
-		singleSigScriptTypeData, types.NetworkTest, Address.EncodeFullBech32m)
+	testEncode(t, "ckb1qfcf7076zt6krnavly3883t6nrlduxy28ud9nv0c3rg387wvuzryndeev8jxm843rrfau8g73uct8tmmhuckqy57acj",
+		scriptWithHashTypeData, types.NetworkMain, Address.EncodeFullBech32)
+	testEncode(t, "ckb1qpcf7076zt6krnavly3883t6nrlduxy28ud9nv0c3rg387wvuzryjq9h89s7gmv7kyvd8hsar68npva00wlnzcqgh76tz",
+		scriptWithHashTypeData, types.NetworkMain, Address.EncodeFullBech32m)
 }
 
 func testEncode(t *testing.T, expected string, script types.Script, network types.Network, f func(Address) (string, error)) {
