@@ -3,6 +3,7 @@ package types
 import (
 	"bytes"
 	"errors"
+	"fmt"
 )
 
 func (h Hash) Serialize() ([]byte, error) {
@@ -222,4 +223,17 @@ func DeserializeHashType(hashType string) (ScriptHashType, error) {
 	}
 
 	return "", errors.New("Invalid script hash_type: " + hashType)
+}
+
+func DeserializeHashTypeByte(hashType byte) (ScriptHashType, error) {
+	switch hashType {
+	case 0x00:
+		return HashTypeData, nil
+	case 0x01:
+		return HashTypeType, nil
+	case 0x02:
+		return HashTypeData1, nil
+	default:
+		return "", errors.New(fmt.Sprintf("invalid script hash_type: %x", hashType))
+	}
 }

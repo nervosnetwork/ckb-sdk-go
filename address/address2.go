@@ -108,17 +108,9 @@ func decodeLongBech32M(payload []byte, network types.Network) (*Address, error) 
 		return nil, errors.New(fmt.Sprintf("invalid payload header 0x%d", payload[0]))
 	}
 	codeHash := types.BytesToHash(payload[1:33])
-	// TODO: Extract function to convert byte to hashType
-	var hashType types.ScriptHashType
-	switch payload[33] {
-	case 0x00:
-		hashType = types.HashTypeData
-	case 0x01:
-		hashType = types.HashTypeType
-	case 0x02:
-		hashType = types.HashTypeData1
-	default:
-		return nil, errors.New("unknown script hash type")
+	hashType, err := types.DeserializeHashTypeByte(payload[33])
+	if err != nil {
+		return nil, err
 	}
 	args := payload[34:]
 	return &Address{
