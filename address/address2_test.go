@@ -64,53 +64,29 @@ func testDecode(t *testing.T, encoded string, address *Address) {
 }
 
 func TestEncode(t *testing.T) {
-	var (
-		address Address
-		encoded string
-		err     error
-	)
-	address = Address{singleSigScript, types.NetworkMain}
-	if encoded, err = address.EncodeShort(); err != nil {
-		t.Error(err)
-	}
-	assert.Equal(t, "ckb1qyqt8xaupvm8837nv3gtc9x0ekkj64vud3jqfwyw5v", encoded)
-	if encoded, err = address.EncodeFullBech32(); err != nil {
-		t.Error(err)
-	}
-	assert.Equal(t, "ckb1qjda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xw3vumhs9nvu786dj9p0q5elx66t24n3kxgj53qks", encoded)
-	if encoded, err = address.EncodeFullBech32m(); err != nil {
-		t.Error(err)
-	}
-	assert.Equal(t, "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqdnnw7qkdnnclfkg59uzn8umtfd2kwxceqxwquc4", encoded)
+	testEncode(t, "ckb1qyqt8xaupvm8837nv3gtc9x0ekkj64vud3jqfwyw5v", singleSigScript, types.NetworkMain, Address.EncodeShort)
+	testEncode(t, "ckb1qjda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xw3vumhs9nvu786dj9p0q5elx66t24n3kxgj53qks", singleSigScript, types.NetworkMain, Address.EncodeFullBech32)
+	testEncode(t, "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqdnnw7qkdnnclfkg59uzn8umtfd2kwxceqxwquc4", singleSigScript, types.NetworkMain, Address.EncodeFullBech32m)
 
 	// Multisig
-	address = Address{multiSigScript, types.NetworkMain}
-	if encoded, err = address.EncodeShort(); err != nil {
-		t.Error(err)
-	}
-	assert.Equal(t, "ckb1qyq5lv479ewscx3ms620sv34pgeuz6zagaaqklhtgg", encoded)
-	address = Address{multiSigScript, types.NetworkTest}
-	if encoded, err = address.EncodeShort(); err != nil {
-		t.Error(err)
-	}
-	assert.Equal(t, "ckt1qyq5lv479ewscx3ms620sv34pgeuz6zagaaqt6f5y5", encoded)
+	testEncode(t, "ckb1qyq5lv479ewscx3ms620sv34pgeuz6zagaaqklhtgg", multiSigScript, types.NetworkMain, Address.EncodeShort)
+	testEncode(t, "ckt1qyq5lv479ewscx3ms620sv34pgeuz6zagaaqt6f5y5", multiSigScript, types.NetworkTest, Address.EncodeShort)
 
 	// anyone can pay
-	address = Address{acpScript, types.NetworkMain}
-	if encoded, err = address.EncodeShort(); err != nil {
-		t.Error(err)
-	}
-	assert.Equal(t, "ckb1qypt6p7e7v4uudxjw9f2dgper5ey77d2hp2qxz4u4u", encoded)
+	testEncode(t, "ckb1qypt6p7e7v4uudxjw9f2dgper5ey77d2hp2qxz4u4u", acpScript, types.NetworkMain, Address.EncodeShort)
 
 	// hashType DATA
-	address = Address{singleSigScriptTypeData, types.NetworkMain}
-	if encoded, err = address.EncodeFullBech32m(); err != nil {
+	testEncode(t, "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq9nnw7qkdnnclfkg59uzn8umtfd2kwxceqvguktl",
+		singleSigScriptTypeData, types.NetworkMain, Address.EncodeFullBech32m)
+	testEncode(t, "ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq9nnw7qkdnnclfkg59uzn8umtfd2kwxceqz6hep8",
+		singleSigScriptTypeData, types.NetworkTest, Address.EncodeFullBech32m)
+}
+
+func testEncode(t *testing.T, expected string, script types.Script, network types.Network, f func(Address) (string, error)) {
+	address := Address{script, network}
+	encoded, err := f(address)
+	if err != nil {
 		t.Error(err)
 	}
-	assert.Equal(t, "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq9nnw7qkdnnclfkg59uzn8umtfd2kwxceqvguktl", encoded)
-	address = Address{singleSigScriptTypeData, types.NetworkTest}
-	if encoded, err = address.EncodeFullBech32m(); err != nil {
-		t.Error(err)
-	}
-	assert.Equal(t, "ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq9nnw7qkdnnclfkg59uzn8umtfd2kwxceqz6hep8", encoded)
+	assert.Equal(t, expected, encoded)
 }
