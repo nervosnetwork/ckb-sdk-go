@@ -199,6 +199,19 @@ func SerializeHashType(hashType ScriptHashType) (string, error) {
 	return "", errors.New("Invalid script hash_type: " + string(hashType))
 }
 
+func SerializeHashTypeByte(hashType ScriptHashType) (byte, error) {
+	switch hashType {
+	case HashTypeData:
+		return 0x00, nil
+	case HashTypeType:
+		return 0x01, nil
+	case HashTypeData1:
+		return 0x02, nil
+	default:
+		return 0, errors.New(string("unknown hash type " + hashType))
+	}
+}
+
 func DeserializeHashType(hashType string) (ScriptHashType, error) {
 	if "00" == hashType {
 		return HashTypeData, nil
