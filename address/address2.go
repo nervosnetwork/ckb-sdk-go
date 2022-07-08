@@ -27,10 +27,19 @@ func Decode(s string) (*Address, error) {
 	}
 	switch data[0] {
 	case 0x00:
+		if encoding != bech32.BECH32M {
+			return nil, errors.New("payload header 0x00 must have encoding bech32m")
+		}
 		return decodeLongBech32M(data, network)
 	case 0x01:
+		if encoding != bech32.BECH32 {
+			return nil, errors.New("payload header 0x01 must have encoding bech32")
+		}
 		return decodeShort(data, network)
 	case 0x02, 0x04:
+		if encoding != bech32.BECH32 {
+			return nil, errors.New("payload header 0x02 or 0x04 must have encoding bech32")
+		}
 		return decodeLongBech32(data, network)
 	default:
 		fmt.Println("Unkown")
@@ -96,7 +105,6 @@ func decodeLongBech32(payload []byte, network types.Network) (*Address, error) {
 }
 
 func decodeLongBech32M(payload []byte, network types.Network) (*Address, error) {
-	fmt.Println("bech32m")
 	if payload[0] != 0x00 {
 		return nil, errors.New(fmt.Sprintf("invalid payload header 0x%d", payload[0]))
 	}
@@ -123,7 +131,6 @@ func decodeLongBech32M(payload []byte, network types.Network) (*Address, error) 
 		Network: network,
 	}, nil
 }
-
 
 func (a *Address) Encode() (string, error) {
 	return a.EncodeFullBech32m()
