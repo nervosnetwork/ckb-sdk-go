@@ -90,3 +90,21 @@ func testEncode(t *testing.T, expected string, script types.Script, network type
 	}
 	assert.Equal(t, expected, encoded)
 }
+
+func TestInvalidDecode(t *testing.T) {
+	var err error
+	_, err = Decode("ckb1qyqylv479ewscx3ms620sv34pgeuz6zagaaqh0knz7")
+	assert.NotNil(t, err)
+	_, err = Decode("ckb1qyqylv479ewscx3ms620sv34pgeuz6zagaarxdzvx03")
+	assert.NotNil(t, err)
+	_, err = Decode("ckb1qyg5lv479ewscx3ms620sv34pgeuz6zagaaqajch0c")
+	assert.NotNil(t, err)
+	_, err = Decode("ckb1q2da0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsnajhch96rq68wrqn2tmhm")
+	assert.NotNil(t, err)
+	_, err = Decode("ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq20k2lzuhgvrgacv4tmr88")
+	assert.NotNil(t, err)
+	_, err = Decode("ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqz0k2lzuhgvrgacvhcym08")
+	assert.NotNil(t, err)
+	_, err = Decode("ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqj0k2lzuhgvrgacvnhnzl8")
+	assert.NotNil(t, err)
+}
