@@ -85,11 +85,9 @@ func RandomNew() (*Secp256k1Key, error) {
 	return &Secp256k1Key{PrivateKey: priv}, nil
 }
 
-func HexToKey(hexkey string) (*Secp256k1Key, error) {
-	if has0xPrefix(hexkey) {
-		hexkey = hexkey[2:]
-	}
-	b, err := hex.DecodeString(hexkey)
+func HexToKey(hexKey string) (*Secp256k1Key, error) {
+	hexKey = trimHexPrefix(hexKey)
+	b, err := hex.DecodeString(hexKey)
 	if err != nil {
 		return nil, errors.New("invalid hex string")
 	}
@@ -98,6 +96,13 @@ func HexToKey(hexkey string) (*Secp256k1Key, error) {
 
 func has0xPrefix(input string) bool {
 	return len(input) >= 2 && input[0] == '0' && (input[1] == 'x' || input[1] == 'X')
+}
+
+func trimHexPrefix(input string) string {
+	if has0xPrefix(input) {
+		return input[2:]
+	}
+	return input
 }
 
 func ToKey(d []byte) (*Secp256k1Key, error) {

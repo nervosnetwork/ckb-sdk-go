@@ -17,7 +17,6 @@ func (s *PWLockSigner) SignTransaction(transaction *types.Transaction, group *tr
 	matched := IsPWLockMatched(key, group.Script.Args)
 	if matched {
 		return PWLockSignTransaction(transaction, group, key)
-		return false, nil
 	} else {
 		return false, nil
 	}

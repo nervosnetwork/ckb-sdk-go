@@ -33,8 +33,6 @@ func (r *ScriptType) UnmarshalJSON(input []byte) error {
 		return err
 	}
 	switch strings.ToLower(jsonObj) {
-	case "":
-		*r = ""
 	case strings.ToLower(string(ScriptTypeLock)):
 		*r = ScriptTypeLock
 	case strings.ToLower(string(ScriptTypeType)):
