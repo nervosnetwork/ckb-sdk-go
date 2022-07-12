@@ -27,17 +27,17 @@ type Payment struct {
 
 // NewPayment returns a Payment object, amount's unit is shannon
 func NewPayment(from, to string, amount, feeRate uint64) (*Payment, error) {
-	fromAddress, err := address.Parse(from)
+	fromAddress, err := address.Decode(from)
 	if err != nil {
 		return nil, fmt.Errorf("parse from address %s error: %v", from, err)
 	}
-	toAddress, err := address.Parse(to)
+	toAddress, err := address.Decode(from)
 	if err != nil {
 		return nil, fmt.Errorf("parse to address %s error: %v", to, err)
 	}
 
-	if fromAddress.Mode != toAddress.Mode {
-		return nil, fmt.Errorf("from address and to address with diffrent network: %v:%v", fromAddress.Mode, toAddress.Mode)
+	if fromAddress.Network != toAddress.Network {
+		return nil, fmt.Errorf("from address and to address with diffrent network: %v:%v", fromAddress.Network, toAddress.Network)
 	}
 
 	return &Payment{
