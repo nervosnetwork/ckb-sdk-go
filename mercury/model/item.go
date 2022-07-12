@@ -5,6 +5,7 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	address2 "github.com/nervosnetwork/ckb-sdk-go/address"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
+	"reflect"
 )
 
 const (
@@ -43,8 +44,7 @@ func NewIdentityItemByCkb(publicKeyHash string) (*Item, error) {
 }
 
 func NewIdentityItemByAddress(address string) (*Item, error) {
-	// TODO: check address type
-	parse, err := address2.Parse(address)
+	parse, err := decodeItemAddress(address)
 	if err != nil {
 		return nil, err
 	}
@@ -54,6 +54,23 @@ func NewIdentityItemByAddress(address string) (*Item, error) {
 	}
 
 	return &Item{ItemTypeIdentity, identity}, nil
+}
+
+func decodeItemAddress(address string) (*address2.Address, error) {
+	a, err := address2.Decode(address)
+	if err != nil {
+		return nil, err
+	}
+	ss := []types.BuiltinScript{
+		types.BuiltinScriptSecp256k1Blake160SighashAll,
+		types.BuiltinScriptAnyoneCanPay}
+	for _, s := range ss {
+		hash := types.GetCodeHash(s, a.Network)
+		if reflect.DeepEqual(hash, a.Script.CodeHash) {
+			return a, nil
+		}
+	}
+	return nil, errors.New("not a valid secp256k1_blake160_signhash_all or ACP address")
 }
 
 func toIdentity(flag byte, content []byte) (string, error) {
