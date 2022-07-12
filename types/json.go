@@ -191,10 +191,12 @@ func (r *CellOutput) UnmarshalJSON(input []byte) error {
 	return nil
 }
 
-type transactionAlias Transaction
 type jsonTransaction struct {
-	transactionAlias
 	Version     hexutil.Uint    `json:"version"`
+	CellDeps    []*CellDep      `json:"cell_deps"`
+	HeaderDeps  []Hash          `json:"header_deps"`
+	Inputs      []*CellInput    `json:"inputs"`
+	Outputs     []*CellOutput   `json:"outputs"`
 	OutputsData []hexutil.Bytes `json:"outputs_data"`
 	Witnesses   []hexutil.Bytes `json:"witnesses"`
 }
@@ -208,16 +210,22 @@ func (t Transaction) MarshalJSON() ([]byte, error) {
 		return result
 	}
 	jsonObj := &jsonTransaction{
-		transactionAlias: transactionAlias(t),
-		Version:          hexutil.Uint(t.Version),
-		OutputsData:      toBytesArray(t.OutputsData),
-		Witnesses:        toBytesArray(t.Witnesses),
+		Version:     hexutil.Uint(t.Version),
+		CellDeps:    t.CellDeps,
+		HeaderDeps:  t.HeaderDeps,
+		Inputs:      t.Inputs,
+		Outputs:     t.Outputs,
+		OutputsData: toBytesArray(t.OutputsData),
+		Witnesses:   toBytesArray(t.Witnesses),
 	}
 	return json.Marshal(jsonObj)
 }
 
 func (t *Transaction) UnmarshalJSON(input []byte) error {
-	var jsonObj jsonTransaction
+	var jsonObj struct {
+		jsonTransaction
+		Hash Hash `json:"hash"`
+	}
 	if err := json.Unmarshal(input, &jsonObj); err != nil {
 		return err
 	}
