@@ -166,6 +166,50 @@ func TestJsonTransactionWithStatus(t *testing.T) {
 	AssertJsonEqual(t, jsonText1, jsonText2)
 }
 
+func TestTransactionHashNotToMarshal(t *testing.T) {
+	jsonText1 := []byte(`
+{
+    "version": "0x0",
+    "cell_deps": null,
+    "header_deps": null,
+    "inputs": null,
+    "outputs": null,
+    "outputs_data": [],
+    "witnesses": []
+}`)
+	v := &Transaction{
+		Version:     0,
+		Hash:        HexToHash("0xae02c44fb5b78b4b1bfc6097d89e0563da323e316ed0551091912d3ddf3f5a19"),
+		CellDeps:    nil,
+		HeaderDeps:  nil,
+		Inputs:      nil,
+		Outputs:     nil,
+		OutputsData: nil,
+		Witnesses:   nil,
+	}
+
+	jsonText2, _ := json.Marshal(v)
+	AssertJsonEqual(t, jsonText1, jsonText2)
+}
+
+func TestTransactionHashToUnmarshal(t *testing.T) {
+	jsonText := []byte(`
+{
+    "version": "0x0",
+    "cell_deps": null,
+    "header_deps": null,
+    "inputs": null,
+    "outputs": null,
+    "outputs_data": [],
+    "witnesses": [],
+	"hash": "0xae02c44fb5b78b4b1bfc6097d89e0563da323e316ed0551091912d3ddf3f5a19"
+}`)
+
+	var v Transaction
+	json.Unmarshal(jsonText, &v)
+	assert.Equal(t, HexToHash("0xae02c44fb5b78b4b1bfc6097d89e0563da323e316ed0551091912d3ddf3f5a19"), v.Hash)
+}
+
 func TestJsonEpoch(t *testing.T) {
 	jsonText1 := []byte(`
 {
