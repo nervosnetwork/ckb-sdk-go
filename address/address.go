@@ -211,6 +211,6 @@ func fromHrp(hrp string) (types.Network, error) {
 	case "ckt":
 		return types.NetworkTest, nil
 	default:
-		return 0, errors.New("unknown network")
+		return 0, errors.New("unknown hrp")
 	}
 }
