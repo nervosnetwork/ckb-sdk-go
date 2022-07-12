@@ -7,25 +7,25 @@ import (
 	"testing"
 )
 
-var singleSigScript = types.Script{
+var singleSigScript = &types.Script{
 	CodeHash: types.HexToHash("0x9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8"),
 	HashType: types.HashTypeType,
 	Args:     common.FromHex("0xb39bbc0b3673c7d36450bc14cfcdad2d559c6c64"),
 }
 
-var multiSigScript = types.Script{
+var multiSigScript = &types.Script{
 	CodeHash: types.HexToHash("0x5c5069eb0857efc65e1bca0c07df34c31663b3622fd3876c876320fc9634e2a8"),
 	HashType: types.HashTypeType,
 	Args:     common.FromHex("0x4fb2be2e5d0c1a3b8694f832350a33c1685d477a"),
 }
 
-var acpScript = types.Script{
+var acpScript = &types.Script{
 	CodeHash: types.HexToHash("0xd369597ff47f29fbc0d47d2e3775370d1250b85140c670e4718af712983a2354"),
 	HashType: types.HashTypeType,
 	Args:     common.FromHex("bd07d9f32bce34d27152a6a0391d324f79aab854"),
 }
 
-var scriptWithHashTypeData = types.Script{
+var scriptWithHashTypeData = &types.Script{
 	CodeHash: types.HexToHash("0x709f3fda12f561cfacf92273c57a98fede188a3f1a59b1f888d113f9cce08649"),
 	HashType: types.HashTypeData,
 	Args:     common.FromHex("0xb73961e46d9eb118d3de1d1e8f30b3af7bbf3160"),
@@ -82,7 +82,7 @@ func TestEncode(t *testing.T) {
 		scriptWithHashTypeData, types.NetworkMain, Address.EncodeFullBech32m)
 }
 
-func testEncode(t *testing.T, expected string, script types.Script, network types.Network, f func(Address) (string, error)) {
+func testEncode(t *testing.T, expected string, script *types.Script, network types.Network, f func(Address) (string, error)) {
 	address := Address{script, network}
 	encoded, err := f(address)
 	if err != nil {

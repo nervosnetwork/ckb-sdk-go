@@ -8,7 +8,7 @@ import (
 )
 
 type Address struct {
-	Script  types.Script
+	Script  *types.Script
 	Network types.Network
 }
 
@@ -72,7 +72,7 @@ func decodeShort(payload []byte, network types.Network) (*Address, error) {
 	}
 	codeHash := types.GetCodeHash(scriptType, network)
 	return &Address{
-		Script: types.Script{
+		Script: &types.Script{
 			CodeHash: codeHash,
 			HashType: types.HashTypeType,
 			Args:     args,
@@ -94,7 +94,7 @@ func decodeLongBech32(payload []byte, network types.Network) (*Address, error) {
 	codeHash := types.BytesToHash(payload[1:33])
 	args := payload[33:]
 	return &Address{
-		Script: types.Script{
+		Script: &types.Script{
 			CodeHash: codeHash,
 			HashType: hashType,
 			Args:     args,
@@ -114,7 +114,7 @@ func decodeLongBech32M(payload []byte, network types.Network) (*Address, error) 
 	}
 	args := payload[34:]
 	return &Address{
-		Script: types.Script{
+		Script: &types.Script{
 			CodeHash: codeHash,
 			HashType: hashType,
 			Args:     args,
