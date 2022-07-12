@@ -7,12 +7,9 @@ import (
 	"math/big"
 	"testing"
 )
+
 func AssertJsonEqual(t *testing.T, t1, t2 []byte) {
-	m1 := map[string]interface{}{}
-	m2 := map[string]interface{}{}
-	json.Unmarshal(t1, &m1)
-	json.Unmarshal(t2, &m2)
-	assert.Equal(t, m2, m1)
+	assert.JSONEq(t, string(t1), string(t2))
 }
 
 func TestJsonScript(t *testing.T) {
@@ -121,7 +118,6 @@ func TestJsonTransactionWithStatus(t *testing.T) {
                 }
             }
         ],
-        "hash": "0xb19806b3ccc091a19d929d0237e6dc6e9b128a468b5b33c121c1bc59ad87877a",
         "header_deps": [],
         "inputs": [
             {
@@ -353,7 +349,6 @@ func TestJsonBlock(t *testing.T) {
     "transactions": [
         {
             "cell_deps": [],
-            "hash": "0xae02c44fb5b78b4b1bfc6097d89e0563da323e316ed0551091912d3ddf3f5a19",
             "header_deps": [],
             "inputs": [
                 {
@@ -468,7 +463,6 @@ func TestJsonRemoteNode(t *testing.T) {
 	assert.Equal(t, uint64(0x583019), v.SyncState.LastCommonHeaderNumber)
 	assert.Equal(t, uint64(0x0), v.SyncState.UnknownHeaderListSize)
 }
-
 
 func TestJsonLocalNode(t *testing.T) {
 	jsonText1 := []byte(`
