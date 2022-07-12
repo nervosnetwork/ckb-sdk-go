@@ -1,9 +1,12 @@
 package address
 
 import (
+	"errors"
+	"fmt"
 	"github.com/nervosnetwork/ckb-sdk-go/crypto/blake2b"
 	"github.com/nervosnetwork/ckb-sdk-go/crypto/secp256k1"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
+	"github.com/nervosnetwork/ckb-sdk-go/utils"
 )
 
 func GenerateScriptSecp256K1Blake160SignhashAll(key *secp256k1.Secp256k1Key) *types.Script {
@@ -24,3 +27,19 @@ func GenerateAddressSecp256K1Blake160SignhashAll(key *secp256k1.Secp256k1Key, ne
 	}
 }
 
+func ValidateChequeAddress(addr string, systemScripts *utils.SystemScripts) (*Address, error) {
+	address, err := Decode(addr)
+	if err != nil {
+		return nil, err
+	}
+	if isSecp256k1Lock(address, systemScripts) {
+		return address, nil
+	}
+	return nil, errors.New(fmt.Sprintf("address %s is not an SECP256K1 short format address", addr))
+}
+
+func isSecp256k1Lock(parsedSenderAddr *Address, systemScripts *utils.SystemScripts) bool {
+	return parsedSenderAddr.Script.CodeHash == systemScripts.SecpSingleSigCell.CellHash &&
+		parsedSenderAddr.Script.HashType == systemScripts.SecpSingleSigCell.HashType &&
+		len(parsedSenderAddr.Script.Args) == 20
+}
