@@ -127,6 +127,11 @@ func (a Address) Encode() (string, error) {
 	return a.EncodeFullBech32m()
 }
 
+// EncodeShort encodes address in short format.
+//
+// See https://github.com/nervosnetwork/rfcs/blob/master/rfcs/0021-ckb-address-format/0021-ckb-address-format.md for more details.
+//
+// Deprecated: Use EncodeFullBech32m instead.
 func (a Address) EncodeShort() (string, error) {
 	payload := make([]byte, 0)
 	payload = append(payload, 0x01)
@@ -151,6 +156,11 @@ func (a Address) EncodeShort() (string, error) {
 	return bech32.Encode(hrp, payload)
 }
 
+// EncodeFullBech32 encodes address in full format with bech32 encoding.
+//
+// See https://github.com/nervosnetwork/rfcs/blob/master/rfcs/0021-ckb-address-format/0021-ckb-address-format.md for more details.
+//
+// Deprecated: Use EncodeFullBech32m instead.
 func (a Address) EncodeFullBech32() (string, error) {
 	payload := make([]byte, 0)
 	if a.Script.HashType == types.HashTypeType {
@@ -173,6 +183,9 @@ func (a Address) EncodeFullBech32() (string, error) {
 	return bech32.Encode(hrp, payload)
 }
 
+// EncodeFullBech32m encodes address in full format with bech32m encoding.
+//
+// See https://github.com/nervosnetwork/rfcs/blob/master/rfcs/0021-ckb-address-format/0021-ckb-address-format.md for more details.
 func (a Address) EncodeFullBech32m() (string, error) {
 	payload := make([]byte, 0)
 	payload = append(payload, 0x00)
