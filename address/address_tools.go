@@ -3,6 +3,7 @@ package address
 import (
 	"errors"
 	"fmt"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/nervosnetwork/ckb-sdk-go/crypto/blake2b"
 	"github.com/nervosnetwork/ckb-sdk-go/crypto/secp256k1"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
@@ -17,6 +18,20 @@ func GenerateScriptSecp256K1Blake160SignhashAll(key *secp256k1.Secp256k1Key) *ty
 		HashType: types.HashTypeType,
 		Args:     args,
 	}
+}
+
+func GenerateScriptSecp256K1Blake160SignhashAllByPublicKey(pubKey string) (*types.Script, error) {
+	b := common.FromHex(pubKey)
+	if len(b) != 33 {
+		return nil, errors.New("only accept 33-byte compressed public key")
+	}
+	args, _ := blake2b.Blake160(b)
+	return &types.Script{
+		// The same code hash is shared by mainnet and testnet
+		CodeHash: types.GetCodeHash(types.BuiltinScriptSecp256k1Blake160SighashAll, types.NetworkMain),
+		HashType: types.HashTypeType,
+		Args:     args,
+	}, nil
 }
 
 func GenerateAddressSecp256K1Blake160SignhashAll(key *secp256k1.Secp256k1Key, network types.Network) *Address {
