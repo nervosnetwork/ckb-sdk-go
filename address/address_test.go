@@ -128,6 +128,7 @@ func generateScript(codeHash string, args string, hashType types.ScriptHashType)
 	}
 }
 
+// These invalid addresses come form https://github.com/nervosnetwork/ckb-sdk-rust/pull/7/files
 func TestInvalidDecode(t *testing.T) {
 	var err error
 	_, err = Decode("ckb1qyqylv479ewscx3ms620sv34pgeuz6zagaaqh0knz7")
