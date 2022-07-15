@@ -136,7 +136,7 @@ req := &model.SimpleTransferPayload{
 	FeeRate:   1000,
 }
 // Get an unsigned raw transaction with the help of Mercury
-resp, err := mercuryClient.BuildSimpleTransferTransaction(req)
+txWithScriptGroups, err := mercuryClient.BuildSimpleTransferTransaction(req)
 ```
 
 For more use cases of Mercury, please refer to [Mercury test cases](./mercury/client_test.go) and [Mercury JSON-RPC documentation](https://github.com/nervosnetwork/mercury/blob/dev-0.4/core/rpc/README.md).
