@@ -1,4 +1,4 @@
-We roll out a brand new ckb-sdk-java after refactor work. The new sdk brings plenty of BREAKING CHANGES incompatible with the deprecated sdk `v1.0.*` and earlier releases.
+We roll out a brand new ckb-sdk-go after refactor work. The new sdk brings plenty of BREAKING CHANGES incompatible with the deprecated sdk `v1.0.*` and earlier releases.
 
 The breaking changes include
 

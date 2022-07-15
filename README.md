@@ -77,6 +77,7 @@ To send the built transaction to CKB network, you need to
 2. send signed transaction to CKB node, and wait it to be confirmed.
 
 ```go
+var txWithScriptGroup *transaction.TransactionWithScriptGroups
 // 0. Set your private key
 privKey := "0xccb083b37aa346c5ce2e1f99a687a153baa04052f26db6ab3c26d6a4cc15c5f1"
 // 1. Sign transaction with your private key
@@ -86,7 +87,7 @@ txSigner.SignTransactionByPrivateKeys(txWithScriptGroup, privKey)
 txHash, err := ckbClient.SendTransaction(context.Background(), txWithScriptGroup.TxView)
 ```
 
-Please note that before signing and sending transaction, you need to prepare a raw transaction represented by an instance of struct `TransactionWithScriptGroups`. You can get it [by Mercury](#Build-transaction-with-Mercury) or [by ckb-indexer](#Build-transaction-with-indexer).
+Please note that before signing and sending transaction, you need to prepare a raw transaction represented by an instance of struct `TransactionWithScriptGroups`. You can get it [by Mercury](#Build-transaction-with-Mercury) or by ckb-indexer.
 
 ### Generate a new address
 In CKB world, a lock script can be represented as an address. `secp256k1_blake160_signhash_all` is the most common used address and here we show how to generate it.
@@ -99,6 +100,7 @@ if err != nil {
 }
 script := address.GenerateScriptSecp256K1Blake160SignhashAll(key)
 addr := &address.Address{Script: script, Network: types.NetworkTest}
+encodedAddr, err := addr.Encode()
 ```
 
 For more details please about CKB address refer to [CKB rfc 0021](https://github.com/nervosnetwork/rfcs/blob/master/rfcs/0021-ckb-address-format/0021-ckb-address-format.md).
