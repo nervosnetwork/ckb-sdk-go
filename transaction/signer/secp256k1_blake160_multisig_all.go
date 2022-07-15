@@ -77,7 +77,7 @@ func setSignatureToWitness(witness []byte, signature []byte, m *MultisigScript) 
 		return nil, err
 	}
 	lock := witnessArgs.Lock
-	pos := len(m.encode())
+	pos := len(m.Encode())
 	emptySignature := [65]byte{}
 	for i := 0; i < int(m.Threshold); i++ {
 		if reflect.DeepEqual(emptySignature[:], lock[pos:pos+65]) {
@@ -138,7 +138,7 @@ func (r *MultisigScript) AddKeyHashBySlice(keyHash []byte) error {
 	return nil
 }
 
-func (r *MultisigScript) encode() []byte {
+func (r *MultisigScript) Encode() []byte {
 	out := make([]byte, 4)
 	out[0] = r.Version
 	out[1] = r.FirstN
@@ -196,14 +196,14 @@ func (r *MultisigScript) WitnessPlaceholder(originalWitness []byte) ([]byte, err
 }
 
 func (r *MultisigScript) WitnessPlaceholderInLock() []byte {
-	header := r.encode()
+	header := r.Encode()
 	b := make([]byte, len(header)+65*int(r.Threshold))
 	copy(b[:len(header)], header)
 	return b
 }
 
 func (r *MultisigScript) ComputeHash() ([]byte, error) {
-	hash, err := blake2b.Blake160(r.encode()[:])
+	hash, err := blake2b.Blake160(r.Encode()[:])
 	if err != nil {
 		return nil, err
 	}

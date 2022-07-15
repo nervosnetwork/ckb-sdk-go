@@ -81,9 +81,17 @@ func hash(codeHash types.Hash, scriptType transaction.ScriptType) (types.Hash, e
 	return types.BytesToHash(hash), nil
 }
 
-func (r *TransactionSigner) SignTransaction(transaction *transaction.TransactionWithScriptGroups, contexts transaction.Contexts) ([]int, error) {
+func (r *TransactionSigner) SignTransactionByPrivateKeys(tx *transaction.TransactionWithScriptGroups, privKeys ...string) ([]int, error) {
+	ctxs := transaction.NewContexts()
+	if err := ctxs.AddByPrivateKeys(privKeys...); err != nil {
+		return nil, err
+	}
+	return r.SignTransaction(tx, ctxs)
+}
+
+func (r *TransactionSigner) SignTransaction(tx *transaction.TransactionWithScriptGroups, contexts transaction.Contexts) ([]int, error) {
 	signedIndex := make([]int, 0)
-	for i, group := range transaction.ScriptGroups {
+	for i, group := range tx.ScriptGroups {
 		if err := checkScriptGroup(group); err != nil {
 			return signedIndex, err
 		}
@@ -95,7 +103,7 @@ func (r *TransactionSigner) SignTransaction(transaction *transaction.Transaction
 		if signer != nil {
 			for _, ctx := range contexts {
 				var signed bool
-				if signed, err = signer.SignTransaction(transaction.TxView, group, ctx); err != nil {
+				if signed, err = signer.SignTransaction(tx.TxView, group, ctx); err != nil {
 					return signedIndex, err
 				}
 				if signed {

@@ -1,174 +1,23 @@
 package address
 
 import (
-	"encoding/hex"
-	"strings"
-
-	"github.com/nervosnetwork/ckb-sdk-go/utils"
-	"github.com/pkg/errors"
-
-	"github.com/ethereum/go-ethereum/common"
-
+	"errors"
+	"fmt"
 	"github.com/nervosnetwork/ckb-sdk-go/crypto/bech32"
-	"github.com/nervosnetwork/ckb-sdk-go/transaction"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 )
 
-type Mode string
-type Type string
-
-const (
-	Mainnet Mode = "ckb"
-	Testnet Mode = "ckt"
-
-	Short       Type = "Short"
-	FullBech32  Type = "FullBech32"
-	FullBech32m Type = "FullBech32m"
-
-	TYPE_FULL_WITH_BECH32M    = "00"
-	ShortFormat               = "01"
-	CodeHashIndexSingleSig    = "00"
-	CodeHashIndexMultisigSig  = "01"
-	CodeHashIndexAnyoneCanPay = "02"
-)
-
-var shortPayloadSupportedArgsLens = [2]int{20, 22}
-
-type ParsedAddress struct {
-	Mode   Mode
-	Type   Type
-	Script *types.Script
+type Address struct {
+	Script  *types.Script
+	Network types.Network
 }
 
-func ConvertScriptToAddress(mode Mode, script *types.Script) (string, error) {
-	return ConvertScriptToBech32mFullAddress(mode, script)
-}
-
-// Deprecated: Short address format deprecated because it is limited (only support secp256k1_blake160,
-// secp256k1_multisig, anyone_can_pay) and a flaw has been found in its encoding method bech32,
-// which could enable attackers to generate valid but unexpected addresses.
-// For more please check https://github.com/nervosnetwork/rfcs/blob/master/rfcs/0021-ckb-address-format/0021-ckb-address-format.md
-func ConvertScriptToShortAddress(mode Mode, script *types.Script) (string, error) {
-	if script.HashType == types.HashTypeType && isShortPayloadSupportedArgsLen(len(script.Args)) {
-		if transaction.SECP256K1_BLAKE160_SIGHASH_ALL_TYPE_HASH == script.CodeHash.String() {
-			// generate_short_payload_singleSig_address
-			payload := ShortFormat + CodeHashIndexSingleSig + hex.EncodeToString(script.Args)
-			data, err := bech32.ConvertBits(common.FromHex(payload), 8, 5, true)
-			if err != nil {
-				return "", err
-			}
-			return bech32.Encode((string)(mode), data)
-		} else if transaction.SECP256K1_BLAKE160_MULTISIG_ALL_TYPE_HASH == script.CodeHash.String() {
-			// generate_short_payload_multisig_address
-			payload := ShortFormat + CodeHashIndexMultisigSig + hex.EncodeToString(script.Args)
-			data, err := bech32.ConvertBits(common.FromHex(payload), 8, 5, true)
-			if err != nil {
-				return "", err
-			}
-			return bech32.Encode((string)(mode), data)
-		} else if utils.AnyoneCanPayCodeHashOnLina == script.CodeHash.String() || utils.AnyoneCanPayCodeHashOnAggron == script.CodeHash.String() {
-			payload := ShortFormat + CodeHashIndexAnyoneCanPay + hex.EncodeToString(script.Args)
-			data, err := bech32.ConvertBits(common.FromHex(payload), 8, 5, true)
-			if err != nil {
-				return "", err
-			}
-			return bech32.Encode((string)(mode), data)
-		}
-	}
-	return "", errors.New("The given script can not be converted into short address. Unsupported")
-}
-
-func isShortPayloadSupportedArgsLen(argLen int) bool {
-	if argLen >= shortPayloadSupportedArgsLens[0] && argLen <= shortPayloadSupportedArgsLens[1] {
-		return true
-	}
-	return false
-}
-
-// Deprecated: Old full address format is deprecated because a flaw has been found in its encoding method
-// bech32, which could enable attackers to generate valid but unexpected addresses.
-// For more please check https://github.com/nervosnetwork/rfcs/blob/master/rfcs/0021-ckb-address-format/0021-ckb-address-format.md
-func ConvertScriptToFullAddress(mode Mode, script *types.Script) (string, error) {
-	var formatType string
-	switch script.HashType {
-	case "type":
-		formatType = "04"
-	case "data", "data1":
-		formatType = "02"
-	default:
-		return "", errors.New("Unsupported hash type")
-	}
-
-	payload := formatType + hex.EncodeToString(script.CodeHash.Bytes()) + hex.EncodeToString(script.Args)
-	data, err := bech32.ConvertBits(common.FromHex(payload), 8, 5, true)
+func Decode(s string) (*Address, error) {
+	encoding, hrp, decoded, err := bech32.Decode(s)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	return bech32.Encode((string)(mode), data)
-}
-
-func ConvertScriptToBech32mFullAddress(mode Mode, script *types.Script) (string, error) {
-	hashType, err := types.SerializeHashType(script.HashType)
-	if err != nil {
-		return "", err
-	}
-
-	// Payload: type(00) | code hash | hash type | args
-	payload := TYPE_FULL_WITH_BECH32M
-	payload += script.CodeHash.Hex()[2:]
-	payload += hashType
-
-	payload += common.Bytes2Hex(script.Args)
-
-	dataPart, err := bech32.ConvertBits(common.FromHex(payload), 8, 5, true)
-	if err != nil {
-		return "", err
-	}
-	return bech32.EncodeWithBech32m(string(mode), dataPart)
-}
-
-func ConvertToBech32mFullAddress(address string) (string, error) {
-	parsedAddress, err := Parse(address)
-	if err != nil {
-		return "", err
-	}
-	return ConvertScriptToBech32mFullAddress(parsedAddress.Mode, parsedAddress.Script)
-}
-
-// Deprecated: Short address format deprecated because it is limited (only support secp256k1_blake160,
-// secp256k1_multisig, anyone_can_pay) and a flaw has been found in its encoding method bech32,
-// which could enable attackers to generate valid but unexpected addresses.
-// For more please check https://github.com/nervosnetwork/rfcs/blob/master/rfcs/0021-ckb-address-format/0021-ckb-address-format.md
-func ConvertToShortAddress(address string) (string, error) {
-	parsedAddress, err := Parse(address)
-	if err != nil {
-		return "", err
-	}
-	return ConvertScriptToShortAddress(parsedAddress.Mode, parsedAddress.Script)
-}
-
-// Deprecated: Old full address format is deprecated because a flaw has been found in its encoding method
-// bech32, which could enable attackers to generate valid but unexpected addresses.
-// For more please check https://github.com/nervosnetwork/rfcs/blob/master/rfcs/0021-ckb-address-format/0021-ckb-address-format.md
-func ConvertToBech32FullAddress(address string) (string, error) {
-	parsedAddress, err := Parse(address)
-	if err != nil {
-		return "", err
-	}
-	return ConvertScriptToFullAddress(parsedAddress.Mode, parsedAddress.Script)
-}
-
-func ConvertPublicToAddress(mode Mode, publicKey string) (string, error) {
-	script := &types.Script{
-		CodeHash: types.HexToHash(transaction.SECP256K1_BLAKE160_SIGHASH_ALL_TYPE_HASH),
-		HashType: types.HashTypeType,
-		Args:     common.FromHex(publicKey),
-	}
-	return ConvertScriptToBech32mFullAddress(mode, script)
-}
-
-func Parse(address string) (*ParsedAddress, error) {
-	encoding, hrp, decoded, err := bech32.Decode(address)
+	network, err := fromHrp(hrp)
 	if err != nil {
 		return nil, err
 	}
@@ -176,113 +25,205 @@ func Parse(address string) (*ParsedAddress, error) {
 	if err != nil {
 		return nil, err
 	}
-	payload := hex.EncodeToString(data)
-
-	var addressType Type
-	var script types.Script
-	if strings.HasPrefix(payload, "01") {
-		if encoding != bech32.BECH32 {
-			return nil, errors.New("payload header 0x01 should have encoding BECH32")
-		}
-		addressType = Short
-		if CodeHashIndexSingleSig == payload[2:4] {
-			if len(payload) != 44 {
-				return nil, errors.New("payload bytes length of secp256k1-sighash-all " +
-					"short address should be 22")
-			}
-			script = types.Script{
-				CodeHash: types.HexToHash(transaction.SECP256K1_BLAKE160_SIGHASH_ALL_TYPE_HASH),
-				HashType: types.HashTypeType,
-				Args:     common.Hex2Bytes(payload[4:]),
-			}
-		} else if CodeHashIndexAnyoneCanPay == payload[2:4] {
-			if len(payload) < 44 || len(payload) > 48 {
-				return nil, errors.New("payload bytes length of acp short address should between 22-24")
-			}
-			script = types.Script{
-				HashType: types.HashTypeType,
-				Args:     common.Hex2Bytes(payload[4:]),
-			}
-			if hrp == (string)(Testnet) {
-				script.CodeHash = types.HexToHash(utils.AnyoneCanPayCodeHashOnAggron)
-			} else {
-				script.CodeHash = types.HexToHash(utils.AnyoneCanPayCodeHashOnLina)
-			}
-		} else if CodeHashIndexMultisigSig == payload[2:4] {
-			if len(payload) != 44 {
-				return nil, errors.New("payload bytes length of secp256k1-multisig-all " +
-					"short address should be 22")
-			}
-			script = types.Script{
-				CodeHash: types.HexToHash(transaction.SECP256K1_BLAKE160_MULTISIG_ALL_TYPE_HASH),
-				HashType: types.HashTypeType,
-				Args:     common.Hex2Bytes(payload[4:]),
-			}
-		} else {
-			return nil, errors.New("unknown code hash index " + payload[2:4])
-		}
-	} else if strings.HasPrefix(payload, "02") {
-		if encoding != bech32.BECH32 {
-			return nil, errors.New("payload header 0x02 should have encoding BECH32");
-		}
-		addressType = FullBech32
-		script = types.Script{
-			CodeHash: types.HexToHash(payload[2:66]),
-			HashType: types.HashTypeData,
-			Args:     common.Hex2Bytes(payload[66:]),
-		}
-	} else if strings.HasPrefix(payload, "04") {
-		if encoding != bech32.BECH32 {
-			return nil, errors.New("payload header 0x04 should have encoding BECH32");
-		}
-		addressType = FullBech32
-		script = types.Script{
-			CodeHash: types.HexToHash(payload[2:66]),
-			HashType: types.HashTypeType,
-			Args:     common.Hex2Bytes(payload[66:]),
-		}
-	} else if strings.HasPrefix(payload, "00") {
+	switch data[0] {
+	case 0x00:
 		if encoding != bech32.BECH32M {
-			return nil, errors.New("payload header 0x00 should have encoding BECH32");
+			return nil, errors.New("payload header 0x00 must have encoding bech32m")
 		}
-		addressType = FullBech32m
-		script = types.Script{
-			CodeHash: types.HexToHash(payload[2:66]),
-			Args:     common.Hex2Bytes(payload[68:]),
+		return decodeLongBech32M(data, network)
+	case 0x01:
+		if encoding != bech32.BECH32 {
+			return nil, errors.New("payload header 0x01 must have encoding bech32")
 		}
-
-		hashType, err := types.DeserializeHashType(payload[66:68])
-		if err != nil {
-			return nil, err
+		return decodeShort(data, network)
+	case 0x02, 0x04:
+		if encoding != bech32.BECH32 {
+			return nil, errors.New("payload header 0x02 or 0x04 must have encoding bech32")
 		}
-
-		script.HashType = hashType
-
-	} else {
-		return nil, errors.New("address type error:" + payload[:2])
+		return decodeLongBech32(data, network)
+	default:
+		return nil, errors.New("unknown address format type")
 	}
-
-	result := &ParsedAddress{
-		Mode:   Mode(hrp),
-		Type:   addressType,
-		Script: &script,
-	}
-	return result, nil
 }
 
-func ValidateChequeAddress(addr string, systemScripts *utils.SystemScripts) (*ParsedAddress, error) {
-	parsedSenderAddr, err := Parse(addr)
+func decodeShort(payload []byte, network types.Network) (*Address, error) {
+	codeHashIndex := payload[1]
+	args := payload[2:]
+	argsLen := len(args)
+	var scriptType types.BuiltinScript
+	switch codeHashIndex {
+	case 0x00: // secp256k1_blake160_sighash_all
+		if argsLen != 20 {
+			return nil, errors.New(fmt.Sprintf("invalid args length %d", argsLen))
+		}
+		scriptType = types.BuiltinScriptSecp256k1Blake160SighashAll
+	case 0x01: // secp256k1_blake160_multisig_all
+		if argsLen != 20 {
+			return nil, errors.New(fmt.Sprintf("invalid args length %d", argsLen))
+		}
+		scriptType = types.BuiltinScriptSecp256k1Blake160MultisigAll
+	case 0x02: // anyone_can_pay
+		if argsLen < 20 || argsLen > 22 {
+			return nil, errors.New(fmt.Sprintf("invalid args length %d", argsLen))
+		}
+		scriptType = types.BuiltinScriptAnyoneCanPay
+	default:
+		return nil, errors.New("unknown code hash index")
+	}
+	codeHash := types.GetCodeHash(scriptType, network)
+	return &Address{
+		Script: &types.Script{
+			CodeHash: codeHash,
+			HashType: types.HashTypeType,
+			Args:     args,
+		},
+		Network: network,
+	}, nil
+}
+
+func decodeLongBech32(payload []byte, network types.Network) (*Address, error) {
+	var hashType types.ScriptHashType
+	switch payload[0] {
+	case 0x04:
+		hashType = types.HashTypeType
+	case 0x02:
+		hashType = types.HashTypeData
+	default:
+		return nil, errors.New("unknown script hash type")
+	}
+	codeHash := types.BytesToHash(payload[1:33])
+	args := payload[33:]
+	return &Address{
+		Script: &types.Script{
+			CodeHash: codeHash,
+			HashType: hashType,
+			Args:     args,
+		},
+		Network: network,
+	}, nil
+}
+
+func decodeLongBech32M(payload []byte, network types.Network) (*Address, error) {
+	if payload[0] != 0x00 {
+		return nil, errors.New(fmt.Sprintf("invalid payload header 0x%d", payload[0]))
+	}
+	codeHash := types.BytesToHash(payload[1:33])
+	hashType, err := types.DeserializeHashTypeByte(payload[33])
 	if err != nil {
 		return nil, err
 	}
-	if isSecp256k1Lock(parsedSenderAddr, systemScripts) {
-		return parsedSenderAddr, nil
-	}
-	return nil, errors.Errorf("address %s is not an SECP256K1 short format address", addr)
+	args := payload[34:]
+	return &Address{
+		Script: &types.Script{
+			CodeHash: codeHash,
+			HashType: hashType,
+			Args:     args,
+		},
+		Network: network,
+	}, nil
 }
 
-func isSecp256k1Lock(parsedSenderAddr *ParsedAddress, systemScripts *utils.SystemScripts) bool {
-	return parsedSenderAddr.Script.CodeHash == systemScripts.SecpSingleSigCell.CellHash &&
-		parsedSenderAddr.Script.HashType == systemScripts.SecpSingleSigCell.HashType &&
-		len(parsedSenderAddr.Script.Args) == 20
+func (a Address) Encode() (string, error) {
+	return a.EncodeFullBech32m()
+}
+
+// EncodeShort encodes address in short format.
+//
+// See https://github.com/nervosnetwork/rfcs/blob/master/rfcs/0021-ckb-address-format/0021-ckb-address-format.md for more details.
+//
+// Deprecated: Use EncodeFullBech32m instead.
+func (a Address) EncodeShort() (string, error) {
+	payload := make([]byte, 0)
+	payload = append(payload, 0x01)
+	if a.Script.CodeHash == types.GetCodeHash(types.BuiltinScriptSecp256k1Blake160SighashAll, a.Network) {
+		payload = append(payload, 0x00)
+	} else if a.Script.CodeHash == types.GetCodeHash(types.BuiltinScriptSecp256k1Blake160MultisigAll, a.Network) {
+		payload = append(payload, 0x01)
+	} else if a.Script.CodeHash == types.GetCodeHash(types.BuiltinScriptAnyoneCanPay, a.Network) {
+		payload = append(payload, 0x02)
+	} else {
+		return "", errors.New("encoding to short address for given script is unsupported")
+	}
+	payload = append(payload, a.Script.Args...)
+	payload, err := bech32.ConvertBits(payload, 8, 5, true)
+	if err != nil {
+		return "", err
+	}
+	hrp, err := toHrp(a.Network)
+	if err != nil {
+		return "", err
+	}
+	return bech32.Encode(hrp, payload)
+}
+
+// EncodeFullBech32 encodes address in full format with bech32 encoding.
+//
+// See https://github.com/nervosnetwork/rfcs/blob/master/rfcs/0021-ckb-address-format/0021-ckb-address-format.md for more details.
+//
+// Deprecated: Use EncodeFullBech32m instead.
+func (a Address) EncodeFullBech32() (string, error) {
+	payload := make([]byte, 0)
+	if a.Script.HashType == types.HashTypeType {
+		payload = append(payload, 0x04)
+	} else if a.Script.HashType == types.HashTypeData {
+		payload = append(payload, 0x02)
+	} else {
+		return "", errors.New(string("unknown hash type " + a.Script.HashType))
+	}
+	payload = append(payload, a.Script.CodeHash.Bytes()...)
+	payload = append(payload, a.Script.Args...)
+	payload, err := bech32.ConvertBits(payload, 8, 5, true)
+	if err != nil {
+		return "", err
+	}
+	hrp, err := toHrp(a.Network)
+	if err != nil {
+		return "", err
+	}
+	return bech32.Encode(hrp, payload)
+}
+
+// EncodeFullBech32m encodes address in full format with bech32m encoding.
+//
+// See https://github.com/nervosnetwork/rfcs/blob/master/rfcs/0021-ckb-address-format/0021-ckb-address-format.md for more details.
+func (a Address) EncodeFullBech32m() (string, error) {
+	payload := make([]byte, 0)
+	payload = append(payload, 0x00)
+	payload = append(payload, a.Script.CodeHash.Bytes()...)
+	hashType, err := types.SerializeHashTypeByte(a.Script.HashType)
+	if err != nil {
+		return "", err
+	}
+	payload = append(payload, hashType)
+	payload = append(payload, a.Script.Args...)
+	if payload, err = bech32.ConvertBits(payload, 8, 5, true); err != nil {
+		return "", err
+	}
+	hrp, err := toHrp(a.Network)
+	if err != nil {
+		return "", err
+	}
+	return bech32.EncodeWithBech32m(hrp, payload)
+}
+
+func toHrp(network types.Network) (string, error) {
+	switch network {
+	case types.NetworkMain:
+		return "ckb", nil
+	case types.NetworkTest:
+		return "ckt", nil
+	default:
+		return "", errors.New("unknown network")
+	}
+}
+
+func fromHrp(hrp string) (types.Network, error) {
+	switch hrp {
+	case "ckb":
+		return types.NetworkMain, nil
+	case "ckt":
+		return types.NetworkTest, nil
+	default:
+		return 0, errors.New("unknown hrp")
+	}
 }
