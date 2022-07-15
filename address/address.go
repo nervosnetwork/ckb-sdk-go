@@ -62,7 +62,7 @@ func decodeShort(payload []byte, network types.Network) (*Address, error) {
 			return nil, errors.New(fmt.Sprintf("invalid args length %d", argsLen))
 		}
 		scriptType = types.BuiltinScriptSecp256k1Blake160MultisigAll
-	case 0x02: // any_can_pay
+	case 0x02: // anyone_can_pay
 		if argsLen < 20 || argsLen > 22 {
 			return nil, errors.New(fmt.Sprintf("invalid args length %d", argsLen))
 		}
