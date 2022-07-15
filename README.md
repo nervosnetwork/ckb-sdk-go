@@ -60,7 +60,7 @@ ckbAmount := amount.CkbToShannon(100)  // Convert CKB to Shannon (1 CKB = 10^8 S
 req := &model.SimpleTransferPayload{
 	AssetInfo: model.NewCkbAsset(),
 	From:       []string{sender},
-	To:          []*model.ToInfo{&model.ToInfo{receiver, ckbAmount}},
+	To:          []*model.ToInfo{{receiver, ckbAmount}},
 	FeeRate:   1000,
 }
 // Get an unsigned raw transaction with the help of Mercury
