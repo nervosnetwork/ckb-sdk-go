@@ -9,6 +9,8 @@ Breaking changes related to user interfaces
 - Transaction signing mechanism by `ScriptGroup`, `ScriptSigner`, and `TransactionSigner`.
 - Clean some utils classes and unused classes.
 
+For migration from earlier release please refer to [migration doc](./docs/migration-guide.md).
+
 Related PRs
 - [#137](https://github.com/nervosnetwork/ckb-sdk-go/pull/137)
 - [#138](https://github.com/nervosnetwork/ckb-sdk-go/pull/138)
