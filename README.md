@@ -9,24 +9,6 @@ Golang SDK for Nervos [CKB](https://github.com/nervosnetwork/ckb).
 The ckb-sdk-go is still under development and considered to be a work in progress. You should get familiar with CKB transaction
 structure and RPC before using it.
 
-## WARNING
-
-Module Indexer has been removed from [ckb_v0.40.0](https://github.com/nervosnetwork/ckb/releases/tag/v0.40.0): Please
-use [ckb-indexer](https://github.com/nervosnetwork/ckb-indexer) as an alternate solution.
-
-The following RPCs have been removed from [ckb_v0.40.0](https://github.com/nervosnetwork/ckb/releases/tag/v0.40.0):
-
-* `get_live_cells_by_lock_hash`
-* `get_transactions_by_lock_hash`
-* `index_lock_hash`
-* `deindex_lock_hash`
-* `get_lock_hash_index_states`
-* `get_capacity_by_lock_hash`
-
-Since [ckb_v0.36.0](https://github.com/nervosnetwork/ckb/releases/tag/v0.36.0) SDK
-use [ckb-indexer](https://github.com/nervosnetwork/ckb-indexer) to collect cells, please
-see [Collect cells](#5-collect-cells) for examples.
-
 ## Installation
 
 ### Minimum requirements
@@ -43,134 +25,186 @@ go get -v github.com/nervosnetwork/ckb-sdk-go
 
 ## Quick start
 
-### Sign and send transaction
+### Setup
+
+ckb-sdk-go provides a convenient client to help you easily interact with [CKB](https://github.com/nervosnetwork/ckb), [CKB-indexer](https://github.com/nervosnetwork/ckb-indexer) or [Mercury](https://github.com/nervosnetwork/mercury) node.
 
 ```go
-package main
+ckbClient, err := rpc.Dial("http://127.0.0.1:8114")
+indexerClient, err := indexer.Dial("http://127.0.0.1:8114")
+mercuryClient , err := mercury.Dial("http://127.0.0.1:8116")
+```
 
-import (
-	"context"
-	"encoding/hex"
-	"fmt"
-	"log"
+You can call JSON-RPC APIs via these clients.
 
-	"github.com/nervosnetwork/ckb-sdk-go/crypto/secp256k1"
-	"github.com/nervosnetwork/ckb-sdk-go/rpc"
-	"github.com/nervosnetwork/ckb-sdk-go/transaction"
-	"github.com/nervosnetwork/ckb-sdk-go/types"
-	"github.com/nervosnetwork/ckb-sdk-go/utils"
-)
+```go
+block, err := ckbClient.GetBlock(context.Background(), types.HexToHash("0x77fdd22f6ae8a717de9ae2b128834e9b2a1424378b5fc95606ba017aab5fed75"))
+```
 
-func main() {
-	client, err := rpc.Dial("http://127.0.0.1:8114")
-	if err != nil {
-		log.Fatalf("create rpc client error: %v", err)
-	}
+For more details about JSON-RPC APIs, please check:
 
-	key, err := secp256k1.HexToKey(PRIVATE_KEY)
-	if err != nil {
-		log.Fatalf("import private key error: %v", err)
-	}
+- [CKB RPC doc](https://github.com/nervosnetwork/ckb/blob/develop/rpc/README.md)
+- [CKB-indexer RPC doc](https://github.com/nervosnetwork/ckb-indexer/blob/master/README.md)
+- [Mercury RPC doc](https://github.com/nervosnetwork/mercury/blob/main/core/rpc/README.md).
 
-	systemScripts, err := utils.NewSystemScripts(client)
-	if err != nil {
-		log.Fatalf("load system script error: %v", err)
-	}
+### Build transaction manually
 
-	toAddress, _ := hex.DecodeString("bf3e92da4911fa5f620e7b1fd27c2d0ddd0de744")
-	changeScript, _ := key.Script(systemScripts)
+Ckb-sdk-go provides [a signer mechanism](#Sign-and-send-transaction) to sign transaction. The only thing you need to provide is an instance of `TransactionWithScriptGroups` and transaction signer will do all signing jobs for you. Here is the code to construct a `TransactionWithScriptGroups` by manual.
 
-	tx := transaction.NewSecp256k1SingleSigTx(systemScripts)
-	tx.Outputs = append(tx.Outputs, &types.CellOutput{
-		Capacity: 200000000000,
-		Lock: &types.Script{
-			CodeHash: types.HexToHash("0x9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8"),
-			HashType: types.HashTypeType,
-			Args:     toAddress,
+```go
+tx := &types.Transaction{
+	Version: 0,
+	CellDeps: []*types.CellDep{
+		&types.CellDep{
+			OutPoint: &types.OutPoint{
+				TxHash: types.HexToHash("0xf8de3bb47d055cdf460d93a2a6e1b05f7432f9777c8c474abf4eec1d4aee5d37"),
+				Index:  0,
+			},
+			DepType: types.DepTypeDepGroup,
 		},
-	})
-	tx.Outputs = append(tx.Outputs, &types.CellOutput{
-		Capacity: 199999998000,
-		Lock: &types.Script{
-			CodeHash: types.HexToHash("0x9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8"),
-			HashType: types.HashTypeType,
-			Args:     changeScript.Args,
-		},
-	})
-	tx.OutputsData = [][]byte{{}, {}}
-
-	group, witnessArgs, err := transaction.AddInputsForTransaction(tx, []*types.CellInput{
-		{
+	},
+	HeaderDeps: nil,
+	Inputs: []*types.CellInput{
+		&types.CellInput{
 			Since: 0,
 			PreviousOutput: &types.OutPoint{
-				TxHash: types.HexToHash("0x8e6d818c6e07e6cbd9fca51294030494ee23dc388d7f5276ba50b938d02cc015"),
+				TxHash: types.HexToHash("0x2ff7f46d509c85e1878cf091aef0ba0b89f34f9fea9e8bc868aed2d627490512"),
 				Index:  1,
 			},
 		},
-	}, uint(len(transaction.Secp256k1SignaturePlaceholder)))
+	},
+	Outputs: []*types.CellOutput{
+		&types.CellOutput{
+			Capacity: 10000000000,
+			Lock: &types.Script{
+				CodeHash: types.HexToHash("0x9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8"),
+				HashType: types.HashTypeType,
+				Args:     common.FromHex("0x3f1573b44218d4c12a91919a58a863be415a2bc3"),
+			},
+			Type: nil,
+		},
+		&types.CellOutput{
+			Capacity: 90000000000,
+			Lock: &types.Script{
+				CodeHash: types.HexToHash("0x9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8"),
+				HashType: types.HashTypeType,
+				Args:     common.FromHex("0xb1d41a1fb06f782cf10a87f3e49e80711af63fcf"),
+			},
+			Type: nil,
+		},
+	},
+	OutputsData: make([][]byte, 2),
+	Witnesses: [][]byte{
+		common.FromHex("0x55000000100000005500000055000000410000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"),
+	},
+}
 
-	if err != nil {
-		log.Fatalf("add inputs to transaction error: %v", err)
-	}
-
-	err = transaction.SingleSignTransaction(tx, group, witnessArgs, key)
-	if err != nil {
-		log.Fatalf("sign transaction error: %v", err)
-	}
-
-	hash, err := client.SendTransaction(context.Background(), tx)
-	if err != nil {
-		log.Fatalf("send transaction error: %v", err)
-	}
-
-	fmt.Println(hash.String())
+scriptGroups := []*transaction.ScriptGroup{
+	&transaction.ScriptGroup{
+		Script: types.Script{
+			CodeHash: types.HexToHash("0x9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8"),
+			HashType: types.HashTypeType,
+			Args:     common.FromHex("0x3f1573b44218d4c12a91919a58a863be415a2bc3"),
+		},
+		GroupType:    transaction.ScriptTypeLock,
+		InputIndices: []uint32{0},
+	},
+}
+txWithScriptGroups := &transaction.TransactionWithScriptGroups{
+	TxView:       tx,
+	ScriptGroups: scriptGroups,
 }
 ```
 
-### Create a new address
+Refer [here](#Sign-and-send-transaction) to see how to sign and send transaction once you have the instance of `TransactionWithScriptGroups`.
 
-In CKB world, a lock script can be represented as an address. `secp256k1_blake160` is the most common used address and
-here we show how to generate it.
+
+### Build transaction with Mercury
+
+[Mercury](https://github.com/nervosnetwork/mercury) is an application for better interaction with CKB chain, providing many useful [JSON-RPC APIs](https://github.com/nervosnetwork/mercury/blob/main/core/rpc/README.md) for development like querying transactions or getting UDT asset information. You need to deploy your own mercury server and sync data with the latest network before using it.
+
+Mercury is another way to build transaction. With the help of Mercury, you can build a transaction by simply calling a JSON-RPC API. Here we show how to build a CKB transfer transaction with mercury.
 
 ```go
-addressGenerateResult, error := GenerateAddress(Testnet)
+sender := "ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq0yvcdtsu5wcr2jldtl72fhkruf0w5vymsp6rk9r"
+receiver := "ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqvglkprurm00l7hrs3rfqmmzyy3ll7djdsujdm6z"
+ckbAmount := amount.CkbToShannon(100)  // Convert CKB to Shannon (1 CKB = 10^8 Shannon)
+req := &model.SimpleTransferPayload{
+	AssetInfo: model.NewCkbAsset(),
+	From:       []string{sender},
+	To:          []*model.ToInfo{{receiver, ckbAmount}},
+	FeeRate:   1000,
+}
+// Get an unsigned raw transaction with the help of Mercury
+txWithScriptGroups, err := mercuryClient.BuildSimpleTransferTransaction(req)
 ```
 
-For more details please about CKB address refer
-to [CKB rfc 0021](https://github.com/nervosnetwork/rfcs/blob/master/rfcs/0021-ckb-address-format/0021-ckb-address-format.md)
-.
+For more use cases of Mercury, please refer to [Mercury test cases](./mercury/client_test.go) and [Mercury JSON-RPC documentation](https://github.com/nervosnetwork/mercury/blob/dev-0.4/core/rpc/README.md).
+
+### Sign and send transaction
+
+Once the `TransactionWithScriptGroups` is prepared, you can follow these steps to sign and send transaction to CKB network.
+
+1. sign transaction with your private key.
+2. send signed transaction to CKB node, and wait it to be confirmed.
+
+```go
+// You can get txWithScriptGroups by manual or by mercury
+var txWithScriptGroups *transaction.TransactionWithScriptGroups
+
+// 0. Set your private key
+privKey := "0xccb083b37aa346c5ce2e1f99a687a153baa04052f26db6ab3c26d6a4cc15c5f1"
+// 1. Sign transaction with your private key
+txSigner := signer.GetTransactionSignerInstance(types.NetworkTest)
+txSigner.SignTransactionByPrivateKeys(txWithScriptGroups, privKey)
+// 2. Send transaction to CKB node
+txHash, err := ckbClient.SendTransaction(context.Background(), txWithScriptGroups.TxView)
+```
+
+Please note that before signing and sending transaction, you need to prepare a raw transaction represented by an instance of struct `TransactionWithScriptGroups`. You can get it [by Mercury](#Build-transaction-with-Mercury) or by ckb-indexer.
+
+### Generate a new address
+In CKB world, a lock script can be represented as an address. `secp256k1_blake160_signhash_all` is the most common used address and here we show how to generate it.
+
+```go
+// Generate a new address randomly
+key, err := secp256k1.RandomNew()
+if err != nil {
+	// handle error
+}
+script := address.GenerateScriptSecp256K1Blake160SignhashAll(key)
+addr := &address.Address{Script: script, Network: types.NetworkTest}
+encodedAddr, err := addr.Encode()
+```
+
+For more details please about CKB address refer to [CKB rfc 0021](https://github.com/nervosnetwork/rfcs/blob/master/rfcs/0021-ckb-address-format/0021-ckb-address-format.md).
 
 ### Convert public key to address
 
-Convert elliptic curve public key to an address (`secp256k1_blake160`)
+Convert elliptic curve public key to an address (`secp256k1_blake160_signash_all`)
 
 ```go
-address, err := ConvertPublicToAddress(Mainnet, "0xb39bbc0b3673c7d36450bc14cfcdad2d559c6c64")
+// You should provide an elliptic curve public key of compressed format, with 33 bytes.
+script, err := address.GenerateScriptSecp256K1Blake160SignhashAllByPublicKey("0x03a0a7a7597b019828a1dda6ed52ab25181073ec3a9825d28b9abbb932fe1ec83d")
+if err != nil {
+	// handle error
+}
+addr := &address.Address{Script: script, Network: types.NetworkTest}
 ```
 
-### Convert short/bech32 address to bech32m address
+### Parse address
 
-Short address and bech32 address are deprecated. The standard address format is bech32m-encoded long address, which can
-be got from the short address or bech32 address as the following snippet code.
+Short address and full bech32 address are deprecated. The standard address encoded way is bech32m. You can still parse address
+from an encoded string address and then get its network, script and encoded string of other format.
 
 ```go
-bech32mFullAddress, err := ConvertToBech32mFullAddress("ckt1qyqxgp7za7dajm5wzjkye52asc8fxvvqy9eqlhp82g")
+addr, err := address.Decode("ckt1qyqxgp7za7dajm5wzjkye52asc8fxvvqy9eqlhp82g")
+if err != nil {
+	// handle error
+}
+script := addr.Script
+network := addr.Network
 ```
-
-### Parse and validate address
-
-```go
-parsedAddress, err := Parse("ckt1qg8mxsu48mncexvxkzgaa7mz2g25uza4zpz062relhjmyuc52ps3zn47dugwyk5e6mgxvlf5ukx7k3uyq9wlkkmegke")
-```
-
-### Mercury
-
-[Mercury](https://github.com/nervosnetwork/mercury) is a development service in CKB ecosystem, providing many
-useful [RPC APIs](https://github.com/nervosnetwork/mercury/blob/main/core/rpc/README.md) for development like querying
-transaction or getting udt asset information. You need to deploy your own mercury and sync data with the network before
-using it.
-
-ckb-sdk-go also integrate with Mercury. For usage guide, please check the [example folder](./mercury/example).
 
 ## License
 
