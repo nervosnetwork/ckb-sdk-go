@@ -1,3 +1,24 @@
+# 2.0.0 (2022-07-18)
+
+2.0.0 is a refactored ckb-sdk-go release and brings plenty of BREAKING CHANGES compared with `v1.0.*` and the earlier releases.
+
+Breaking changes related to user interfaces
+
+- Type or name change of quite a few fields in RPC type representation.
+- Unified address representation and operation.
+- Transaction signing mechanism by `ScriptGroup`, `ScriptSigner`, and `TransactionSigner`.
+- Clean some utils classes and unused classes.
+
+Related PRs
+- [#137](https://github.com/nervosnetwork/ckb-sdk-go/pull/137)
+- [#138](https://github.com/nervosnetwork/ckb-sdk-go/pull/138)
+- [#139](https://github.com/nervosnetwork/ckb-sdk-go/pull/139)
+- [#140](https://github.com/nervosnetwork/ckb-sdk-go/pull/140)
+- [#141](https://github.com/nervosnetwork/ckb-sdk-go/pull/141)
+- [#142](https://github.com/nervosnetwork/ckb-sdk-go/pull/142)
+- [#143](https://github.com/nervosnetwork/ckb-sdk-go/pull/143)
+- [#144](https://github.com/nervosnetwork/ckb-sdk-go/pull/144)
+
 # 1.0.4
 
 ## 🚀 Features
