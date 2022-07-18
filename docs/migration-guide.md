@@ -62,6 +62,35 @@ import (
 )
 ```
 
+## Remove builder
+
+For simplicity, we remove builder for Mercury JSON-RPC request struct. Here is the change to create a new Mercury JSON-RPC request.
+
+```go
+// Before:
+payload := model.NewQueryTransactionsPayloadBuilder().
+    SetItem(item).
+    AddAssetInfo(common.NewUdtAsset(constant.UDT_HASH)).
+    SetExtra(&extra).
+    AddBlockRange(&model.BlockRange{
+        From: 0,
+        To:   4592529,
+    }).Build()
+payload.StructureType = model.DoubleEntry
+
+// Now:
+payload := model.QueryTransactionsPayload{
+    Item:          item,
+    AssetInfos:    []*model.AssetInfo{model.NewUdtAsset(constant.UDT_HASH)},
+    Extra:         &extra,
+    BlockRange:    &model.BlockRange{
+        From: 0,
+        To:   4592529,
+    },
+    StructureType: model.StructureTypeDoubleEntry,
+}
+```
+
 ## Sign transaction
 
 The new go sdk introduces `ScriptGroup` for signing transactions. You can get the `ScriptGroup` with a raw transaction from mercury, or construct it by yourself. After that `TransactionSigner` can sign in the correct place as long as you provide the right secret information (e.g. private key).
