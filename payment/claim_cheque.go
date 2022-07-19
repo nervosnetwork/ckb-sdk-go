@@ -60,7 +60,7 @@ func (c *ClaimCheque) GenerateClaimChequeUnsignedTx(client rpc.Client) (*types.T
 			Args:     receiverLockHash.Bytes()[0:20],
 		},
 		ScriptType: indexer.ScriptTypeLock,
-		ArgsLen:    chequeScriptArgsLength,
+		//ArgsLen:    chequeScriptArgsLength,  // TODO: remove
 	}
 	// cheque cell iterator
 	chequeCollector := collector.NewLiveCellCollector(client, chequeSearchKey, indexer.SearchOrderAsc, indexer.SearchLimit, "")
