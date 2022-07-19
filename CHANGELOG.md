@@ -1,3 +1,17 @@
+# 2.0.0
+
+2.0.0 is a refactored ckb-sdk-go release and brings plenty of BREAKING CHANGES compared with  and the earlier releases.
+
+Breaking changes related to user interfaces
+
+- Type or name change of quite a few fields in RPC type representation.
+- Unified address representation and operation.
+- Transaction signing mechanism by , , and .
+- Clean some utils classes and unused classes.
+
+Related PRs：#137, #138, #139, #140, #141, #142, #143, #144.
+
+For migration from earlier release please refer to [migration doc](./docs/migration-guide.md).
 # 2.0.0 (2022-07-18)
 
 2.0.0 is a refactored ckb-sdk-go release and brings plenty of BREAKING CHANGES compared with `v1.0.*` and the earlier releases.
