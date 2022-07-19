@@ -1,9 +1,9 @@
-name: Continuous delivery in GitHub and Maven Central Repository
+name: Continuous delivery in GitHub
 
 on:
   push:
     tags:
-      - 'v*'
+      - 'rc/v*'
 
 jobs:
   create-release-draft:
