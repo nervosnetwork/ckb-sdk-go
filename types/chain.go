@@ -1,9 +1,8 @@
 package types
 
 import (
-	"math/big"
-
 	"github.com/nervosnetwork/ckb-sdk-go/crypto/blake2b"
+	"math/big"
 )
 
 type ScriptHashType string
@@ -63,12 +62,12 @@ type Script struct {
 	Args     []byte         `json:"args"`
 }
 
-func (script *Script) OccupiedCapacity() uint64 {
-	return uint64(len(script.Args)) + uint64(len(script.CodeHash.Bytes())) + 1
+func (r *Script) OccupiedCapacity() uint64 {
+	return uint64(len(r.Args)) + uint64(len(r.CodeHash.Bytes())) + 1
 }
 
-func (script *Script) Hash() (Hash, error) {
-	data, err := script.Serialize()
+func (r *Script) Hash() (Hash, error) {
+	data, err := r.Serialize()
 	if err != nil {
 		return Hash{}, err
 	}
@@ -81,12 +80,12 @@ func (script *Script) Hash() (Hash, error) {
 	return BytesToHash(hash), nil
 }
 
-func (script *Script) Equals(obj *Script) bool {
+func (r *Script) Equals(obj *Script) bool {
 	if obj == nil {
 		return false
 	}
 
-	sh, _ := script.Hash()
+	sh, _ := r.Hash()
 	oh, _ := obj.Hash()
 	return sh.String() == oh.String()
 }
@@ -102,10 +101,10 @@ type CellOutput struct {
 	Type     *Script `json:"type"`
 }
 
-func (o CellOutput) OccupiedCapacity(outputData []byte) uint64 {
-	occupiedCapacity := 8 + uint64(len(outputData)) + o.Lock.OccupiedCapacity()
-	if o.Type != nil {
-		occupiedCapacity += o.Type.OccupiedCapacity()
+func (r CellOutput) OccupiedCapacity(outputData []byte) uint64 {
+	occupiedCapacity := 8 + uint64(len(outputData)) + r.Lock.OccupiedCapacity()
+	if r.Type != nil {
+		occupiedCapacity += r.Type.OccupiedCapacity()
 	}
 	return occupiedCapacity
 }
@@ -226,20 +225,20 @@ type BlockReward struct {
 type BlockEconomicState struct {
 	Issuance    BlockIssuance `json:"issuance"`
 	MinerReward MinerReward   `json:"miner_reward"`
-	TxsFee      *big.Int      `json:"txs_fee"`
+	TxsFee      uint64        `json:"txs_fee"`
 	FinalizedAt Hash          `json:"finalized_at"`
 }
 
 type BlockIssuance struct {
-	Primary   *big.Int `json:"primary"`
-	Secondary *big.Int `json:"secondary"`
+	Primary   uint64 `json:"primary"`
+	Secondary uint64 `json:"secondary"`
 }
 
 type MinerReward struct {
-	Primary   *big.Int `json:"primary"`
-	Secondary *big.Int `json:"secondary"`
-	Committed *big.Int `json:"committed"`
-	Proposal  *big.Int `json:"proposal"`
+	Primary   uint64 `json:"primary"`
+	Secondary uint64 `json:"secondary"`
+	Committed uint64 `json:"committed"`
+	Proposal  uint64 `json:"proposal"`
 }
 
 type RationalU256 struct {
@@ -253,25 +252,32 @@ type ProposalWindow struct {
 }
 
 type Consensus struct {
-	Id                                   string         `json:"ID"`
-	GenesisHash                          Hash           `json:"genesis_hash"`
-	DaoTypeHash                          Hash           `json:"dao_type_hash"`
-	Secp256k1Blake160SighashAllTypeHash  Hash           `json:"secp256k1_blake160_sighash_all_type_hash"`
-	Secp256k1Blake160MultisigAllTypeHash Hash           `json:"secp256k1_blake160_multisig_all_type_hash"`
-	InitialPrimaryEpochReward            uint64         `json:"initial_primary_epoch_reward"`
-	SecondaryEpochReward                 uint64         `json:"secondary_epoch_reward"`
-	MaxUnclesNum                         uint64         `json:"max_uncles_num"`
-	OrphanRateTarget                     RationalU256   `json:"orphan_rate_target"`
-	EpochDurationTarget                  uint64         `json:"epoch_duration_target"`
-	TxProposalWindow                     ProposalWindow `json:"tx_proposal_window"`
-	ProposerRewardRatio                  RationalU256   `json:"proposer_reward_ratio"`
-	CellbaseMaturity                     uint64         `json:"cellbase_maturity"`
-	MedianTimeBlockCount                 uint64         `json:"median_time_block_count"`
-	MaxBlockCycles                       uint64         `json:"max_block_cycles"`
-	BlockVersion                         uint           `json:"block_version"`
-	TxVersion                            uint           `json:"tx_version"`
-	TypeIdCodeHash                       Hash           `json:"type_id_code_hash"`
-	MaxBlockProposalsLimit               uint64         `json:"max_block_proposals_limit"`
-	PrimaryEpochRewardHalvingInterval    uint64         `json:"primary_epoch_reward_halving_interval"`
-	PermanentDifficultyInDummy           bool           `json:"permanent_difficulty_in_dummy"`
+	Id                                   string             `json:"ID"`
+	GenesisHash                          Hash               `json:"genesis_hash"`
+	DaoTypeHash                          Hash               `json:"dao_type_hash"`
+	Secp256k1Blake160SighashAllTypeHash  Hash               `json:"secp256k1_blake160_sighash_all_type_hash"`
+	Secp256k1Blake160MultisigAllTypeHash Hash               `json:"secp256k1_blake160_multisig_all_type_hash"`
+	InitialPrimaryEpochReward            uint64             `json:"initial_primary_epoch_reward"`
+	SecondaryEpochReward                 uint64             `json:"secondary_epoch_reward"`
+	MaxUnclesNum                         uint64             `json:"max_uncles_num"`
+	OrphanRateTarget                     RationalU256       `json:"orphan_rate_target"`
+	EpochDurationTarget                  uint64             `json:"epoch_duration_target"`
+	TxProposalWindow                     ProposalWindow     `json:"tx_proposal_window"`
+	ProposerRewardRatio                  RationalU256       `json:"proposer_reward_ratio"`
+	CellbaseMaturity                     uint64             `json:"cellbase_maturity"`
+	MedianTimeBlockCount                 uint64             `json:"median_time_block_count"`
+	MaxBlockCycles                       uint64             `json:"max_block_cycles"`
+	MaxBlockBytes                        uint64             `json:"max_block_bytes"`
+	BlockVersion                         uint               `json:"block_version"`
+	TxVersion                            uint               `json:"tx_version"`
+	TypeIdCodeHash                       Hash               `json:"type_id_code_hash"`
+	MaxBlockProposalsLimit               uint64             `json:"max_block_proposals_limit"`
+	PrimaryEpochRewardHalvingInterval    uint64             `json:"primary_epoch_reward_halving_interval"`
+	PermanentDifficultyInDummy           bool               `json:"permanent_difficulty_in_dummy"`
+	HardforkFeatures                     []*HardForkFeature `json:"hardfork_features"`
+}
+
+type HardForkFeature struct {
+	Rfc         string `json:"rfc"`
+	EpochNumber uint64 `json:"epoch_number,omitempty"`
 }

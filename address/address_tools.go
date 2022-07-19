@@ -1,209 +1,111 @@
 package address
 
 import (
-	"bytes"
-	"encoding/hex"
+	"errors"
 	"fmt"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/nervosnetwork/ckb-sdk-go/crypto/blake2b"
 	"github.com/nervosnetwork/ckb-sdk-go/crypto/secp256k1"
-	"github.com/nervosnetwork/ckb-sdk-go/transaction"
+	"github.com/nervosnetwork/ckb-sdk-go/transaction/signer"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
-	"github.com/pkg/errors"
+	"github.com/nervosnetwork/ckb-sdk-go/utils"
 )
 
-const (
-	MAINNET_ACP_CODE_HASH    = "0xd369597ff47f29fbc0d47d2e3775370d1250b85140c670e4718af712983a2354"
-	TESTNET_ACP_CODE_HASH    = "0x3419a1c09eb2567f6552ee7a8ecffd64155cffe0f1796e6e61ec088d740c1356"
-	MAINNET_CHEQUE_CODE_HASH = "0xe4d4ecc6e5f9a059bf2f7a82cca292083aebc0c421566a52484fe2ec51a9fb0c"
-	TESTNET_CHEQUE_CODE_HASH = "0x60d5f39efce409c587cb9ea359cefdead650ca128f0bd9cb3855348f98c70d5b"
-)
-
-type AddressGenerateResult struct {
-	Address    string
-	LockArgs   string
-	PrivateKey string
-}
-
-func GenerateAddress(mode Mode) (*AddressGenerateResult, error) {
-	return GenerateBech32mFullAddress(mode)
-}
-
-// Deprecated: Short address format deprecated because it is limited (only support secp256k1_blake160,
-// secp256k1_multisig, anyone_can_pay) and a flaw has been found in its encoding method bech32,
-// which could enable attackers to generate valid but unexpected addresses.
-// For more please check https://github.com/nervosnetwork/rfcs/blob/master/rfcs/0021-ckb-address-format/0021-ckb-address-format.md
-func GenerateShortAddress(mode Mode) (*AddressGenerateResult, error) {
-
-	key, err := secp256k1.RandomNew()
-	if err != nil {
-		return nil, err
-	}
-
-	pubKey, err := blake2b.Blake160(key.PubKey())
-	if err != nil {
-		return nil, err
-	}
-
-	script := &types.Script{
-		CodeHash: types.HexToHash(transaction.SECP256K1_BLAKE160_SIGHASH_ALL_TYPE_HASH),
+func GenerateScriptSecp256K1Blake160SignhashAll(key *secp256k1.Secp256k1Key) *types.Script {
+	args, _ := blake2b.Blake160(key.PubKey())
+	return &types.Script{
+		// The same code hash is shared by mainnet and testnet
+		CodeHash: types.GetCodeHash(types.BuiltinScriptSecp256k1Blake160SighashAll, types.NetworkMain),
 		HashType: types.HashTypeType,
-		Args:     common.FromHex(hex.EncodeToString(pubKey)),
+		Args:     args,
 	}
-
-	address, err := ConvertScriptToShortAddress(mode, script)
-	if err != nil {
-		return nil, err
-	}
-
-	return &AddressGenerateResult{
-		Address:    address,
-		LockArgs:   hexutil.Encode(pubKey),
-		PrivateKey: hexutil.Encode(key.Bytes()),
-	}, err
 }
 
-// Deprecated: Old full address format is deprecated because a flaw has been found in its encoding method
-// bech32, which could enable attackers to generate valid but unexpected addresses.
-// For more please check https://github.com/nervosnetwork/rfcs/blob/master/rfcs/0021-ckb-address-format/0021-ckb-address-format.md
-func GenerateFullAddress(mode Mode) (*AddressGenerateResult, error) {
-	key, err := secp256k1.RandomNew()
-	if err != nil {
-		return nil, err
+func GenerateScriptSecp256K1Blake160SignhashAllByPublicKey(pubKey string) (*types.Script, error) {
+	b := common.FromHex(pubKey)
+	if len(b) != 33 {
+		return nil, errors.New("only accept 33-byte compressed public key")
 	}
-
-	pubKey, err := blake2b.Blake160(key.PubKey())
-	if err != nil {
-		return nil, err
-	}
-
-	script := &types.Script{
-		CodeHash: types.HexToHash(transaction.SECP256K1_BLAKE160_SIGHASH_ALL_TYPE_HASH),
+	args, _ := blake2b.Blake160(b)
+	return &types.Script{
+		// The same code hash is shared by mainnet and testnet
+		CodeHash: types.GetCodeHash(types.BuiltinScriptSecp256k1Blake160SighashAll, types.NetworkMain),
 		HashType: types.HashTypeType,
-		Args:     common.FromHex(hex.EncodeToString(pubKey)),
-	}
+		Args:     args,
+	}, nil
+}
 
-	address, err := ConvertScriptToFullAddress(mode, script)
+func GenerateAddressSecp256K1Blake160SignhashAll(key *secp256k1.Secp256k1Key, network types.Network) *Address {
+	script := GenerateScriptSecp256K1Blake160SignhashAll(key)
+	return &Address{
+		Script:  script,
+		Network: network,
+	}
+}
+
+func ValidateChequeAddress(addr string, systemScripts *utils.SystemScripts) (*Address, error) {
+	address, err := Decode(addr)
 	if err != nil {
 		return nil, err
 	}
-
-	return &AddressGenerateResult{
-		Address:    address,
-		LockArgs:   hexutil.Encode(pubKey),
-		PrivateKey: hexutil.Encode(key.Bytes()),
-	}, err
+	if isSecp256k1Lock(address, systemScripts) {
+		return address, nil
+	}
+	return nil, errors.New(fmt.Sprintf("address %s is not an SECP256K1 short format address", addr))
 }
 
-func GenerateBech32mFullAddress(mode Mode) (*AddressGenerateResult, error) {
-	key, err := secp256k1.RandomNew()
-	if err != nil {
-		return nil, err
-	}
-
-	pubKey, err := blake2b.Blake160(key.PubKey())
-	if err != nil {
-		return nil, err
-	}
-
-	script := &types.Script{
-		CodeHash: types.HexToHash(transaction.SECP256K1_BLAKE160_SIGHASH_ALL_TYPE_HASH),
-		HashType: types.HashTypeType,
-		Args:     common.FromHex(hex.EncodeToString(pubKey)),
-	}
-
-	address, err := ConvertScriptToBech32mFullAddress(mode, script)
-	if err != nil {
-		return nil, err
-	}
-
-	return &AddressGenerateResult{
-		Address:    address,
-		LockArgs:   hexutil.Encode(pubKey),
-		PrivateKey: hexutil.Encode(key.Bytes()),
-	}, err
+func isSecp256k1Lock(parsedSenderAddr *Address, systemScripts *utils.SystemScripts) bool {
+	return parsedSenderAddr.Script.CodeHash == systemScripts.SecpSingleSigCell.CellHash &&
+		parsedSenderAddr.Script.HashType == systemScripts.SecpSingleSigCell.HashType &&
+		len(parsedSenderAddr.Script.Args) == 20
 }
 
-func GenerateAcpAddress(secp256k1Address string) (string, error) {
-	addressScript, err := Parse(secp256k1Address)
-	if err != nil {
-		return "", err
+// GenerateSecp256k1Blake160MultisigScript generate scep256k1 multisig script.
+// It can accept public key (in compressed format, 33 bytes each) array or public key hash (20 bytes) array, and
+// return error if giving none of them.
+func GenerateSecp256k1Blake160MultisigScript(requireN, threshold int, publicKeysOrHashes [][]byte) (*types.Script, []byte, error) {
+	multisigScript := signer.MultisigScript{
+		Version:    0,
+		FirstN:     byte(requireN),
+		Threshold:  byte(threshold),
+		KeysHashes: [][20]byte{},
 	}
 
-	script := &types.Script{
-		CodeHash: types.HexToHash(getAcpCodeHash(addressScript.Mode)),
-		HashType: types.HashTypeType,
-		Args:     common.FromHex(hex.EncodeToString(addressScript.Script.Args)),
-	}
-
-	return ConvertScriptToAddress(addressScript.Mode, script)
-}
-
-func GenerateChequeAddress(senderAddress, receiverAddress string) (string, error) {
-	senderScript, err := Parse(senderAddress)
-	if err != nil {
-		return "", err
-	}
-	receiverScript, err := Parse(receiverAddress)
-	if err != nil {
-		return "", err
-	}
-
-	if senderScript.Mode != receiverScript.Mode {
-		return "", errors.New("The network type of senderAddress and receiverAddress must be the same")
-	}
-
-	senderScriptHash, err := senderScript.Script.Hash()
-	if err != nil {
-		return "", err
-	}
-	receiverScriptHash, err := receiverScript.Script.Hash()
-	if err != nil {
-		return "", err
-	}
-
-	s1 := senderScriptHash.String()[0:42]
-	s2 := receiverScriptHash.String()[0:42]
-
-	args := bytesCombine(common.FromHex(s2), common.FromHex(s1))
-	pubKey := common.Bytes2Hex(args)
-	fmt.Printf("pubKey: %s\n", pubKey)
-
-	chequeLock := &types.Script{
-		CodeHash: types.HexToHash(getChequeCodeHash(senderScript.Mode)),
-		HashType: types.HashTypeType,
-		Args:     common.FromHex(pubKey),
-	}
-
-	return ConvertScriptToAddress(senderScript.Mode, chequeLock)
-
-}
-
-func getHashType(hashType types.ScriptHashType) string {
-	if hashType == types.HashTypeType {
-		return "01"
+	isPublicKeyHash := len(publicKeysOrHashes[0]) == 20
+	if isPublicKeyHash {
+		for _, publicKeyHash := range publicKeysOrHashes {
+			if len(publicKeyHash) != 20 {
+				return nil, nil, errors.New("public key hash length must be 20 bytes")
+			}
+			if err := multisigScript.AddKeyHashBySlice(publicKeyHash); err != nil {
+				return nil, nil, err
+			}
+		}
 	} else {
-		return "00"
+		for _, publicKey := range publicKeysOrHashes {
+			if len(publicKey) != 33 {
+				return nil, nil, errors.New("public key (compressed) length must be 33 bytes")
+			}
+			publicKeyHash, err := blake2b.Blake160(publicKey)
+			if err != nil {
+				return nil, nil, err
+			}
+			if err := multisigScript.AddKeyHashBySlice(publicKeyHash); err != nil {
+				return nil, nil, err
+			}
+		}
 	}
-}
 
-func getAcpCodeHash(mode Mode) string {
-	if mode == Mainnet {
-		return MAINNET_ACP_CODE_HASH
-	} else {
-		return TESTNET_ACP_CODE_HASH
+	args, err := multisigScript.ComputeHash()
+	if err != nil {
+		return nil, nil, err
 	}
-}
 
-func getChequeCodeHash(mode Mode) string {
-	if mode == Mainnet {
-		return MAINNET_CHEQUE_CODE_HASH
-	} else {
-		return TESTNET_CHEQUE_CODE_HASH
-	}
-}
-
-func bytesCombine(pBytes ...[]byte) []byte {
-	return bytes.Join(pBytes, []byte(""))
+	// secp256k1_blake160_multisig_all share the same code hash in network main and test
+	codeHash := types.GetCodeHash(types.BuiltinScriptSecp256k1Blake160MultisigAll, types.NetworkTest)
+	return &types.Script{
+		CodeHash: codeHash,
+		HashType: types.HashTypeType,
+		Args:     args,
+	}, multisigScript.Encode(), nil
 }

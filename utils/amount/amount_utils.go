@@ -2,7 +2,6 @@ package amount
 
 import (
 	"github.com/ethereum/go-ethereum/common/math"
-	"github.com/nervosnetwork/ckb-sdk-go/mercury/model"
 	"math/big"
 )
 
@@ -18,7 +17,7 @@ func CkbWithDecimalToShannon(amount float64) *big.Int {
 	return result
 }
 
-func CkbToShannon(amount uint64) *model.U128 {
+func CkbToShannon(amount uint64) *big.Int {
 	ckbAmount := new(big.Int)
 	ckbAmount.SetUint64(amount)
 
@@ -26,5 +25,5 @@ func CkbToShannon(amount uint64) *model.U128 {
 
 	result := ckbAmount.Mul(ckbAmount, pow)
 
-	return model.NewU128WithBigInt(result)
+	return result
 }

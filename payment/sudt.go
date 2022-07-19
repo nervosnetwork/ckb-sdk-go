@@ -39,14 +39,14 @@ func NewSudt(senderAddresses []string, receiverInfo map[string]string, ckbPayerA
 	var receivers []types.ReceiverInfo
 	totalAmount := big.NewInt(0)
 	for _, senderAddr := range senderAddresses {
-		parsedSenderAddr, err := address.Parse(senderAddr)
+		parsedSenderAddr, err := address.Decode(senderAddr)
 		if err != nil {
 			return nil, err
 		}
 		senders = append(senders, parsedSenderAddr.Script)
 	}
 	for receiverAddr, amount := range receiverInfo {
-		parsedReceiverAddr, err := address.Parse(receiverAddr)
+		parsedReceiverAddr, err := address.Decode(receiverAddr)
 		if err != nil {
 			return nil, err
 		}
@@ -60,15 +60,15 @@ func NewSudt(senderAddresses []string, receiverInfo map[string]string, ckbPayerA
 		})
 		totalAmount = big.NewInt(0).Add(totalAmount, n)
 	}
-	parsedPayFeeAddr, err := address.Parse(ckbPayerAddress)
+	parsedPayFeeAddr, err := address.Decode(ckbPayerAddress)
 	if err != nil {
 		return nil, err
 	}
-	parsedCkbChangeAddr, err := address.Parse(ckbChangeAddress)
+	parsedCkbChangeAddr, err := address.Decode(ckbChangeAddress)
 	if err != nil {
 		return nil, err
 	}
-	parsedSudtChangeAddr, err := address.Parse(sudtChangeAddress)
+	parsedSudtChangeAddr, err := address.Decode(sudtChangeAddress)
 	if err != nil {
 		return nil, err
 	}

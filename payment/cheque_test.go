@@ -93,7 +93,7 @@ func genSearchKey(addr string) *indexer.SearchKey {
 }
 
 func getLock(addr string) *types.Script {
-	parsedAddr, _ := address.Parse(addr)
+	parsedAddr, _ := address.Decode(addr)
 	return parsedAddr.Script
 }
 

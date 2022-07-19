@@ -3,14 +3,14 @@ package secp256k1
 import (
 	"bytes"
 	"crypto/ecdsa"
+	"crypto/elliptic"
 	"crypto/rand"
 	"encoding/hex"
 	"errors"
 	"fmt"
-	"math/big"
-
 	"github.com/ethereum/go-ethereum/common/math"
 	"github.com/ethereum/go-ethereum/crypto/secp256k1"
+	"math/big"
 
 	"github.com/nervosnetwork/ckb-sdk-go/crypto"
 	"github.com/nervosnetwork/ckb-sdk-go/crypto/blake2b"
@@ -62,6 +62,14 @@ func (k *Secp256k1Key) PubKey() []byte {
 	return secp256k1.CompressPubkey(pub.X, pub.Y)
 }
 
+func (k *Secp256k1Key) PubKeyUncompressed() []byte {
+	pub := &k.PrivateKey.PublicKey
+	if pub == nil || pub.X == nil || pub.Y == nil {
+		return nil
+	}
+	return elliptic.Marshal(pub.Curve, pub.X, pub.Y)
+}
+
 func RandomNew() (*Secp256k1Key, error) {
 	randBytes := make([]byte, 64)
 	_, err := rand.Read(randBytes)
@@ -77,12 +85,24 @@ func RandomNew() (*Secp256k1Key, error) {
 	return &Secp256k1Key{PrivateKey: priv}, nil
 }
 
-func HexToKey(hexkey string) (*Secp256k1Key, error) {
-	b, err := hex.DecodeString(hexkey)
+func HexToKey(hexKey string) (*Secp256k1Key, error) {
+	hexKey = trimHexPrefix(hexKey)
+	b, err := hex.DecodeString(hexKey)
 	if err != nil {
 		return nil, errors.New("invalid hex string")
 	}
 	return ToKey(b)
+}
+
+func has0xPrefix(input string) bool {
+	return len(input) >= 2 && input[0] == '0' && (input[1] == 'x' || input[1] == 'X')
+}
+
+func trimHexPrefix(input string) string {
+	if has0xPrefix(input) {
+		return input[2:]
+	}
+	return input
 }
 
 func ToKey(d []byte) (*Secp256k1Key, error) {
