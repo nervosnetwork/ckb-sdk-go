@@ -14,10 +14,10 @@ type TransactionWithScriptGroups struct {
 }
 
 type ScriptGroup struct {
-	Script        types.Script `json:"script"`
-	GroupType     ScriptType   `json:"group_type"`
-	InputIndices  []uint32     `json:"input_indices"`
-	OutputIndices []uint32     `json:"output_indices"`
+	Script        *types.Script `json:"script"`
+	GroupType     ScriptType    `json:"group_type"`
+	InputIndices  []uint32      `json:"input_indices"`
+	OutputIndices []uint32      `json:"output_indices"`
 }
 
 type ScriptType string
@@ -45,7 +45,7 @@ func (r *ScriptType) UnmarshalJSON(input []byte) error {
 
 func (r *ScriptGroup) UnmarshalJSON(input []byte) error {
 	var jsonObj struct {
-		Script        types.Script   `json:"script"`
+		Script        *types.Script  `json:"script"`
 		GroupType     ScriptType     `json:"group_type"`
 		InputIndices  []hexutil.Uint `json:"input_indices"`
 		OutputIndices []hexutil.Uint `json:"output_indices"`
