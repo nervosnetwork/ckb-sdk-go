@@ -9,6 +9,7 @@ import (
 
 type Network uint
 type BuiltinScript uint
+type WitnessType uint
 
 const (
 	HashLength = 32
@@ -23,6 +24,10 @@ const (
 	BuiltinScriptSUDT
 	BuiltinScriptCheque
 	BuiltinScriptPWLock
+
+	WitnessTypeLock WitnessType = iota
+	WitnessTypeInputType
+	WitnessTypeOutputType
 )
 
 var (
