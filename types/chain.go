@@ -180,9 +180,9 @@ type Block struct {
 }
 
 type TransactionInput struct {
-	OutPoint    *OutPoint   `json:"out_point"`
-	Output      *CellOutput `json:"output"`
-	OutputData  []byte            `json:"output_data"`
+	OutPoint   *OutPoint   `json:"out_point"`
+	Output     *CellOutput `json:"output"`
+	OutputData []byte      `json:"output_data"`
 }
 
 type Cell struct {
