@@ -122,12 +122,12 @@ func checkScriptGroup(group *transaction.ScriptGroup) error {
 	}
 	switch group.GroupType {
 	case transaction.ScriptTypeType:
-		if len(group.OutputIndices) == 0 {
-			return errors.New("groupType is Lock but OutputIndices is empty")
+		if len(group.OutputIndices) + len(group.InputIndices) < 0 {
+			return errors.New("groupType is Type but OutputIndices and InputIndices are empty")
 		}
 	case transaction.ScriptTypeLock:
 		if len(group.InputIndices) == 0 {
-			return errors.New("groupType is Type but InputIndices is empty")
+			return errors.New("groupType is Lock but InputIndices is empty")
 		}
 	default:
 		return errors.New("unknown group type " + string(group.GroupType))
