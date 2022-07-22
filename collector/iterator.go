@@ -20,7 +20,7 @@ func NewLiveCellIterator(client indexer.Client, key *indexer.SearchKey) CellIter
 		Limit:       100,
 		afterCursor: "",
 		cells:       nil,
-		index:       -1,
+		index:       0,
 	}
 }
 
