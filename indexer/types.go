@@ -22,15 +22,16 @@ const (
 type SearchKey struct {
 	Script     *types.Script `json:"script"`
 	ScriptType ScriptType    `json:"script_type"`
-	ArgsLen    uint          `json:"args_len,omitempty"`
-	Filter     *CellsFilter  `json:"filter,omitempty"`
+	Filter     *Filter       `json:"filter,omitempty"`
+	WithData   bool          `json:"with_data"`
 }
 
-type CellsFilter struct {
+type Filter struct {
 	Script              *types.Script `json:"script"`
-	OutputDataLenRange  *[2]uint64    `json:"output_data_len_range"`
-	OutputCapacityRange *[2]uint64    `json:"output_capacity_range"`
-	BlockRange          *[2]uint64    `json:"block_range"`
+	ScriptLenRange      *[2]uint64    `json:"script_len_range,omitempty"`
+	OutputDataLenRange  *[2]uint64    `json:"output_data_len_range,omitempty"`
+	OutputCapacityRange *[2]uint64    `json:"output_capacity_range,omitempty"`
+	BlockRange          *[2]uint64    `json:"block_range,omitempty"`
 }
 
 type LiveCell struct {
