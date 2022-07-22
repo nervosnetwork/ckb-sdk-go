@@ -95,10 +95,10 @@ func (r *CkbTransactionBuilder) Build(contexts ...interface{}) (*transaction.Tra
 		i              = -1
 	)
 	for {
-		if !r.iterator.HasNext() {
-			break
+		cell := r.getNextCell()
+		if cell == nil {
+			break // break when can't find cell
 		}
-		cell := r.iterator.Next()
 		r.AddInput(&types.CellInput{
 			Since:          0,
 			PreviousOutput: cell.OutPoint,
@@ -156,4 +156,17 @@ func (r *CkbTransactionBuilder) Build(contexts ...interface{}) (*transaction.Tra
 		r.scriptGroups = append(r.scriptGroups, g)
 	}
 	return r.BuildTransaction(), nil
+}
+
+func (r CkbTransactionBuilder) getNextCell() *types.TransactionInput {
+	for {
+		if !r.iterator.HasNext() {
+			return nil
+		}
+		cell := r.iterator.Next()
+		// filter cell with non-nil type
+		if cell.Output.Type == nil {
+			return cell
+		}
+	}
 }
