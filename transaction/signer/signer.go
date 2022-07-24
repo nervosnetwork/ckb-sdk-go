@@ -49,7 +49,7 @@ func GetTransactionSignerInstance(network types.Network) *TransactionSigner {
 		instance.RegisterLockSigner(
 			types.GetCodeHash(types.BuiltinScriptAnyoneCanPay, network), &AnyCanPaySigner{})
 		instance.RegisterLockSigner(
-			types.GetCodeHash(types.BuiltinScriptPWLock, network), &PWLockSigner{})
+			types.GetCodeHash(types.BuiltinScriptPwLock, network), &PWLockSigner{})
 	}
 	return instance
 }
