@@ -1,4 +1,4 @@
-package collector
+package builder
 
 import (
 	"github.com/ethereum/go-ethereum/common"

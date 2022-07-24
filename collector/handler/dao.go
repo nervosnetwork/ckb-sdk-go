@@ -1,9 +1,10 @@
-package collector
+package handler
 
 import (
 	"bytes"
 	"context"
 	"errors"
+	"github.com/nervosnetwork/ckb-sdk-go/collector"
 	"github.com/nervosnetwork/ckb-sdk-go/rpc"
 	"github.com/nervosnetwork/ckb-sdk-go/transaction"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
@@ -62,7 +63,7 @@ func IsDepositCell(output *types.CellOutput, outputData []byte) bool {
 	return false
 }
 
-func (r *DaoScriptHandler) BuildTransaction(builder TransactionBuilder, group *transaction.ScriptGroup, context interface{}) (bool, error) {
+func (r *DaoScriptHandler) BuildTransaction(builder collector.TransactionBuilder, group *transaction.ScriptGroup, context interface{}) (bool, error) {
 	if group == nil || !r.isMatched(group.Script) {
 		return false, nil
 	}

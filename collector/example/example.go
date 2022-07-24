@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/nervosnetwork/ckb-sdk-go/collector"
+	builder2 "github.com/nervosnetwork/ckb-sdk-go/collector/builder"
 	"github.com/nervosnetwork/ckb-sdk-go/indexer"
 	"github.com/nervosnetwork/ckb-sdk-go/rpc"
 	"github.com/nervosnetwork/ckb-sdk-go/transaction/signer"
@@ -24,7 +25,7 @@ func SendCkbExample() error {
 		return err
 	}
 
-	builder := collector.NewCkbTransactionBuilder(network, iterator)
+	builder := builder2.NewCkbTransactionBuilder(network, iterator)
 	builder.FeeRate = 1000
 	if err := builder.AddOutputByAddress(receiver, 50100000000); err != nil {
 		return err

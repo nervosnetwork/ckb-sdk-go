@@ -1,7 +1,8 @@
-package collector
+package builder
 
 import (
 	"errors"
+	"github.com/nervosnetwork/ckb-sdk-go/collector"
 	"github.com/nervosnetwork/ckb-sdk-go/transaction"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 )
@@ -11,12 +12,12 @@ type CkbTransactionBuilder struct {
 	FeeRate uint
 	Network types.Network
 
-	iterator          CellIterator
+	iterator          collector.CellIterator
 	changeOutputIndex int
 	reward            uint64
 }
 
-func NewCkbTransactionBuilder(network types.Network, iterator CellIterator) *CkbTransactionBuilder {
+func NewCkbTransactionBuilder(network types.Network, iterator collector.CellIterator) *CkbTransactionBuilder {
 	return &CkbTransactionBuilder{
 		SimpleTransactionBuilder: *NewSimpleTransactionBuilder(network),
 		FeeRate:                  1000,
