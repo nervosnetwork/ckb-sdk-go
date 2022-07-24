@@ -14,6 +14,7 @@ type TransactionBuilder interface {
 	AddHeaderDep(headerDep types.Hash) int
 	AddCellDep(cellDep *types.CellDep) int
 	AddInput(input *types.CellInput) int
+	SetSince(index uint, since uint64) error
 	AddOutput(output *types.CellOutput) int
 	SetOutputData(index uint, data []byte) error
 	SetWitness(index uint, witnessType types.WitnessType, data []byte) error
@@ -80,6 +81,14 @@ func (r *SimpleTransactionBuilder) AddInput(input *types.CellInput) int {
 	r.Inputs = append(r.Inputs, input)
 	r.Witnesses = append(r.Witnesses, []byte{})
 	return len(r.Inputs) - 1
+}
+
+func (r *SimpleTransactionBuilder) SetSince(index uint, since uint64) error {
+	if index >= uint(len(r.Inputs)) {
+		return errors.New("index " + strconv.Itoa(int(index)) + " out of range")
+	}
+	r.Inputs[index].Since = since
+	return nil
 }
 
 func (r *SimpleTransactionBuilder) AddOutput(output *types.CellOutput) int {
