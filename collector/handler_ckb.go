@@ -9,6 +9,7 @@ import (
 
 type Secp256k1Blake160SighashAllScriptHandler struct {
 	cellDep *types.CellDep
+	network types.Network
 }
 
 func NewSecp256k1Blake160SighashAllScriptHandler(network types.Network) *Secp256k1Blake160SighashAllScriptHandler {
@@ -29,6 +30,7 @@ func NewSecp256k1Blake160SighashAllScriptHandler(network types.Network) *Secp256
 			},
 			DepType: types.DepTypeDepGroup,
 		},
+		network: network,
 	}
 }
 
@@ -36,7 +38,7 @@ func (r *Secp256k1Blake160SighashAllScriptHandler) isMatched(script *types.Scrip
 	if script == nil {
 		return false
 	}
-	codeHash := types.GetCodeHash(types.BuiltinScriptSecp256k1Blake160SighashAll, types.NetworkMain)
+	codeHash := types.GetCodeHash(types.BuiltinScriptSecp256k1Blake160SighashAll, r.network)
 	return reflect.DeepEqual(script.CodeHash, codeHash)
 }
 
@@ -55,6 +57,7 @@ func (r *Secp256k1Blake160SighashAllScriptHandler) BuildTransaction(builder Tran
 
 type Secp256k1Blake160MultisigAllScriptHandler struct {
 	cellDep *types.CellDep
+	network types.Network
 }
 
 func NewSecp256k1Blake160MultisigAllScriptHandler(network types.Network) *Secp256k1Blake160MultisigAllScriptHandler {
@@ -75,6 +78,7 @@ func NewSecp256k1Blake160MultisigAllScriptHandler(network types.Network) *Secp25
 			},
 			DepType: types.DepTypeDepGroup,
 		},
+		network: network,
 	}
 }
 
@@ -82,7 +86,7 @@ func (r *Secp256k1Blake160MultisigAllScriptHandler) isMatched(script *types.Scri
 	if script == nil {
 		return false
 	}
-	codeHash := types.GetCodeHash(types.BuiltinScriptSecp256k1Blake160MultisigAll, types.NetworkMain)
+	codeHash := types.GetCodeHash(types.BuiltinScriptSecp256k1Blake160MultisigAll, r.network)
 	return reflect.DeepEqual(script.CodeHash, codeHash)
 }
 
