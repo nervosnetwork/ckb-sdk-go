@@ -23,8 +23,8 @@ type DaoDepositCellInfo struct {
 }
 
 // GetDaoDepositCellInfo Get information for DAO cell deposited as outpoint and withdrawn in block of withdrawBlockHash
-func (c *DaoHelper) GetDaoDepositCellInfo(outpoint *types.OutPoint, withdrawBlockHash *types.Hash) (DaoDepositCellInfo, error) {
-	blockHeader, err := c.Client.GetHeader(context.Background(), *withdrawBlockHash)
+func (c *DaoHelper) GetDaoDepositCellInfo(outpoint *types.OutPoint, withdrawBlockHash types.Hash) (DaoDepositCellInfo, error) {
+	blockHeader, err := c.Client.GetHeader(context.Background(), withdrawBlockHash)
 	if err != nil {
 		return DaoDepositCellInfo{}, err
 	}
@@ -55,7 +55,7 @@ func (c *DaoHelper) getDaoDepositCellInfo(outpoint *types.OutPoint, withdrawBloc
 	if err != nil {
 		return DaoDepositCellInfo{}, err
 	}
-	depositBlockHeader, err := c.Client.GetHeader(context.Background(), *depositTransactionWithStatus.TxStatus.BlockHash)
+	depositBlockHeader, err := c.Client.GetHeader(context.Background(), depositTransactionWithStatus.TxStatus.BlockHash)
 	if err != nil {
 		return DaoDepositCellInfo{}, err
 	}

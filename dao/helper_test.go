@@ -17,7 +17,7 @@ func TestGetDaoDepositCellInfo(t *testing.T) {
 	}
 	withdrawBlockHash := types.HexToHash("0xbaef9b22ee3d04d8fc3ad8c04f8403ad3b3b39c5ace51406c5305920976105f7")
 
-	daoCellInfo, err := daoHelper.GetDaoDepositCellInfo(&outpoint, &withdrawBlockHash)
+	daoCellInfo, err := daoHelper.GetDaoDepositCellInfo(&outpoint, withdrawBlockHash)
 	if err != nil {
 		panic(err)
 	}
