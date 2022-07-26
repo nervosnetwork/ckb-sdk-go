@@ -79,9 +79,9 @@ func (r *SimpleTransactionBuilder) SetSince(index uint, since uint64) error {
 	return nil
 }
 
-func (r *SimpleTransactionBuilder) AddOutput(output *types.CellOutput) int {
+func (r *SimpleTransactionBuilder) AddOutput(output *types.CellOutput, data []byte) int {
 	r.Outputs = append(r.Outputs, output)
-	r.OutputsData = append(r.OutputsData, []byte{})
+	r.OutputsData = append(r.OutputsData, data)
 	return len(r.Outputs) - 1
 }
 
@@ -95,7 +95,7 @@ func (r *SimpleTransactionBuilder) AddOutputByAddress(addr string, capacity uint
 		Lock:     a.Script,
 		Type:     nil,
 	}
-	r.AddOutput(output)
+	r.AddOutput(output, []byte{})
 	return nil
 }
 

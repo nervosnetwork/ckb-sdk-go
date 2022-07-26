@@ -11,7 +11,7 @@ type TransactionBuilder interface {
 	AddCellDep(cellDep *types.CellDep) int
 	AddInput(input *types.CellInput) int
 	SetSince(index uint, since uint64) error
-	AddOutput(output *types.CellOutput) int
+	AddOutput(output *types.CellOutput, data []byte) int
 	SetOutputData(index uint, data []byte) error
 	SetWitness(index uint, witnessType types.WitnessType, data []byte) error
 	AddScriptGroup(group *transaction.ScriptGroup) int
