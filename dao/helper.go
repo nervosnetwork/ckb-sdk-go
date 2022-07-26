@@ -65,7 +65,7 @@ func (c *DaoHelper) getDaoDepositCellInfo(outpoint *types.OutPoint, withdrawBloc
 	}
 	outpointCell := depositTransactionWithStatus.Transaction.Outputs[outpoint.Index]
 	outpointData := depositTransactionWithStatus.Transaction.OutputsData[outpoint.Index]
-	occupiedCapacity := outpointCell.OccupiedCapacity(outpointData) * 100000000
+	occupiedCapacity := outpointCell.OccupiedCapacity(outpointData)
 	totalCapacity := outpointCell.Capacity
 	freeCapacity := new(big.Int).SetUint64(totalCapacity - occupiedCapacity)
 	depositAr := new(big.Int).SetUint64(extractArFromDaoData(&depositBlockHeader.Dao))

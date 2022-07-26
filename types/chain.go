@@ -2,6 +2,7 @@ package types
 
 import (
 	"github.com/nervosnetwork/ckb-sdk-go/crypto/blake2b"
+	"github.com/nervosnetwork/ckb-sdk-go/utils/amount"
 	"math/big"
 )
 
@@ -63,7 +64,8 @@ type Script struct {
 }
 
 func (r *Script) OccupiedCapacity() uint64 {
-	return uint64(len(r.Args)) + uint64(len(r.CodeHash.Bytes())) + 1
+	ckBytes := uint64(len(r.Args)) + uint64(len(r.CodeHash.Bytes())) + 1
+	return amount.CkbToShannon(ckBytes)
 }
 
 func (r *Script) Hash() (Hash, error) {
@@ -102,7 +104,8 @@ type CellOutput struct {
 }
 
 func (r CellOutput) OccupiedCapacity(outputData []byte) uint64 {
-	occupiedCapacity := 8 + uint64(len(outputData)) + r.Lock.OccupiedCapacity()
+	occupiedCapacity := amount.CkbToShannon(8 + uint64(len(outputData)))
+	occupiedCapacity += r.Lock.OccupiedCapacity()
 	if r.Type != nil {
 		occupiedCapacity += r.Type.OccupiedCapacity()
 	}

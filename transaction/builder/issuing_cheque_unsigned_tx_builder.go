@@ -245,7 +245,7 @@ func (b *IssuingChequeUnsignedTxBuilder) isCkbEnough() (bool, error) {
 		changeOutput := b.tx.Outputs[b.ckbChangeOutputIndex.Value]
 		changeOutputData := b.tx.OutputsData[b.ckbChangeOutputIndex.Value]
 
-		changeOutputCapacity := big.NewInt(0).SetUint64(changeOutput.OccupiedCapacity(changeOutputData) * uint64(math.Pow10(8)))
+		changeOutputCapacity := big.NewInt(0).SetUint64(changeOutput.OccupiedCapacity(changeOutputData))
 		if changeCapacity.Cmp(changeOutputCapacity) >= 0 {
 			return true, nil
 		} else {
