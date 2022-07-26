@@ -28,6 +28,9 @@ func NewSimpleTransactionBuilder(network types.Network) *SimpleTransactionBuilde
 	if network == types.NetworkMain || network == types.NetworkTest {
 		s := SimpleTransactionBuilder{}
 		s.Register(handler.NewSecp256k1Blake160SighashAllScriptHandler(network))
+		s.Register(handler.NewSecp256k1Blake160MultisigAllScriptHandler(network))
+		s.Register(handler.NewSudtScriptHandler(network))
+		s.Register(handler.NewDaoScriptHandler(network))
 		return &s
 	} else {
 		return nil
