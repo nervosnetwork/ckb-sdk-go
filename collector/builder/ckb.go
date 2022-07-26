@@ -54,13 +54,12 @@ func getOrPutScriptGroup(m map[types.Hash]*transaction.ScriptGroup, script *type
 		}
 	}
 	return m[hash], nil
-
 }
 
-func (r *CkbTransactionBuilder) executeHandlers(group *transaction.ScriptGroup, contexts ...interface{}) error {
-	for _, v := range r.ScriptHandlers {
+func executeHandlers(s *SimpleTransactionBuilder, group *transaction.ScriptGroup, contexts ...interface{}) error {
+	for _, v := range s.ScriptHandlers {
 		for _, c := range contexts {
-			if _, err := v.BuildTransaction(r, group, c); err != nil {
+			if _, err := v.BuildTransaction(s, group, c); err != nil {
 				return err
 			}
 		}
@@ -84,7 +83,7 @@ func (r *CkbTransactionBuilder) Build(contexts ...interface{}) (*transaction.Tra
 				return nil, err
 			}
 			group.OutputIndices = append(group.OutputIndices, uint32(i))
-			if err := r.executeHandlers(group, contexts); err != nil {
+			if err := executeHandlers(&r.SimpleTransactionBuilder, group, contexts); err != nil {
 				return nil, err
 			}
 		}
@@ -113,7 +112,7 @@ func (r *CkbTransactionBuilder) Build(contexts ...interface{}) (*transaction.Tra
 				return nil, err
 			}
 			group.InputIndices = append(group.InputIndices, uint32(i))
-			if err := r.executeHandlers(group, contexts); err != nil {
+			if err := executeHandlers(&r.SimpleTransactionBuilder, group, contexts); err != nil {
 				return nil, err
 			}
 		}
@@ -125,7 +124,7 @@ func (r *CkbTransactionBuilder) Build(contexts ...interface{}) (*transaction.Tra
 				return nil, err
 			}
 			group.InputIndices = append(group.InputIndices, uint32(i))
-			if err := r.executeHandlers(group, contexts); err != nil {
+			if err := executeHandlers(&r.SimpleTransactionBuilder, group, contexts); err != nil {
 				return nil, err
 			}
 		}
