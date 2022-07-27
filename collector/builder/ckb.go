@@ -12,7 +12,10 @@ type CkbTransactionBuilder struct {
 	FeeRate uint
 	Network types.Network
 
-	iterator          collector.CellIterator
+	iterator               collector.CellIterator
+	transactionInputs      []*types.TransactionInput // customized inputs
+	transactionInputsIndex int
+
 	changeOutputIndex int
 	reward            uint64
 }
@@ -159,6 +162,13 @@ func (r *CkbTransactionBuilder) Build(contexts ...interface{}) (*transaction.Tra
 }
 
 func (r CkbTransactionBuilder) getNextCell() *types.TransactionInput {
+	// consume customized inputs at first
+	if r.transactionInputsIndex < len(r.transactionInputs) {
+		t := r.transactionInputs[r.transactionInputsIndex]
+		r.transactionInputsIndex += 1
+		return t
+	}
+
 	for {
 		if !r.iterator.HasNext() {
 			return nil
