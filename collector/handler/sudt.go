@@ -27,7 +27,7 @@ func NewSudtScriptHandler(network types.Network) *SudtScriptHandler {
 				TxHash: txHash,
 				Index:  0,
 			},
-			DepType: types.DepTypeDepGroup,
+			DepType: types.DepTypeCode,
 		},
 		network: network,
 	}
