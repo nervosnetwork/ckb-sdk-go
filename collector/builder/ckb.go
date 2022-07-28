@@ -178,7 +178,7 @@ func (r *CkbTransactionBuilder) Build(contexts ...interface{}) (*transaction.Tra
 	return r.BuildTransaction(), nil
 }
 
-func (r CkbTransactionBuilder) getNextCell() *types.TransactionInput {
+func (r *CkbTransactionBuilder) getNextCell() *types.TransactionInput {
 	// consume customized inputs at first
 	if r.transactionInputsIndex < len(r.transactionInputs) {
 		t := r.transactionInputs[r.transactionInputsIndex]
