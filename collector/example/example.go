@@ -29,6 +29,7 @@ func SendCkbExample() error {
 		return err
 	}
 
+	// build transaction
 	builder := builder2.NewCkbTransactionBuilder(network, iterator)
 	builder.FeeRate = 1000
 	if err := builder.AddOutputByAddress(receiver, 50100000000); err != nil {
@@ -40,12 +41,14 @@ func SendCkbExample() error {
 		return err
 	}
 
+	// sign transaction
 	txSigner := signer.GetTransactionSignerInstance(network)
 	_, err = txSigner.SignTransactionByPrivateKeys(txWithGroups, "0x6c9ed03816e3111e49384b8d180174ad08e29feb1393ea1b51cef1c505d4e36a")
 	if err != nil {
 		return err
 	}
 
+	// send transaction
 	ckbClient, err := rpc.Dial("https://testnet.ckb.dev")
 	hash, err := ckbClient.SendTransaction(context.Background(), txWithGroups.TxView)
 	if err != nil {
@@ -83,6 +86,7 @@ func SendCkbFromMultisigAddressExample() error {
 		return err
 	}
 
+	// build transaction
 	builder := builder2.NewCkbTransactionBuilder(network, iterator)
 	builder.FeeRate = 1000
 	if err := builder.AddOutputByAddress(receiver, 50100000000); err != nil {
@@ -94,6 +98,7 @@ func SendCkbFromMultisigAddressExample() error {
 		return err
 	}
 
+	// sign transaction
 	txSigner := signer.GetTransactionSignerInstance(network)
 	// first signature
 	ctx1, _ := transaction.NewContextWithPayload("0x4fd809631a6aa6e3bb378dd65eae5d71df895a82c91a615a1e8264741515c79c", multisigScript)
@@ -109,6 +114,7 @@ func SendCkbFromMultisigAddressExample() error {
 	if _, err = txSigner.SignTransaction(txWithGroups, ctxs2); err != nil {
 		return err
 	}
+
 	// send transaction
 	ckbClient, err := rpc.Dial("https://testnet.ckb.dev")
 	hash, err := ckbClient.SendTransaction(context.Background(), txWithGroups.TxView)
@@ -131,6 +137,7 @@ func IssueSudtExample() error {
 		return err
 	}
 
+	// build transaction
 	builder, err := builder2.NewSudtTransactionBuilderFromSudtOwnerAddress(network, iterator, builder2.SudtTransactionTypeIssue, sender)
 	if err != nil {
 		return err
@@ -146,12 +153,14 @@ func IssueSudtExample() error {
 		return err
 	}
 
+	// sign transaction
 	txSigner := signer.GetTransactionSignerInstance(network)
 	_, err = txSigner.SignTransactionByPrivateKeys(txWithGroups, "0x0c982052ffd4af5f3bbf232301dcddf468009161fc48ba1426e3ce0929fb59f8")
 	if err != nil {
 		return err
 	}
 
+	// send transaction
 	ckbClient, err := rpc.Dial("https://testnet.ckb.dev")
 	hash, err := ckbClient.SendTransaction(context.Background(), txWithGroups.TxView)
 	if err != nil {
@@ -176,6 +185,7 @@ func SendSudtExample() error {
 		return err
 	}
 
+	// build transaction
 	builder, err := builder2.NewSudtTransactionBuilderFromSudtArgs(network, iterator, builder2.SudtTransactionTypeTransfer, sudtArgs)
 	if err != nil {
 		return err
@@ -191,12 +201,14 @@ func SendSudtExample() error {
 		return err
 	}
 
+	// sign transaction
 	txSigner := signer.GetTransactionSignerInstance(network)
 	_, err = txSigner.SignTransactionByPrivateKeys(txWithGroups, "0x0c982052ffd4af5f3bbf232301dcddf468009161fc48ba1426e3ce0929fb59f8")
 	if err != nil {
 		return err
 	}
 
+	// send transaction
 	ckbClient, err := rpc.Dial("https://testnet.ckb.dev")
 	hash, err := ckbClient.SendTransaction(context.Background(), txWithGroups.TxView)
 	if err != nil {
@@ -218,24 +230,26 @@ func DepositDaoExample() error {
 		return err
 	}
 
+	// build transaction
 	builder := builder2.NewCkbTransactionBuilder(network, iterator)
 	builder.FeeRate = 1000
 	if err := builder.AddDaoDepositOutputByAddress(sender, 50100000000); err != nil {
 		return err
 	}
-
 	builder.AddChangeOutputByAddress(sender)
 	txWithGroups, err := builder.Build()
 	if err != nil {
 		return err
 	}
 
+	// sign transaction
 	txSigner := signer.GetTransactionSignerInstance(network)
 	_, err = txSigner.SignTransactionByPrivateKeys(txWithGroups, "0x6c9ed03816e3111e49384b8d180174ad08e29feb1393ea1b51cef1c505d4e36a")
 	if err != nil {
 		return err
 	}
 
+	// send transaction
 	ckbClient, err := rpc.Dial("https://testnet.ckb.dev")
 	hash, err := ckbClient.SendTransaction(context.Background(), txWithGroups.TxView)
 	if err != nil {
@@ -261,12 +275,12 @@ func WithdrawDaoExample() error {
 	if err != nil {
 		return err
 	}
-
 	iterator, err := collector.NewLiveCellIteratorFromAddress(indexerClient, sender)
 	if err != nil {
 		return err
 	}
 
+	// build transaction
 	builder, err := builder2.NewDaoTransactionBuilder(network, iterator, depositOutPoint, ckbClient)
 	if err != nil {
 		return err
@@ -275,7 +289,6 @@ func WithdrawDaoExample() error {
 	if err := builder.AddWithdrawOutput(sender); err != nil {
 		return err
 	}
-
 	builder.AddChangeOutputByAddress(sender)
 
 	withdrawInfo, err := handler.NewWithdrawInfo(ckbClient, depositOutPoint)
@@ -287,12 +300,14 @@ func WithdrawDaoExample() error {
 		return err
 	}
 
+	// sign transaction
 	txSigner := signer.GetTransactionSignerInstance(network)
 	_, err = txSigner.SignTransactionByPrivateKeys(txWithGroups, "0x6c9ed03816e3111e49384b8d180174ad08e29feb1393ea1b51cef1c505d4e36a")
 	if err != nil {
 		return err
 	}
 
+	// send transaction
 	hash, err := ckbClient.SendTransaction(context.Background(), txWithGroups.TxView)
 	if err != nil {
 		return err
@@ -323,6 +338,7 @@ func ClaimDaoExample() error {
 		return err
 	}
 
+	// build transaction
 	builder, err := builder2.NewDaoTransactionBuilder(network, iterator, withdrawOutPoint, ckbClient)
 	if err != nil {
 		return err
@@ -339,12 +355,14 @@ func ClaimDaoExample() error {
 		return err
 	}
 
+	// sign transaction
 	txSigner := signer.GetTransactionSignerInstance(network)
 	_, err = txSigner.SignTransactionByPrivateKeys(txWithGroups, "0x6c9ed03816e3111e49384b8d180174ad08e29feb1393ea1b51cef1c505d4e36a")
 	if err != nil {
 		return err
 	}
 
+	// send transaction
 	hash, err := ckbClient.SendTransaction(context.Background(), txWithGroups.TxView)
 	if err != nil {
 		return err
