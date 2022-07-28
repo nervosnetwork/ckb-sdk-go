@@ -10,6 +10,7 @@ import (
 	"github.com/nervosnetwork/ckb-sdk-go/collector/handler"
 	"github.com/nervosnetwork/ckb-sdk-go/rpc"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
+	"math/big"
 )
 
 type DaoTransactionType uint
@@ -107,7 +108,7 @@ func getDaoReward(withdrawOutPoint *types.OutPoint, client rpc.Client) (uint64, 
 	)
 	for i := 0; i < len(withdrawTx.Inputs); i++ {
 		outPoint := withdrawTx.Inputs[i].PreviousOutput
-		txWithStatus, err := client.GetTransaction(context.Background(), withdrawOutPoint.TxHash)
+		txWithStatus, err := client.GetTransaction(context.Background(), outPoint.TxHash)
 		if err != nil {
 			return 0, err
 		}
@@ -134,15 +135,21 @@ func getDaoReward(withdrawOutPoint *types.OutPoint, client rpc.Client) (uint64, 
 	}
 	occupiedCapacity := depositCell.OccupiedCapacity(depositCellData)
 	daoMaximumWithdraw := calculateDaoMaximumWithdraw(depositBlockHeader, withdrawBlockHeader, depositCell, occupiedCapacity)
-	daoReward := daoMaximumWithdraw - occupiedCapacity
+	daoReward := daoMaximumWithdraw - depositCell.Capacity
 	return daoReward, nil
 }
 
 func calculateDaoMaximumWithdraw(depositBlockHeader, withdrawBlockHeader *types.Header, output *types.CellOutput, occupiedCapacity uint64) uint64 {
 	depositAr := extractAr(depositBlockHeader.Dao)
 	withdrawAr := extractAr(withdrawBlockHeader.Dao)
-	maximumWithdraw := (output.Capacity-occupiedCapacity)*withdrawAr/depositAr + occupiedCapacity
-	return maximumWithdraw
+
+	maximumWithdraw := new(big.Int).SetUint64(output.Capacity)
+	maximumWithdraw.Sub(maximumWithdraw, new(big.Int).SetUint64(occupiedCapacity))
+	maximumWithdraw.Mul(maximumWithdraw, new(big.Int).SetUint64(withdrawAr))
+	maximumWithdraw.Div(maximumWithdraw, new(big.Int).SetUint64(depositAr))
+	maximumWithdraw.Add(maximumWithdraw, new(big.Int).SetUint64(occupiedCapacity))
+
+	return maximumWithdraw.Uint64()
 }
 
 func extractAr(dao types.Hash) uint64 {
