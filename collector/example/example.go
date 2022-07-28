@@ -6,6 +6,7 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/nervosnetwork/ckb-sdk-go/collector"
 	builder2 "github.com/nervosnetwork/ckb-sdk-go/collector/builder"
+	"github.com/nervosnetwork/ckb-sdk-go/collector/handler"
 	"github.com/nervosnetwork/ckb-sdk-go/indexer"
 	"github.com/nervosnetwork/ckb-sdk-go/rpc"
 	"github.com/nervosnetwork/ckb-sdk-go/transaction/signer"
@@ -170,6 +171,62 @@ func DepositDaoExample() error {
 	}
 
 	ckbClient, err := rpc.Dial("https://testnet.ckb.dev")
+	hash, err := ckbClient.SendTransaction(context.Background(), txWithGroups.TxView)
+	if err != nil {
+		return err
+	}
+	fmt.Println("transaction hash: " + hexutil.Encode(hash.Bytes()))
+	return nil
+}
+
+func WithdrawDaoExample() error {
+	sender := "ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq2qf8keemy2p5uu0g0gn8cd4ju23s5269qk8rg4r"
+	depositOutPoint := &types.OutPoint{
+		TxHash: types.HexToHash("0xebfb7bff39985865c20bd5b6c0190e58298eb9e4b1ddb9daee16166bed658c40"),
+		Index:  0,
+	}
+
+	network := types.NetworkTest
+	indexerClient, err := indexer.Dial("https://testnet.ckb.dev/indexer")
+	if err != nil {
+		return err
+	}
+	ckbClient, err := rpc.Dial("https://testnet.ckb.dev")
+	if err != nil {
+		return err
+	}
+
+	iterator, err := collector.NewLiveCellIteratorFromAddress(indexerClient, sender)
+	if err != nil {
+		return err
+	}
+
+	builder, err := builder2.NewDaoTransactionBuilder(network, iterator, depositOutPoint, ckbClient)
+	if err != nil {
+		return err
+	}
+	builder.FeeRate = 1000
+	if err := builder.AddWithdrawOutput(sender); err != nil {
+		return err
+	}
+
+	builder.AddChangeOutputByAddress(sender)
+
+	withdrawInfo, err := handler.NewWithdrawInfo(ckbClient, depositOutPoint)
+	if err != nil {
+		return err
+	}
+	txWithGroups, err := builder.Build(withdrawInfo)
+	if err != nil {
+		return err
+	}
+
+	txSigner := signer.GetTransactionSignerInstance(network)
+	_, err = txSigner.SignTransactionByPrivateKeys(txWithGroups, "0x6c9ed03816e3111e49384b8d180174ad08e29feb1393ea1b51cef1c505d4e36a")
+	if err != nil {
+		return err
+	}
+
 	hash, err := ckbClient.SendTransaction(context.Background(), txWithGroups.TxView)
 	if err != nil {
 		return err
