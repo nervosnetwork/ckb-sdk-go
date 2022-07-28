@@ -2,7 +2,9 @@ package builder
 
 import (
 	"errors"
+	"github.com/nervosnetwork/ckb-sdk-go/address"
 	"github.com/nervosnetwork/ckb-sdk-go/collector"
+	"github.com/nervosnetwork/ckb-sdk-go/collector/handler"
 	"github.com/nervosnetwork/ckb-sdk-go/transaction"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 )
@@ -40,6 +42,21 @@ func (r *CkbTransactionBuilder) AddChangeOutputByAddress(addr string) error {
 		r.changeOutputIndex = len(r.Outputs) - 1
 	}
 	return err
+}
+
+func (r *CkbTransactionBuilder) AddDaoDepositOutputByAddress(addr string, capacity uint64) error {
+	a, err := address.Decode(addr)
+	if err != nil {
+		return err
+	}
+	output := &types.CellOutput{
+		Capacity: capacity,
+		Lock:     a.Script,
+		Type:     handler.DaoScript,
+	}
+	data := handler.DaoDepositOutputData
+	r.AddOutput(output, data)
+	return nil
 }
 
 func getOrPutScriptGroup(m map[types.Hash]*transaction.ScriptGroup, script *types.Script, scriptType transaction.ScriptType) (*transaction.ScriptGroup, error) {
