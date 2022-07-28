@@ -4,11 +4,13 @@ import (
 	"context"
 	"fmt"
 	"github.com/ethereum/go-ethereum/common/hexutil"
+	"github.com/nervosnetwork/ckb-sdk-go/address"
 	"github.com/nervosnetwork/ckb-sdk-go/collector"
 	builder2 "github.com/nervosnetwork/ckb-sdk-go/collector/builder"
 	"github.com/nervosnetwork/ckb-sdk-go/collector/handler"
 	"github.com/nervosnetwork/ckb-sdk-go/indexer"
 	"github.com/nervosnetwork/ckb-sdk-go/rpc"
+	"github.com/nervosnetwork/ckb-sdk-go/transaction"
 	"github.com/nervosnetwork/ckb-sdk-go/transaction/signer"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 	"math/big"
@@ -44,6 +46,70 @@ func SendCkbExample() error {
 		return err
 	}
 
+	ckbClient, err := rpc.Dial("https://testnet.ckb.dev")
+	hash, err := ckbClient.SendTransaction(context.Background(), txWithGroups.TxView)
+	if err != nil {
+		return err
+	}
+	fmt.Println("transaction hash: " + hexutil.Encode(hash.Bytes()))
+	return nil
+}
+
+func SendCkbFromMultisigAddressExample() error {
+	network := types.NetworkTest
+
+	multisigScript := signer.NewMultisigScript(0, 2)
+	multisigScript.AddKeyHashBySlice(hexutil.MustDecode("0x7336b0ba900684cb3cb00f0d46d4f64c0994a562"))
+	multisigScript.AddKeyHashBySlice(hexutil.MustDecode("0x5724c1e3925a5206944d753a6f3edaedf977d77f"))
+
+	args, _ := multisigScript.ComputeHash()
+	// ckt1qpw9q60tppt7l3j7r09qcp7lxnp3vcanvgha8pmvsa3jplykxn32sqdunqvd3g2felqv6qer8pkydws8jg9qxlca0st5v
+	sender, _ := address.Address{
+		Script: &types.Script{
+			CodeHash: types.GetCodeHash(types.BuiltinScriptSecp256k1Blake160MultisigAll, network),
+			HashType: types.HashTypeType,
+			Args:     args,
+		},
+		Network: network,
+	}.Encode()
+
+	receiver := "ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq2qf8keemy2p5uu0g0gn8cd4ju23s5269qk8rg4r"
+	indexerClient, err := indexer.Dial("https://testnet.ckb.dev/indexer")
+	if err != nil {
+		return err
+	}
+	iterator, err := collector.NewLiveCellIteratorFromAddress(indexerClient, sender)
+	if err != nil {
+		return err
+	}
+
+	builder := builder2.NewCkbTransactionBuilder(network, iterator)
+	builder.FeeRate = 1000
+	if err := builder.AddOutputByAddress(receiver, 50100000000); err != nil {
+		return err
+	}
+	builder.AddChangeOutputByAddress(sender)
+	txWithGroups, err := builder.Build(multisigScript)
+	if err != nil {
+		return err
+	}
+
+	txSigner := signer.GetTransactionSignerInstance(network)
+	// first signature
+	ctx1, _ := transaction.NewContextWithPayload("0x4fd809631a6aa6e3bb378dd65eae5d71df895a82c91a615a1e8264741515c79c", multisigScript)
+	ctxs1 := transaction.NewContexts()
+	ctxs1.Add(ctx1)
+	if _, err = txSigner.SignTransaction(txWithGroups, ctxs1); err != nil {
+		return err
+	}
+	// second signature
+	ctx2, _ := transaction.NewContextWithPayload("0x7438f7b35c355e3d2fb9305167a31a72d22ddeafb80a21cc99ff6329d92e8087", multisigScript)
+	ctxs2 := transaction.NewContexts()
+	ctxs2.Add(ctx2)
+	if _, err = txSigner.SignTransaction(txWithGroups, ctxs2); err != nil {
+		return err
+	}
+	// send transaction
 	ckbClient, err := rpc.Dial("https://testnet.ckb.dev")
 	hash, err := ckbClient.SendTransaction(context.Background(), txWithGroups.TxView)
 	if err != nil {
