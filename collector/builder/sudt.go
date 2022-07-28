@@ -195,7 +195,7 @@ func (r *SudtTransactionBuilder) Build(contexts ...interface{}) (*transaction.Tr
 				return nil, err
 			}
 			group.InputIndices = append(group.InputIndices, uint32(i))
-			if err := executeHandlers(&r.SimpleTransactionBuilder, group, contexts); err != nil {
+			if err := executeHandlers(&r.SimpleTransactionBuilder, group, contexts...); err != nil {
 				return nil, err
 			}
 		}
@@ -207,7 +207,7 @@ func (r *SudtTransactionBuilder) Build(contexts ...interface{}) (*transaction.Tr
 				return nil, err
 			}
 			group.InputIndices = append(group.InputIndices, uint32(i))
-			if err := executeHandlers(&r.SimpleTransactionBuilder, group, contexts); err != nil {
+			if err := executeHandlers(&r.SimpleTransactionBuilder, group, contexts...); err != nil {
 				return nil, err
 			}
 		}

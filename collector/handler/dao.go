@@ -91,6 +91,7 @@ func (r *DaoScriptHandler) BuildTransaction(builder collector.TransactionBuilder
 			withdrawInfo = &v
 		}
 		builder.AddHeaderDep(withdrawInfo.DepositBlockHash)
+	default:
 	}
 	return true, nil
 }
