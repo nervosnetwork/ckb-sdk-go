@@ -95,12 +95,22 @@ func (r *Secp256k1Blake160MultisigAllScriptHandler) BuildTransaction(builder col
 	if group == nil || !r.isMatched(group.Script) {
 		return false, nil
 	}
-	multisigScript, ok := context.(signer.MultisigScript)
-	if !ok {
+	var lock []byte
+	switch context.(type) {
+	case signer.MultisigScript, *signer.MultisigScript:
+		var (
+			multisigScript *signer.MultisigScript
+			ok             bool
+		)
+		if multisigScript, ok = context.(*signer.MultisigScript); !ok {
+			v, _ := context.(signer.MultisigScript)
+			multisigScript = &v
+		}
+		lock = multisigScript.WitnessPlaceholderInLock()
+	default:
 		return false, nil
 	}
 	index := group.InputIndices[0]
-	lock := multisigScript.WitnessPlaceholderInLock()
 	if err := builder.SetWitness(uint(index), types.WitnessTypeLock, lock[:]); err != nil {
 		return false, err
 	}
