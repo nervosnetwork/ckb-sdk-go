@@ -77,6 +77,9 @@ func getOrPutScriptGroup(m map[types.Hash]*transaction.ScriptGroup, script *type
 }
 
 func executeHandlers(s *SimpleTransactionBuilder, group *transaction.ScriptGroup, contexts ...interface{}) error {
+	if len(contexts) == 0 {
+		contexts = append(contexts, nil)
+	}
 	for _, v := range s.ScriptHandlers {
 		for _, c := range contexts {
 			if _, err := v.BuildTransaction(s, group, c); err != nil {
