@@ -134,12 +134,8 @@ func (r *SudtTransactionBuilder) Build(contexts ...interface{}) (*transaction.Tr
 	if r.SudtType == nil {
 		return nil, errors.New("sudt type is not set")
 	}
-	// TODO: check transactionType not set
-	//if r.transactionType == "" {
-	//
-	//}
 
-	// If transaction type is issue, we need the change output to receive sudt
+	// If transaction type is SudtTransactionTypeTransfer, we need the change output to receive SUDT
 	if r.transactionType == SudtTransactionTypeTransfer {
 		r.Outputs[r.changeOutputIndex].Type = r.SudtType
 		r.OutputsData[r.changeOutputIndex] = utils.GenerateSudtAmount(big.NewInt(0))
