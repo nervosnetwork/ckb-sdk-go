@@ -120,7 +120,7 @@ type Transaction struct {
 }
 
 func (t *Transaction) ComputeHash() (Hash, error) {
-	data := t.Serialize()
+	data := t.SerializeWithoutWitnesses()
 
 	hash, err := blake2b.Blake256(data)
 	if err != nil {
@@ -131,7 +131,7 @@ func (t *Transaction) ComputeHash() (Hash, error) {
 }
 
 func (t *Transaction) SizeInBlock() uint64 {
-	b := t.SerializeWithWitness()
+	b := t.Serialize()
 	size := uint64(len(b)) + 4 // add header size
 	return size
 }

@@ -44,12 +44,11 @@ func (d *CellDep) Serialize() []byte {
 	return d.Pack().AsSlice()
 }
 
-// Serialize transaction
-func (t *Transaction) Serialize() []byte {
+func (t *Transaction) SerializeWithoutWitnesses() []byte {
 	return t.PackToRawTransaction().AsSlice()
 }
 
-func (t *Transaction) SerializeWithWitness() []byte {
+func (t *Transaction) Serialize() []byte {
 	return t.Pack().AsSlice()
 }
 
