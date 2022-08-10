@@ -14,6 +14,23 @@ func (r *WitnessArgs) Pack() *molecule.WitnessArgs {
 	return &b
 }
 
+func UnpackWitnessArgs(v *molecule.WitnessArgs) *WitnessArgs {
+	w := &WitnessArgs{}
+	if v.Lock().IsSome() {
+		b, _ := v.Lock().IntoBytes()
+		w.Lock = b.RawData()
+	}
+	if v.InputType().IsSome() {
+		b, _ := v.InputType().IntoBytes()
+		w.InputType = b.RawData()
+	}
+	if v.OutputType().IsSome() {
+		b, _ := v.OutputType().IntoBytes()
+		w.OutputType = b.RawData()
+	}
+	return w
+}
+
 func (r *Transaction) PackToRawTransaction() *molecule.RawTransaction {
 	builder := molecule.NewRawTransactionBuilder()
 	builder.Version(*PackUint32(uint32(r.Version)))
