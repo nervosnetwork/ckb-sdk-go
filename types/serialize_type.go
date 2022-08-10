@@ -49,6 +49,10 @@ func (t *Transaction) Serialize() []byte {
 	return t.PackToRawTransaction().AsSlice()
 }
 
+func (t *Transaction) SerializeWithWitness() []byte {
+	return t.Pack().AsSlice()
+}
+
 func (w *WitnessArgs) Serialize() []byte {
 	return w.Pack().AsSlice()
 }

@@ -219,10 +219,7 @@ func (r *SudtTransactionBuilder) Build(contexts ...interface{}) (*transaction.Tr
 
 		tx := r.BuildTransaction().TxView
 		// check if there is enough capacity for output capacity and change
-		fee, err := transaction.CalculateTransactionFee(tx, uint64(r.FeeRate))
-		if err != nil {
-			return nil, err
-		}
+		fee := transaction.CalculateTransactionFee(tx, uint64(r.FeeRate))
 		if inputsCapacity < (outputsCapacity + fee) {
 			continue
 		}

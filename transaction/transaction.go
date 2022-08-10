@@ -248,14 +248,11 @@ func SingleSegmentSignTransaction(transaction *types.Transaction, start int, end
 	return nil
 }
 
-func CalculateTransactionFee(tx *types.Transaction, feeRate uint64) (uint64, error) {
-	txSize, err := tx.SizeInBlock()
-	if err != nil {
-		return 0, err
-	}
+func CalculateTransactionFee(tx *types.Transaction, feeRate uint64) uint64 {
+	txSize := tx.SizeInBlock()
 	fee := txSize * feeRate / 1000
 	if fee*1000 < txSize*feeRate {
 		fee += 1
 	}
-	return fee, nil
+	return fee
 }

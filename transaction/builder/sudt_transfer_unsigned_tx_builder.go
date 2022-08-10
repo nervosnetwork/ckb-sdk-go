@@ -130,13 +130,10 @@ func (s *SudtTransferUnsignedTxBuilder) UpdateChangeOutput() error {
 	}
 
 	// then update ckb change output
-	fee, err := transaction.CalculateTransactionFee(s.tx, s.FeeRate)
-	if err != nil {
-		return err
-	}
+	fee := transaction.CalculateTransactionFee(s.tx, s.FeeRate)
 	changeCapacity := s.result.Capacity - s.tx.OutputsCapacity() - fee
 	s.tx.Outputs[s.ckbChangeOutputIndex.Value].Capacity = changeCapacity
-	err = s.generateGroups()
+	err := s.generateGroups()
 	if err != nil {
 		return err
 	}
@@ -259,10 +256,7 @@ func (s *SudtTransferUnsignedTxBuilder) isCkbEnough() (bool, error) {
 	outputsCapacity := big.NewInt(0).SetUint64(s.tx.OutputsCapacity())
 	changeCapacity := big.NewInt(0).Sub(inputsCapacity, outputsCapacity)
 	if changeCapacity.Cmp(big.NewInt(0)) > 0 {
-		fee, err := transaction.CalculateTransactionFee(s.tx, s.FeeRate)
-		if err != nil {
-			return false, err
-		}
+		fee := transaction.CalculateTransactionFee(s.tx, s.FeeRate)
 		changeCapacity = big.NewInt(0).Sub(changeCapacity, big.NewInt(0).SetUint64(fee))
 		changeOutput := s.tx.Outputs[s.ckbChangeOutputIndex.Value]
 		changeOutputData := s.tx.OutputsData[s.ckbChangeOutputIndex.Value]

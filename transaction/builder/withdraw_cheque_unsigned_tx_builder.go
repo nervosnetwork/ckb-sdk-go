@@ -210,13 +210,10 @@ func (b *WithdrawChequesUnsignedTxBuilder) UpdateChangeOutput() error {
 	b.tx.OutputsData[b.sUDTChangeOutputIndex.Value] = utils.GenerateSudtAmount(totalAmount)
 
 	// then update ckb change output
-	fee, err := transaction.CalculateTransactionFee(b.tx, b.FeeRate)
-	if err != nil {
-		return err
-	}
+	fee := transaction.CalculateTransactionFee(b.tx, b.FeeRate)
 	changeCapacity := b.result.Capacity - b.tx.OutputsCapacity() - fee
 	b.tx.Outputs[b.ckbChangeOutputIndex.Value].Capacity = changeCapacity
-	err = b.generateGroups()
+	err := b.generateGroups()
 	if err != nil {
 		return err
 	}
@@ -232,10 +229,7 @@ func (b *WithdrawChequesUnsignedTxBuilder) isCkbEnough() (bool, error) {
 	outputsCapacity := big.NewInt(0).SetUint64(b.tx.OutputsCapacity())
 	changeCapacity := big.NewInt(0).Sub(inputsCapacity, outputsCapacity)
 	if changeCapacity.Cmp(big.NewInt(0)) > 0 {
-		fee, err := transaction.CalculateTransactionFee(b.tx, b.FeeRate)
-		if err != nil {
-			return false, err
-		}
+		fee := transaction.CalculateTransactionFee(b.tx, b.FeeRate)
 		changeCapacity = big.NewInt(0).Sub(changeCapacity, big.NewInt(0).SetUint64(fee))
 		changeOutput := b.tx.Outputs[b.ckbChangeOutputIndex.Value]
 		changeOutputData := b.tx.OutputsData[b.ckbChangeOutputIndex.Value]

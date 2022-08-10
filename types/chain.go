@@ -130,21 +130,10 @@ func (t *Transaction) ComputeHash() (Hash, error) {
 	return BytesToHash(hash), nil
 }
 
-func (t *Transaction) SizeInBlock() (uint64, error) {
-	// raw tx serialize
-	rawTxBytes := t.Serialize()
-
-	var witnessBytes [][]byte
-	for _, witness := range t.Witnesses {
-		witnessBytes = append(witnessBytes, SerializeBytes(witness))
-	}
-	witnessesBytes := SerializeDynVec(witnessBytes)
-	//tx serialize
-	txBytes := SerializeTable([][]byte{rawTxBytes, witnessesBytes})
-	txSize := uint64(len(txBytes))
-	// tx offset cost
-	txSize += 4
-	return txSize, nil
+func (t *Transaction) SizeInBlock() uint64 {
+	b := t.SerializeWithWitness()
+	size := uint64(len(b)) + 4 // add header size
+	return size
 }
 
 func (t *Transaction) OutputsCapacity() (totalCapacity uint64) {
