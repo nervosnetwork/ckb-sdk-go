@@ -6,6 +6,14 @@ import (
 	"github.com/nervosnetwork/ckb-sdk-go/molecule"
 )
 
+func SerializeUint32(n uint32) []byte {
+	return PackUint32(n).AsSlice()
+}
+
+func SerializeUint64(n uint64) []byte {
+	return PackUint64(n).AsSlice()
+}
+
 func (h Hash) Serialize() []byte {
 	return h.Pack().AsSlice()
 }
