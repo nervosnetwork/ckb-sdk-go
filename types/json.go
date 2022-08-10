@@ -218,6 +218,9 @@ func (t Transaction) MarshalJSON() ([]byte, error) {
 		OutputsData: toBytesArray(t.OutputsData),
 		Witnesses:   toBytesArray(t.Witnesses),
 	}
+	if jsonObj.HeaderDeps == nil {
+		jsonObj.HeaderDeps = make([]Hash, 0)
+	}
 	return json.Marshal(jsonObj)
 }
 

@@ -11,7 +11,6 @@ import (
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 	"github.com/nervosnetwork/ckb-sdk-go/utils"
 	"github.com/pkg/errors"
-	"math"
 	"math/big"
 )
 
@@ -292,7 +291,7 @@ func (b *ClaimChequesUnsignedTxBuilder) isCkbEnough() (bool, error) {
 		changeCapacity = big.NewInt(0).Sub(changeCapacity, big.NewInt(0).SetUint64(fee))
 		changeOutput := b.tx.Outputs[b.ckbChangeOutputIndex.Value]
 		changeOutputData := b.tx.OutputsData[b.ckbChangeOutputIndex.Value]
-		changeOutputCapacity := big.NewInt(0).SetUint64(changeOutput.OccupiedCapacity(changeOutputData) * uint64(math.Pow10(8)))
+		changeOutputCapacity := big.NewInt(0).SetUint64(changeOutput.OccupiedCapacity(changeOutputData))
 		if changeCapacity.Cmp(changeOutputCapacity) >= 0 {
 			return true, nil
 		} else {

@@ -8,7 +8,6 @@ import (
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 	"github.com/nervosnetwork/ckb-sdk-go/utils"
 	"github.com/pkg/errors"
-	"math"
 	"math/big"
 )
 
@@ -268,7 +267,7 @@ func (s *SudtTransferUnsignedTxBuilder) isCkbEnough() (bool, error) {
 		changeOutput := s.tx.Outputs[s.ckbChangeOutputIndex.Value]
 		changeOutputData := s.tx.OutputsData[s.ckbChangeOutputIndex.Value]
 
-		changeOutputCapacity := big.NewInt(0).SetUint64(changeOutput.OccupiedCapacity(changeOutputData) * uint64(math.Pow10(8)))
+		changeOutputCapacity := big.NewInt(0).SetUint64(changeOutput.OccupiedCapacity(changeOutputData))
 		if changeCapacity.Cmp(changeOutputCapacity) >= 0 {
 			return true, nil
 		} else {

@@ -171,7 +171,7 @@ func TestTransactionHashNotToMarshal(t *testing.T) {
 {
     "version": "0x0",
     "cell_deps": null,
-    "header_deps": null,
+    "header_deps": [],
     "inputs": null,
     "outputs": null,
     "outputs_data": [],
@@ -196,10 +196,10 @@ func TestTransactionHashToUnmarshal(t *testing.T) {
 	jsonText := []byte(`
 {
     "version": "0x0",
-    "cell_deps": null,
-    "header_deps": null,
-    "inputs": null,
-    "outputs": null,
+    "cell_deps": [],
+    "header_deps": [],
+    "inputs": [],
+    "outputs": [],
     "outputs_data": [],
     "witnesses": [],
 	"hash": "0xae02c44fb5b78b4b1bfc6097d89e0563da323e316ed0551091912d3ddf3f5a19"

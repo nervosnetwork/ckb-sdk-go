@@ -9,6 +9,7 @@ import (
 
 type Network uint
 type BuiltinScript uint
+type WitnessType uint
 
 const (
 	HashLength = 32
@@ -20,9 +21,13 @@ const (
 	BuiltinScriptSecp256k1Blake160MultisigAll
 	BuiltinScriptAnyoneCanPay
 	BuiltinScriptDao
-	BuiltinScriptSUDT
+	BuiltinScriptSudt
 	BuiltinScriptCheque
-	BuiltinScriptPWLock
+	BuiltinScriptPwLock
+
+	WitnessTypeLock WitnessType = iota
+	WitnessTypeInputType
+	WitnessTypeOutputType
 )
 
 var (
@@ -40,11 +45,11 @@ func GetCodeHash(script BuiltinScript, network Network) Hash {
 			return HexToHash("0xd369597ff47f29fbc0d47d2e3775370d1250b85140c670e4718af712983a2354")
 		case BuiltinScriptDao:
 			return HexToHash("0x82d76d1b75fe2fd9a27dfbaa65a039221a380d76c926f378d3f81cf3e7e13f2e")
-		case BuiltinScriptSUDT:
+		case BuiltinScriptSudt:
 			return HexToHash("0x5e7a36a77e68eecc013dfa2fe6a23f3b6c344b04005808694ae6dd45eea4cfd5")
 		case BuiltinScriptCheque:
 			return HexToHash("0xe4d4ecc6e5f9a059bf2f7a82cca292083aebc0c421566a52484fe2ec51a9fb0c")
-		case BuiltinScriptPWLock:
+		case BuiltinScriptPwLock:
 			return HexToHash("0xbf43c3602455798c1a61a596e0d95278864c552fafe231c063b3fabf97a8febc")
 		}
 	} else if network == NetworkTest {
@@ -57,11 +62,11 @@ func GetCodeHash(script BuiltinScript, network Network) Hash {
 			return HexToHash("0x3419a1c09eb2567f6552ee7a8ecffd64155cffe0f1796e6e61ec088d740c1356")
 		case BuiltinScriptDao:
 			return HexToHash("0x82d76d1b75fe2fd9a27dfbaa65a039221a380d76c926f378d3f81cf3e7e13f2e")
-		case BuiltinScriptSUDT:
+		case BuiltinScriptSudt:
 			return HexToHash("0xc5e5dcf215925f7ef4dfaf5f4b4f105bc321c02776d6e7d52a1db3fcd9d011a4")
 		case BuiltinScriptCheque:
 			return HexToHash("0x60d5f39efce409c587cb9ea359cefdead650ca128f0bd9cb3855348f98c70d5b")
-		case BuiltinScriptPWLock:
+		case BuiltinScriptPwLock:
 			return HexToHash("0x58c5f491aba6d61678b7cf7edf4910b1f5e00ec0cde2f42e0abb4fd9aff25a63")
 		}
 	}
