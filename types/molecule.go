@@ -124,7 +124,12 @@ func UnpackBytes(v *molecule.Bytes) []byte {
 }
 
 func PackBytes(v []byte) *molecule.Bytes {
-	return molecule.BytesFromSliceUnchecked(v)
+	builder := molecule.NewBytesBuilder()
+	for _, vv := range v {
+		builder.Push(*PackByte(vv))
+	}
+	b := builder.Build()
+	return &b
 }
 
 func PackBytesVec(v [][]byte) *molecule.BytesVec {
@@ -146,7 +151,8 @@ func PackBytesToOpt(v []byte) *molecule.BytesOpt {
 }
 
 func PackByte(v byte) *molecule.Byte {
-	return molecule.ByteFromSliceUnchecked([]byte{v})
+	b := molecule.NewByte(v)
+	return &b
 }
 
 func PackUint64(v uint64) *molecule.Uint64 {
