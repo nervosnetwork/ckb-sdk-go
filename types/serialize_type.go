@@ -3,6 +3,7 @@ package types
 import (
 	"errors"
 	"fmt"
+	"github.com/nervosnetwork/ckb-sdk-go/molecule"
 )
 
 func (h Hash) Serialize() []byte {
@@ -76,4 +77,12 @@ func DeserializeHashTypeByte(hashType byte) (ScriptHashType, error) {
 	default:
 		return "", errors.New(fmt.Sprintf("invalid script hash_type: %x", hashType))
 	}
+}
+
+func DeserializeWitnessArgs(in []byte) (*WitnessArgs, error) {
+	m, err := molecule.WitnessArgsFromSlice(in, false)
+	if err != nil {
+		return nil, err
+	}
+	return UnpackWitnessArgs(m), nil
 }
