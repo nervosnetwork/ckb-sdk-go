@@ -69,11 +69,7 @@ func (r *Script) OccupiedCapacity() uint64 {
 }
 
 func (r *Script) Hash() (Hash, error) {
-	data, err := r.Serialize()
-	if err != nil {
-		return Hash{}, err
-	}
-
+	data := r.Serialize()
 	hash, err := blake2b.Blake256(data)
 	if err != nil {
 		return Hash{}, err
@@ -124,10 +120,7 @@ type Transaction struct {
 }
 
 func (t *Transaction) ComputeHash() (Hash, error) {
-	data, err := t.Serialize()
-	if err != nil {
-		return Hash{}, err
-	}
+	data := t.Serialize()
 
 	hash, err := blake2b.Blake256(data)
 	if err != nil {
@@ -139,10 +132,7 @@ func (t *Transaction) ComputeHash() (Hash, error) {
 
 func (t *Transaction) SizeInBlock() (uint64, error) {
 	// raw tx serialize
-	rawTxBytes, err := t.Serialize()
-	if err != nil {
-		return 0, err
-	}
+	rawTxBytes := t.Serialize()
 
 	var witnessBytes [][]byte
 	for _, witness := range t.Witnesses {

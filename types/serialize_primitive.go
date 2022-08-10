@@ -26,21 +26,6 @@ func SerializeUint64(n uint64) []byte {
 	return b
 }
 
-// SerializeArray serialize array
-func SerializeArray(items []Serializer) ([][]byte, error) {
-	ret := make([][]byte, len(items))
-	for i := 0; i < len(items); i++ {
-		data, err := items[i].Serialize()
-		if err != nil {
-			return nil, err
-		}
-
-		ret[i] = data
-	}
-
-	return ret, nil
-}
-
 // SerializeStruct serialize struct
 func SerializeStruct(fields [][]byte) []byte {
 	b := new(bytes.Buffer)
@@ -172,11 +157,11 @@ func SerializeTable(fields [][]byte) []byte {
 
 // SerializeOption serialize option
 func SerializeOption(o Serializer) ([]byte, error) {
-	if o == nil || reflect.ValueOf(o).IsNil() {
-		return []byte{}, nil
-	}
-
-	return o.Serialize()
+	return nil, nil
+	//if o == nil || reflect.ValueOf(o).IsNil() {
+	//	return []byte{}, nil
+	//}
+	//return o.Serialize()
 }
 
 // SerializeOption serialize option
