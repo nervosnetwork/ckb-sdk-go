@@ -22,32 +22,26 @@ func (t ScriptHashType) Serialize() []byte {
 	return t.Pack().AsSlice()
 }
 
-// Serialize dep type
 func (t DepType) Serialize() []byte {
 	return t.Pack().AsSlice()
 }
 
-// Serialize script
 func (r *Script) Serialize() []byte {
 	return r.Pack().AsSlice()
 }
 
-// Serialize outpoint
 func (r *OutPoint) Serialize() []byte {
 	return r.Pack().AsSlice()
 }
 
-// Serialize cell input
 func (r *CellInput) Serialize() []byte {
 	return r.Pack().AsSlice()
 }
 
-// Serialize cell output
 func (r *CellOutput) Serialize() []byte {
 	return r.Pack().AsSlice()
 }
 
-// Serialize cell dep
 func (d *CellDep) Serialize() []byte {
 	return d.Pack().AsSlice()
 }
