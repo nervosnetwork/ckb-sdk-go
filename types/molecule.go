@@ -89,7 +89,7 @@ func (t DepType) Pack() *molecule.Byte {
 	case DepTypeDepGroup:
 		b = 0x01
 	default:
-		panic("invalid dep type")
+		return nil
 	}
 	return PackByte(b)
 }
@@ -202,7 +202,7 @@ func (t ScriptHashType) Pack() *molecule.Byte {
 	case HashTypeData1:
 		b = 0x02
 	default:
-		panic("invalid script hash type")
+		return nil
 	}
 	return PackByte(b)
 }
