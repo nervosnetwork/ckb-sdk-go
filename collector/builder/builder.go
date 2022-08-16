@@ -130,9 +130,7 @@ func (r *SimpleTransactionBuilder) SetWitness(index uint, witnessType types.Witn
 	default:
 		return errors.New("unknown data type " + strconv.Itoa(int(witnessType)))
 	}
-	if w, err = wArgs.Serialize(); err != nil {
-		return err
-	}
+	w = wArgs.Serialize()
 	r.Witnesses[index] = w
 	return nil
 }

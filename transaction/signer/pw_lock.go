@@ -53,9 +53,7 @@ func PWLockSignTransaction(tx *types.Transaction, group *transaction.ScriptGroup
 		return false, err
 	}
 	witnessArgs.Lock = signature
-	if tx.Witnesses[i], err = witnessArgs.Serialize(); err != nil {
-		return false, err
-	}
+	tx.Witnesses[i] = witnessArgs.Serialize()
 	return true, nil
 }
 

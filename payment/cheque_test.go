@@ -145,12 +145,9 @@ func mockUnsignedIssuingChequeTx(senderAddr, receiverAddr, totalAmount, transfer
 		},
 	})
 	tx.Witnesses = append(tx.Witnesses, transaction.Secp256k1EmptyWitnessArgPlaceholder, []byte{})
-	fee, err := transaction.CalculateTransactionFee(tx, feeRate)
+	fee := transaction.CalculateTransactionFee(tx, feeRate)
 	changeCapacity := uint64((1142-162-142)*math.Pow10(8)) - fee
 	tx.Outputs[1].Capacity = changeCapacity
-	if err != nil {
-		return nil
-	}
 	return tx
 }
 
