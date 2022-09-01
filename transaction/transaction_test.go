@@ -65,7 +65,7 @@ func TestSingleSignTransaction(t *testing.T) {
 			{
 				Capacity: 1000000000000,
 				Lock: &types.Script{
-					CodeHash: systemScripts.SecpSingleSigCell.CellHash,
+					CodeHash: systemScripts.SecpSingleSigCell.CodeHash,
 					HashType: systemScripts.SecpSingleSigCell.HashType,
 					Args:     common.FromHex("0x6d217d56cd45d321f64d3f38a2b21a41dbb23aa0"),
 				},
@@ -73,7 +73,7 @@ func TestSingleSignTransaction(t *testing.T) {
 			{
 				Capacity: 499999999000,
 				Lock: &types.Script{
-					CodeHash: systemScripts.SecpSingleSigCell.CellHash,
+					CodeHash: systemScripts.SecpSingleSigCell.CodeHash,
 					HashType: systemScripts.SecpSingleSigCell.HashType,
 					Args:     common.FromHex("0x6d217d56cd45d321f64d3f38a2b21a41dbb23aa0"),
 				},

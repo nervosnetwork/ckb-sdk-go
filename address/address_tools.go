@@ -55,7 +55,7 @@ func ValidateChequeAddress(addr string, systemScripts *utils.SystemScripts) (*Ad
 }
 
 func isSecp256k1Lock(parsedSenderAddr *Address, systemScripts *utils.SystemScripts) bool {
-	return parsedSenderAddr.Script.CodeHash == systemScripts.SecpSingleSigCell.CellHash &&
+	return parsedSenderAddr.Script.CodeHash == systemScripts.SecpSingleSigCell.CodeHash &&
 		parsedSenderAddr.Script.HashType == systemScripts.SecpSingleSigCell.HashType &&
 		len(parsedSenderAddr.Script.Args) == 20
 }

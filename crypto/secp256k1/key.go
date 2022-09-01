@@ -47,7 +47,7 @@ func (k *Secp256k1Key) Script(systemScripts *utils.SystemScripts) (*types.Script
 	}
 
 	return &types.Script{
-		CodeHash: systemScripts.SecpSingleSigCell.CellHash,
+		CodeHash: systemScripts.SecpSingleSigCell.CodeHash,
 		HashType: types.HashTypeType,
 		Args:     args,
 	}, nil

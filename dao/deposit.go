@@ -50,7 +50,7 @@ func (d *Deposit) AddDaoOutput(scripts *utils.SystemScripts, lock *types.Script,
 		Capacity: amount,
 		Lock:     lock,
 		Type: &types.Script{
-			CodeHash: scripts.DaoCell.CellHash,
+			CodeHash: scripts.DaoCell.CodeHash,
 			HashType: types.HashTypeType,
 			Args:     []byte{},
 		},
