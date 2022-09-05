@@ -1,3 +1,16 @@
+# 2.0.1 (2022-09-05)
+
+## 🚀 Features
+
+- feat: implement transaction builder and script handlers mechanism (#149)
+- feat: adopt molecule generator (#150)
+
+## 🧰 Maintenance
+
+- fix: update indexer missing fields (#147)
+- chore: clean deprecated payment example (#151)
+- chore: add RPC test (#152)
+
 # 2.0.0 (2022-07-18)
 
 2.0.0 is a refactored ckb-sdk-go release and brings plenty of BREAKING CHANGES compared with `v1.0.*` and the earlier releases.
