@@ -21,8 +21,8 @@ type SystemScriptCell struct {
 	DepType  types.DepType
 }
 
-var mainnetcontracts map[types.BuiltinScript]*SystemScriptCell
-var testnetContracts map[types.BuiltinScript]*SystemScriptCell
+var mainnetContracts = make(map[types.BuiltinScript]*SystemScriptCell)
+var testnetContracts = make(map[types.BuiltinScript]*SystemScriptCell)
 
 func init() {
 	initMainnetSystemScript()
@@ -30,7 +30,7 @@ func init() {
 }
 
 func initMainnetSystemScript() {
-	mainnetcontracts[types.BuiltinScriptSecp256k1Blake160SighashAll] = &SystemScriptCell{
+	mainnetContracts[types.BuiltinScriptSecp256k1Blake160SighashAll] = &SystemScriptCell{
 		CodeHash: types.HexToHash("0x9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8"),
 		HashType: types.HashTypeType,
 		OutPoint: &types.OutPoint{
@@ -39,7 +39,7 @@ func initMainnetSystemScript() {
 		},
 		DepType: types.DepTypeDepGroup,
 	}
-	mainnetcontracts[types.BuiltinScriptSecp256k1Blake160MultisigAll] = &SystemScriptCell{
+	mainnetContracts[types.BuiltinScriptSecp256k1Blake160MultisigAll] = &SystemScriptCell{
 		CodeHash: types.HexToHash("0x5c5069eb0857efc65e1bca0c07df34c31663b3622fd3876c876320fc9634e2a8"),
 		HashType: types.HashTypeType,
 		OutPoint: &types.OutPoint{
@@ -48,7 +48,7 @@ func initMainnetSystemScript() {
 		},
 		DepType: types.DepTypeDepGroup,
 	}
-	mainnetcontracts[types.BuiltinScriptDao] = &SystemScriptCell{
+	mainnetContracts[types.BuiltinScriptDao] = &SystemScriptCell{
 		CodeHash: types.HexToHash("0x82d76d1b75fe2fd9a27dfbaa65a039221a380d76c926f378d3f81cf3e7e13f2e"),
 		HashType: types.HashTypeType,
 		OutPoint: &types.OutPoint{
@@ -57,7 +57,7 @@ func initMainnetSystemScript() {
 		},
 		DepType: types.DepTypeCode,
 	}
-	mainnetcontracts[types.BuiltinScriptSudt] = &SystemScriptCell{
+	mainnetContracts[types.BuiltinScriptSudt] = &SystemScriptCell{
 		CodeHash: types.HexToHash("0x5e7a36a77e68eecc013dfa2fe6a23f3b6c344b04005808694ae6dd45eea4cfd5"),
 		HashType: types.HashTypeType,
 		OutPoint: &types.OutPoint{
@@ -66,7 +66,7 @@ func initMainnetSystemScript() {
 		},
 		DepType: types.DepTypeCode,
 	}
-	mainnetcontracts[types.BuiltinScriptCheque] = &SystemScriptCell{
+	mainnetContracts[types.BuiltinScriptCheque] = &SystemScriptCell{
 		CodeHash: types.HexToHash("0xe4d4ecc6e5f9a059bf2f7a82cca292083aebc0c421566a52484fe2ec51a9fb0c"),
 		HashType: types.HashTypeType,
 		OutPoint: &types.OutPoint{
@@ -75,7 +75,7 @@ func initMainnetSystemScript() {
 		},
 		DepType: types.DepTypeDepGroup,
 	}
-	mainnetcontracts[types.BuiltinScriptAnyoneCanPay] = &SystemScriptCell{
+	mainnetContracts[types.BuiltinScriptAnyoneCanPay] = &SystemScriptCell{
 		CodeHash: types.HexToHash("0xd369597ff47f29fbc0d47d2e3775370d1250b85140c670e4718af712983a2354"),
 		HashType: types.HashTypeType,
 		OutPoint: &types.OutPoint{
@@ -84,7 +84,7 @@ func initMainnetSystemScript() {
 		},
 		DepType: types.DepTypeDepGroup,
 	}
-	mainnetcontracts[types.BuiltinScriptPwLock] = &SystemScriptCell{
+	mainnetContracts[types.BuiltinScriptPwLock] = &SystemScriptCell{
 		CodeHash: types.HexToHash("0xbf43c3602455798c1a61a596e0d95278864c552fafe231c063b3fabf97a8febc"),
 		HashType: types.HashTypeType,
 		OutPoint: &types.OutPoint{
@@ -95,7 +95,7 @@ func initMainnetSystemScript() {
 	}
 }
 func initTestnetSystemScript() {
-	mainnetcontracts[types.BuiltinScriptSecp256k1Blake160SighashAll] = &SystemScriptCell{
+	mainnetContracts[types.BuiltinScriptSecp256k1Blake160SighashAll] = &SystemScriptCell{
 		CodeHash: types.HexToHash("0x9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8"),
 		HashType: types.HashTypeType,
 		OutPoint: &types.OutPoint{
@@ -104,7 +104,7 @@ func initTestnetSystemScript() {
 		},
 		DepType: types.DepTypeDepGroup,
 	}
-	mainnetcontracts[types.BuiltinScriptSecp256k1Blake160MultisigAll] = &SystemScriptCell{
+	mainnetContracts[types.BuiltinScriptSecp256k1Blake160MultisigAll] = &SystemScriptCell{
 		CodeHash: types.HexToHash("0x5c5069eb0857efc65e1bca0c07df34c31663b3622fd3876c876320fc9634e2a8"),
 		HashType: types.HashTypeType,
 		OutPoint: &types.OutPoint{
@@ -113,7 +113,7 @@ func initTestnetSystemScript() {
 		},
 		DepType: types.DepTypeDepGroup,
 	}
-	mainnetcontracts[types.BuiltinScriptDao] = &SystemScriptCell{
+	mainnetContracts[types.BuiltinScriptDao] = &SystemScriptCell{
 		CodeHash: types.HexToHash("0x82d76d1b75fe2fd9a27dfbaa65a039221a380d76c926f378d3f81cf3e7e13f2e"),
 		HashType: types.HashTypeType,
 		OutPoint: &types.OutPoint{
@@ -122,7 +122,7 @@ func initTestnetSystemScript() {
 		},
 		DepType: types.DepTypeCode,
 	}
-	mainnetcontracts[types.BuiltinScriptSudt] = &SystemScriptCell{
+	mainnetContracts[types.BuiltinScriptSudt] = &SystemScriptCell{
 		CodeHash: types.HexToHash("0xc5e5dcf215925f7ef4dfaf5f4b4f105bc321c02776d6e7d52a1db3fcd9d011a4"),
 		HashType: types.HashTypeType,
 		OutPoint: &types.OutPoint{
@@ -131,7 +131,7 @@ func initTestnetSystemScript() {
 		},
 		DepType: types.DepTypeCode,
 	}
-	mainnetcontracts[types.BuiltinScriptCheque] = &SystemScriptCell{
+	mainnetContracts[types.BuiltinScriptCheque] = &SystemScriptCell{
 		CodeHash: types.HexToHash("0x60d5f39efce409c587cb9ea359cefdead650ca128f0bd9cb3855348f98c70d5b"),
 		HashType: types.HashTypeType,
 		OutPoint: &types.OutPoint{
@@ -140,7 +140,7 @@ func initTestnetSystemScript() {
 		},
 		DepType: types.DepTypeDepGroup,
 	}
-	mainnetcontracts[types.BuiltinScriptAnyoneCanPay] = &SystemScriptCell{
+	mainnetContracts[types.BuiltinScriptAnyoneCanPay] = &SystemScriptCell{
 		CodeHash: types.HexToHash("0x3419a1c09eb2567f6552ee7a8ecffd64155cffe0f1796e6e61ec088d740c1356"),
 		HashType: types.HashTypeType,
 		OutPoint: &types.OutPoint{
@@ -149,7 +149,7 @@ func initTestnetSystemScript() {
 		},
 		DepType: types.DepTypeDepGroup,
 	}
-	mainnetcontracts[types.BuiltinScriptPwLock] = &SystemScriptCell{
+	mainnetContracts[types.BuiltinScriptPwLock] = &SystemScriptCell{
 		CodeHash: types.HexToHash("0x58c5f491aba6d61678b7cf7edf4910b1f5e00ec0cde2f42e0abb4fd9aff25a63"),
 		HashType: types.HashTypeType,
 		OutPoint: &types.OutPoint{
@@ -163,7 +163,7 @@ func initTestnetSystemScript() {
 func GetSystemScriptInfo(network types.Network, script types.BuiltinScript) *SystemScriptCell {
 	switch network {
 	case types.NetworkMain:
-		return mainnetcontracts[script]
+		return mainnetContracts[script]
 	case types.NetworkTest:
 		return testnetContracts[script]
 	default:
