@@ -2,220 +2,277 @@ package rpc
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
+	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
-	"testing"
-
-	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
-
-	mockRpc "github.com/nervosnetwork/ckb-sdk-go/test/mock/rpc"
+	"testing"
 )
 
-func TestGetTipBlockNumber(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
+var testClient, _ = DialContext(context.Background(), "https://testnet.ckb.dev")
+var ctx = context.Background()
 
-	mc := mockRpc.NewMockClient(ctrl)
-
-	mc.
-		EXPECT().
-		GetTipBlockNumber(gomock.Any()).
-		Return(uint64(100), nil).
-		AnyTimes()
-
-	num, err := mc.GetTipBlockNumber(context.Background())
-
-	assert.Nil(t, err, "get tip block number error")
-	assert.Equal(t, uint64(100), num)
+func assertEqualHexBytes(t *testing.T, a string, b []byte) {
+	a1, err := hexutil.Decode(a)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.Equal(t, a1, b)
 }
 
-func TestSyncState(t *testing.T) {
-	if testing.Short() {
-		t.Skip("Skip use cases that require node access at ci")
+func TestClient_GetBlockByNumber(t *testing.T) {
+	block, err := testClient.GetBlockByNumber(ctx, 1)
+	if err != nil {
+		t.Fatal(err)
 	}
-
-	api, _ := Dial("http://localhost:8114")
-	syncState, err := api.SyncState(context.Background())
-	assert.Nil(t, err)
-
-	json, err := json.Marshal(syncState)
-	assert.Nil(t, err)
-	fmt.Println(string(json))
+	assert.Equal(t, 1, len(block.Transactions))
 }
 
-func TestGetTransactionProof(t *testing.T) {
-	if testing.Short() {
-		t.Skip("Skip use cases that require node access at ci")
+func TestClient_GetBlockHash(t *testing.T) {
+	blockHash, err := testClient.GetBlockHash(ctx, 1)
+	if err != nil {
+		t.Fatal(err)
 	}
-
-	api := getApi()
-
-	proof, err := api.GetTransactionProof(context.Background(), []string{"0xc9ae96ff99b48e755ccdb350a69591ba80877be3d6c67ac9660bb9a0c52dc3d6"}, nil)
-	assert.Nil(t, err)
-
-	marshal, err := json.Marshal(proof)
-	assert.Nil(t, err)
-	fmt.Println(string(marshal))
+	assertEqualHexBytes(t,
+		"0xd5ac7cf8c34a975bf258a34f1c2507638487ab71aa4d10a9ec73704aa3abf9cd",
+		blockHash.Bytes())
 }
 
-func TestGetTransactionProofByBlockHash(t *testing.T) {
-	if testing.Short() {
-		t.Skip("Skip use cases that require node access at ci")
+func TestClient_GetBlockEconomicState(t *testing.T) {
+	blockEconomicState, err := testClient.GetBlockEconomicState(ctx,
+		types.HexToHash("0xd5ac7cf8c34a975bf258a34f1c2507638487ab71aa4d10a9ec73704aa3abf9cd"))
+	if err != nil {
+		t.Fatal(err)
 	}
-
-	api := getApi()
-	hash := types.HexToHash("0x36038509b555c8acf360175b9bc4f67bd68be02b152f4a9d1131a424fffd8d23")
-	proof, err := api.GetTransactionProof(context.Background(), []string{"0xc9ae96ff99b48e755ccdb350a69591ba80877be3d6c67ac9660bb9a0c52dc3d6"}, &hash)
-	assert.Nil(t, err)
-
-	marshal, err := json.Marshal(proof)
-	assert.Nil(t, err)
-	fmt.Println(string(marshal))
+	assert.Equal(t, uint64(9207601095), blockEconomicState.MinerReward.Secondary)
 }
 
-func TestVerifyTransactionProof(t *testing.T) {
-	if testing.Short() {
-		t.Skip("Skip use cases that require node access at ci")
+func TestClient_GetBlock(t *testing.T) {
+	block, err := testClient.GetBlock(ctx,
+		types.HexToHash("0xd5ac7cf8c34a975bf258a34f1c2507638487ab71aa4d10a9ec73704aa3abf9cd"))
+	if err != nil {
+		t.Fatal(err)
 	}
-
-	api := getApi()
-
-	proof := &types.TransactionProof{
-		Proof: &types.Proof{
-			Indices: []uint{2},
-			Lemmas:  []types.Hash{types.HexToHash("0x705d0774a1f870c1e92571e9db806bd85c0ac7f26015f3d6c7b822f7616c1fb4")},
-		},
-		BlockHash:     types.HexToHash("0x36038509b555c8acf360175b9bc4f67bd68be02b152f4a9d1131a424fffd8d23"),
-		WitnessesRoot: types.HexToHash("0x56431856ad780db4cc1181c44b3fddf596380f1e21fb1c0b31db6deca2892c75"),
-	}
-
-	json, err := json.Marshal(proof)
-	assert.Nil(t, err)
-	fmt.Println(string(json))
-
-	result, err := api.VerifyTransactionProof(context.Background(), proof)
-
-	fmt.Println(result)
+	assert.Equal(t, 1, len(block.Transactions))
+	assert.NotNil(t, block.Header)
 }
 
-func TestSetNetworkActive(t *testing.T) {
-	if testing.Short() {
-		t.Skip("Skip use cases that require node access at ci")
+func TestClient_GetTransaction(t *testing.T) {
+	txView, err := testClient.GetTransaction(ctx,
+		types.HexToHash("0x8277d74d33850581f8d843613ded0c2a1722dec0e87e748f45c115dfb14210f1"))
+	if err != nil {
+		t.Fatal(err)
 	}
-
-	api := getApi()
-	err := api.SetNetworkActive(context.Background(), true)
-	assert.Nil(t, err)
+	tx := txView.Transaction
+	assert.Equal(t, 4, len(tx.CellDeps))
+	assert.Equal(t, 1, len(tx.Inputs))
+	assert.Equal(t, 3, len(tx.Outputs))
+	assert.Equal(t, uint64(30000000000), tx.Outputs[0].Capacity)
 }
 
-func TestClearBannedAddresses(t *testing.T) {
-	if testing.Short() {
-		t.Skip("Skip use cases that require node access at ci")
+func TestClient_GetTipHeader(t *testing.T) {
+	header, err := testClient.GetTipHeader(ctx)
+	if err != nil {
+		t.Fatal(err)
 	}
-
-	api := getApi()
-	err := api.ClearBannedAddresses(context.Background())
-	assert.Nil(t, err)
+	assert.NotEqual(t, uint64(0), header.Number)
+	assert.NotEqual(t, uint(0), header.CompactTarget)
 }
 
-func TestAddNode(t *testing.T) {
-	if testing.Short() {
-		t.Skip("Skip use cases that require node access at ci")
+func TestClient_GetTipBlockNumber(t *testing.T) {
+	blockNumber, err := testClient.GetTipBlockNumber(ctx)
+	if err != nil {
+		t.Fatal(err)
 	}
-
-	api := getApi()
-	err := api.AddNode(context.Background(), "QmUsZHPbjjzU627UZFt4k8j6ycEcNvXRnVGxCPKqwbAfQS", "/ip4/192.168.2.100/tcp/8114")
-	assert.Nil(t, err)
+	assert.NotEqual(t, uint64(0), blockNumber)
 }
 
-func TestRemoveNode(t *testing.T) {
-	if testing.Short() {
-		t.Skip("Skip use cases that require node access at ci")
+func TestClient_GetCurrentEpoch(t *testing.T) {
+	epoch, err := testClient.GetCurrentEpoch(ctx)
+	if err != nil {
+		t.Fatal(err)
 	}
-
-	api := getApi()
-	err := api.RemoveNode(context.Background(), "QmUsZHPbjjzU627UZFt4k8j6ycEcNvXRnVGxCPKqwbAfQS")
-	assert.Nil(t, err)
+	assert.NotEqual(t, uint64(0), epoch.Number)
+	assert.NotEqual(t, uint64(0), epoch.CompactTarget)
 }
 
-func TestPingPeers(t *testing.T) {
-	if testing.Short() {
-		t.Skip("Skip use cases that require node access at ci")
+func TestClient_GetEpochByNumber(t *testing.T) {
+	epoch, err := testClient.GetEpochByNumber(ctx, 2)
+	if err != nil {
+		t.Fatal(err)
 	}
-
-	api := getApi()
-	err := api.PingPeers(context.Background())
-	assert.Nil(t, err)
+	assert.Equal(t, uint64(1500), epoch.StartNumber)
+	assert.Equal(t, uint64(500945247), epoch.CompactTarget)
 }
 
-func TestGetRawTxPool(t *testing.T) {
-	if testing.Short() {
-		t.Skip("Skip use cases that require node access at ci")
+func TestClient_GetHeader(t *testing.T) {
+	header, err := testClient.GetHeader(ctx,
+		types.HexToHash("0xd5ac7cf8c34a975bf258a34f1c2507638487ab71aa4d10a9ec73704aa3abf9cd"))
+	if err != nil {
+		t.Fatal(err)
 	}
-
-	api := getApi()
-	pool, err := api.GetRawTxPool(context.Background())
-	assert.Nil(t, err)
-
-	json, err := json.Marshal(pool)
-	assert.Nil(t, err)
-
-	fmt.Println(len(pool.Pending))
-	fmt.Println(len(pool.Proposed))
-
-	fmt.Println(string(json))
+	assert.Equal(t, uint64(1), header.Number)
+	assert.Equal(t, uint64(1590137711584), header.Timestamp)
 }
 
-func TestClearTxPool(t *testing.T) {
-	if testing.Short() {
-		t.Skip("Skip use cases that require node access at ci")
+func TestClient_GetHeaderByNumber(t *testing.T) {
+	header, err := testClient.GetHeaderByNumber(ctx, 1)
+	if err != nil {
+		t.Fatal(err)
 	}
-
-	api := getApi()
-
-	pool, err := api.GetRawTxPool(context.Background())
-	assert.Nil(t, err)
-	fmt.Println(len(pool.Pending))
-	fmt.Println(len(pool.Proposed))
-
-	err2 := api.ClearTxPool(context.Background())
-	assert.Nil(t, err2)
-
-	pool, err3 := api.GetRawTxPool(context.Background())
-	assert.Nil(t, err3)
-	fmt.Println(len(pool.Pending))
-	fmt.Println(len(pool.Proposed))
+	assert.Equal(t, uint64(1), header.Number)
+	assert.Equal(t, uint64(1590137711584), header.Timestamp)
 }
 
-func TestGetBlockMedianTime(t *testing.T) {
-	if testing.Short() {
-		t.Skip("Skip use cases that require node access at ci")
+func TestClient_GetConsensus(t *testing.T) {
+	consensus, err := testClient.GetConsensus(ctx)
+	if err != nil {
+		t.Fatal(err)
 	}
-
-	api := getApi()
-	time, err := api.GetBlockMedianTime(context.Background(), types.HexToHash("0xa5f5c85987a15de25661e5a214f2c1449cd803f071acc7999820f25246471f40"))
-	assert.Nil(t, err)
-
-	fmt.Println(time)
+	assert.Equal(t, uint64(3500000000), consensus.MaxBlockCycles)
 }
 
-func TestGetForkBlock(t *testing.T) {
-	if testing.Short() {
-		t.Skip("Skip use cases that require node access at ci")
+func TestClient_GetBlockMedianTime(t *testing.T) {
+	blockMedianTime, err := testClient.GetBlockMedianTime(ctx,
+		types.HexToHash("0xd5ac7cf8c34a975bf258a34f1c2507638487ab71aa4d10a9ec73704aa3abf9cd"))
+	if err != nil {
+		t.Fatal(err)
 	}
-
-	api := getApi()
-	block, err := api.GetForkBlock(context.Background(), types.HexToHash("0xa5f5c85987a15de25661e5a214f2c1449cd803f071acc7999820f25246471f40"))
-	assert.Nil(t, err)
-
-	json, err := json.Marshal(block)
-	assert.Nil(t, err)
-	fmt.Println(string(json))
+	assert.NotEqual(t, uint64(0), blockMedianTime)
 }
 
-func getApi() Client {
-	api, _ := Dial("http://localhost:8114")
-	return api
+func TestClient_GetTransactionProof(t *testing.T) {
+	transactionProof, err := testClient.GetTransactionProof(ctx, []string{"0x8277d74d33850581f8d843613ded0c2a1722dec0e87e748f45c115dfb14210f1"}, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.NotNil(t, transactionProof.BlockHash)
+	assert.Equal(t, 1, len(transactionProof.Proof.Indices))
+
+	result, err := testClient.VerifyTransactionProof(ctx, transactionProof)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.Equal(t, 1, len(result))
+}
+
+func TestClient_LocalNodeInfo(t *testing.T) {
+	nodeInfo, err := testClient.LocalNodeInfo(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.True(t, len(nodeInfo.Addresses) > 0)
+	assert.True(t, len(nodeInfo.Protocols) > 0)
+	assert.True(t, len(nodeInfo.Protocols[0].SupportVersions) > 0)
+}
+
+func TestClient_GetPeers(t *testing.T) {
+	peers, err := testClient.GetPeers(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.True(t, len(peers) > 0)
+	assert.True(t, len(peers[0].Addresses) > 0)
+	assert.True(t, len(peers[0].Protocols) > 0)
+}
+
+func TestClient_SyncState(t *testing.T) {
+	state, err := testClient.SyncState(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.NotEqual(t, uint64(0), state.BestKnownBlockNumber)
+}
+
+func TestClient_SetNetworkActive(t *testing.T) {
+	err := testClient.SetNetworkActive(ctx, true)
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestClient_AddNode(t *testing.T) {
+	err := testClient.AddNode(ctx, "QmUsZHPbjjzU627UZFt4k8j6ycEcNvXRnVGxCPKqwbAfQS", "/ip4/192.168.2.100/tcp/8114")
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestClient_RemoveNode(t *testing.T) {
+	err := testClient.RemoveNode(ctx, "QmUsZHPbjjzU627UZFt4k8j6ycEcNvXRnVGxCPKqwbAfQS")
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestClient_SetBan(t *testing.T) {
+	err := testClient.SetBan(ctx, "192.168.0.2", "insert", 1840546800000, true, "test set_ban rpc")
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestClient_GetBannedAddresses(t *testing.T) {
+	bannedAddress, err := testClient.GetBannedAddresses(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.NotNil(t, bannedAddress)
+}
+
+func TestClient_ClearBannedAddresses(t *testing.T) {
+	err := testClient.ClearBannedAddresses(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestClient_PingPeers(t *testing.T) {
+	err := testClient.PingPeers(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestClient_TxPoolInfo(t *testing.T) {
+	txPoolInfo, err := testClient.TxPoolInfo(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.NotEqual(t, uint64(0), txPoolInfo.MinFeeRate)
+	assert.NotEqual(t, types.Hash{}, txPoolInfo.TipHash)
+}
+
+func TestClient_ClearTxPool(t *testing.T) {
+	err := testClient.ClearTxPool(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestClient_GetRawTxPool(t *testing.T) {
+	rawTxPool, err := testClient.GetRawTxPool(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.NotNil(t, rawTxPool)
+}
+
+func TestClient_GetBlockchainInfo(t *testing.T) {
+	blockchainInfo, err := testClient.GetBlockchainInfo(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.NotNil(t, blockchainInfo)
+}
+
+func TestClient_GetLiveCell(t *testing.T) {
+	outPoint := types.OutPoint{
+		TxHash: types.HexToHash("0xf8de3bb47d055cdf460d93a2a6e1b05f7432f9777c8c474abf4eec1d4aee5d37"),
+		Index:  0,
+	}
+	cellWithStatus, err := testClient.GetLiveCell(ctx, &outPoint, true)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.NotNil(t, cellWithStatus)
 }
