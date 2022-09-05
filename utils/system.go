@@ -160,6 +160,27 @@ func initTestnetSystemScript() {
 	}
 }
 
+func GetSystemScriptInfo(network types.Network, script types.BuiltinScript) *SystemScriptCell {
+	switch network {
+	case types.NetworkMain:
+		return mainnetcontracts[script]
+	case types.NetworkTest:
+		return testnetContracts[script]
+	default:
+		return nil
+	}
+}
+
+func NewScript(network types.Network, script types.BuiltinScript, args []byte) *types.Script {
+	systemScriptInfo := GetSystemScriptInfo(network, script)
+	return &types.Script{
+		CodeHash: systemScriptInfo.CodeHash,
+		HashType: systemScriptInfo.HashType,
+		Args:     args,
+	}
+}
+
+// TODO: remove
 type SystemScripts struct {
 	SecpSingleSigCell *SystemScriptCell
 	SecpMultiSigCell  *SystemScriptCell
