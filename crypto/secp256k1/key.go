@@ -13,9 +13,6 @@ import (
 	"math/big"
 
 	"github.com/nervosnetwork/ckb-sdk-go/crypto"
-	"github.com/nervosnetwork/ckb-sdk-go/crypto/blake2b"
-	"github.com/nervosnetwork/ckb-sdk-go/types"
-	"github.com/nervosnetwork/ckb-sdk-go/utils"
 )
 
 var (
@@ -36,21 +33,6 @@ func (k *Secp256k1Key) Sign(data []byte) ([]byte, error) {
 	defer crypto.ZeroBytes(seckey)
 
 	return secp256k1.Sign(data, seckey)
-}
-
-func (k *Secp256k1Key) Script(systemScripts *utils.SystemScripts) (*types.Script, error) {
-	pub := k.PubKey()
-
-	args, err := blake2b.Blake160(pub)
-	if err != nil {
-		return nil, err
-	}
-
-	return &types.Script{
-		CodeHash: systemScripts.SecpSingleSigCell.CodeHash,
-		HashType: types.HashTypeType,
-		Args:     args,
-	}, nil
 }
 
 func (k *Secp256k1Key) PubKey() []byte {
