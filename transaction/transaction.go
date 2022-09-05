@@ -6,7 +6,6 @@ import (
 	"github.com/nervosnetwork/ckb-sdk-go/crypto"
 	"github.com/nervosnetwork/ckb-sdk-go/crypto/blake2b"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
-	"github.com/nervosnetwork/ckb-sdk-go/utils"
 )
 
 var (
@@ -20,50 +19,6 @@ func NewEmptyWitnessArg(LockScriptLength uint) *types.WitnessArgs {
 		Lock:       make([]byte, LockScriptLength),
 		InputType:  nil,
 		OutputType: nil,
-	}
-}
-
-func NewSecp256k1SingleSigTx(scripts *utils.SystemScripts) *types.Transaction {
-	return &types.Transaction{
-		Version:    0,
-		HeaderDeps: []types.Hash{},
-		CellDeps: []*types.CellDep{
-			{
-				OutPoint: scripts.SecpSingleSigCell.OutPoint,
-				DepType:  types.DepTypeDepGroup,
-			},
-		},
-	}
-}
-
-func NewSecp256k1MultiSigTx(scripts *utils.SystemScripts) *types.Transaction {
-	return &types.Transaction{
-		Version:    0,
-		HeaderDeps: []types.Hash{},
-		CellDeps: []*types.CellDep{
-			{
-				OutPoint: scripts.SecpMultiSigCell.OutPoint,
-				DepType:  types.DepTypeDepGroup,
-			},
-		},
-	}
-}
-
-func NewSecp256k1HybirdSigTx(scripts *utils.SystemScripts) *types.Transaction {
-	return &types.Transaction{
-		Version:    0,
-		HeaderDeps: []types.Hash{},
-		CellDeps: []*types.CellDep{
-
-			{
-				OutPoint: scripts.SecpSingleSigCell.OutPoint,
-				DepType:  types.DepTypeDepGroup,
-			},
-			{
-				OutPoint: scripts.SecpMultiSigCell.OutPoint,
-				DepType:  types.DepTypeDepGroup,
-			},
-		},
 	}
 }
 
