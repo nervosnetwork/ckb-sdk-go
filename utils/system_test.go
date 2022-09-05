@@ -11,4 +11,6 @@ func TestGetSystemScriptInfo(t *testing.T) {
 	assert.NotNil(t, s)
 	s = GetSystemScriptInfo(types.NetworkMain, types.BuiltinScriptSecp256k1Blake160MultisigAll)
 	assert.NotNil(t, s)
+	s = GetSystemScriptInfo(types.NetworkTest, types.BuiltinScriptSecp256k1Blake160MultisigAll)
+	assert.NotNil(t, s)
 }

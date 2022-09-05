@@ -5,6 +5,7 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	address2 "github.com/nervosnetwork/ckb-sdk-go/address"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
+	"github.com/nervosnetwork/ckb-sdk-go/utils"
 	"reflect"
 )
 
@@ -65,7 +66,7 @@ func decodeItemAddress(address string) (*address2.Address, error) {
 		types.BuiltinScriptSecp256k1Blake160SighashAll,
 		types.BuiltinScriptAnyoneCanPay}
 	for _, s := range ss {
-		hash := types.GetCodeHash(s, a.Network)
+		hash := utils.GetCodeHash(a.Network, s)
 		if reflect.DeepEqual(hash, a.Script.CodeHash) {
 			return a, nil
 		}

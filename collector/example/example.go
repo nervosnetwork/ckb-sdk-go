@@ -13,6 +13,7 @@ import (
 	"github.com/nervosnetwork/ckb-sdk-go/transaction"
 	"github.com/nervosnetwork/ckb-sdk-go/transaction/signer"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
+	"github.com/nervosnetwork/ckb-sdk-go/utils"
 	"math/big"
 )
 
@@ -69,7 +70,7 @@ func SendCkbFromMultisigAddressExample() error {
 	// ckt1qpw9q60tppt7l3j7r09qcp7lxnp3vcanvgha8pmvsa3jplykxn32sqdunqvd3g2felqv6qer8pkydws8jg9qxlca0st5v
 	sender, _ := address.Address{
 		Script: &types.Script{
-			CodeHash: types.GetCodeHash(types.BuiltinScriptSecp256k1Blake160MultisigAll, network),
+			CodeHash: utils.GetCodeHash(network, types.BuiltinScriptSecp256k1Blake160MultisigAll),
 			HashType: types.HashTypeType,
 			Args:     args,
 		},

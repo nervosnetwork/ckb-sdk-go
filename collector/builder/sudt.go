@@ -66,7 +66,7 @@ func NewSudtTransactionBuilderFromSudtOwnerAddress(network types.Network, iterat
 }
 
 func (r *SudtTransactionBuilder) setSudtArgs(sudtArgs []byte) error {
-	codeHash := types.GetCodeHash(types.BuiltinScriptSudt, r.Network)
+	codeHash := utils.GetCodeHash(r.Network, types.BuiltinScriptSudt)
 	if reflect.DeepEqual(codeHash, types.Hash{}) {
 		return errors.New("can not find sudt code hash")
 	}

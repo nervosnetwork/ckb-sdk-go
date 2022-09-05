@@ -5,6 +5,7 @@ import (
 	"github.com/nervosnetwork/ckb-sdk-go/transaction"
 	"github.com/nervosnetwork/ckb-sdk-go/transaction/signer"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
+	"github.com/nervosnetwork/ckb-sdk-go/utils"
 	"reflect"
 )
 
@@ -39,7 +40,7 @@ func (r *Secp256k1Blake160SighashAllScriptHandler) isMatched(script *types.Scrip
 	if script == nil {
 		return false
 	}
-	codeHash := types.GetCodeHash(types.BuiltinScriptSecp256k1Blake160SighashAll, r.network)
+	codeHash := utils.GetCodeHash(r.network, types.BuiltinScriptSecp256k1Blake160SighashAll)
 	return reflect.DeepEqual(script.CodeHash, codeHash)
 }
 
@@ -87,7 +88,7 @@ func (r *Secp256k1Blake160MultisigAllScriptHandler) isMatched(script *types.Scri
 	if script == nil {
 		return false
 	}
-	codeHash := types.GetCodeHash(types.BuiltinScriptSecp256k1Blake160MultisigAll, r.network)
+	codeHash := utils.GetCodeHash(r.network, types.BuiltinScriptSecp256k1Blake160MultisigAll)
 	return reflect.DeepEqual(script.CodeHash, codeHash)
 }
 

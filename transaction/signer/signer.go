@@ -5,6 +5,7 @@ import (
 	"github.com/nervosnetwork/ckb-sdk-go/crypto/blake2b"
 	"github.com/nervosnetwork/ckb-sdk-go/transaction"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
+	"github.com/nervosnetwork/ckb-sdk-go/utils"
 )
 
 type ScriptSigner interface {
@@ -43,13 +44,13 @@ func GetTransactionSignerInstance(network types.Network) *TransactionSigner {
 
 	if !isInitialized {
 		instance.RegisterLockSigner(
-			types.GetCodeHash(types.BuiltinScriptSecp256k1Blake160SighashAll, network), &Secp256k1Blake160SighashAllSigner{})
+			utils.GetCodeHash(network, types.BuiltinScriptSecp256k1Blake160SighashAll), &Secp256k1Blake160SighashAllSigner{})
 		instance.RegisterLockSigner(
-			types.GetCodeHash(types.BuiltinScriptSecp256k1Blake160MultisigAll, network), &Secp256k1Blake160MultisigAllSigner{})
+			utils.GetCodeHash(network, types.BuiltinScriptSecp256k1Blake160MultisigAll), &Secp256k1Blake160MultisigAllSigner{})
 		instance.RegisterLockSigner(
-			types.GetCodeHash(types.BuiltinScriptAnyoneCanPay, network), &AnyCanPaySigner{})
+			utils.GetCodeHash(network, types.BuiltinScriptAnyoneCanPay), &AnyCanPaySigner{})
 		instance.RegisterLockSigner(
-			types.GetCodeHash(types.BuiltinScriptPwLock, network), &PWLockSigner{})
+			utils.GetCodeHash(network, types.BuiltinScriptPwLock), &PWLockSigner{})
 	}
 	return instance
 }

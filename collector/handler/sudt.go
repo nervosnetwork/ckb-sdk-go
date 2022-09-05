@@ -4,6 +4,7 @@ import (
 	"github.com/nervosnetwork/ckb-sdk-go/collector"
 	"github.com/nervosnetwork/ckb-sdk-go/transaction"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
+	"github.com/nervosnetwork/ckb-sdk-go/utils"
 	"reflect"
 )
 
@@ -37,7 +38,7 @@ func (r *SudtScriptHandler) isMatched(script *types.Script) bool {
 	if script == nil {
 		return false
 	}
-	codeHash := types.GetCodeHash(types.BuiltinScriptSudt, r.network)
+	codeHash := utils.GetCodeHash(r.network, types.BuiltinScriptSudt)
 	return reflect.DeepEqual(script.CodeHash, codeHash)
 }
 

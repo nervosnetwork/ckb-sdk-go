@@ -7,13 +7,14 @@ import (
 	"github.com/nervosnetwork/ckb-sdk-go/crypto/secp256k1"
 	"github.com/nervosnetwork/ckb-sdk-go/transaction/signer"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
+	"github.com/nervosnetwork/ckb-sdk-go/utils"
 )
 
 func GenerateScriptSecp256K1Blake160SignhashAll(key *secp256k1.Secp256k1Key) *types.Script {
 	args, _ := blake2b.Blake160(key.PubKey())
 	return &types.Script{
 		// The same code hash is shared by mainnet and testnet
-		CodeHash: types.GetCodeHash(types.BuiltinScriptSecp256k1Blake160SighashAll, types.NetworkMain),
+		CodeHash: utils.GetCodeHash(types.NetworkMain, types.BuiltinScriptSecp256k1Blake160SighashAll),
 		HashType: types.HashTypeType,
 		Args:     args,
 	}
@@ -27,7 +28,7 @@ func GenerateScriptSecp256K1Blake160SignhashAllByPublicKey(pubKey string) (*type
 	args, _ := blake2b.Blake160(b)
 	return &types.Script{
 		// The same code hash is shared by mainnet and testnet
-		CodeHash: types.GetCodeHash(types.BuiltinScriptSecp256k1Blake160SighashAll, types.NetworkMain),
+		CodeHash: utils.GetCodeHash(types.NetworkMain, types.BuiltinScriptSecp256k1Blake160SighashAll),
 		HashType: types.HashTypeType,
 		Args:     args,
 	}, nil
@@ -77,7 +78,7 @@ func GenerateSecp256k1Blake160MultisigScript(requireN, threshold int, publicKeys
 	}
 
 	// secp256k1_blake160_multisig_all share the same code hash in network main and test
-	codeHash := types.GetCodeHash(types.BuiltinScriptSecp256k1Blake160MultisigAll, types.NetworkTest)
+	codeHash := utils.GetCodeHash(types.NetworkTest, types.BuiltinScriptSecp256k1Blake160MultisigAll)
 	return &types.Script{
 		CodeHash: codeHash,
 		HashType: types.HashTypeType,
