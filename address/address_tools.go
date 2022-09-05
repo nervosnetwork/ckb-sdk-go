@@ -36,6 +36,8 @@ func GenerateScriptSecp256K1Blake160SignhashAllByPublicKey(pubKey string) (*type
 // GenerateSecp256k1Blake160MultisigScript generate scep256k1 multisig script.
 // It can accept public key (in compressed format, 33 bytes each) array or public key hash (20 bytes) array, and
 // return error if giving none of them.
+// TODO: change method signature and only accepte MultisigScript as parameter
+// TODO: change method name to `GenerateScriptSecp256k1Blake160Multisig`
 func GenerateSecp256k1Blake160MultisigScript(requireN, threshold int, publicKeysOrHashes [][]byte) (*types.Script, []byte, error) {
 	multisigScript := signer.MultisigScript{
 		Version:    0,
