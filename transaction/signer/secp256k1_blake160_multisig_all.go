@@ -87,10 +87,7 @@ func setSignatureToWitness(witness []byte, signature []byte, m *MultisigScript) 
 		pos += 65
 	}
 	witnessArgs.Lock = lock
-	w, err := witnessArgs.Serialize()
-	if err != nil {
-		return nil, err
-	}
+	w := witnessArgs.Serialize()
 	return w, err
 }
 
@@ -188,10 +185,7 @@ func (r *MultisigScript) WitnessPlaceholder(originalWitness []byte) ([]byte, err
 		}
 	}
 	witnessArgs.Lock = r.WitnessPlaceholderInLock()
-	b, err := witnessArgs.Serialize()
-	if err != nil {
-		return nil, err
-	}
+	b := witnessArgs.Serialize()
 	return b, nil
 }
 

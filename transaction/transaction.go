@@ -80,20 +80,14 @@ func AddInputsForTransaction(transaction *types.Transaction, inputs []*types.Cel
 		group[i] = start + i
 	}
 	emptyWitnessArgs := NewEmptyWitnessArg(signatureLengthInBytes)
-	emptyWitnessArgsBytes, err := emptyWitnessArgs.Serialize()
-	if err != nil {
-		return make([]int, 0), &types.WitnessArgs{}, err
-	}
+	emptyWitnessArgsBytes := emptyWitnessArgs.Serialize()
 	transaction.Witnesses[start] = emptyWitnessArgsBytes
 	return group, emptyWitnessArgs, nil
 }
 
 // group is an array, which content is the index of input after grouping
 func SingleSignTransaction(transaction *types.Transaction, group []int, witnessArgs *types.WitnessArgs, key crypto.Key) error {
-	data, err := witnessArgs.Serialize()
-	if err != nil {
-		return err
-	}
+	data := witnessArgs.Serialize()
 	length := make([]byte, 8)
 	binary.LittleEndian.PutUint64(length, uint64(len(data)))
 
@@ -137,10 +131,7 @@ func SingleSignTransaction(transaction *types.Transaction, group []int, witnessA
 		InputType:  witnessArgs.InputType,
 		OutputType: witnessArgs.OutputType,
 	}
-	wab, err := wa.Serialize()
-	if err != nil {
-		return err
-	}
+	wab := wa.Serialize()
 
 	transaction.Witnesses[group[0]] = wab
 
@@ -162,10 +153,7 @@ func MsgFromTxForMultiSig(transaction *types.Transaction, group []int, multisigS
 	n := int(multisigScript[3])
 	witnessArgsLock := append(multisigScript, make([]byte, n*len(Secp256k1SignaturePlaceholder))...)
 	witnessArgs.Lock = witnessArgsLock
-	data, err := witnessArgs.Serialize()
-	if err != nil {
-		return nil, err
-	}
+	data := witnessArgs.Serialize()
 	length := make([]byte, 8)
 	binary.LittleEndian.PutUint64(length, uint64(len(data)))
 
@@ -208,21 +196,14 @@ func MultiSignTransaction(transaction *types.Transaction, group []int, witnessAr
 		InputType:  witnessArgs.InputType,
 		OutputType: witnessArgs.OutputType,
 	}
-	wab, err := wa.Serialize()
-	if err != nil {
-		return err
-	}
-
+	wab := wa.Serialize()
 	transaction.Witnesses[group[0]] = wab
 
 	return nil
 }
 
 func SingleSegmentSignMessage(transaction *types.Transaction, start int, end int, witnessArgs *types.WitnessArgs) ([]byte, error) {
-	data, err := witnessArgs.Serialize()
-	if err != nil {
-		return nil, err
-	}
+	data := witnessArgs.Serialize()
 	length := make([]byte, 8)
 	binary.LittleEndian.PutUint64(length, uint64(len(data)))
 
@@ -261,24 +242,17 @@ func SingleSegmentSignTransaction(transaction *types.Transaction, start int, end
 		InputType:  witnessArgs.InputType,
 		OutputType: witnessArgs.OutputType,
 	}
-	wab, err := wa.Serialize()
-	if err != nil {
-		return err
-	}
-
+	wab := wa.Serialize()
 	transaction.Witnesses[start] = wab
 
 	return nil
 }
 
-func CalculateTransactionFee(tx *types.Transaction, feeRate uint64) (uint64, error) {
-	txSize, err := tx.SizeInBlock()
-	if err != nil {
-		return 0, err
-	}
+func CalculateTransactionFee(tx *types.Transaction, feeRate uint64) uint64 {
+	txSize := tx.SizeInBlock()
 	fee := txSize * feeRate / 1000
 	if fee*1000 < txSize*feeRate {
 		fee += 1
 	}
-	return fee, nil
+	return fee
 }

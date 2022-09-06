@@ -45,6 +45,21 @@ func TestGetCells(t *testing.T) {
 	resp, err := c.GetCells(context.Background(), s, SearchOrderAsc, 10, "")
 	checkError(t, err)
 	assert.Equal(t, 10, len(resp.Objects))
+
+	// Check response when `WithData` == true in request
+	s = &SearchKey{
+		Script: &types.Script{
+			// https://pudge.explorer.nervos.org/address/ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqgxc8z84suk20xzx8337sckkkjfqvzk2ysq48gzc
+			CodeHash: types.HexToHash("0x9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8"),
+			HashType: types.HashTypeType,
+			Args:     ethcommon.FromHex("0x06c1c47ac39653cc231e31f4316b5a4903056512"),
+		},
+		ScriptType: ScriptTypeLock,
+		WithData: true,
+	}
+	resp, err = c.GetCells(context.Background(), s, SearchOrderAsc, 10, "")
+	checkError(t, err)
+	assert.Equal(t, ethcommon.FromHex("0x0000000000000000"), resp.Objects[0].OutputData)
 }
 
 func TestGetTransactions(t *testing.T) {

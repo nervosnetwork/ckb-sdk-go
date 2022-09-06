@@ -2,6 +2,7 @@ package types
 
 import (
 	"github.com/nervosnetwork/ckb-sdk-go/crypto/blake2b"
+	"github.com/nervosnetwork/ckb-sdk-go/utils/amount"
 	"math/big"
 )
 
@@ -63,15 +64,12 @@ type Script struct {
 }
 
 func (r *Script) OccupiedCapacity() uint64 {
-	return uint64(len(r.Args)) + uint64(len(r.CodeHash.Bytes())) + 1
+	ckBytes := uint64(len(r.Args)) + uint64(len(r.CodeHash.Bytes())) + 1
+	return amount.CkbToShannon(ckBytes)
 }
 
 func (r *Script) Hash() (Hash, error) {
-	data, err := r.Serialize()
-	if err != nil {
-		return Hash{}, err
-	}
-
+	data := r.Serialize()
 	hash, err := blake2b.Blake256(data)
 	if err != nil {
 		return Hash{}, err
@@ -102,7 +100,8 @@ type CellOutput struct {
 }
 
 func (r CellOutput) OccupiedCapacity(outputData []byte) uint64 {
-	occupiedCapacity := 8 + uint64(len(outputData)) + r.Lock.OccupiedCapacity()
+	occupiedCapacity := amount.CkbToShannon(8 + uint64(len(outputData)))
+	occupiedCapacity += r.Lock.OccupiedCapacity()
 	if r.Type != nil {
 		occupiedCapacity += r.Type.OccupiedCapacity()
 	}
@@ -121,10 +120,7 @@ type Transaction struct {
 }
 
 func (t *Transaction) ComputeHash() (Hash, error) {
-	data, err := t.Serialize()
-	if err != nil {
-		return Hash{}, err
-	}
+	data := t.SerializeWithoutWitnesses()
 
 	hash, err := blake2b.Blake256(data)
 	if err != nil {
@@ -134,24 +130,10 @@ func (t *Transaction) ComputeHash() (Hash, error) {
 	return BytesToHash(hash), nil
 }
 
-func (t *Transaction) SizeInBlock() (uint64, error) {
-	// raw tx serialize
-	rawTxBytes, err := t.Serialize()
-	if err != nil {
-		return 0, err
-	}
-
-	var witnessBytes [][]byte
-	for _, witness := range t.Witnesses {
-		witnessBytes = append(witnessBytes, SerializeBytes(witness))
-	}
-	witnessesBytes := SerializeDynVec(witnessBytes)
-	//tx serialize
-	txBytes := SerializeTable([][]byte{rawTxBytes, witnessesBytes})
-	txSize := uint64(len(txBytes))
-	// tx offset cost
-	txSize += 4
-	return txSize, nil
+func (t *Transaction) SizeInBlock() uint64 {
+	b := t.Serialize()
+	size := uint64(len(b)) + 4 // add header size
+	return size
 }
 
 func (t *Transaction) OutputsCapacity() (totalCapacity uint64) {
@@ -177,6 +159,12 @@ type Block struct {
 	Proposals    []string       `json:"proposals"`
 	Transactions []*Transaction `json:"transactions"`
 	Uncles       []*UncleBlock  `json:"uncles"`
+}
+
+type TransactionInput struct {
+	OutPoint   *OutPoint   `json:"out_point"`
+	Output     *CellOutput `json:"output"`
+	OutputData []byte      `json:"output_data"`
 }
 
 type Cell struct {
@@ -205,7 +193,7 @@ type CellWithStatus struct {
 }
 
 type TxStatus struct {
-	BlockHash *Hash             `json:"block_hash"`
+	BlockHash Hash              `json:"block_hash"`
 	Status    TransactionStatus `json:"status"`
 }
 
