@@ -1,3 +1,15 @@
+# 2.0.1
+
+## 🚀 Features
+
+- feat: implement transaction builder and script handlers mechanism (#149)
+- feat: adopt molecule generator (#150)
+
+## 🧰 Maintenance
+
+- fix: update indexer missing fields (#147)
+- chore: clean deprecated payment example (#151)
+- chore: add RPC test (#152)
 # 2.0.1 (2022-09-05)
 
 ## 🚀 Features
