@@ -10,8 +10,8 @@ import (
 )
 
 type Secp256k1Blake160SighashAllScriptHandler struct {
-	cellDep *types.CellDep
-	network types.Network
+	CellDep  *types.CellDep
+	CodeHash types.Hash
 }
 
 func NewSecp256k1Blake160SighashAllScriptHandler(network types.Network) *Secp256k1Blake160SighashAllScriptHandler {
@@ -25,14 +25,14 @@ func NewSecp256k1Blake160SighashAllScriptHandler(network types.Network) *Secp256
 	}
 
 	return &Secp256k1Blake160SighashAllScriptHandler{
-		cellDep: &types.CellDep{
+		CellDep: &types.CellDep{
 			OutPoint: &types.OutPoint{
 				TxHash: txHash,
 				Index:  0,
 			},
 			DepType: types.DepTypeDepGroup,
 		},
-		network: network,
+		CodeHash: utils.GetCodeHash(network, types.BuiltinScriptSecp256k1Blake160SighashAll),
 	}
 }
 
@@ -40,8 +40,7 @@ func (r *Secp256k1Blake160SighashAllScriptHandler) isMatched(script *types.Scrip
 	if script == nil {
 		return false
 	}
-	codeHash := utils.GetCodeHash(r.network, types.BuiltinScriptSecp256k1Blake160SighashAll)
-	return reflect.DeepEqual(script.CodeHash, codeHash)
+	return reflect.DeepEqual(script.CodeHash, r.CodeHash)
 }
 
 func (r *Secp256k1Blake160SighashAllScriptHandler) BuildTransaction(builder collector.TransactionBuilder, group *transaction.ScriptGroup, context interface{}) (bool, error) {
@@ -53,7 +52,7 @@ func (r *Secp256k1Blake160SighashAllScriptHandler) BuildTransaction(builder coll
 	if err := builder.SetWitness(uint(index), types.WitnessTypeLock, lock[:]); err != nil {
 		return false, err
 	}
-	builder.AddCellDep(r.cellDep)
+	builder.AddCellDep(r.CellDep)
 	return true, nil
 }
 

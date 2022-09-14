@@ -9,8 +9,8 @@ import (
 )
 
 type SudtScriptHandler struct {
-	cellDep *types.CellDep
-	network types.Network
+	CellDep  *types.CellDep
+	CodeHash types.Hash
 }
 
 func NewSudtScriptHandler(network types.Network) *SudtScriptHandler {
@@ -23,14 +23,14 @@ func NewSudtScriptHandler(network types.Network) *SudtScriptHandler {
 		return nil
 	}
 	return &SudtScriptHandler{
-		cellDep: &types.CellDep{
+		CellDep: &types.CellDep{
 			OutPoint: &types.OutPoint{
 				TxHash: txHash,
 				Index:  0,
 			},
 			DepType: types.DepTypeCode,
 		},
-		network: network,
+		CodeHash: utils.GetCodeHash(network, types.BuiltinScriptSudt),
 	}
 }
 
@@ -38,14 +38,13 @@ func (r *SudtScriptHandler) isMatched(script *types.Script) bool {
 	if script == nil {
 		return false
 	}
-	codeHash := utils.GetCodeHash(r.network, types.BuiltinScriptSudt)
-	return reflect.DeepEqual(script.CodeHash, codeHash)
+	return reflect.DeepEqual(script.CodeHash, r.CodeHash)
 }
 
 func (r *SudtScriptHandler) BuildTransaction(builder collector.TransactionBuilder, group *transaction.ScriptGroup, context interface{}) (bool, error) {
 	if group == nil || !r.isMatched(group.Script) {
 		return false, nil
 	}
-	builder.AddCellDep(r.cellDep)
+	builder.AddCellDep(r.CellDep)
 	return true, nil
 }

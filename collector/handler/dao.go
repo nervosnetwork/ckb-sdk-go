@@ -24,8 +24,8 @@ var (
 )
 
 type DaoScriptHandler struct {
-	cellDep *types.CellDep
-	network types.Network
+	CellDep  *types.CellDep
+	CodeHash types.Hash
 }
 
 func NewDaoScriptHandler(network types.Network) *DaoScriptHandler {
@@ -39,14 +39,14 @@ func NewDaoScriptHandler(network types.Network) *DaoScriptHandler {
 	}
 
 	return &DaoScriptHandler{
-		cellDep: &types.CellDep{
+		CellDep: &types.CellDep{
 			OutPoint: &types.OutPoint{
 				TxHash: txHash,
 				Index:  2,
 			},
 			DepType: types.DepTypeCode,
 		},
-		network: network,
+		CodeHash: utils.GetCodeHash(network, types.BuiltinScriptDao),
 	}
 }
 
@@ -54,14 +54,12 @@ func (r *DaoScriptHandler) isMatched(script *types.Script) bool {
 	if script == nil {
 		return false
 	}
-	codeHash := utils.GetCodeHash(r.network, types.BuiltinScriptDao)
-	return reflect.DeepEqual(script.CodeHash, codeHash)
+	return reflect.DeepEqual(script.CodeHash, r.CodeHash)
 }
 
 func IsDepositCell(output *types.CellOutput, outputData []byte) bool {
 	return reflect.DeepEqual(DaoScript, output.Type) &&
 		bytes.Equal(DaoDepositOutputData, outputData)
-	return false
 }
 
 func (r *DaoScriptHandler) BuildTransaction(builder collector.TransactionBuilder, group *transaction.ScriptGroup, context interface{}) (bool, error) {
@@ -69,7 +67,7 @@ func (r *DaoScriptHandler) BuildTransaction(builder collector.TransactionBuilder
 		return false, nil
 	}
 
-	builder.AddCellDep(r.cellDep)
+	builder.AddCellDep(r.CellDep)
 
 	var ok bool
 	switch context.(type) {
