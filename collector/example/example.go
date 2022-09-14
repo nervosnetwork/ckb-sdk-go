@@ -187,10 +187,7 @@ func SendSudtExample() error {
 	}
 
 	// build transaction
-	builder, err := builder2.NewSudtTransactionBuilderFromSudtArgs(network, iterator, builder2.SudtTransactionTypeTransfer, sudtArgs)
-	if err != nil {
-		return err
-	}
+	builder := builder2.NewSudtTransactionBuilderFromSudtArgs(network, iterator, builder2.SudtTransactionTypeTransfer, sudtArgs)
 	builder.FeeRate = 1000
 	_, err = builder.AddSudtOutputByAddress(receiver, big.NewInt(1))
 	if err != nil {

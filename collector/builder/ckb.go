@@ -12,7 +12,6 @@ import (
 type CkbTransactionBuilder struct {
 	SimpleTransactionBuilder
 	FeeRate uint
-	Network types.Network
 
 	iterator               collector.CellIterator
 	transactionInputs      []*types.TransactionInput // customized inputs
@@ -26,7 +25,6 @@ func NewCkbTransactionBuilder(network types.Network, iterator collector.CellIter
 	return &CkbTransactionBuilder{
 		SimpleTransactionBuilder: *NewSimpleTransactionBuilder(network),
 		FeeRate:                  1000,
-		Network:                  network,
 
 		iterator:          iterator,
 		changeOutputIndex: -1,
