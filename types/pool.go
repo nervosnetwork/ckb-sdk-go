@@ -11,3 +11,8 @@ type TxPoolInfo struct {
 	MinFeeRate       uint64 `json:"min_fee_rate"`
 	LastTxsUpdatedAt uint64 `json:"last_txs_updated_at"`
 }
+
+type RawTxPool struct {
+	Pending  []Hash `json:"pending"`
+	Proposed []Hash `json:"proposed"`
+}
