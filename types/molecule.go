@@ -2,7 +2,7 @@ package types
 
 import (
 	"encoding/binary"
-	"github.com/nervosnetwork/ckb-sdk-go/molecule"
+	"github.com/nervosnetwork/ckb-sdk-go/types/molecule"
 )
 
 func (r *WitnessArgs) Pack() *molecule.WitnessArgs {
