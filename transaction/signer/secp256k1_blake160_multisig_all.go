@@ -36,10 +36,8 @@ func (s *Secp256k1Blake160MultisigAllSigner) SignTransaction(transaction *types.
 }
 
 func MultiSignTransaction(tx *types.Transaction, group *transaction.ScriptGroup, key *secp256k1.Secp256k1Key, m *MultisigScript) (bool, error) {
-	txHash, err := tx.ComputeHash()
-	if err != nil {
-		return false, err
-	}
+	var err error
+	txHash := tx.ComputeHash()
 	data := txHash.Bytes()
 	i := group.InputIndices[0]
 	originalWitness := tx.Witnesses[i]
@@ -56,10 +54,7 @@ func MultiSignTransaction(tx *types.Transaction, group *transaction.ScriptGroup,
 		data = append(data, types.SerializeUint64(uint64(len(witness)))...)
 		data = append(data, witness...)
 	}
-	msg, err := blake2b.Blake256(data)
-	if err != nil {
-		return false, err
-	}
+	msg := blake2b.Blake256(data)
 	signature, err := key.Sign(msg)
 	if err != nil {
 		return false, err
@@ -95,10 +90,7 @@ func IsMultiSigMatched(key *secp256k1.Secp256k1Key, multisigScript *MultisigScri
 	if key == nil || scriptArgs == nil {
 		return false, errors.New("key or scriptArgs is nil")
 	}
-	hash, err := multisigScript.ComputeHash160()
-	if err != nil {
-		return false, err
-	}
+	hash := multisigScript.ComputeHash160()
 	return bytes.Equal(scriptArgs, hash), nil
 }
 
@@ -196,10 +188,6 @@ func (r *MultisigScript) WitnessPlaceholderInLock() []byte {
 	return b
 }
 
-func (r *MultisigScript) ComputeHash160() ([]byte, error) {
-	hash, err := blake2b.Blake160(r.Encode()[:])
-	if err != nil {
-		return nil, err
-	}
-	return hash, nil
+func (r *MultisigScript) ComputeHash160() []byte {
+	return blake2b.Blake160(r.Encode()[:])
 }

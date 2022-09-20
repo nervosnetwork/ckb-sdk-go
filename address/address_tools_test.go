@@ -91,10 +91,7 @@ func TestGenerateSecp256k1MultisigScriptByHash(t *testing.T) {
 		if err != nil {
 			t.Error(t, err)
 		}
-		hash, err := blake2b.Blake160(key)
-		if err != nil {
-			t.Error(t, err)
-		}
+		hash := blake2b.Blake160(key)
 		publicKeysHash = append(publicKeysHash, hash)
 	}
 	script, _, err := GenerateSecp256k1Blake160MultisigScript(0, 2, publicKeysHash)

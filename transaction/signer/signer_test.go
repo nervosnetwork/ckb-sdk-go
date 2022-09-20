@@ -79,10 +79,7 @@ func TestMultiScriptEncode(t *testing.T) {
 	}
 	encoded := m.Encode()
 	assert.Equal(t, common.FromHex("0x000002029b41c025515b00c24e2e2042df7b221af5c1891fe732dcd15b7618eb1d7a11e6a68e4579b5be0114"), encoded)
-	hash, err := m.ComputeHash160()
-	if err != nil {
-		t.Error(err)
-	}
+	hash := m.ComputeHash160()
 	assert.Equal(t, common.FromHex("0x35ed7b939b4ac9cb447b82340fd8f26d344f7a62"), hash)
 }
 

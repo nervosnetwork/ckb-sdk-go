@@ -26,10 +26,8 @@ func (s *Secp256k1Blake160SighashAllSigner) SignTransaction(transaction *types.T
 }
 
 func SingleSignTransaction(tx *types.Transaction, group *transaction.ScriptGroup, key *secp256k1.Secp256k1Key) (bool, error) {
-	txHash, err := tx.ComputeHash()
-	if err != nil {
-		return false, err
-	}
+	var err error
+	txHash := tx.ComputeHash()
 	data := txHash.Bytes()
 	for _, v := range group.InputIndices {
 		witness := tx.Witnesses[v]
@@ -41,10 +39,7 @@ func SingleSignTransaction(tx *types.Transaction, group *transaction.ScriptGroup
 		data = append(data, types.SerializeUint64(uint64(len(witness)))...)
 		data = append(data, witness...)
 	}
-	msg, err := blake2b.Blake256(data)
-	if err != nil {
-		return false, err
-	}
+	msg := blake2b.Blake256(data)
 	signature, err := key.Sign(msg)
 	if err != nil {
 		return false, err
@@ -64,9 +59,6 @@ func IsSingleSigMatched(key *secp256k1.Secp256k1Key, scriptArgs []byte) (bool, e
 	if key == nil || scriptArgs == nil {
 		return false, errors.New("key or scriptArgs is nil")
 	}
-	hash, err := blake2b.Blake160(key.PubKey())
-	if err != nil {
-		return false, err
-	}
+	hash := blake2b.Blake160(key.PubKey())
 	return bytes.Equal(scriptArgs, hash), nil
 }

@@ -41,57 +41,57 @@ func AddInputsForTransaction(transaction *types.Transaction, inputs []*types.Cel
 }
 
 // group is an array, which content is the index of input after grouping
-func SingleSignTransaction(transaction *types.Transaction, group []int, witnessArgs *types.WitnessArgs, key crypto.Key) error {
-	data := witnessArgs.Serialize()
-	length := make([]byte, 8)
-	binary.LittleEndian.PutUint64(length, uint64(len(data)))
-
-	hash, err := transaction.ComputeHash()
-	if err != nil {
-		return err
-	}
-
-	message := append(hash.Bytes(), length...)
-	message = append(message, data...)
-	// hash the other witnesses in the group
-	if len(group) > 1 {
-		for i := 1; i < len(group); i++ {
-			data = transaction.Witnesses[group[i]]
-			length := make([]byte, 8)
-			binary.LittleEndian.PutUint64(length, uint64(len(data)))
-			message = append(message, length...)
-			message = append(message, data...)
-		}
-	}
-	// hash witnesses which do not in any input group
-	for _, witness := range transaction.Witnesses[len(transaction.Inputs):] {
-		length := make([]byte, 8)
-		binary.LittleEndian.PutUint64(length, uint64(len(witness)))
-		message = append(message, length...)
-		message = append(message, witness...)
-	}
-
-	message, err = blake2b.Blake256(message)
-	if err != nil {
-		return err
-	}
-
-	signed, err := key.Sign(message)
-	if err != nil {
-		return err
-	}
-
-	wa := &types.WitnessArgs{
-		Lock:       signed,
-		InputType:  witnessArgs.InputType,
-		OutputType: witnessArgs.OutputType,
-	}
-	wab := wa.Serialize()
-
-	transaction.Witnesses[group[0]] = wab
-
-	return nil
-}
+//func SingleSignTransaction(transaction *types.Transaction, group []int, witnessArgs *types.WitnessArgs, key crypto.Key) error {
+//	data := witnessArgs.Serialize()
+//	length := make([]byte, 8)
+//	binary.LittleEndian.PutUint64(length, uint64(len(data)))
+//
+//	hash, err := transaction.ComputeHash()
+//	if err != nil {
+//		return err
+//	}
+//
+//	message := append(hash.Bytes(), length...)
+//	message = append(message, data...)
+//	// hash the other witnesses in the group
+//	if len(group) > 1 {
+//		for i := 1; i < len(group); i++ {
+//			data = transaction.Witnesses[group[i]]
+//			length := make([]byte, 8)
+//			binary.LittleEndian.PutUint64(length, uint64(len(data)))
+//			message = append(message, length...)
+//			message = append(message, data...)
+//		}
+//	}
+//	// hash witnesses which do not in any input group
+//	for _, witness := range transaction.Witnesses[len(transaction.Inputs):] {
+//		length := make([]byte, 8)
+//		binary.LittleEndian.PutUint64(length, uint64(len(witness)))
+//		message = append(message, length...)
+//		message = append(message, witness...)
+//	}
+//
+//	message, err = blake2b.Blake256(message)
+//	if err != nil {
+//		return err
+//	}
+//
+//	signed, err := key.Sign(message)
+//	if err != nil {
+//		return err
+//	}
+//
+//	wa := &types.WitnessArgs{
+//		Lock:       signed,
+//		InputType:  witnessArgs.InputType,
+//		OutputType: witnessArgs.OutputType,
+//	}
+//	wab := wa.Serialize()
+//
+//	transaction.Witnesses[group[0]] = wab
+//
+//	return nil
+//}
 
 func MsgFromTxForMultiSig(transaction *types.Transaction, group []int, multisigScript []byte) ([]byte, error) {
 	var witnessArgs *types.WitnessArgs
@@ -112,10 +112,7 @@ func MsgFromTxForMultiSig(transaction *types.Transaction, group []int, multisigS
 	length := make([]byte, 8)
 	binary.LittleEndian.PutUint64(length, uint64(len(data)))
 
-	hash, err := transaction.ComputeHash()
-	if err != nil {
-		return nil, err
-	}
+	hash := transaction.ComputeHash()
 
 	message := append(hash.Bytes(), length...)
 	message = append(message, data...)
@@ -137,7 +134,7 @@ func MsgFromTxForMultiSig(transaction *types.Transaction, group []int, multisigS
 		message = append(message, witness...)
 	}
 
-	return blake2b.Blake256(message)
+	return blake2b.Blake256(message), nil
 }
 
 func MultiSignTransaction(transaction *types.Transaction, group []int, witnessArgs *types.WitnessArgs, serialize []byte, signatures ...[]byte) error {
@@ -162,10 +159,7 @@ func SingleSegmentSignMessage(transaction *types.Transaction, start int, end int
 	length := make([]byte, 8)
 	binary.LittleEndian.PutUint64(length, uint64(len(data)))
 
-	hash, err := transaction.ComputeHash()
-	if err != nil {
-		return nil, err
-	}
+	hash := transaction.ComputeHash()
 
 	message := append(hash.Bytes(), length...)
 	message = append(message, data...)
@@ -178,7 +172,7 @@ func SingleSegmentSignMessage(transaction *types.Transaction, start int, end int
 		message = append(message, data...)
 	}
 
-	return blake2b.Blake256(message)
+	return blake2b.Blake256(message), nil
 }
 
 func SingleSegmentSignTransaction(transaction *types.Transaction, start int, end int, witnessArgs *types.WitnessArgs, key crypto.Key) error {

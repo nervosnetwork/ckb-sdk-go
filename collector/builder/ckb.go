@@ -61,10 +61,7 @@ func getOrPutScriptGroup(m map[types.Hash]*transaction.ScriptGroup, script *type
 	if script == nil {
 		return nil, nil
 	}
-	hash, err := script.Hash()
-	if err != nil {
-		return nil, err
-	}
+	hash := script.Hash()
 	if m[hash] == nil {
 		m[hash] = &transaction.ScriptGroup{
 			Script:    script,

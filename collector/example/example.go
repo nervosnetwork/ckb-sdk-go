@@ -66,7 +66,7 @@ func SendCkbFromMultisigAddressExample() error {
 	multisigScript.AddKeyHashBySlice(hexutil.MustDecode("0x7336b0ba900684cb3cb00f0d46d4f64c0994a562"))
 	multisigScript.AddKeyHashBySlice(hexutil.MustDecode("0x5724c1e3925a5206944d753a6f3edaedf977d77f"))
 
-	args, _ := multisigScript.ComputeHash160()
+	args := multisigScript.ComputeHash160()
 	// ckt1qpw9q60tppt7l3j7r09qcp7lxnp3vcanvgha8pmvsa3jplykxn32sqdunqvd3g2felqv6qer8pkydws8jg9qxlca0st5v
 	sender, _ := address.Address{
 		Script: &types.Script{

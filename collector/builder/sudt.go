@@ -54,10 +54,7 @@ func NewSudtTransactionBuilderFromSudtOwnerAddress(network types.Network, iterat
 	if err != nil {
 		return nil, err
 	}
-	sudtArgs, err := addr.Script.Hash()
-	if err != nil {
-		return nil, err
-	}
+	sudtArgs := addr.Script.Hash()
 	return NewSudtTransactionBuilderFromSudtArgs(network, iterator, transactionType, sudtArgs.Bytes()), nil
 }
 

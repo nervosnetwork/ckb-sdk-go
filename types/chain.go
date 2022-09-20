@@ -68,14 +68,10 @@ func (r *Script) OccupiedCapacity() uint64 {
 	return amount.CkbToShannon(ckBytes)
 }
 
-func (r *Script) Hash() (Hash, error) {
+func (r *Script) Hash() Hash {
 	data := r.Serialize()
-	hash, err := blake2b.Blake256(data)
-	if err != nil {
-		return Hash{}, err
-	}
-
-	return BytesToHash(hash), nil
+	hash := blake2b.Blake256(data)
+	return BytesToHash(hash)
 }
 
 func (r *Script) Equals(obj *Script) bool {
@@ -83,8 +79,8 @@ func (r *Script) Equals(obj *Script) bool {
 		return false
 	}
 
-	sh, _ := r.Hash()
-	oh, _ := obj.Hash()
+	sh := r.Hash()
+	oh := obj.Hash()
 	return sh.String() == oh.String()
 }
 
@@ -119,15 +115,10 @@ type Transaction struct {
 	Witnesses   [][]byte      `json:"witnesses"`
 }
 
-func (t *Transaction) ComputeHash() (Hash, error) {
+func (t *Transaction) ComputeHash() Hash {
 	data := t.SerializeWithoutWitnesses()
-
-	hash, err := blake2b.Blake256(data)
-	if err != nil {
-		return Hash{}, err
-	}
-
-	return BytesToHash(hash), nil
+	hash := blake2b.Blake256(data)
+	return BytesToHash(hash)
 }
 
 func (t *Transaction) SizeInBlock() uint64 {

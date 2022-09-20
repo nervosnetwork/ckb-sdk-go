@@ -11,7 +11,7 @@ import (
 )
 
 func GenerateScriptSecp256K1Blake160SignhashAll(key *secp256k1.Secp256k1Key) *types.Script {
-	args, _ := blake2b.Blake160(key.PubKey())
+	args := blake2b.Blake160(key.PubKey())
 	return &types.Script{
 		// The same code hash is shared by mainnet and testnet
 		CodeHash: utils.GetCodeHash(types.NetworkMain, types.BuiltinScriptSecp256k1Blake160SighashAll),
@@ -25,7 +25,7 @@ func GenerateScriptSecp256K1Blake160SignhashAllByPublicKey(pubKey string) (*type
 	if len(b) != 33 {
 		return nil, errors.New("only accept 33-byte compressed public key")
 	}
-	args, _ := blake2b.Blake160(b)
+	args := blake2b.Blake160(b)
 	return &types.Script{
 		// The same code hash is shared by mainnet and testnet
 		CodeHash: utils.GetCodeHash(types.NetworkMain, types.BuiltinScriptSecp256k1Blake160SighashAll),
@@ -62,21 +62,14 @@ func GenerateSecp256k1Blake160MultisigScript(requireN, threshold int, publicKeys
 			if len(publicKey) != 33 {
 				return nil, nil, errors.New("public key (compressed) length must be 33 bytes")
 			}
-			publicKeyHash, err := blake2b.Blake160(publicKey)
-			if err != nil {
-				return nil, nil, err
-			}
+			publicKeyHash := blake2b.Blake160(publicKey)
 			if err := multisigScript.AddKeyHashBySlice(publicKeyHash); err != nil {
 				return nil, nil, err
 			}
 		}
 	}
 
-	args, err := multisigScript.ComputeHash160()
-	if err != nil {
-		return nil, nil, err
-	}
-
+	args := multisigScript.ComputeHash160()
 	// secp256k1_blake160_multisig_all share the same code hash in network main and test
 	codeHash := utils.GetCodeHash(types.NetworkTest, types.BuiltinScriptSecp256k1Blake160MultisigAll)
 	return &types.Script{

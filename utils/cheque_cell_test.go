@@ -19,18 +19,9 @@ func TestChequeCellArgs(t *testing.T) {
 		Args:     common.FromHex("0xedcda9513fa030ce4308e29245a22c022d0212ab"),
 	}
 
-	senderLockHash, err := senderLock.Hash()
-	if err != nil {
-		t.Fatal(err)
-	}
-	receiverLockHash, err := receiverLock.Hash()
-	if err != nil {
-		t.Fatal(err)
-	}
+	senderLockHash := senderLock.Hash()
+	receiverLockHash := receiverLock.Hash()
 	expectedArgs := append(receiverLockHash.Bytes()[0:20], senderLockHash.Bytes()[0:20]...)
-	actualArgs, err := ChequeCellArgs(senderLock, receiverLock)
-	if err != nil {
-		t.Fatal(err)
-	}
+	actualArgs := ChequeCellArgs(senderLock, receiverLock)
 	assert.Equal(t, expectedArgs, actualArgs)
 }

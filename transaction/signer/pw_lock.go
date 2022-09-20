@@ -23,10 +23,7 @@ func (s *PWLockSigner) SignTransaction(transaction *types.Transaction, group *tr
 }
 
 func PWLockSignTransaction(tx *types.Transaction, group *transaction.ScriptGroup, key *secp256k1.Secp256k1Key) (bool, error) {
-	txHash, err := tx.ComputeHash()
-	if err != nil {
-		return false, err
-	}
+	txHash := tx.ComputeHash()
 	data := txHash.Bytes()
 	for _, v := range group.InputIndices {
 		witness := tx.Witnesses[v]
