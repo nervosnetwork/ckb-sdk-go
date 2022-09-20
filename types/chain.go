@@ -134,6 +134,15 @@ func (t *Transaction) OutputsCapacity() (totalCapacity uint64) {
 	return
 }
 
+func (t Transaction) CalculateFee(feeRate uint64) uint64 {
+	txSize := t.SizeInBlock()
+	fee := txSize * feeRate / 1000
+	if fee*1000 < txSize*feeRate {
+		fee += 1
+	}
+	return fee
+}
+
 type WitnessArgs struct {
 	Lock       []byte `json:"lock"`
 	InputType  []byte `json:"input_type"`

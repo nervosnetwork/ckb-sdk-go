@@ -150,7 +150,7 @@ func (r *CkbTransactionBuilder) Build(contexts ...interface{}) (*transaction.Tra
 		inputsCapacity += cell.Output.Capacity
 		tx := r.BuildTransaction().TxView
 		// check if there is enough capacity for output capacity and change
-		fee := transaction.CalculateTransactionFee(tx, uint64(r.FeeRate))
+		fee := tx.CalculateFee(uint64(r.FeeRate))
 		if (inputsCapacity + r.reward) < (outputsCapacity + fee) {
 			continue
 		}
