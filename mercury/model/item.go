@@ -83,7 +83,7 @@ func toIdentity(flag byte, content []byte) (string, error) {
 }
 
 func NewOutPointItem(txHash types.Hash, index uint) *Item {
-	outPoint := types.OutPoint{TxHash: txHash, Index: index}
+	outPoint := types.OutPoint{TxHash: txHash, Index: uint32(index)}
 	return &Item{
 		ItemTypeOutPoint,
 		outPoint,

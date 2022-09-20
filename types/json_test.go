@@ -37,7 +37,7 @@ func TestJsonOutPoint(t *testing.T) {
 }`)
 	var v OutPoint
 	json.Unmarshal(jsonText1, &v)
-	assert.Equal(t, uint(0x2), v.Index)
+	assert.Equal(t, uint32(0x2), v.Index)
 	assert.Equal(t, HexToHash("0xf8de3bb47d055cdf460d93a2a6e1b05f7432f9777c8c474abf4eec1d4aee5d37"), v.TxHash)
 
 	jsonText2, _ := json.Marshal(v)
@@ -339,8 +339,8 @@ func TestJsonConsensus(t *testing.T) {
 	assert.Equal(t, uint64(0x25), v.MedianTimeBlockCount)
 	assert.Equal(t, uint64(0xd09dc300), v.MaxBlockCycles)
 	assert.Equal(t, uint64(0x91c08), v.MaxBlockBytes)
-	assert.Equal(t, uint(0x0), v.BlockVersion)
-	assert.Equal(t, uint(0x0), v.TxVersion)
+	assert.Equal(t, uint32(0x0), v.BlockVersion)
+	assert.Equal(t, uint32(0x0), v.TxVersion)
 	assert.Equal(t, HexToHash("0x00000000000000000000000000000000000000000000000000545950455f4944"), v.TypeIdCodeHash)
 	assert.Equal(t, uint64(0x5dc), v.MaxBlockProposalsLimit)
 	assert.Equal(t, uint64(0x2238), v.PrimaryEpochRewardHalvingInterval)

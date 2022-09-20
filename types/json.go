@@ -69,7 +69,7 @@ func (r *Header) UnmarshalJSON(input []byte) error {
 		return err
 	}
 	*r = Header{
-		CompactTarget:    uint(jsonObj.CompactTarget),
+		CompactTarget:    uint32(jsonObj.CompactTarget),
 		Dao:              jsonObj.Dao,
 		Epoch:            uint64(jsonObj.Epoch),
 		Hash:             jsonObj.Hash,
@@ -80,7 +80,7 @@ func (r *Header) UnmarshalJSON(input []byte) error {
 		Timestamp:        uint64(jsonObj.Timestamp),
 		TransactionsRoot: jsonObj.TransactionsRoot,
 		ExtraHash:        jsonObj.ExtraHash,
-		Version:          uint(jsonObj.Version),
+		Version:          uint32(jsonObj.Version),
 	}
 	return nil
 }
@@ -106,7 +106,7 @@ func (r *OutPoint) UnmarshalJSON(input []byte) error {
 	}
 	*r = OutPoint{
 		TxHash: jsonObj.TxHash,
-		Index:  uint(jsonObj.Index),
+		Index:  uint32(jsonObj.Index),
 	}
 	return nil
 }
@@ -240,7 +240,7 @@ func (t *Transaction) UnmarshalJSON(input []byte) error {
 		return result
 	}
 	*t = Transaction{
-		Version:     uint(jsonObj.Version),
+		Version:     uint32(jsonObj.Version),
 		Hash:        jsonObj.Hash,
 		CellDeps:    jsonObj.CellDeps,
 		HeaderDeps:  jsonObj.HeaderDeps,
@@ -377,8 +377,8 @@ func (r *Consensus) UnmarshalJSON(input []byte) error {
 		MedianTimeBlockCount:              uint64(jsonObj.MedianTimeBlockCount),
 		MaxBlockCycles:                    uint64(jsonObj.MaxBlockCycles),
 		MaxBlockBytes:                     uint64(jsonObj.MaxBlockBytes),
-		BlockVersion:                      uint(jsonObj.BlockVersion),
-		TxVersion:                         uint(jsonObj.TxVersion),
+		BlockVersion:                      uint32(jsonObj.BlockVersion),
+		TxVersion:                         uint32(jsonObj.TxVersion),
 		TypeIdCodeHash:                    jsonObj.TypeIdCodeHash,
 		MaxBlockProposalsLimit:            uint64(jsonObj.MaxBlockProposalsLimit),
 		PrimaryEpochRewardHalvingInterval: uint64(jsonObj.PrimaryEpochRewardHalvingInterval),

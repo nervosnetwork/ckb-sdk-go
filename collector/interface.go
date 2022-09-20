@@ -6,7 +6,7 @@ import (
 )
 
 type TransactionBuilder interface {
-	SetVersion(version uint)
+	SetVersion(version uint32)
 	AddHeaderDep(headerDep types.Hash) int
 	AddCellDep(cellDep *types.CellDep) int
 	AddInput(input *types.CellInput) int

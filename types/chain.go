@@ -33,7 +33,7 @@ type Epoch struct {
 }
 
 type Header struct {
-	CompactTarget    uint     `json:"compact_target"`
+	CompactTarget    uint32   `json:"compact_target"`
 	Dao              Hash     `json:"dao"`
 	Epoch            uint64   `json:"epoch"`
 	Hash             Hash     `json:"hash"`
@@ -44,12 +44,12 @@ type Header struct {
 	Timestamp        uint64   `json:"timestamp"`
 	TransactionsRoot Hash     `json:"transactions_root"`
 	ExtraHash        Hash     `json:"extra_hash"`
-	Version          uint     `json:"version"`
+	Version          uint32   `json:"version"`
 }
 
 type OutPoint struct {
-	TxHash Hash `json:"tx_hash"`
-	Index  uint `json:"index"`
+	TxHash Hash   `json:"tx_hash"`
+	Index  uint32 `json:"index"`
 }
 
 type CellDep struct {
@@ -105,7 +105,7 @@ func (r CellOutput) OccupiedCapacity(outputData []byte) uint64 {
 }
 
 type Transaction struct {
-	Version     uint          `json:"version"`
+	Version     uint32        `json:"version"`
 	Hash        Hash          `json:"hash"`
 	CellDeps    []*CellDep    `json:"cell_deps"`
 	HeaderDeps  []Hash        `json:"header_deps"`
@@ -256,8 +256,8 @@ type Consensus struct {
 	MedianTimeBlockCount                 uint64             `json:"median_time_block_count"`
 	MaxBlockCycles                       uint64             `json:"max_block_cycles"`
 	MaxBlockBytes                        uint64             `json:"max_block_bytes"`
-	BlockVersion                         uint               `json:"block_version"`
-	TxVersion                            uint               `json:"tx_version"`
+	BlockVersion                         uint32             `json:"block_version"`
+	TxVersion                            uint32             `json:"tx_version"`
 	TypeIdCodeHash                       Hash               `json:"type_id_code_hash"`
 	MaxBlockProposalsLimit               uint64             `json:"max_block_proposals_limit"`
 	PrimaryEpochRewardHalvingInterval    uint64             `json:"primary_epoch_reward_halving_interval"`
