@@ -16,7 +16,7 @@ func (s *AnyCanPaySigner) SignTransaction(tx *types.Transaction, group *transact
 	}
 	if matched {
 		i0 := group.InputIndices[0]
-		signature, err := transaction.SignTransaction(tx, uint32ArrayToIntArray(group.InputIndices), tx.Witnesses[i0], ctx.Key)
+		signature, err := SignTransaction(tx, uint32ArrayToIntArray(group.InputIndices), tx.Witnesses[i0], ctx.Key)
 		if err != nil {
 			return false, err
 		}

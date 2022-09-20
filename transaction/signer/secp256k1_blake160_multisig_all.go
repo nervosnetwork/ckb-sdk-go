@@ -42,7 +42,7 @@ func MultiSignTransaction(tx *types.Transaction, group []int, key *secp256k1.Sec
 	if err != nil {
 		return false, nil
 	}
-	signature, err := transaction.SignTransaction(tx, group, witnessPlaceholder, key)
+	signature, err := SignTransaction(tx, group, witnessPlaceholder, key)
 	if err != nil {
 		return false, err
 	}

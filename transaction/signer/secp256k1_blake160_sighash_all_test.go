@@ -1,4 +1,4 @@
-package transaction
+package signer
 
 import (
 	"github.com/ethereum/go-ethereum/common"
