@@ -12,47 +12,35 @@ import (
 type Secp256k1Blake160SighashAllSigner struct {
 }
 
-func (s *Secp256k1Blake160SighashAllSigner) SignTransaction(transaction *types.Transaction, group *transaction.ScriptGroup, ctx *transaction.Context) (bool, error) {
-	key := ctx.Key
-	matched, err := IsSingleSigMatched(key, group.Script.Args)
+func uint32ArrayToIntArray(uint32Array []uint32) []int {
+	var intArray []int
+	for _, i := range uint32Array {
+		intArray = append(intArray, int(i))
+	}
+	return intArray
+}
+
+func (s *Secp256k1Blake160SighashAllSigner) SignTransaction(tx *types.Transaction, group *transaction.ScriptGroup, ctx *transaction.Context) (bool, error) {
+	matched, err := IsSingleSigMatched(ctx.Key, group.Script.Args)
 	if err != nil {
 		return false, err
 	}
 	if matched {
-		return SingleSignTransaction(transaction, group, key)
+		i0 := group.InputIndices[0]
+		signature, err := transaction.SignTransaction(tx, uint32ArrayToIntArray(group.InputIndices), tx.Witnesses[i0], ctx.Key)
+		if err != nil {
+			return false, err
+		}
+		witnessArgs, err := types.DeserializeWitnessArgs(tx.Witnesses[i0])
+		if err != nil {
+			return false, err
+		}
+		witnessArgs.Lock = signature
+		tx.Witnesses[i0] = witnessArgs.Serialize()
+		return true, nil
 	} else {
 		return false, nil
 	}
-}
-
-func SingleSignTransaction(tx *types.Transaction, group *transaction.ScriptGroup, key *secp256k1.Secp256k1Key) (bool, error) {
-	var err error
-	txHash := tx.ComputeHash()
-	data := txHash.Bytes()
-	for _, v := range group.InputIndices {
-		witness := tx.Witnesses[v]
-		data = append(data, types.SerializeUint64(uint64(len(witness)))...)
-		data = append(data, witness...)
-	}
-	for i := len(tx.Inputs); i < len(tx.Witnesses); i++ {
-		witness := tx.Witnesses[i]
-		data = append(data, types.SerializeUint64(uint64(len(witness)))...)
-		data = append(data, witness...)
-	}
-	msg := blake2b.Blake256(data)
-	signature, err := key.Sign(msg)
-	if err != nil {
-		return false, err
-	}
-	i := group.InputIndices[0]
-	w := tx.Witnesses[i]
-	witnessArgs, err := types.DeserializeWitnessArgs(w)
-	if err != nil {
-		return false, err
-	}
-	witnessArgs.Lock = signature
-	tx.Witnesses[i] = witnessArgs.Serialize()
-	return true, nil
 }
 
 func IsSingleSigMatched(key *secp256k1.Secp256k1Key, scriptArgs []byte) (bool, error) {

@@ -29,38 +29,24 @@ func (s *Secp256k1Blake160MultisigAllSigner) SignTransaction(transaction *types.
 		return false, err
 	}
 	if matched {
-		return MultiSignTransaction(transaction, group, ctx.Key, m)
+		return MultiSignTransaction(transaction, uint32ArrayToIntArray(group.InputIndices), ctx.Key, m)
 	} else {
 		return false, nil
 	}
 }
 
-func MultiSignTransaction(tx *types.Transaction, group *transaction.ScriptGroup, key *secp256k1.Secp256k1Key, m *MultisigScript) (bool, error) {
+func MultiSignTransaction(tx *types.Transaction, group []int, key *secp256k1.Secp256k1Key, m *MultisigScript) (bool, error) {
 	var err error
-	txHash := tx.ComputeHash()
-	data := txHash.Bytes()
-	i := group.InputIndices[0]
-	originalWitness := tx.Witnesses[i]
-	if tx.Witnesses[i], err = m.WitnessPlaceholder(originalWitness); err != nil {
-		return false, err
+	i0 := group[0]
+	witnessPlaceholder, err := m.WitnessPlaceholder(tx.Witnesses[i0])
+	if err != nil {
+		return false, nil
 	}
-	for _, v := range group.InputIndices {
-		witness := tx.Witnesses[v]
-		data = append(data, types.SerializeUint64(uint64(len(witness)))...)
-		data = append(data, witness...)
-	}
-	for i := len(tx.Inputs); i < len(tx.Witnesses); i++ {
-		witness := tx.Witnesses[i]
-		data = append(data, types.SerializeUint64(uint64(len(witness)))...)
-		data = append(data, witness...)
-	}
-	msg := blake2b.Blake256(data)
-	signature, err := key.Sign(msg)
+	signature, err := transaction.SignTransaction(tx, group, witnessPlaceholder, key)
 	if err != nil {
 		return false, err
 	}
-	tx.Witnesses[i], err = setSignatureToWitness(originalWitness, signature, m)
-	if err != nil {
+	if tx.Witnesses[i0], err = setSignatureToWitness(tx.Witnesses[i0], signature, m); err != nil {
 		return false, err
 	}
 	return true, nil
