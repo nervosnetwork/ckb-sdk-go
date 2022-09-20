@@ -95,7 +95,7 @@ func IsMultiSigMatched(key *secp256k1.Secp256k1Key, multisigScript *MultisigScri
 	if key == nil || scriptArgs == nil {
 		return false, errors.New("key or scriptArgs is nil")
 	}
-	hash, err := multisigScript.ComputeHash()
+	hash, err := multisigScript.ComputeHash160()
 	if err != nil {
 		return false, err
 	}
@@ -196,8 +196,7 @@ func (r *MultisigScript) WitnessPlaceholderInLock() []byte {
 	return b
 }
 
-// TODO: return Blake256 hash
-func (r *MultisigScript) ComputeHash() ([]byte, error) {
+func (r *MultisigScript) ComputeHash160() ([]byte, error) {
 	hash, err := blake2b.Blake160(r.Encode()[:])
 	if err != nil {
 		return nil, err

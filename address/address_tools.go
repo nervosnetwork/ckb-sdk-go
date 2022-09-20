@@ -72,7 +72,7 @@ func GenerateSecp256k1Blake160MultisigScript(requireN, threshold int, publicKeys
 		}
 	}
 
-	args, err := multisigScript.ComputeHash()
+	args, err := multisigScript.ComputeHash160()
 	if err != nil {
 		return nil, nil, err
 	}
