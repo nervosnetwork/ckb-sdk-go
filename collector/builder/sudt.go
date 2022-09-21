@@ -7,7 +7,6 @@ import (
 	"github.com/nervosnetwork/ckb-sdk-go/script/address"
 	"github.com/nervosnetwork/ckb-sdk-go/script/signer"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
-	"github.com/nervosnetwork/ckb-sdk-go/utils"
 	"math/big"
 	"reflect"
 )
@@ -69,7 +68,7 @@ func (r *SudtTransactionBuilder) AddSudtOutputByAddress(addr string, sudtAmount 
 		Lock:     a.Script,
 		Type:     r.SudtType,
 	}
-	data := utils.GenerateSudtAmount(sudtAmount)
+	data := script.EncodeSudtAmount(sudtAmount)
 	output.Capacity = output.OccupiedCapacity(data)
 	return r.AddOutput(output, data), nil
 }
@@ -84,7 +83,7 @@ func (r *SudtTransactionBuilder) AddSudtOutputWithCapacityByAddress(addr string,
 		Lock:     a.Script,
 		Type:     r.SudtType,
 	}
-	data := utils.GenerateSudtAmount(sudtAmount)
+	data := script.EncodeSudtAmount(sudtAmount)
 	return r.AddOutput(output, data), nil
 }
 
@@ -107,13 +106,13 @@ func (r *SudtTransactionBuilder) Build(contexts ...interface{}) (*signer.Transac
 	// If transaction type is SudtTransactionTypeTransfer, we need the change output to receive SUDT
 	if r.transactionType == SudtTransactionTypeTransfer {
 		r.Outputs[r.changeOutputIndex].Type = r.SudtType
-		r.OutputsData[r.changeOutputIndex] = utils.GenerateSudtAmount(big.NewInt(0))
+		r.OutputsData[r.changeOutputIndex] = script.EncodeSudtAmount(big.NewInt(0))
 	}
 
 	var (
 		err              error
-		script           *types.Script
-		group            *signer.ScriptGroup
+		s                *types.Script
+		g                *signer.ScriptGroup
 		m                = make(map[types.Hash]*signer.ScriptGroup)
 		outputsCapacity  = uint64(0)
 		outputSudtAmount = big.NewInt(0)
@@ -124,13 +123,13 @@ func (r *SudtTransactionBuilder) Build(contexts ...interface{}) (*signer.Transac
 		if err := addSudtAmount(outputSudtAmount, data); err != nil {
 			return nil, err
 		}
-		script = r.Outputs[i].Type
-		if script != nil {
-			if group, err = getOrPutScriptGroup(m, script, signer.ScriptTypeType); err != nil {
+		s = r.Outputs[i].Type
+		if s != nil {
+			if g, err = getOrPutScriptGroup(m, s, signer.ScriptTypeType); err != nil {
 				return nil, err
 			}
-			group.OutputIndices = append(group.OutputIndices, uint32(i))
-			if err := executeHandlers(&r.SimpleTransactionBuilder, group, contexts); err != nil {
+			g.OutputIndices = append(g.OutputIndices, uint32(i))
+			if err := executeHandlers(&r.SimpleTransactionBuilder, g, contexts); err != nil {
 				return nil, err
 			}
 		}
@@ -154,25 +153,25 @@ func (r *SudtTransactionBuilder) Build(contexts ...interface{}) (*signer.Transac
 		i += 1
 
 		// process input's LOCK
-		script = cell.Output.Lock
-		if script != nil {
-			if group, err = getOrPutScriptGroup(m, script, signer.ScriptTypeLock); err != nil {
+		s = cell.Output.Lock
+		if s != nil {
+			if g, err = getOrPutScriptGroup(m, s, signer.ScriptTypeLock); err != nil {
 				return nil, err
 			}
-			group.InputIndices = append(group.InputIndices, uint32(i))
-			if err := executeHandlers(&r.SimpleTransactionBuilder, group, contexts...); err != nil {
+			g.InputIndices = append(g.InputIndices, uint32(i))
+			if err := executeHandlers(&r.SimpleTransactionBuilder, g, contexts...); err != nil {
 				return nil, err
 			}
 		}
 
 		// process input's TYPE
-		script = cell.Output.Type
-		if script != nil {
-			if group, err = getOrPutScriptGroup(m, script, signer.ScriptTypeType); err != nil {
+		s = cell.Output.Type
+		if s != nil {
+			if g, err = getOrPutScriptGroup(m, s, signer.ScriptTypeType); err != nil {
 				return nil, err
 			}
-			group.InputIndices = append(group.InputIndices, uint32(i))
-			if err := executeHandlers(&r.SimpleTransactionBuilder, group, contexts...); err != nil {
+			g.InputIndices = append(g.InputIndices, uint32(i))
+			if err := executeHandlers(&r.SimpleTransactionBuilder, g, contexts...); err != nil {
 				return nil, err
 			}
 		}
@@ -200,7 +199,7 @@ func (r *SudtTransactionBuilder) Build(contexts ...interface{}) (*signer.Transac
 			if r.transactionType == SudtTransactionTypeTransfer {
 				diff := big.NewInt(0)
 				diff.Sub(inputsSudtAmount, outputSudtAmount)
-				r.OutputsData[r.changeOutputIndex] = utils.GenerateSudtAmount(diff)
+				r.OutputsData[r.changeOutputIndex] = script.EncodeSudtAmount(diff)
 			}
 			enoughCapacity = true
 			break
@@ -233,7 +232,7 @@ func addSudtAmount(a *big.Int, b []byte) error {
 	if len(b) == 0 {
 		return nil
 	}
-	amount, err := utils.ParseSudtAmount(b)
+	amount, err := script.DecodeSudtAmount(b)
 	if err != nil {
 		return err
 	}

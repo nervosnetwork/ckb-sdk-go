@@ -2,7 +2,9 @@ package script
 
 import (
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/stretchr/testify/assert"
+	"math/big"
 	"testing"
 )
 
@@ -43,4 +45,18 @@ func getKeysHashes() [][20]byte {
 	copy(keysHashes[0][:], common.FromHex("0x9b41c025515b00c24e2e2042df7b221af5c1891f"))
 	copy(keysHashes[1][:], common.FromHex("0xe732dcd15b7618eb1d7a11e6a68e4579b5be0114"))
 	return keysHashes
+}
+
+func TestDecodeSudtAmount(t *testing.T) {
+	data := hexutil.MustDecode("0x0010a5d4e80000000000000000000000")
+	amount, err := DecodeSudtAmount(data)
+	if err != nil {
+		t.Error(err)
+	}
+	assert.Equal(t, big.NewInt(1000000000000), amount)
+}
+
+func TestEncodeSudtAmount(t *testing.T) {
+	data := EncodeSudtAmount(big.NewInt(1000000000000))
+	assert.Equal(t, hexutil.MustDecode("0x0010a5d4e80000000000000000000000"), data)
 }

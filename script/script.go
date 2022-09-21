@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/nervosnetwork/ckb-sdk-go/crypto/blake2b"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
+	"math/big"
 )
 
 type MultisigConfig struct {
@@ -92,4 +93,37 @@ func (r *MultisigConfig) WitnessPlaceholderInLock() []byte {
 
 func (r *MultisigConfig) Hash160() []byte {
 	return blake2b.Blake160(r.Encode()[:])
+}
+
+func DecodeSudtAmount(outputData []byte) (*big.Int, error) {
+	if len(outputData) == 0 {
+		return big.NewInt(0), nil
+	}
+	tmpData := make([]byte, len(outputData))
+	copy(tmpData, outputData)
+	if len(tmpData) < 16 {
+		return nil, errors.New("invalid sUDT amount")
+	}
+	b := tmpData[0:16]
+	b = reverse(b)
+
+	return big.NewInt(0).SetBytes(b), nil
+}
+
+func EncodeSudtAmount(amount *big.Int) []byte {
+	b := amount.Bytes()
+	b = reverse(b)
+	if len(b) < 16 {
+		for i := len(b); i < 16; i++ {
+			b = append(b, 0)
+		}
+	}
+	return b
+}
+
+func reverse(b []byte) []byte {
+	for i := 0; i < len(b)/2; i++ {
+		b[i], b[len(b)-i-1] = b[len(b)-i-1], b[i]
+	}
+	return b
 }
