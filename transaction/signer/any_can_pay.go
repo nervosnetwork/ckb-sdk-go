@@ -2,14 +2,13 @@ package signer
 
 import (
 	"github.com/nervosnetwork/ckb-sdk-go/crypto/secp256k1"
-	"github.com/nervosnetwork/ckb-sdk-go/transaction"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 )
 
 type AnyCanPaySigner struct {
 }
 
-func (s *AnyCanPaySigner) SignTransaction(tx *types.Transaction, group *transaction.ScriptGroup, ctx *transaction.Context) (bool, error) {
+func (s *AnyCanPaySigner) SignTransaction(tx *types.Transaction, group *ScriptGroup, ctx *Context) (bool, error) {
 	matched, err := IsAnyCanPayMatched(ctx.Key, group.Script.Args)
 	if err != nil {
 		return false, err

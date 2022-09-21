@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/nervosnetwork/ckb-sdk-go/crypto/secp256k1"
-	"github.com/nervosnetwork/ckb-sdk-go/transaction"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 	"strconv"
 )
@@ -12,7 +11,7 @@ import (
 type PWLockSigner struct {
 }
 
-func (s *PWLockSigner) SignTransaction(transaction *types.Transaction, group *transaction.ScriptGroup, ctx *transaction.Context) (bool, error) {
+func (s *PWLockSigner) SignTransaction(transaction *types.Transaction, group *ScriptGroup, ctx *Context) (bool, error) {
 	key := ctx.Key
 	matched := IsPWLockMatched(key, group.Script.Args)
 	if matched {
@@ -22,7 +21,7 @@ func (s *PWLockSigner) SignTransaction(transaction *types.Transaction, group *tr
 	}
 }
 
-func PWLockSignTransaction(tx *types.Transaction, group *transaction.ScriptGroup, key *secp256k1.Secp256k1Key) (bool, error) {
+func PWLockSignTransaction(tx *types.Transaction, group *ScriptGroup, key *secp256k1.Secp256k1Key) (bool, error) {
 	txHash := tx.ComputeHash()
 	data := txHash.Bytes()
 	for _, v := range group.InputIndices {

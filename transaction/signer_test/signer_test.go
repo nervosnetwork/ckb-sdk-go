@@ -1,4 +1,4 @@
-package signer
+package signer_test
 
 import (
 	"encoding/json"
@@ -7,10 +7,10 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/nervosnetwork/ckb-sdk-go/crypto/secp256k1"
-	"github.com/nervosnetwork/ckb-sdk-go/transaction"
+	"github.com/nervosnetwork/ckb-sdk-go/transaction/signer"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 	"github.com/stretchr/testify/assert"
-	"io/ioutil"
+	"os"
 	"runtime/debug"
 	"testing"
 )
@@ -18,21 +18,21 @@ import (
 func TestIsSingleSigMatched(t *testing.T) {
 	key, _ := secp256k1.HexToKey("9d8ca87d75d150692211fa62b0d30de4d1ee6c530d5678b40b8cedacf0750d0f")
 	args := common.FromHex("af0b41c627807fbddcee75afa174d5a7e5135ebd")
-	actual, err := IsSingleSigMatched(key, args)
+	actual, err := signer.IsSingleSigMatched(key, args)
 	assert.Equal(t, true, actual)
 	assert.Nil(t, nil, err)
 
 	key, _ = secp256k1.HexToKey("9d8ca87d75d150692211fa62b0d30de4d1ee6c530d5678b40b8cedacf0750d0f")
 	args = common.FromHex("0450340178ae277261a838c89f9ccb76a190ed4b")
-	actual, err = IsSingleSigMatched(key, args)
+	actual, err = signer.IsSingleSigMatched(key, args)
 	assert.Equal(t, false, actual)
 	assert.Nil(t, err)
 
-	actual, err = IsSingleSigMatched(nil, args)
+	actual, err = signer.IsSingleSigMatched(nil, args)
 	assert.Equal(t, false, actual)
 	assert.NotNil(t, err)
 
-	actual, err = IsSingleSigMatched(key, nil)
+	actual, err = signer.IsSingleSigMatched(key, nil)
 	assert.Equal(t, false, actual)
 	assert.NotNil(t, err)
 }
@@ -42,18 +42,18 @@ func TestIsPWLockMatched(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	assert.True(t, IsPWLockMatched(k, common.FromHex("001d3f1ef827552ae1114027bd3ecf1f086ba0f9")))
+	assert.True(t, signer.IsPWLockMatched(k, common.FromHex("001d3f1ef827552ae1114027bd3ecf1f086ba0f9")))
 
 	k, err = secp256k1.HexToKey("e0ccb2548af279947b452efda4535dd4bcadf756d919701fcd4c382833277f85")
 	if err != nil {
 		t.Error(err)
 	}
-	assert.True(t, IsPWLockMatched(k, common.FromHex("adabffb9c27cb4af100ce7bca6903315220e87a2")))
+	assert.True(t, signer.IsPWLockMatched(k, common.FromHex("adabffb9c27cb4af100ce7bca6903315220e87a2")))
 }
 
 func TestMultiScriptDecode(t *testing.T) {
 	bytes := common.FromHex("0x000002029b41c025515b00c24e2e2042df7b221af5c1891fe732dcd15b7618eb1d7a11e6a68e4579b5be0114")
-	m, err := DecodeToMultisigScript(bytes)
+	m, err := signer.DecodeToMultisigScript(bytes)
 	if err != nil {
 		t.Error(err)
 	}
@@ -62,16 +62,16 @@ func TestMultiScriptDecode(t *testing.T) {
 	assert.Equal(t, getKeysHashes(), m.KeysHashes)
 
 	bytes = common.FromHex("0x000002039b41c025515b00c24e2e2042df7b221af5c1891fe732dcd15b7618eb1d7a11e6a68e4579b5be0114")
-	_, err = DecodeToMultisigScript(bytes)
+	_, err = signer.DecodeToMultisigScript(bytes)
 	assert.Error(t, err)
 
 	bytes = common.FromHex("0x000002029b41c025515b00c24e2e2042df7b221af5c1891f")
-	_, err = DecodeToMultisigScript(bytes)
+	_, err = signer.DecodeToMultisigScript(bytes)
 	assert.Error(t, err)
 }
 
 func TestMultiScriptEncode(t *testing.T) {
-	m := &MultisigScript{
+	m := &signer.MultisigScript{
 		Version:    0,
 		FirstN:     0,
 		Threshold:  2,
@@ -118,7 +118,7 @@ func testSignAndCheck(t *testing.T, fileName string) {
 	if err != nil {
 		t.Error(err, string(debug.Stack()))
 	}
-	txSigner := GetTransactionSignerInstance(types.NetworkTest)
+	txSigner := signer.GetTransactionSignerInstance(types.NetworkTest)
 	tx := checker.Transaction
 	signed, err := txSigner.SignTransaction(tx, checker.Contexts)
 	if err != nil {
@@ -139,7 +139,7 @@ func testSignAndCheck(t *testing.T, fileName string) {
 }
 
 func fromFile(fileName string) (*signerChecker, error) {
-	content, err := ioutil.ReadFile("./test-fixture/" + fileName)
+	content, err := os.ReadFile("./fixture/" + fileName)
 	if err != nil {
 		return nil, err
 	}
@@ -151,30 +151,30 @@ func fromFile(fileName string) (*signerChecker, error) {
 }
 
 type signerChecker struct {
-	Transaction       *transaction.TransactionWithScriptGroups `json:"raw_transaction"`
-	ExpectedWitnesses []string                                 `json:"expected_witnesses"`
-	Contexts          transaction.Contexts                     `json:"Contexts"`
+	Transaction       *signer.TransactionWithScriptGroups `json:"raw_transaction"`
+	ExpectedWitnesses []string                            `json:"expected_witnesses"`
+	Contexts          signer.Contexts                     `json:"Contexts"`
 }
 
 func (r *signerChecker) UnmarshalJSON(input []byte) error {
 	var jsonObj struct {
-		Transaction       *transaction.TransactionWithScriptGroups `json:"raw_transaction"`
-		ExpectedWitnesses []string                                 `json:"expected_witnesses"`
-		Contexts          []map[string]interface{}                 `json:"contexts"`
+		Transaction       *signer.TransactionWithScriptGroups `json:"raw_transaction"`
+		ExpectedWitnesses []string                            `json:"expected_witnesses"`
+		Contexts          []map[string]interface{}            `json:"contexts"`
 	}
 	if err := json.Unmarshal(input, &jsonObj); err != nil {
 		return err
 	}
 	r.Transaction = jsonObj.Transaction
 	r.ExpectedWitnesses = jsonObj.ExpectedWitnesses
-	r.Contexts = transaction.NewContexts()
+	r.Contexts = signer.NewContexts()
 	for _, c := range jsonObj.Contexts {
 		var (
-			ctx *transaction.Context
+			ctx *signer.Context
 			err error
 		)
 		if val, ok := c["private_key"]; ok {
-			if ctx, err = transaction.NewContext(val.(string)); err != nil {
+			if ctx, err = signer.NewContext(val.(string)); err != nil {
 				return err
 			}
 		} else {
@@ -182,7 +182,7 @@ func (r *signerChecker) UnmarshalJSON(input []byte) error {
 		}
 		if val, ok := c["multisig_script"]; ok {
 			v := val.(map[string]interface{})
-			m := NewMultisigScript(byte(v["first_n"].(float64)),
+			m := signer.NewMultisigScript(byte(v["first_n"].(float64)),
 				byte(v["threshold"].(float64)))
 			for _, h := range v["key_hashes"].([]interface{}) {
 				m.AddKeyHash(common.FromHex(h.(string)))

@@ -2,7 +2,6 @@ package handler
 
 import (
 	"github.com/nervosnetwork/ckb-sdk-go/collector"
-	"github.com/nervosnetwork/ckb-sdk-go/transaction"
 	"github.com/nervosnetwork/ckb-sdk-go/transaction/signer"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 	"github.com/nervosnetwork/ckb-sdk-go/utils"
@@ -43,7 +42,7 @@ func (r *Secp256k1Blake160SighashAllScriptHandler) isMatched(script *types.Scrip
 	return reflect.DeepEqual(script.CodeHash, r.CodeHash)
 }
 
-func (r *Secp256k1Blake160SighashAllScriptHandler) BuildTransaction(builder collector.TransactionBuilder, group *transaction.ScriptGroup, context interface{}) (bool, error) {
+func (r *Secp256k1Blake160SighashAllScriptHandler) BuildTransaction(builder collector.TransactionBuilder, group *signer.ScriptGroup, context interface{}) (bool, error) {
 	if group == nil || !r.isMatched(group.Script) {
 		return false, nil
 	}
@@ -91,7 +90,7 @@ func (r *Secp256k1Blake160MultisigAllScriptHandler) isMatched(script *types.Scri
 	return reflect.DeepEqual(script.CodeHash, codeHash)
 }
 
-func (r *Secp256k1Blake160MultisigAllScriptHandler) BuildTransaction(builder collector.TransactionBuilder, group *transaction.ScriptGroup, context interface{}) (bool, error) {
+func (r *Secp256k1Blake160MultisigAllScriptHandler) BuildTransaction(builder collector.TransactionBuilder, group *signer.ScriptGroup, context interface{}) (bool, error) {
 	if group == nil || !r.isMatched(group.Script) {
 		return false, nil
 	}

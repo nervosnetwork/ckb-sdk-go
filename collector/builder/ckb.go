@@ -5,7 +5,7 @@ import (
 	"github.com/nervosnetwork/ckb-sdk-go/address"
 	"github.com/nervosnetwork/ckb-sdk-go/collector"
 	"github.com/nervosnetwork/ckb-sdk-go/collector/handler"
-	"github.com/nervosnetwork/ckb-sdk-go/transaction"
+	"github.com/nervosnetwork/ckb-sdk-go/transaction/signer"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 )
 
@@ -57,13 +57,13 @@ func (r *CkbTransactionBuilder) AddDaoDepositOutputByAddress(addr string, capaci
 	return nil
 }
 
-func getOrPutScriptGroup(m map[types.Hash]*transaction.ScriptGroup, script *types.Script, scriptType transaction.ScriptType) (*transaction.ScriptGroup, error) {
+func getOrPutScriptGroup(m map[types.Hash]*signer.ScriptGroup, script *types.Script, scriptType signer.ScriptType) (*signer.ScriptGroup, error) {
 	if script == nil {
 		return nil, nil
 	}
 	hash := script.Hash()
 	if m[hash] == nil {
-		m[hash] = &transaction.ScriptGroup{
+		m[hash] = &signer.ScriptGroup{
 			Script:    script,
 			GroupType: scriptType,
 		}
@@ -71,7 +71,7 @@ func getOrPutScriptGroup(m map[types.Hash]*transaction.ScriptGroup, script *type
 	return m[hash], nil
 }
 
-func executeHandlers(s *SimpleTransactionBuilder, group *transaction.ScriptGroup, contexts ...interface{}) error {
+func executeHandlers(s *SimpleTransactionBuilder, group *signer.ScriptGroup, contexts ...interface{}) error {
 	if len(contexts) == 0 {
 		contexts = append(contexts, nil)
 	}
@@ -85,19 +85,19 @@ func executeHandlers(s *SimpleTransactionBuilder, group *transaction.ScriptGroup
 	return nil
 }
 
-func (r *CkbTransactionBuilder) Build(contexts ...interface{}) (*transaction.TransactionWithScriptGroups, error) {
+func (r *CkbTransactionBuilder) Build(contexts ...interface{}) (*signer.TransactionWithScriptGroups, error) {
 	var (
 		err             error
 		script          *types.Script
-		group           *transaction.ScriptGroup
-		m               = make(map[types.Hash]*transaction.ScriptGroup)
+		group           *signer.ScriptGroup
+		m               = make(map[types.Hash]*signer.ScriptGroup)
 		outputsCapacity = uint64(0)
 	)
 	for i := 0; i < len(r.Outputs); i++ {
 		outputsCapacity += r.Outputs[i].Capacity
 		script = r.Outputs[i].Type
 		if script != nil {
-			if group, err = getOrPutScriptGroup(m, script, transaction.ScriptTypeType); err != nil {
+			if group, err = getOrPutScriptGroup(m, script, signer.ScriptTypeType); err != nil {
 				return nil, err
 			}
 			group.OutputIndices = append(group.OutputIndices, uint32(i))
@@ -126,7 +126,7 @@ func (r *CkbTransactionBuilder) Build(contexts ...interface{}) (*transaction.Tra
 		// process input's LOCK
 		script = cell.Output.Lock
 		if script != nil {
-			if group, err = getOrPutScriptGroup(m, script, transaction.ScriptTypeLock); err != nil {
+			if group, err = getOrPutScriptGroup(m, script, signer.ScriptTypeLock); err != nil {
 				return nil, err
 			}
 			group.InputIndices = append(group.InputIndices, uint32(i))
@@ -138,7 +138,7 @@ func (r *CkbTransactionBuilder) Build(contexts ...interface{}) (*transaction.Tra
 		// process input's TYPE
 		script = cell.Output.Type
 		if script != nil {
-			if group, err = getOrPutScriptGroup(m, script, transaction.ScriptTypeType); err != nil {
+			if group, err = getOrPutScriptGroup(m, script, signer.ScriptTypeType); err != nil {
 				return nil, err
 			}
 			group.InputIndices = append(group.InputIndices, uint32(i))
@@ -166,7 +166,7 @@ func (r *CkbTransactionBuilder) Build(contexts ...interface{}) (*transaction.Tra
 	if !enoughCapacity {
 		return nil, errors.New("no enough capacity")
 	}
-	r.scriptGroups = make([]*transaction.ScriptGroup, 0)
+	r.scriptGroups = make([]*signer.ScriptGroup, 0)
 	for _, g := range m {
 		r.scriptGroups = append(r.scriptGroups, g)
 	}

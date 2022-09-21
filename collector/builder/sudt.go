@@ -4,7 +4,7 @@ import (
 	"errors"
 	"github.com/nervosnetwork/ckb-sdk-go/address"
 	"github.com/nervosnetwork/ckb-sdk-go/collector"
-	"github.com/nervosnetwork/ckb-sdk-go/transaction"
+	"github.com/nervosnetwork/ckb-sdk-go/transaction/signer"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 	"github.com/nervosnetwork/ckb-sdk-go/utils"
 	"math/big"
@@ -98,7 +98,7 @@ func (r *SudtTransactionBuilder) AddChangeOutputByAddress(addr string) error {
 	return err
 }
 
-func (r *SudtTransactionBuilder) Build(contexts ...interface{}) (*transaction.TransactionWithScriptGroups, error) {
+func (r *SudtTransactionBuilder) Build(contexts ...interface{}) (*signer.TransactionWithScriptGroups, error) {
 	if r.SudtType == nil {
 		return nil, errors.New("sudt type is not set")
 	}
@@ -112,8 +112,8 @@ func (r *SudtTransactionBuilder) Build(contexts ...interface{}) (*transaction.Tr
 	var (
 		err              error
 		script           *types.Script
-		group            *transaction.ScriptGroup
-		m                = make(map[types.Hash]*transaction.ScriptGroup)
+		group            *signer.ScriptGroup
+		m                = make(map[types.Hash]*signer.ScriptGroup)
 		outputsCapacity  = uint64(0)
 		outputSudtAmount = big.NewInt(0)
 	)
@@ -125,7 +125,7 @@ func (r *SudtTransactionBuilder) Build(contexts ...interface{}) (*transaction.Tr
 		}
 		script = r.Outputs[i].Type
 		if script != nil {
-			if group, err = getOrPutScriptGroup(m, script, transaction.ScriptTypeType); err != nil {
+			if group, err = getOrPutScriptGroup(m, script, signer.ScriptTypeType); err != nil {
 				return nil, err
 			}
 			group.OutputIndices = append(group.OutputIndices, uint32(i))
@@ -155,7 +155,7 @@ func (r *SudtTransactionBuilder) Build(contexts ...interface{}) (*transaction.Tr
 		// process input's LOCK
 		script = cell.Output.Lock
 		if script != nil {
-			if group, err = getOrPutScriptGroup(m, script, transaction.ScriptTypeLock); err != nil {
+			if group, err = getOrPutScriptGroup(m, script, signer.ScriptTypeLock); err != nil {
 				return nil, err
 			}
 			group.InputIndices = append(group.InputIndices, uint32(i))
@@ -167,7 +167,7 @@ func (r *SudtTransactionBuilder) Build(contexts ...interface{}) (*transaction.Tr
 		// process input's TYPE
 		script = cell.Output.Type
 		if script != nil {
-			if group, err = getOrPutScriptGroup(m, script, transaction.ScriptTypeType); err != nil {
+			if group, err = getOrPutScriptGroup(m, script, signer.ScriptTypeType); err != nil {
 				return nil, err
 			}
 			group.InputIndices = append(group.InputIndices, uint32(i))
@@ -208,7 +208,7 @@ func (r *SudtTransactionBuilder) Build(contexts ...interface{}) (*transaction.Tr
 	if !enoughCapacity {
 		return nil, errors.New("no enough capacity")
 	}
-	r.scriptGroups = make([]*transaction.ScriptGroup, 0)
+	r.scriptGroups = make([]*signer.ScriptGroup, 0)
 	for _, g := range m {
 		r.scriptGroups = append(r.scriptGroups, g)
 	}

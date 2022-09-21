@@ -8,7 +8,6 @@ import (
 	"github.com/nervosnetwork/ckb-sdk-go/crypto"
 	"github.com/nervosnetwork/ckb-sdk-go/crypto/blake2b"
 	"github.com/nervosnetwork/ckb-sdk-go/crypto/secp256k1"
-	"github.com/nervosnetwork/ckb-sdk-go/transaction"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 )
 
@@ -23,7 +22,7 @@ func uint32ArrayToIntArray(uint32Array []uint32) []int {
 	return intArray
 }
 
-func (s *Secp256k1Blake160SighashAllSigner) SignTransaction(tx *types.Transaction, group *transaction.ScriptGroup, ctx *transaction.Context) (bool, error) {
+func (s *Secp256k1Blake160SighashAllSigner) SignTransaction(tx *types.Transaction, group *ScriptGroup, ctx *Context) (bool, error) {
 	matched, err := IsSingleSigMatched(ctx.Key, group.Script.Args)
 	if err != nil {
 		return false, err
