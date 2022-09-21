@@ -76,7 +76,7 @@ func IsMultiSigMatched(key *secp256k1.Secp256k1Key, multisigScript *MultisigScri
 	if key == nil || scriptArgs == nil {
 		return false, errors.New("key or scriptArgs is nil")
 	}
-	hash := multisigScript.ComputeHash160()
+	hash := multisigScript.Hash160()
 	return bytes.Equal(scriptArgs, hash), nil
 }
 
@@ -96,21 +96,11 @@ func NewMultisigScript(firstN byte, threshold byte) *MultisigScript {
 	}
 }
 
-func (r *MultisigScript) AddKeyHash(keyHash [20]byte) {
-	r.KeysHashes = append(r.KeysHashes, keyHash)
-}
-
-func (r *MultisigScript) AddKeyHashBySlice(keyHash []byte) error {
-	if keyHash == nil {
-		return errors.New("keyHash is nil")
-	}
-	if len(keyHash) != 20 {
-		return errors.New("keyHash length should be 20-byte")
-	}
-	k := [20]byte{}
-	copy(k[:], keyHash)
-	r.AddKeyHash(k)
-	return nil
+// AddKeyHash adds key hash, and panic if keyHash is shorter than 20 bytes.
+func (r *MultisigScript) AddKeyHash(keyHash []byte) {
+	var h [20]byte
+	copy(h[:], keyHash[:20])
+	r.KeysHashes = append(r.KeysHashes, h)
 }
 
 func (r *MultisigScript) Encode() []byte {
@@ -174,6 +164,6 @@ func (r *MultisigScript) WitnessPlaceholderInLock() []byte {
 	return b
 }
 
-func (r *MultisigScript) ComputeHash160() []byte {
+func (r *MultisigScript) Hash160() []byte {
 	return blake2b.Blake160(r.Encode()[:])
 }

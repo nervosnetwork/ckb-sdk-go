@@ -79,7 +79,7 @@ func TestMultiScriptEncode(t *testing.T) {
 	}
 	encoded := m.Encode()
 	assert.Equal(t, common.FromHex("0x000002029b41c025515b00c24e2e2042df7b221af5c1891fe732dcd15b7618eb1d7a11e6a68e4579b5be0114"), encoded)
-	hash := m.ComputeHash160()
+	hash := m.Hash160()
 	assert.Equal(t, common.FromHex("0x35ed7b939b4ac9cb447b82340fd8f26d344f7a62"), hash)
 }
 
@@ -185,9 +185,7 @@ func (r *signerChecker) UnmarshalJSON(input []byte) error {
 			m := NewMultisigScript(byte(v["first_n"].(float64)),
 				byte(v["threshold"].(float64)))
 			for _, h := range v["key_hashes"].([]interface{}) {
-				if err := m.AddKeyHashBySlice(common.FromHex(h.(string))); err != nil {
-					return err
-				}
+				m.AddKeyHash(common.FromHex(h.(string)))
 			}
 			ctx.Payload = m
 		}
