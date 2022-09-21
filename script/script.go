@@ -127,3 +127,10 @@ func reverse(b []byte) []byte {
 	}
 	return b
 }
+
+// ChequeArgs generates a args for cheque script
+func ChequeArgs(senderLock, receiverLock *types.Script) []byte {
+	senderLockHash := senderLock.Hash()
+	receiverLockHash := receiverLock.Hash()
+	return append(receiverLockHash.Bytes()[0:20], senderLockHash.Bytes()[0:20]...)
+}
