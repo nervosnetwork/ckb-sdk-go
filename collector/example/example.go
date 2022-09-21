@@ -4,13 +4,13 @@ import (
 	"context"
 	"fmt"
 	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/nervosnetwork/ckb-sdk-go/address"
 	"github.com/nervosnetwork/ckb-sdk-go/collector"
-	builder2 "github.com/nervosnetwork/ckb-sdk-go/collector/builder"
+	"github.com/nervosnetwork/ckb-sdk-go/collector/builder"
 	"github.com/nervosnetwork/ckb-sdk-go/collector/handler"
 	"github.com/nervosnetwork/ckb-sdk-go/indexer"
 	"github.com/nervosnetwork/ckb-sdk-go/rpc"
-	"github.com/nervosnetwork/ckb-sdk-go/transaction/signer"
+	"github.com/nervosnetwork/ckb-sdk-go/script/address"
+	"github.com/nervosnetwork/ckb-sdk-go/script/signer"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 	"github.com/nervosnetwork/ckb-sdk-go/utils"
 	"math/big"
@@ -30,13 +30,13 @@ func SendCkbExample() error {
 	}
 
 	// build transaction
-	builder := builder2.NewCkbTransactionBuilder(network, iterator)
-	builder.FeeRate = 1000
-	if err := builder.AddOutputByAddress(receiver, 50100000000); err != nil {
+	b := builder.NewCkbTransactionBuilder(network, iterator)
+	b.FeeRate = 1000
+	if err := b.AddOutputByAddress(receiver, 50100000000); err != nil {
 		return err
 	}
-	builder.AddChangeOutputByAddress(sender)
-	txWithGroups, err := builder.Build()
+	b.AddChangeOutputByAddress(sender)
+	txWithGroups, err := b.Build()
 	if err != nil {
 		return err
 	}
@@ -87,7 +87,7 @@ func SendCkbFromMultisigAddressExample() error {
 	}
 
 	// build transaction
-	builder := builder2.NewCkbTransactionBuilder(network, iterator)
+	builder := builder.NewCkbTransactionBuilder(network, iterator)
 	builder.FeeRate = 1000
 	if err := builder.AddOutputByAddress(receiver, 50100000000); err != nil {
 		return err
@@ -138,7 +138,7 @@ func IssueSudtExample() error {
 	}
 
 	// build transaction
-	builder, err := builder2.NewSudtTransactionBuilderFromSudtOwnerAddress(network, iterator, builder2.SudtTransactionTypeIssue, sender)
+	builder, err := builder.NewSudtTransactionBuilderFromSudtOwnerAddress(network, iterator, builder.SudtTransactionTypeIssue, sender)
 	if err != nil {
 		return err
 	}
@@ -186,7 +186,7 @@ func SendSudtExample() error {
 	}
 
 	// build transaction
-	builder := builder2.NewSudtTransactionBuilderFromSudtArgs(network, iterator, builder2.SudtTransactionTypeTransfer, sudtArgs)
+	builder := builder.NewSudtTransactionBuilderFromSudtArgs(network, iterator, builder.SudtTransactionTypeTransfer, sudtArgs)
 	builder.FeeRate = 1000
 	_, err = builder.AddSudtOutputByAddress(receiver, big.NewInt(1))
 	if err != nil {
@@ -228,7 +228,7 @@ func DepositDaoExample() error {
 	}
 
 	// build transaction
-	builder := builder2.NewCkbTransactionBuilder(network, iterator)
+	builder := builder.NewCkbTransactionBuilder(network, iterator)
 	builder.FeeRate = 1000
 	if err := builder.AddDaoDepositOutputByAddress(sender, 50100000000); err != nil {
 		return err
@@ -278,7 +278,7 @@ func WithdrawDaoExample() error {
 	}
 
 	// build transaction
-	builder, err := builder2.NewDaoTransactionBuilder(network, iterator, depositOutPoint, ckbClient)
+	builder, err := builder.NewDaoTransactionBuilder(network, iterator, depositOutPoint, ckbClient)
 	if err != nil {
 		return err
 	}
@@ -336,7 +336,7 @@ func ClaimDaoExample() error {
 	}
 
 	// build transaction
-	builder, err := builder2.NewDaoTransactionBuilder(network, iterator, withdrawOutPoint, ckbClient)
+	builder, err := builder.NewDaoTransactionBuilder(network, iterator, withdrawOutPoint, ckbClient)
 	if err != nil {
 		return err
 	}

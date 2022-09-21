@@ -2,8 +2,8 @@ package collector
 
 import (
 	"context"
-	"github.com/nervosnetwork/ckb-sdk-go/address"
 	"github.com/nervosnetwork/ckb-sdk-go/indexer"
+	"github.com/nervosnetwork/ckb-sdk-go/script/address"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 )
 

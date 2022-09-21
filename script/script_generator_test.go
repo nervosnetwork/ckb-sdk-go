@@ -1,11 +1,12 @@
-package address
+package script
 
 import (
 	"encoding/hex"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/nervosnetwork/ckb-sdk-go/crypto/blake2b"
 	"github.com/nervosnetwork/ckb-sdk-go/crypto/secp256k1"
-	"github.com/nervosnetwork/ckb-sdk-go/transaction/signer"
+	"github.com/nervosnetwork/ckb-sdk-go/script/address"
+	"github.com/nervosnetwork/ckb-sdk-go/script/signer"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -16,7 +17,7 @@ func TestGenerateScriptSecp256K1Blake160SignhashAll(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	generated := ScriptSecp256K1Blake160SignhashAll(key)
+	generated := Secp256K1Blake160SignhashAll(key)
 	expected := &types.Script{
 		CodeHash: types.HexToHash("0x9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8"),
 		HashType: types.HashTypeType,
@@ -24,22 +25,22 @@ func TestGenerateScriptSecp256K1Blake160SignhashAll(t *testing.T) {
 	}
 	assert.Equal(t, expected, generated)
 
-	generated, err = ScriptSecp256K1Blake160SignhashAllByPublicKey(common.FromHex("0x024a501efd328e062c8675f2365970728c859c592beeefd6be8ead3d901330bc01"))
+	generated, err = Secp256K1Blake160SignhashAllByPublicKey(common.FromHex("0x024a501efd328e062c8675f2365970728c859c592beeefd6be8ead3d901330bc01"))
 	if err != nil {
 		t.Error(err)
 	}
 	assert.Equal(t, expected, generated)
 	// test public key hex without 0x
-	generated, err = ScriptSecp256K1Blake160SignhashAllByPublicKey(common.FromHex("024a501efd328e062c8675f2365970728c859c592beeefd6be8ead3d901330bc01"))
+	generated, err = Secp256K1Blake160SignhashAllByPublicKey(common.FromHex("024a501efd328e062c8675f2365970728c859c592beeefd6be8ead3d901330bc01"))
 	if err != nil {
 		t.Error(err)
 	}
 	assert.Equal(t, expected, generated)
 	// test invalid length
-	_, err = ScriptSecp256K1Blake160SignhashAllByPublicKey(common.FromHex("0x024a501ef"))
+	_, err = Secp256K1Blake160SignhashAllByPublicKey(common.FromHex("0x024a501ef"))
 	assert.NotNil(t, err)
 	// test uncompressed public key
-	_, err = ScriptSecp256K1Blake160SignhashAllByPublicKey(common.FromHex("0x044a501efd328e062c8675f2365970728c859c592beeefd6be8ead3d901330bc01d1868c7dabbf50e52ca7311e1263f917a8ced1d033e82dc2a68bed69397382f4"))
+	_, err = Secp256K1Blake160SignhashAllByPublicKey(common.FromHex("0x044a501efd328e062c8675f2365970728c859c592beeefd6be8ead3d901330bc01d1868c7dabbf50e52ca7311e1263f917a8ced1d033e82dc2a68bed69397382f4"))
 	assert.NotNil(t, err)
 }
 
@@ -57,12 +58,12 @@ func TestGenerateSecp256k1MultisigScriptByHash(t *testing.T) {
 		}
 		multisigScript.AddKeyHash(blake2b.Blake256(key))
 	}
-	script, err := ScriptSecp256k1Blake160Multisig(multisigScript)
+	script, err := Secp256k1Blake160Multisig(multisigScript)
 	if err != nil {
 		t.Error(t, err)
 	}
 
-	address := &Address{
+	address := &address.Address{
 		Script:  script,
 		Network: types.NetworkTest,
 	}

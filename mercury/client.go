@@ -2,7 +2,7 @@ package mercury
 
 import (
 	"context"
-	"github.com/nervosnetwork/ckb-sdk-go/transaction/signer"
+	"github.com/nervosnetwork/ckb-sdk-go/script/signer"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 
 	"github.com/ethereum/go-ethereum/rpc"

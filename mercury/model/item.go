@@ -3,7 +3,7 @@ package model
 import (
 	"errors"
 	"github.com/ethereum/go-ethereum/common/hexutil"
-	address2 "github.com/nervosnetwork/ckb-sdk-go/address"
+	"github.com/nervosnetwork/ckb-sdk-go/script/address"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 	"github.com/nervosnetwork/ckb-sdk-go/utils"
 	"reflect"
@@ -57,8 +57,8 @@ func NewIdentityItemByAddress(address string) (*Item, error) {
 	return &Item{ItemTypeIdentity, identity}, nil
 }
 
-func decodeItemAddress(address string) (*address2.Address, error) {
-	a, err := address2.Decode(address)
+func decodeItemAddress(addr string) (*address.Address, error) {
+	a, err := address.Decode(addr)
 	if err != nil {
 		return nil, err
 	}
@@ -71,7 +71,7 @@ func decodeItemAddress(address string) (*address2.Address, error) {
 			return a, nil
 		}
 	}
-	return nil, errors.New("not a valid secp256k1_blake160_signhash_all or ACP address")
+	return nil, errors.New("not a valid secp256k1_blake160_signhash_all or ACP addr")
 }
 
 func toIdentity(flag byte, content []byte) (string, error) {

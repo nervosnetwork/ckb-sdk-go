@@ -55,17 +55,17 @@ func decodeShort(payload []byte, network types.Network) (*Address, error) {
 	switch codeHashIndex {
 	case 0x00: // secp256k1_blake160_sighash_all
 		if argsLen != 20 {
-			return nil, errors.New(fmt.Sprintf("invalid args length %d", argsLen))
+			return nil, fmt.Errorf("invalid args length %d", argsLen)
 		}
 		scriptType = types.BuiltinScriptSecp256k1Blake160SighashAll
 	case 0x01: // secp256k1_blake160_multisig_all
 		if argsLen != 20 {
-			return nil, errors.New(fmt.Sprintf("invalid args length %d", argsLen))
+			return nil, fmt.Errorf("invalid args length %d", argsLen)
 		}
 		scriptType = types.BuiltinScriptSecp256k1Blake160MultisigAll
 	case 0x02: // anyone_can_pay
 		if argsLen < 20 || argsLen > 22 {
-			return nil, errors.New(fmt.Sprintf("invalid args length %d", argsLen))
+			return nil, fmt.Errorf("invalid args length %d", argsLen)
 		}
 		scriptType = types.BuiltinScriptAnyoneCanPay
 	default:
@@ -106,7 +106,7 @@ func decodeLongBech32(payload []byte, network types.Network) (*Address, error) {
 
 func decodeLongBech32M(payload []byte, network types.Network) (*Address, error) {
 	if payload[0] != 0x00 {
-		return nil, errors.New(fmt.Sprintf("invalid payload header 0x%d", payload[0]))
+		return nil, fmt.Errorf("invalid payload header 0x%d", payload[0])
 	}
 	codeHash := types.BytesToHash(payload[1:33])
 	hashType, err := types.DeserializeHashTypeByte(payload[33])
