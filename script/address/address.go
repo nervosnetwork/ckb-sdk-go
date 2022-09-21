@@ -4,8 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"github.com/nervosnetwork/ckb-sdk-go/crypto/bech32"
+	"github.com/nervosnetwork/ckb-sdk-go/script"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
-	"github.com/nervosnetwork/ckb-sdk-go/utils"
 )
 
 type Address struct {
@@ -51,27 +51,27 @@ func decodeShort(payload []byte, network types.Network) (*Address, error) {
 	codeHashIndex := payload[1]
 	args := payload[2:]
 	argsLen := len(args)
-	var scriptType types.BuiltinScript
+	var scriptType script.SystemScript
 	switch codeHashIndex {
 	case 0x00: // secp256k1_blake160_sighash_all
 		if argsLen != 20 {
 			return nil, fmt.Errorf("invalid args length %d", argsLen)
 		}
-		scriptType = types.BuiltinScriptSecp256k1Blake160SighashAll
+		scriptType = script.SystemScriptSecp256k1Blake160SighashAll
 	case 0x01: // secp256k1_blake160_multisig_all
 		if argsLen != 20 {
 			return nil, fmt.Errorf("invalid args length %d", argsLen)
 		}
-		scriptType = types.BuiltinScriptSecp256k1Blake160MultisigAll
+		scriptType = script.SystemScriptSecp256k1Blake160MultisigAll
 	case 0x02: // anyone_can_pay
 		if argsLen < 20 || argsLen > 22 {
 			return nil, fmt.Errorf("invalid args length %d", argsLen)
 		}
-		scriptType = types.BuiltinScriptAnyoneCanPay
+		scriptType = script.SystemScriptAnyoneCanPay
 	default:
 		return nil, errors.New("unknown code hash index")
 	}
-	codeHash := utils.GetCodeHash(network, scriptType)
+	codeHash := script.GetCodeHash(network, scriptType)
 	return &Address{
 		Script: &types.Script{
 			CodeHash: codeHash,
@@ -136,11 +136,11 @@ func (a Address) Encode() (string, error) {
 func (a Address) EncodeShort() (string, error) {
 	payload := make([]byte, 0)
 	payload = append(payload, 0x01)
-	if a.Script.CodeHash == utils.GetCodeHash(a.Network, types.BuiltinScriptSecp256k1Blake160SighashAll) {
+	if a.Script.CodeHash == script.GetCodeHash(a.Network, script.SystemScriptSecp256k1Blake160SighashAll) {
 		payload = append(payload, 0x00)
-	} else if a.Script.CodeHash == utils.GetCodeHash(a.Network, types.BuiltinScriptSecp256k1Blake160MultisigAll) {
+	} else if a.Script.CodeHash == script.GetCodeHash(a.Network, script.SystemScriptSecp256k1Blake160MultisigAll) {
 		payload = append(payload, 0x01)
-	} else if a.Script.CodeHash == utils.GetCodeHash(a.Network, types.BuiltinScriptAnyoneCanPay) {
+	} else if a.Script.CodeHash == script.GetCodeHash(a.Network, script.SystemScriptAnyoneCanPay) {
 		payload = append(payload, 0x02)
 	} else {
 		return "", errors.New("encoding to short address for given script is unsupported")

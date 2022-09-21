@@ -2,9 +2,9 @@ package handler
 
 import (
 	"github.com/nervosnetwork/ckb-sdk-go/collector"
+	"github.com/nervosnetwork/ckb-sdk-go/script"
 	"github.com/nervosnetwork/ckb-sdk-go/script/signer"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
-	"github.com/nervosnetwork/ckb-sdk-go/utils"
 	"reflect"
 )
 
@@ -31,7 +31,7 @@ func NewSecp256k1Blake160SighashAllScriptHandler(network types.Network) *Secp256
 			},
 			DepType: types.DepTypeDepGroup,
 		},
-		CodeHash: utils.GetCodeHash(network, types.BuiltinScriptSecp256k1Blake160SighashAll),
+		CodeHash: script.GetCodeHash(network, script.SystemScriptSecp256k1Blake160SighashAll),
 	}
 }
 
@@ -82,12 +82,12 @@ func NewSecp256k1Blake160MultisigAllScriptHandler(network types.Network) *Secp25
 	}
 }
 
-func (r *Secp256k1Blake160MultisigAllScriptHandler) isMatched(script *types.Script) bool {
-	if script == nil {
+func (r *Secp256k1Blake160MultisigAllScriptHandler) isMatched(s *types.Script) bool {
+	if s == nil {
 		return false
 	}
-	codeHash := utils.GetCodeHash(r.network, types.BuiltinScriptSecp256k1Blake160MultisigAll)
-	return reflect.DeepEqual(script.CodeHash, codeHash)
+	codeHash := script.GetCodeHash(r.network, script.SystemScriptSecp256k1Blake160MultisigAll)
+	return reflect.DeepEqual(s.CodeHash, codeHash)
 }
 
 func (r *Secp256k1Blake160MultisigAllScriptHandler) BuildTransaction(builder collector.TransactionBuilder, group *signer.ScriptGroup, context interface{}) (bool, error) {
@@ -96,16 +96,16 @@ func (r *Secp256k1Blake160MultisigAllScriptHandler) BuildTransaction(builder col
 	}
 	var lock []byte
 	switch context.(type) {
-	case signer.MultisigScript, *signer.MultisigScript:
+	case script.MultisigConfig, *script.MultisigConfig:
 		var (
-			multisigScript *signer.MultisigScript
-			ok             bool
+			config *script.MultisigConfig
+			ok     bool
 		)
-		if multisigScript, ok = context.(*signer.MultisigScript); !ok {
-			v, _ := context.(signer.MultisigScript)
-			multisigScript = &v
+		if config, ok = context.(*script.MultisigConfig); !ok {
+			v, _ := context.(script.MultisigConfig)
+			config = &v
 		}
-		lock = multisigScript.WitnessPlaceholderInLock()
+		lock = config.WitnessPlaceholderInLock()
 	default:
 		return false, nil
 	}

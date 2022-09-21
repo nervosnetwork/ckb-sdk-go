@@ -9,10 +9,10 @@ import (
 	"github.com/nervosnetwork/ckb-sdk-go/collector/handler"
 	"github.com/nervosnetwork/ckb-sdk-go/indexer"
 	"github.com/nervosnetwork/ckb-sdk-go/rpc"
+	"github.com/nervosnetwork/ckb-sdk-go/script"
 	"github.com/nervosnetwork/ckb-sdk-go/script/address"
 	"github.com/nervosnetwork/ckb-sdk-go/script/signer"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
-	"github.com/nervosnetwork/ckb-sdk-go/utils"
 	"math/big"
 )
 
@@ -61,15 +61,15 @@ func SendCkbExample() error {
 func SendCkbFromMultisigAddressExample() error {
 	network := types.NetworkTest
 
-	multisigScript := signer.NewMultisigScript(0, 2)
-	multisigScript.AddKeyHash(hexutil.MustDecode("0x7336b0ba900684cb3cb00f0d46d4f64c0994a562"))
-	multisigScript.AddKeyHash(hexutil.MustDecode("0x5724c1e3925a5206944d753a6f3edaedf977d77f"))
+	multisigConfig := script.NewMultisigConfig(0, 2)
+	multisigConfig.AddKeyHash(hexutil.MustDecode("0x7336b0ba900684cb3cb00f0d46d4f64c0994a562"))
+	multisigConfig.AddKeyHash(hexutil.MustDecode("0x5724c1e3925a5206944d753a6f3edaedf977d77f"))
 
-	args := multisigScript.Hash160()
+	args := multisigConfig.Hash160()
 	// ckt1qpw9q60tppt7l3j7r09qcp7lxnp3vcanvgha8pmvsa3jplykxn32sqdunqvd3g2felqv6qer8pkydws8jg9qxlca0st5v
 	sender, _ := address.Address{
 		Script: &types.Script{
-			CodeHash: utils.GetCodeHash(network, types.BuiltinScriptSecp256k1Blake160MultisigAll),
+			CodeHash: script.GetCodeHash(network, script.SystemScriptSecp256k1Blake160MultisigAll),
 			HashType: types.HashTypeType,
 			Args:     args,
 		},
@@ -93,7 +93,7 @@ func SendCkbFromMultisigAddressExample() error {
 		return err
 	}
 	builder.AddChangeOutputByAddress(sender)
-	txWithGroups, err := builder.Build(multisigScript)
+	txWithGroups, err := builder.Build(multisigConfig)
 	if err != nil {
 		return err
 	}
@@ -101,14 +101,14 @@ func SendCkbFromMultisigAddressExample() error {
 	// sign transaction
 	txSigner := signer.GetTransactionSignerInstance(network)
 	// first signature
-	ctx1, _ := signer.NewContextWithPayload("0x4fd809631a6aa6e3bb378dd65eae5d71df895a82c91a615a1e8264741515c79c", multisigScript)
+	ctx1, _ := signer.NewContextWithPayload("0x4fd809631a6aa6e3bb378dd65eae5d71df895a82c91a615a1e8264741515c79c", multisigConfig)
 	ctxs1 := signer.NewContexts()
 	ctxs1.Add(ctx1)
 	if _, err = txSigner.SignTransaction(txWithGroups, ctxs1); err != nil {
 		return err
 	}
 	// second signature
-	ctx2, _ := signer.NewContextWithPayload("0x7438f7b35c355e3d2fb9305167a31a72d22ddeafb80a21cc99ff6329d92e8087", multisigScript)
+	ctx2, _ := signer.NewContextWithPayload("0x7438f7b35c355e3d2fb9305167a31a72d22ddeafb80a21cc99ff6329d92e8087", multisigConfig)
 	ctxs2 := signer.NewContexts()
 	ctxs2.Add(ctx2)
 	if _, err = txSigner.SignTransaction(txWithGroups, ctxs2); err != nil {

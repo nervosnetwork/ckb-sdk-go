@@ -3,16 +3,15 @@ package script
 import (
 	"encoding/hex"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/nervosnetwork/ckb-sdk-go/crypto/blake2b"
 	"github.com/nervosnetwork/ckb-sdk-go/crypto/secp256k1"
-	"github.com/nervosnetwork/ckb-sdk-go/script/address"
-	"github.com/nervosnetwork/ckb-sdk-go/script/signer"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
-func TestGenerateScriptSecp256K1Blake160SignhashAll(t *testing.T) {
+func TestSecp256K1Blake160SignhashAll(t *testing.T) {
 	key, err := secp256k1.HexToKey("e79f3207ea4980b7fed79956d5934249ceac4751a4fae01a0f7c4a96884bc4e3")
 	if err != nil {
 		t.Error(err)
@@ -44,32 +43,27 @@ func TestGenerateScriptSecp256K1Blake160SignhashAll(t *testing.T) {
 	assert.NotNil(t, err)
 }
 
-func TestGenerateSecp256k1MultisigScriptByHash(t *testing.T) {
+func TestSecp256k1Blake160Multisig(t *testing.T) {
 	encodedPublicKeys := []string{
 		"032edb83018b57ddeb9bcc7287c5cc5da57e6e0289d31c9e98cb361e88678d6288",
 		"033aeb3fdbfaac72e9e34c55884a401ee87115302c146dd9e314677d826375dc8f",
 		"029a685b8206550ea1b600e347f18fd6115bffe582089d3567bec7eba57d04df01",
 	}
-	multisigScript := signer.NewMultisigScript(0, 2)
+	multisigConfig := NewMultisigConfig(0, 2)
 	for _, publicKeyHex := range encodedPublicKeys {
 		key, err := hex.DecodeString(publicKeyHex)
 		if err != nil {
 			t.Error(t, err)
 		}
-		multisigScript.AddKeyHash(blake2b.Blake256(key))
+		multisigConfig.AddKeyHash(blake2b.Blake256(key))
 	}
-	script, err := Secp256k1Blake160Multisig(multisigScript)
+	s, err := Secp256k1Blake160Multisig(multisigConfig)
 	if err != nil {
 		t.Error(t, err)
 	}
 
-	address := &address.Address{
-		Script:  script,
-		Network: types.NetworkTest,
-	}
-	encoded, err := address.Encode()
-	if err != nil {
-		t.Error(err)
-	}
-	assert.Equal(t, "ckt1qpw9q60tppt7l3j7r09qcp7lxnp3vcanvgha8pmvsa3jplykxn32sq0sfnkgf0ph76pkzwld9ujzex4pkeuwnlsdc5tqu", encoded)
+	// ckt1qpw9q60tppt7l3j7r09qcp7lxnp3vcanvgha8pmvsa3jplykxn32sq0sfnkgf0ph76pkzwld9ujzex4pkeuwnlsdc5tqu
+	assert.Equal(t, hexutil.MustDecode("0x5c5069eb0857efc65e1bca0c07df34c31663b3622fd3876c876320fc9634e2a8"), s.CodeHash.Bytes())
+	assert.Equal(t, hexutil.MustDecode("0xf04cec84bc37f683613bed2f242c9aa1b678e9fe"), s.Args)
+	assert.Equal(t, types.HashTypeType, s.HashType)
 }

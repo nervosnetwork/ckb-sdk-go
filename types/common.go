@@ -8,7 +8,6 @@ import (
 )
 
 type Network uint
-type BuiltinScript uint
 type WitnessType uint
 
 const (
@@ -16,14 +15,6 @@ const (
 
 	NetworkMain Network = iota
 	NetworkTest
-
-	BuiltinScriptSecp256k1Blake160SighashAll BuiltinScript = iota
-	BuiltinScriptSecp256k1Blake160MultisigAll
-	BuiltinScriptAnyoneCanPay
-	BuiltinScriptDao
-	BuiltinScriptSudt
-	BuiltinScriptCheque
-	BuiltinScriptPwLock
 
 	WitnessTypeLock WitnessType = iota
 	WitnessTypeInputType

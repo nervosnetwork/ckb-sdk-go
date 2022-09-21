@@ -3,6 +3,7 @@ package builder
 import (
 	"errors"
 	"github.com/nervosnetwork/ckb-sdk-go/collector"
+	"github.com/nervosnetwork/ckb-sdk-go/script"
 	"github.com/nervosnetwork/ckb-sdk-go/script/address"
 	"github.com/nervosnetwork/ckb-sdk-go/script/signer"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
@@ -30,7 +31,7 @@ type SudtTransactionBuilder struct {
 
 func NewSudtTransactionBuilderFromSudtArgs(network types.Network, iterator collector.CellIterator,
 	transactionType SudtTransactionType, sudtArgs []byte) *SudtTransactionBuilder {
-	codeHash := utils.GetCodeHash(network, types.BuiltinScriptSudt)
+	codeHash := script.GetCodeHash(network, script.SystemScriptSudt)
 	s := &SudtTransactionBuilder{
 		SimpleTransactionBuilder: *NewSimpleTransactionBuilder(network),
 		FeeRate:                  1000,

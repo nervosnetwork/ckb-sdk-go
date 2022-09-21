@@ -3,8 +3,8 @@ package signer
 import (
 	"bytes"
 	"errors"
-	"github.com/nervosnetwork/ckb-sdk-go/crypto/blake2b"
 	"github.com/nervosnetwork/ckb-sdk-go/crypto/secp256k1"
+	"github.com/nervosnetwork/ckb-sdk-go/script"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 	"reflect"
 )
@@ -13,13 +13,13 @@ type Secp256k1Blake160MultisigAllSigner struct {
 }
 
 func (s *Secp256k1Blake160MultisigAllSigner) SignTransaction(transaction *types.Transaction, group *ScriptGroup, ctx *Context) (bool, error) {
-	var m *MultisigScript
+	var m *script.MultisigConfig
 	switch ctx.Payload.(type) {
-	case MultisigScript:
-		mm := ctx.Payload.(MultisigScript)
+	case script.MultisigConfig:
+		mm := ctx.Payload.(script.MultisigConfig)
 		m = &mm
-	case *MultisigScript:
-		m = ctx.Payload.(*MultisigScript)
+	case *script.MultisigConfig:
+		m = ctx.Payload.(*script.MultisigConfig)
 	default:
 		return false, nil
 	}
@@ -34,10 +34,10 @@ func (s *Secp256k1Blake160MultisigAllSigner) SignTransaction(transaction *types.
 	}
 }
 
-func MultiSignTransaction(tx *types.Transaction, group []int, key *secp256k1.Secp256k1Key, m *MultisigScript) (bool, error) {
+func MultiSignTransaction(tx *types.Transaction, group []int, key *secp256k1.Secp256k1Key, config *script.MultisigConfig) (bool, error) {
 	var err error
 	i0 := group[0]
-	witnessPlaceholder, err := m.WitnessPlaceholder(tx.Witnesses[i0])
+	witnessPlaceholder, err := config.WitnessPlaceholder(tx.Witnesses[i0])
 	if err != nil {
 		return false, nil
 	}
@@ -45,21 +45,21 @@ func MultiSignTransaction(tx *types.Transaction, group []int, key *secp256k1.Sec
 	if err != nil {
 		return false, err
 	}
-	if tx.Witnesses[i0], err = setSignatureToWitness(tx.Witnesses[i0], signature, m); err != nil {
+	if tx.Witnesses[i0], err = setSignatureToWitness(tx.Witnesses[i0], signature, config); err != nil {
 		return false, err
 	}
 	return true, nil
 }
 
-func setSignatureToWitness(witness []byte, signature []byte, m *MultisigScript) ([]byte, error) {
+func setSignatureToWitness(witness []byte, signature []byte, config *script.MultisigConfig) ([]byte, error) {
 	witnessArgs, err := types.DeserializeWitnessArgs(witness)
 	if err != nil {
 		return nil, err
 	}
 	lock := witnessArgs.Lock
-	pos := len(m.Encode())
+	pos := len(config.Encode())
 	emptySignature := [65]byte{}
-	for i := 0; i < int(m.Threshold); i++ {
+	for i := 0; i < int(config.Threshold); i++ {
 		if reflect.DeepEqual(emptySignature[:], lock[pos:pos+65]) {
 			copy(lock[pos:pos+65], signature[:])
 			break
@@ -71,98 +71,10 @@ func setSignatureToWitness(witness []byte, signature []byte, m *MultisigScript) 
 	return w, err
 }
 
-func IsMultiSigMatched(key *secp256k1.Secp256k1Key, multisigScript *MultisigScript, scriptArgs []byte) (bool, error) {
+func IsMultiSigMatched(key *secp256k1.Secp256k1Key, config *script.MultisigConfig, scriptArgs []byte) (bool, error) {
 	if key == nil || scriptArgs == nil {
 		return false, errors.New("key or scriptArgs is nil")
 	}
-	hash := multisigScript.Hash160()
+	hash := config.Hash160()
 	return bytes.Equal(scriptArgs, hash), nil
-}
-
-type MultisigScript struct {
-	Version    byte
-	FirstN     byte
-	Threshold  byte
-	KeysHashes [][20]byte
-}
-
-func NewMultisigScript(firstN byte, threshold byte) *MultisigScript {
-	return &MultisigScript{
-		Version:    0,
-		FirstN:     firstN,
-		Threshold:  threshold,
-		KeysHashes: make([][20]byte, 0),
-	}
-}
-
-// AddKeyHash adds key hash, and panic if keyHash is shorter than 20 bytes.
-func (r *MultisigScript) AddKeyHash(keyHash []byte) {
-	var h [20]byte
-	copy(h[:], keyHash[:20])
-	r.KeysHashes = append(r.KeysHashes, h)
-}
-
-func (r *MultisigScript) Encode() []byte {
-	out := make([]byte, 4)
-	out[0] = r.Version
-	out[1] = r.FirstN
-	out[2] = r.Threshold
-	out[3] = byte(len(r.KeysHashes))
-	for _, b := range r.KeysHashes {
-		out = append(out, b[:]...)
-	}
-	return out
-}
-
-func DecodeToMultisigScript(in []byte) (*MultisigScript, error) {
-	l := len(in)
-	if l < 24 {
-		return nil, errors.New("bytes length should be greater than 24")
-	}
-	if (l-4)%4 != 0 {
-		return nil, errors.New("invalid bytes length")
-	}
-	if l != int(in[3])*20+4 {
-		return nil, errors.New("invalid public key list size")
-	}
-	m := &MultisigScript{
-		Version:    in[0],
-		FirstN:     in[1],
-		Threshold:  in[2],
-		KeysHashes: make([][20]byte, 0),
-	}
-	for i := 0; i < int(in[3]); i++ {
-		var b [20]byte
-		copy(b[:], in[4+i*20:4+i*20+20])
-		m.KeysHashes = append(m.KeysHashes, b)
-	}
-	return m, nil
-}
-
-func (r *MultisigScript) WitnessPlaceholder(originalWitness []byte) ([]byte, error) {
-	var (
-		witnessArgs *types.WitnessArgs
-		err         error
-	)
-	if len(originalWitness) == 0 {
-		witnessArgs = &types.WitnessArgs{}
-	} else {
-		if witnessArgs, err = types.DeserializeWitnessArgs(originalWitness); err != nil {
-			return nil, err
-		}
-	}
-	witnessArgs.Lock = r.WitnessPlaceholderInLock()
-	b := witnessArgs.Serialize()
-	return b, nil
-}
-
-func (r *MultisigScript) WitnessPlaceholderInLock() []byte {
-	header := r.Encode()
-	b := make([]byte, len(header)+65*int(r.Threshold))
-	copy(b[:len(header)], header)
-	return b
-}
-
-func (r *MultisigScript) Hash160() []byte {
-	return blake2b.Blake160(r.Encode()[:])
 }
