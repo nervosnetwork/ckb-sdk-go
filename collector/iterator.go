@@ -31,7 +31,7 @@ func NewLiveCellIteratorFromAddress(client indexer.Client, addr string) (CellIte
 	}
 	searchKey := &indexer.SearchKey{
 		Script:     a.Script,
-		ScriptType: indexer.ScriptTypeLock,
+		ScriptType: types.ScriptTypeLock,
 		Filter:     nil,
 		WithData:   true,
 	}

@@ -4,14 +4,10 @@ import (
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 )
 
-type ScriptType string
 type SearchOrder string
 type IoType string
 
 const (
-	ScriptTypeLock ScriptType = "lock"
-	ScriptTypeType ScriptType = "type"
-
 	SearchOrderAsc  SearchOrder = "asc"
 	SearchOrderDesc SearchOrder = "desc"
 
@@ -20,10 +16,10 @@ const (
 )
 
 type SearchKey struct {
-	Script     *types.Script `json:"script"`
-	ScriptType ScriptType    `json:"script_type"`
-	Filter     *Filter       `json:"filter,omitempty"`
-	WithData   bool          `json:"with_data"`
+	Script     *types.Script    `json:"script"`
+	ScriptType types.ScriptType `json:"script_type"`
+	Filter     *Filter          `json:"filter,omitempty"`
+	WithData   bool             `json:"with_data"`
 }
 
 type Filter struct {

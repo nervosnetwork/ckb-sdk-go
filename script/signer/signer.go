@@ -1,7 +1,7 @@
 package signer
 
 import (
-	"errors"
+	"fmt"
 	"github.com/nervosnetwork/ckb-sdk-go/crypto/blake2b"
 	"github.com/nervosnetwork/ckb-sdk-go/script"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
@@ -54,20 +54,20 @@ func GetTransactionSignerInstance(network types.Network) *TransactionSigner {
 	return instance
 }
 
-func (r *TransactionSigner) RegisterSigner(codeHash types.Hash, scriptType ScriptType, signer ScriptSigner) {
+func (r *TransactionSigner) RegisterSigner(codeHash types.Hash, scriptType types.ScriptType, signer ScriptSigner) {
 	hash := hash(codeHash, scriptType)
 	r.signers[hash] = signer
 }
 
 func (r *TransactionSigner) RegisterTypeSigner(codeHash types.Hash, signer ScriptSigner) {
-	r.RegisterSigner(codeHash, ScriptTypeType, signer)
+	r.RegisterSigner(codeHash, types.ScriptTypeType, signer)
 }
 
 func (r *TransactionSigner) RegisterLockSigner(codeHash types.Hash, signer ScriptSigner) {
-	r.RegisterSigner(codeHash, ScriptTypeLock, signer)
+	r.RegisterSigner(codeHash, types.ScriptTypeLock, signer)
 }
 
-func hash(codeHash types.Hash, scriptType ScriptType) types.Hash {
+func hash(codeHash types.Hash, scriptType types.ScriptType) types.Hash {
 	data := codeHash.Bytes()
 	data = append(data, []byte(scriptType)...)
 	return types.BytesToHash(blake2b.Blake256(data))
@@ -108,19 +108,19 @@ func (r *TransactionSigner) SignTransaction(tx *TransactionWithScriptGroups, con
 
 func checkScriptGroup(group *ScriptGroup) error {
 	if group == nil {
-		return errors.New("nil ScriptGroup")
+		return fmt.Errorf("nil ScriptGroup")
 	}
 	switch group.GroupType {
-	case ScriptTypeType:
+	case types.ScriptTypeType:
 		if len(group.OutputIndices)+len(group.InputIndices) < 0 {
-			return errors.New("groupType is Type but OutputIndices and InputIndices are empty")
+			return fmt.Errorf("groupType is Type but OutputIndices and InputIndices are empty")
 		}
-	case ScriptTypeLock:
+	case types.ScriptTypeLock:
 		if len(group.InputIndices) == 0 {
-			return errors.New("groupType is Lock but InputIndices is empty")
+			return fmt.Errorf("groupType is Lock but InputIndices is empty")
 		}
 	default:
-		return errors.New("unknown group type " + string(group.GroupType))
+		return fmt.Errorf("unknown group type %s", group.GroupType)
 	}
 	return nil
 }

@@ -57,7 +57,7 @@ func (r *CkbTransactionBuilder) AddDaoDepositOutputByAddress(addr string, capaci
 	return nil
 }
 
-func getOrPutScriptGroup(m map[types.Hash]*signer.ScriptGroup, script *types.Script, scriptType signer.ScriptType) (*signer.ScriptGroup, error) {
+func getOrPutScriptGroup(m map[types.Hash]*signer.ScriptGroup, script *types.Script, scriptType types.ScriptType) (*signer.ScriptGroup, error) {
 	if script == nil {
 		return nil, nil
 	}
@@ -97,7 +97,7 @@ func (r *CkbTransactionBuilder) Build(contexts ...interface{}) (*signer.Transact
 		outputsCapacity += r.Outputs[i].Capacity
 		script = r.Outputs[i].Type
 		if script != nil {
-			if group, err = getOrPutScriptGroup(m, script, signer.ScriptTypeType); err != nil {
+			if group, err = getOrPutScriptGroup(m, script, types.ScriptTypeType); err != nil {
 				return nil, err
 			}
 			group.OutputIndices = append(group.OutputIndices, uint32(i))
@@ -126,7 +126,7 @@ func (r *CkbTransactionBuilder) Build(contexts ...interface{}) (*signer.Transact
 		// process input's LOCK
 		script = cell.Output.Lock
 		if script != nil {
-			if group, err = getOrPutScriptGroup(m, script, signer.ScriptTypeLock); err != nil {
+			if group, err = getOrPutScriptGroup(m, script, types.ScriptTypeLock); err != nil {
 				return nil, err
 			}
 			group.InputIndices = append(group.InputIndices, uint32(i))
@@ -138,7 +138,7 @@ func (r *CkbTransactionBuilder) Build(contexts ...interface{}) (*signer.Transact
 		// process input's TYPE
 		script = cell.Output.Type
 		if script != nil {
-			if group, err = getOrPutScriptGroup(m, script, signer.ScriptTypeType); err != nil {
+			if group, err = getOrPutScriptGroup(m, script, types.ScriptTypeType); err != nil {
 				return nil, err
 			}
 			group.InputIndices = append(group.InputIndices, uint32(i))

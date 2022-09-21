@@ -9,6 +9,7 @@ import (
 
 type Network uint
 type WitnessType uint
+type ScriptType string
 
 const (
 	HashLength = 32
@@ -19,6 +20,9 @@ const (
 	WitnessTypeLock WitnessType = iota
 	WitnessTypeInputType
 	WitnessTypeOutputType
+
+	ScriptTypeLock ScriptType = "lock"
+	ScriptTypeType ScriptType = "type"
 )
 
 var (

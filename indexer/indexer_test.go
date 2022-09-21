@@ -25,7 +25,7 @@ func TestGetCellsCapacity(t *testing.T) {
 			HashType: types.HashTypeType,
 			Args:     ethcommon.FromHex("0x4049ed9cec8a0d39c7a1e899f0dacb8a8c28ad14"),
 		},
-		ScriptType: ScriptTypeLock,
+		ScriptType: types.ScriptTypeLock,
 	}
 	resp, err := c.GetCellsCapacity(context.Background(), s)
 	checkError(t, err)
@@ -40,7 +40,7 @@ func TestGetCells(t *testing.T) {
 			HashType: types.HashTypeType,
 			Args:     ethcommon.FromHex("0x4049ed9cec8a0d39c7a1e899f0dacb8a8c28ad14"),
 		},
-		ScriptType: ScriptTypeLock,
+		ScriptType: types.ScriptTypeLock,
 	}
 	resp, err := c.GetCells(context.Background(), s, SearchOrderAsc, 10, "")
 	checkError(t, err)
@@ -54,8 +54,8 @@ func TestGetCells(t *testing.T) {
 			HashType: types.HashTypeType,
 			Args:     ethcommon.FromHex("0x06c1c47ac39653cc231e31f4316b5a4903056512"),
 		},
-		ScriptType: ScriptTypeLock,
-		WithData: true,
+		ScriptType: types.ScriptTypeLock,
+		WithData:   true,
 	}
 	resp, err = c.GetCells(context.Background(), s, SearchOrderAsc, 10, "")
 	checkError(t, err)
@@ -69,7 +69,7 @@ func TestGetTransactions(t *testing.T) {
 			HashType: types.HashTypeType,
 			Args:     ethcommon.FromHex("0xe53f35ccf63bb37a3bb0ac3b7f89808077a78eae"),
 		},
-		ScriptType: ScriptTypeLock,
+		ScriptType: types.ScriptTypeLock,
 	}
 	resp, err := c.GetTransactions(context.Background(), s, SearchOrderAsc, 10, "")
 	checkError(t, err)

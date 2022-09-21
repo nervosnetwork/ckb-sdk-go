@@ -2,11 +2,27 @@ package types
 
 import (
 	"encoding/json"
-	"errors"
+	"fmt"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"math/big"
 	"strings"
 )
+
+func (r *ScriptType) UnmarshalJSON(input []byte) error {
+	var jsonObj string
+	if err := json.Unmarshal(input, &jsonObj); err != nil {
+		return err
+	}
+	switch strings.ToLower(jsonObj) {
+	case strings.ToLower(string(ScriptTypeLock)):
+		*r = ScriptTypeLock
+	case strings.ToLower(string(ScriptTypeType)):
+		*r = ScriptTypeType
+	default:
+		return fmt.Errorf("can't unmarshal json from unknown script type %s", input)
+	}
+	return nil
+}
 
 type jsonEpoch struct {
 	CompactTarget hexutil.Uint64 `json:"compact_target"`
@@ -271,7 +287,7 @@ func (r *TransactionStatus) UnmarshalJSON(input []byte) error {
 	case strings.ToLower(string(TransactionStatusRejected)):
 		*r = TransactionStatusRejected
 	default:
-		return errors.New("can't unmarshal json from unknown transaction status value " + jsonObj)
+		return fmt.Errorf("can't unmarshal json from unknown transaction status value %s", jsonObj)
 	}
 	return nil
 }

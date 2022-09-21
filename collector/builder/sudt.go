@@ -125,7 +125,7 @@ func (r *SudtTransactionBuilder) Build(contexts ...interface{}) (*signer.Transac
 		}
 		s = r.Outputs[i].Type
 		if s != nil {
-			if g, err = getOrPutScriptGroup(m, s, signer.ScriptTypeType); err != nil {
+			if g, err = getOrPutScriptGroup(m, s, types.ScriptTypeType); err != nil {
 				return nil, err
 			}
 			g.OutputIndices = append(g.OutputIndices, uint32(i))
@@ -155,7 +155,7 @@ func (r *SudtTransactionBuilder) Build(contexts ...interface{}) (*signer.Transac
 		// process input's LOCK
 		s = cell.Output.Lock
 		if s != nil {
-			if g, err = getOrPutScriptGroup(m, s, signer.ScriptTypeLock); err != nil {
+			if g, err = getOrPutScriptGroup(m, s, types.ScriptTypeLock); err != nil {
 				return nil, err
 			}
 			g.InputIndices = append(g.InputIndices, uint32(i))
@@ -167,7 +167,7 @@ func (r *SudtTransactionBuilder) Build(contexts ...interface{}) (*signer.Transac
 		// process input's TYPE
 		s = cell.Output.Type
 		if s != nil {
-			if g, err = getOrPutScriptGroup(m, s, signer.ScriptTypeType); err != nil {
+			if g, err = getOrPutScriptGroup(m, s, types.ScriptTypeType); err != nil {
 				return nil, err
 			}
 			g.InputIndices = append(g.InputIndices, uint32(i))
