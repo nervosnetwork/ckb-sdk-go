@@ -74,14 +74,18 @@ func hash(codeHash types.Hash, scriptType types.ScriptType) types.Hash {
 }
 
 func (r *TransactionSigner) SignTransactionByPrivateKeys(tx *TransactionWithScriptGroups, privKeys ...string) ([]int, error) {
-	ctxs := NewContexts()
-	if err := ctxs.AddByPrivateKeys(privKeys...); err != nil {
-		return nil, err
+	var ctxs []*Context
+	for _, key := range privKeys {
+		ctx, err := NewContext(key)
+		if err != nil {
+			return nil, err
+		}
+		ctxs = append(ctxs, ctx)
 	}
-	return r.SignTransaction(tx, ctxs)
+	return r.SignTransaction(tx, ctxs...)
 }
 
-func (r *TransactionSigner) SignTransaction(tx *TransactionWithScriptGroups, contexts Contexts) ([]int, error) {
+func (r *TransactionSigner) SignTransaction(tx *TransactionWithScriptGroups, contexts ...*Context) ([]int, error) {
 	var err error
 	signedIndex := make([]int, 0)
 	for i, group := range tx.ScriptGroups {

@@ -79,7 +79,7 @@ func testSignAndCheck(t *testing.T, fileName string) {
 	}
 	txSigner := signer.GetTransactionSignerInstance(types.NetworkTest)
 	tx := checker.Transaction
-	signed, err := txSigner.SignTransaction(tx, checker.Contexts)
+	signed, err := txSigner.SignTransaction(tx, checker.Contexts...)
 	if err != nil {
 		t.Error(err, string(debug.Stack()))
 	}
@@ -112,7 +112,7 @@ func fromFile(fileName string) (*signerChecker, error) {
 type signerChecker struct {
 	Transaction       *signer.TransactionWithScriptGroups `json:"raw_transaction"`
 	ExpectedWitnesses []string                            `json:"expected_witnesses"`
-	Contexts          signer.Contexts                     `json:"Contexts"`
+	Contexts          []*signer.Context                   `json:"Contexts"`
 }
 
 func (r *signerChecker) UnmarshalJSON(input []byte) error {
@@ -126,7 +126,6 @@ func (r *signerChecker) UnmarshalJSON(input []byte) error {
 	}
 	r.Transaction = jsonObj.Transaction
 	r.ExpectedWitnesses = jsonObj.ExpectedWitnesses
-	r.Contexts = signer.NewContexts()
 	for _, c := range jsonObj.Contexts {
 		var (
 			ctx *signer.Context
@@ -148,7 +147,7 @@ func (r *signerChecker) UnmarshalJSON(input []byte) error {
 			}
 			ctx.Payload = m
 		}
-		r.Contexts.Add(ctx)
+		r.Contexts = append(r.Contexts, ctx)
 	}
 	return nil
 }

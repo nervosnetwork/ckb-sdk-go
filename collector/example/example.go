@@ -102,16 +102,12 @@ func SendCkbFromMultisigAddressExample() error {
 	txSigner := signer.GetTransactionSignerInstance(network)
 	// first signature
 	ctx1, _ := signer.NewContextWithPayload("0x4fd809631a6aa6e3bb378dd65eae5d71df895a82c91a615a1e8264741515c79c", multisigConfig)
-	ctxs1 := signer.NewContexts()
-	ctxs1.Add(ctx1)
-	if _, err = txSigner.SignTransaction(txWithGroups, ctxs1); err != nil {
+	if _, err = txSigner.SignTransaction(txWithGroups, ctx1); err != nil {
 		return err
 	}
 	// second signature
 	ctx2, _ := signer.NewContextWithPayload("0x7438f7b35c355e3d2fb9305167a31a72d22ddeafb80a21cc99ff6329d92e8087", multisigConfig)
-	ctxs2 := signer.NewContexts()
-	ctxs2.Add(ctx2)
-	if _, err = txSigner.SignTransaction(txWithGroups, ctxs2); err != nil {
+	if _, err = txSigner.SignTransaction(txWithGroups, ctx2); err != nil {
 		return err
 	}
 
