@@ -240,3 +240,18 @@ func (e *DaoState) UnmarshalJSON(input []byte) error {
 	}
 	return nil
 }
+
+func (r *DaoInfo) UnmarshalJSON(input []byte) error {
+	var jsonObj struct {
+		State  DaoState
+		Reward hexutil.Uint64
+	}
+	if err := json.Unmarshal(input, &jsonObj); err != nil {
+		return err
+	}
+	*r = DaoInfo{
+		State:  jsonObj.State,
+		Reward: uint64(jsonObj.Reward),
+	}
+	return nil
+}
