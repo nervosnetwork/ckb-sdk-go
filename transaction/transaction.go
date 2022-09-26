@@ -3,10 +3,10 @@ package transaction
 import (
 	"encoding/binary"
 	"errors"
-	"github.com/nervosnetwork/ckb-sdk-go/crypto"
-	"github.com/nervosnetwork/ckb-sdk-go/crypto/blake2b"
-	"github.com/nervosnetwork/ckb-sdk-go/types"
-	"github.com/nervosnetwork/ckb-sdk-go/utils"
+	"github.com/nervosnetwork/ckb-sdk-go/v2/crypto"
+	"github.com/nervosnetwork/ckb-sdk-go/v2/crypto/blake2b"
+	"github.com/nervosnetwork/ckb-sdk-go/v2/types"
+	"github.com/nervosnetwork/ckb-sdk-go/v2/utils"
 )
 
 var (

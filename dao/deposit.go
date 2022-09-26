@@ -3,8 +3,8 @@ package dao
 import (
 	"errors"
 
-	"github.com/nervosnetwork/ckb-sdk-go/types"
-	"github.com/nervosnetwork/ckb-sdk-go/utils"
+	"github.com/nervosnetwork/ckb-sdk-go/v2/types"
+	"github.com/nervosnetwork/ckb-sdk-go/v2/utils"
 )
 
 type Deposit struct {

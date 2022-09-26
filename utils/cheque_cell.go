@@ -1,6 +1,6 @@
 package utils
 
-import "github.com/nervosnetwork/ckb-sdk-go/types"
+import "github.com/nervosnetwork/ckb-sdk-go/v2/types"
 
 func ChequeCellArgs(senderLock, receiverLock *types.Script) ([]byte, error) {
 	senderLockHash, err := senderLock.Hash()

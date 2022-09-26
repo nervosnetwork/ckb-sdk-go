@@ -3,7 +3,7 @@ package indexer
 import (
 	"context"
 	ethcommon "github.com/ethereum/go-ethereum/common"
-	"github.com/nervosnetwork/ckb-sdk-go/types"
+	"github.com/nervosnetwork/ckb-sdk-go/v2/types"
 	"github.com/stretchr/testify/assert"
 	"runtime/debug"
 	"testing"
@@ -55,7 +55,7 @@ func TestGetCells(t *testing.T) {
 			Args:     ethcommon.FromHex("0x06c1c47ac39653cc231e31f4316b5a4903056512"),
 		},
 		ScriptType: ScriptTypeLock,
-		WithData: true,
+		WithData:   true,
 	}
 	resp, err = c.GetCells(context.Background(), s, SearchOrderAsc, 10, "")
 	checkError(t, err)

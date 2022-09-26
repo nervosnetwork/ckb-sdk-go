@@ -2,9 +2,9 @@ package builder
 
 import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/nervosnetwork/ckb-sdk-go/address"
-	"github.com/nervosnetwork/ckb-sdk-go/types"
-	"github.com/nervosnetwork/ckb-sdk-go/utils"
+	"github.com/nervosnetwork/ckb-sdk-go/v2/address"
+	"github.com/nervosnetwork/ckb-sdk-go/v2/types"
+	"github.com/nervosnetwork/ckb-sdk-go/v2/utils"
 	"github.com/stretchr/testify/assert"
 	"math/big"
 	"testing"
@@ -73,8 +73,7 @@ func TestSudtTransactionBuilderBalance(t *testing.T) {
 		t.Error(err)
 	}
 
-	if _, err = b.AddSudtOutputByAddress("ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqdamwzrffgc54ef48493nfd2sd0h4cjnxg4850up", big.NewInt(1))
-		err != nil {
+	if _, err = b.AddSudtOutputByAddress("ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqdamwzrffgc54ef48493nfd2sd0h4cjnxg4850up", big.NewInt(1)); err != nil {
 		t.Error(err)
 	}
 	b.FeeRate = 1000

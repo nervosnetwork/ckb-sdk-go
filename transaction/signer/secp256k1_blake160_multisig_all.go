@@ -3,10 +3,10 @@ package signer
 import (
 	"bytes"
 	"errors"
-	"github.com/nervosnetwork/ckb-sdk-go/crypto/blake2b"
-	"github.com/nervosnetwork/ckb-sdk-go/crypto/secp256k1"
-	"github.com/nervosnetwork/ckb-sdk-go/transaction"
-	"github.com/nervosnetwork/ckb-sdk-go/types"
+	"github.com/nervosnetwork/ckb-sdk-go/v2/crypto/blake2b"
+	"github.com/nervosnetwork/ckb-sdk-go/v2/crypto/secp256k1"
+	"github.com/nervosnetwork/ckb-sdk-go/v2/transaction"
+	"github.com/nervosnetwork/ckb-sdk-go/v2/types"
 	"reflect"
 )
 
