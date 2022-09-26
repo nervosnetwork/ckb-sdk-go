@@ -510,8 +510,8 @@ func (r *RemoteNode) UnmarshalJSON(input []byte) error {
 	type RemoteAlias RemoteNode
 	var jsonObj struct {
 		RemoteAlias
-		ConnectedDuration hexutil.Uint64 `json:"connected_duration"`
-		LastPingDuration  hexutil.Uint64 `json:"last_ping_duration,omitempty"`
+		ConnectedDuration hexutil.Uint64  `json:"connected_duration"`
+		LastPingDuration  *hexutil.Uint64 `json:"last_ping_duration,omitempty"`
 	}
 	if err := json.Unmarshal(input, &jsonObj); err != nil {
 		return err
@@ -522,9 +522,11 @@ func (r *RemoteNode) UnmarshalJSON(input []byte) error {
 		Addresses:         jsonObj.Addresses,
 		IsOutbound:        jsonObj.IsOutbound,
 		ConnectedDuration: uint64(jsonObj.ConnectedDuration),
-		LastPingDuration:  uint64(jsonObj.LastPingDuration),
 		SyncState:         jsonObj.SyncState,
 		Protocols:         jsonObj.Protocols,
+	}
+	if jsonObj.LastPingDuration != nil {
+		r.LastPingDuration = uint64(*jsonObj.LastPingDuration)
 	}
 	return nil
 }
