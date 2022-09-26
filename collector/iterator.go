@@ -2,8 +2,8 @@ package collector
 
 import (
 	"context"
+	address2 "github.com/nervosnetwork/ckb-sdk-go/address"
 	"github.com/nervosnetwork/ckb-sdk-go/indexer"
-	"github.com/nervosnetwork/ckb-sdk-go/script/address"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 )
 
@@ -25,7 +25,7 @@ func NewLiveCellIterator(client indexer.Client, key *indexer.SearchKey) CellIter
 }
 
 func NewLiveCellIteratorFromAddress(client indexer.Client, addr string) (CellIterator, error) {
-	a, err := address.Decode(addr)
+	a, err := address2.Decode(addr)
 	if err != nil {
 		return nil, err
 	}

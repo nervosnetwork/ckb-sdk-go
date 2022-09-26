@@ -2,9 +2,9 @@ package builder
 
 import (
 	"errors"
+	address2 "github.com/nervosnetwork/ckb-sdk-go/address"
 	"github.com/nervosnetwork/ckb-sdk-go/collector"
 	"github.com/nervosnetwork/ckb-sdk-go/script"
-	"github.com/nervosnetwork/ckb-sdk-go/script/address"
 	"github.com/nervosnetwork/ckb-sdk-go/transaction"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 	"math/big"
@@ -50,7 +50,7 @@ func NewSudtTransactionBuilderFromSudtArgs(network types.Network, iterator colle
 func NewSudtTransactionBuilderFromSudtOwnerAddress(network types.Network, iterator collector.CellIterator,
 	transactionType SudtTransactionType, sudtOwnerAddress string) (*SudtTransactionBuilder, error) {
 
-	addr, err := address.Decode(sudtOwnerAddress)
+	addr, err := address2.Decode(sudtOwnerAddress)
 	if err != nil {
 		return nil, err
 	}
@@ -59,7 +59,7 @@ func NewSudtTransactionBuilderFromSudtOwnerAddress(network types.Network, iterat
 }
 
 func (r *SudtTransactionBuilder) AddSudtOutputByAddress(addr string, sudtAmount *big.Int) (int, error) {
-	a, err := address.Decode(addr)
+	a, err := address2.Decode(addr)
 	if err != nil {
 		return 0, err
 	}
@@ -74,7 +74,7 @@ func (r *SudtTransactionBuilder) AddSudtOutputByAddress(addr string, sudtAmount 
 }
 
 func (r *SudtTransactionBuilder) AddSudtOutputWithCapacityByAddress(addr string, capacity uint64, sudtAmount *big.Int) (int, error) {
-	a, err := address.Decode(addr)
+	a, err := address2.Decode(addr)
 	if err != nil {
 		return 0, err
 	}

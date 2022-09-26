@@ -5,10 +5,10 @@ import (
 	"context"
 	"encoding/binary"
 	"errors"
+	address2 "github.com/nervosnetwork/ckb-sdk-go/address"
 	"github.com/nervosnetwork/ckb-sdk-go/collector"
 	"github.com/nervosnetwork/ckb-sdk-go/collector/handler"
 	"github.com/nervosnetwork/ckb-sdk-go/rpc"
-	"github.com/nervosnetwork/ckb-sdk-go/script/address"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 	"math/big"
 )
@@ -159,7 +159,7 @@ func (r *DaoTransactionBuilder) AddWithdrawOutput(addr string) error {
 	if r.depositBlockNumber == 0 {
 		return errors.New("deposit block number not initialized")
 	}
-	a, err := address.Decode(addr)
+	a, err := address2.Decode(addr)
 	if err != nil {
 		return err
 	}

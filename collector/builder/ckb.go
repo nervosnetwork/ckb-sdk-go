@@ -2,9 +2,9 @@ package builder
 
 import (
 	"errors"
+	address2 "github.com/nervosnetwork/ckb-sdk-go/address"
 	"github.com/nervosnetwork/ckb-sdk-go/collector"
 	"github.com/nervosnetwork/ckb-sdk-go/collector/handler"
-	"github.com/nervosnetwork/ckb-sdk-go/script/address"
 	"github.com/nervosnetwork/ckb-sdk-go/transaction"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 )
@@ -43,7 +43,7 @@ func (r *CkbTransactionBuilder) AddChangeOutputByAddress(addr string) error {
 }
 
 func (r *CkbTransactionBuilder) AddDaoDepositOutputByAddress(addr string, capacity uint64) error {
-	a, err := address.Decode(addr)
+	a, err := address2.Decode(addr)
 	if err != nil {
 		return err
 	}
