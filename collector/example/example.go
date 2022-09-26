@@ -11,7 +11,8 @@ import (
 	"github.com/nervosnetwork/ckb-sdk-go/rpc"
 	"github.com/nervosnetwork/ckb-sdk-go/script"
 	"github.com/nervosnetwork/ckb-sdk-go/script/address"
-	"github.com/nervosnetwork/ckb-sdk-go/script/signer"
+	"github.com/nervosnetwork/ckb-sdk-go/transaction"
+	"github.com/nervosnetwork/ckb-sdk-go/transaction/signer"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 	"math/big"
 )
@@ -101,12 +102,12 @@ func SendCkbFromMultisigAddressExample() error {
 	// sign transaction
 	txSigner := signer.GetTransactionSignerInstance(network)
 	// first signature
-	ctx1, _ := signer.NewContextWithPayload("0x4fd809631a6aa6e3bb378dd65eae5d71df895a82c91a615a1e8264741515c79c", multisigConfig)
+	ctx1, _ := transaction.NewContextWithPayload("0x4fd809631a6aa6e3bb378dd65eae5d71df895a82c91a615a1e8264741515c79c", multisigConfig)
 	if _, err = txSigner.SignTransaction(txWithGroups, ctx1); err != nil {
 		return err
 	}
 	// second signature
-	ctx2, _ := signer.NewContextWithPayload("0x7438f7b35c355e3d2fb9305167a31a72d22ddeafb80a21cc99ff6329d92e8087", multisigConfig)
+	ctx2, _ := transaction.NewContextWithPayload("0x7438f7b35c355e3d2fb9305167a31a72d22ddeafb80a21cc99ff6329d92e8087", multisigConfig)
 	if _, err = txSigner.SignTransaction(txWithGroups, ctx2); err != nil {
 		return err
 	}

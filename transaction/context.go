@@ -1,4 +1,4 @@
-package signer
+package transaction
 
 import (
 	"github.com/nervosnetwork/ckb-sdk-go/crypto/secp256k1"

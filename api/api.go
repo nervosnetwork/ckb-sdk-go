@@ -7,7 +7,7 @@ import (
 	"github.com/nervosnetwork/ckb-sdk-go/mercury"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model"
 	C "github.com/nervosnetwork/ckb-sdk-go/rpc"
-	"github.com/nervosnetwork/ckb-sdk-go/script/signer"
+	"github.com/nervosnetwork/ckb-sdk-go/transaction"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 )
 
@@ -21,19 +21,19 @@ type DefaultCkbApi struct {
 	mercury mercury.Client
 }
 
-func (cli *DefaultCkbApi) BuildSimpleTransferTransaction(payload *model.SimpleTransferPayload) (*signer.TransactionWithScriptGroups, error) {
+func (cli *DefaultCkbApi) BuildSimpleTransferTransaction(payload *model.SimpleTransferPayload) (*transaction.TransactionWithScriptGroups, error) {
 	return cli.mercury.BuildSimpleTransferTransaction(payload)
 }
 
-func (cli *DefaultCkbApi) BuildDaoDepositTransaction(payload *model.DaoDepositPayload) (*signer.TransactionWithScriptGroups, error) {
+func (cli *DefaultCkbApi) BuildDaoDepositTransaction(payload *model.DaoDepositPayload) (*transaction.TransactionWithScriptGroups, error) {
 	return cli.mercury.BuildDaoDepositTransaction(payload)
 }
 
-func (cli *DefaultCkbApi) BuildDaoWithdrawTransaction(payload *model.DaoWithdrawPayload) (*signer.TransactionWithScriptGroups, error) {
+func (cli *DefaultCkbApi) BuildDaoWithdrawTransaction(payload *model.DaoWithdrawPayload) (*transaction.TransactionWithScriptGroups, error) {
 	return cli.mercury.BuildDaoWithdrawTransaction(payload)
 }
 
-func (cli *DefaultCkbApi) BuildDaoClaimTransaction(payload *model.DaoClaimPayload) (*signer.TransactionWithScriptGroups, error) {
+func (cli *DefaultCkbApi) BuildDaoClaimTransaction(payload *model.DaoClaimPayload) (*transaction.TransactionWithScriptGroups, error) {
 	return cli.mercury.BuildDaoClaimTransaction(payload)
 }
 
@@ -69,15 +69,15 @@ func (cli *DefaultCkbApi) GetBalance(payload *model.GetBalancePayload) (*model.G
 	return cli.mercury.GetBalance(payload)
 }
 
-func (cli *DefaultCkbApi) BuildTransferTransaction(payload *model.TransferPayload) (*signer.TransactionWithScriptGroups, error) {
+func (cli *DefaultCkbApi) BuildTransferTransaction(payload *model.TransferPayload) (*transaction.TransactionWithScriptGroups, error) {
 	return cli.mercury.BuildTransferTransaction(payload)
 }
 
-func (cli *DefaultCkbApi) BuildAdjustAccountTransaction(payload *model.BuildAdjustAccountPayload) (*signer.TransactionWithScriptGroups, error) {
+func (cli *DefaultCkbApi) BuildAdjustAccountTransaction(payload *model.BuildAdjustAccountPayload) (*transaction.TransactionWithScriptGroups, error) {
 	return cli.mercury.BuildAdjustAccountTransaction(payload)
 }
 
-func (cli *DefaultCkbApi) BuildSudtIssueTransaction(payload *model.BuildSudtIssueTransactionPayload) (*signer.TransactionWithScriptGroups, error) {
+func (cli *DefaultCkbApi) BuildSudtIssueTransaction(payload *model.BuildSudtIssueTransactionPayload) (*transaction.TransactionWithScriptGroups, error) {
 	return cli.mercury.BuildSudtIssueTransaction(payload)
 }
 

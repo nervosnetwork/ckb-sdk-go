@@ -2,7 +2,7 @@ package mercury
 
 import (
 	"context"
-	"github.com/nervosnetwork/ckb-sdk-go/script/signer"
+	"github.com/nervosnetwork/ckb-sdk-go/transaction"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 
 	"github.com/ethereum/go-ethereum/rpc"
@@ -11,10 +11,10 @@ import (
 
 type Client interface {
 	GetBalance(payload *model.GetBalancePayload) (*model.GetBalanceResponse, error)
-	BuildTransferTransaction(payload *model.TransferPayload) (*signer.TransactionWithScriptGroups, error)
-	BuildSimpleTransferTransaction(payload *model.SimpleTransferPayload) (*signer.TransactionWithScriptGroups, error)
-	BuildAdjustAccountTransaction(*model.BuildAdjustAccountPayload) (*signer.TransactionWithScriptGroups, error)
-	BuildSudtIssueTransaction(payload *model.BuildSudtIssueTransactionPayload) (*signer.TransactionWithScriptGroups, error)
+	BuildTransferTransaction(payload *model.TransferPayload) (*transaction.TransactionWithScriptGroups, error)
+	BuildSimpleTransferTransaction(payload *model.SimpleTransferPayload) (*transaction.TransactionWithScriptGroups, error)
+	BuildAdjustAccountTransaction(*model.BuildAdjustAccountPayload) (*transaction.TransactionWithScriptGroups, error)
+	BuildSudtIssueTransaction(payload *model.BuildSudtIssueTransactionPayload) (*transaction.TransactionWithScriptGroups, error)
 	RegisterAddresses(normalAddresses []string) ([]string, error)
 	GetTransactionInfo(txHash types.Hash) (*model.GetTransactionInfoResponse, error)
 	GetSpentTransactionWithTransactionInfo(*model.GetSpentTransactionPayload) (*model.TransactionInfoWrapper, error)
@@ -26,16 +26,16 @@ type Client interface {
 	GetDbInfo() (*model.DBInfo, error)
 	GetMercuryInfo() (*model.MercuryInfo, error)
 	GetSyncState() (*model.MercurySyncState, error)
-	BuildDaoDepositTransaction(payload *model.DaoDepositPayload) (*signer.TransactionWithScriptGroups, error)
-	BuildDaoWithdrawTransaction(payload *model.DaoWithdrawPayload) (*signer.TransactionWithScriptGroups, error)
-	BuildDaoClaimTransaction(payload *model.DaoClaimPayload) (*signer.TransactionWithScriptGroups, error)
+	BuildDaoDepositTransaction(payload *model.DaoDepositPayload) (*transaction.TransactionWithScriptGroups, error)
+	BuildDaoWithdrawTransaction(payload *model.DaoWithdrawPayload) (*transaction.TransactionWithScriptGroups, error)
+	BuildDaoClaimTransaction(payload *model.DaoClaimPayload) (*transaction.TransactionWithScriptGroups, error)
 }
 type client struct {
 	c *rpc.Client
 }
 
-func (cli *client) BuildDaoDepositTransaction(payload *model.DaoDepositPayload) (*signer.TransactionWithScriptGroups, error) {
-	var resp signer.TransactionWithScriptGroups
+func (cli *client) BuildDaoDepositTransaction(payload *model.DaoDepositPayload) (*transaction.TransactionWithScriptGroups, error) {
+	var resp transaction.TransactionWithScriptGroups
 	err := cli.c.Call(&resp, "build_dao_deposit_transaction", payload)
 	if err != nil {
 		return nil, err
@@ -44,8 +44,8 @@ func (cli *client) BuildDaoDepositTransaction(payload *model.DaoDepositPayload) 
 	return &resp, err
 }
 
-func (cli *client) BuildDaoWithdrawTransaction(payload *model.DaoWithdrawPayload) (*signer.TransactionWithScriptGroups, error) {
-	var resp signer.TransactionWithScriptGroups
+func (cli *client) BuildDaoWithdrawTransaction(payload *model.DaoWithdrawPayload) (*transaction.TransactionWithScriptGroups, error) {
+	var resp transaction.TransactionWithScriptGroups
 	err := cli.c.Call(&resp, "build_dao_withdraw_transaction", payload)
 	if err != nil {
 		return nil, err
@@ -54,8 +54,8 @@ func (cli *client) BuildDaoWithdrawTransaction(payload *model.DaoWithdrawPayload
 	return &resp, err
 }
 
-func (cli *client) BuildDaoClaimTransaction(payload *model.DaoClaimPayload) (*signer.TransactionWithScriptGroups, error) {
-	var resp signer.TransactionWithScriptGroups
+func (cli *client) BuildDaoClaimTransaction(payload *model.DaoClaimPayload) (*transaction.TransactionWithScriptGroups, error) {
+	var resp transaction.TransactionWithScriptGroups
 	err := cli.c.Call(&resp, "build_dao_claim_transaction", payload)
 	if err != nil {
 		return nil, err
@@ -104,8 +104,8 @@ func (cli *client) GetBalance(payload *model.GetBalancePayload) (*model.GetBalan
 	return &balance, err
 }
 
-func (cli *client) BuildTransferTransaction(payload *model.TransferPayload) (*signer.TransactionWithScriptGroups, error) {
-	var resp signer.TransactionWithScriptGroups
+func (cli *client) BuildTransferTransaction(payload *model.TransferPayload) (*transaction.TransactionWithScriptGroups, error) {
+	var resp transaction.TransactionWithScriptGroups
 	err := cli.c.Call(&resp, "build_transfer_transaction", payload)
 	if err != nil {
 		return &resp, err
@@ -114,8 +114,8 @@ func (cli *client) BuildTransferTransaction(payload *model.TransferPayload) (*si
 	return &resp, err
 }
 
-func (cli *client) BuildSimpleTransferTransaction(payload *model.SimpleTransferPayload) (*signer.TransactionWithScriptGroups, error) {
-	var resp signer.TransactionWithScriptGroups
+func (cli *client) BuildSimpleTransferTransaction(payload *model.SimpleTransferPayload) (*transaction.TransactionWithScriptGroups, error) {
+	var resp transaction.TransactionWithScriptGroups
 	err := cli.c.Call(&resp, "build_simple_transfer_transaction", payload)
 	if err != nil {
 		return &resp, err
@@ -124,8 +124,8 @@ func (cli *client) BuildSimpleTransferTransaction(payload *model.SimpleTransferP
 	return &resp, err
 }
 
-func (cli *client) BuildAdjustAccountTransaction(payload *model.BuildAdjustAccountPayload) (*signer.TransactionWithScriptGroups, error) {
-	var resp signer.TransactionWithScriptGroups
+func (cli *client) BuildAdjustAccountTransaction(payload *model.BuildAdjustAccountPayload) (*transaction.TransactionWithScriptGroups, error) {
+	var resp transaction.TransactionWithScriptGroups
 	err := cli.c.Call(&resp, "build_adjust_account_transaction", payload)
 	if err != nil {
 		return &resp, err
@@ -134,8 +134,8 @@ func (cli *client) BuildAdjustAccountTransaction(payload *model.BuildAdjustAccou
 	return &resp, err
 }
 
-func (cli *client) BuildSudtIssueTransaction(payload *model.BuildSudtIssueTransactionPayload) (*signer.TransactionWithScriptGroups, error) {
-	var resp signer.TransactionWithScriptGroups
+func (cli *client) BuildSudtIssueTransaction(payload *model.BuildSudtIssueTransactionPayload) (*transaction.TransactionWithScriptGroups, error) {
+	var resp transaction.TransactionWithScriptGroups
 	err := cli.c.Call(&resp, "build_sudt_issue_transaction", payload)
 	if err != nil {
 		return &resp, err

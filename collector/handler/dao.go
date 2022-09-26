@@ -7,7 +7,7 @@ import (
 	"github.com/nervosnetwork/ckb-sdk-go/collector"
 	"github.com/nervosnetwork/ckb-sdk-go/rpc"
 	"github.com/nervosnetwork/ckb-sdk-go/script"
-	"github.com/nervosnetwork/ckb-sdk-go/script/signer"
+	"github.com/nervosnetwork/ckb-sdk-go/transaction"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 	"reflect"
 )
@@ -62,7 +62,7 @@ func IsDepositCell(output *types.CellOutput, outputData []byte) bool {
 		bytes.Equal(DaoDepositOutputData, outputData)
 }
 
-func (r *DaoScriptHandler) BuildTransaction(builder collector.TransactionBuilder, group *signer.ScriptGroup, context interface{}) (bool, error) {
+func (r *DaoScriptHandler) BuildTransaction(builder collector.TransactionBuilder, group *transaction.ScriptGroup, context interface{}) (bool, error) {
 	if group == nil || !r.isMatched(group.Script) {
 		return false, nil
 	}

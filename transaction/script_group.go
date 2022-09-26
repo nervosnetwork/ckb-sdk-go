@@ -1,4 +1,4 @@
-package signer
+package transaction
 
 import (
 	"encoding/json"
@@ -17,14 +17,6 @@ type ScriptGroup struct {
 	InputIndices  []uint32         `json:"input_indices"`
 	OutputIndices []uint32         `json:"output_indices"`
 }
-
-//
-//type ScriptType string
-//
-//const (
-//	ScriptTypeLock ScriptType = "lock"
-//	ScriptTypeType ScriptType = "type"
-//)
 
 func (r *ScriptGroup) UnmarshalJSON(input []byte) error {
 	var jsonObj struct {

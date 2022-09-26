@@ -3,12 +3,12 @@ package signer
 import (
 	"fmt"
 	"github.com/nervosnetwork/ckb-sdk-go/crypto/blake2b"
-	"github.com/nervosnetwork/ckb-sdk-go/script"
+	"github.com/nervosnetwork/ckb-sdk-go/transaction"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 )
 
 type ScriptSigner interface {
-	SignTransaction(transaction *types.Transaction, group *ScriptGroup, ctx *Context) (bool, error)
+	SignTransaction(transaction *types.Transaction, group *transaction.ScriptGroup, ctx *transaction.Context) (bool, error)
 }
 
 type TransactionSigner struct {
@@ -19,39 +19,17 @@ func NewTransactionSigner() *TransactionSigner {
 	return &TransactionSigner{signers: make(map[types.Hash]ScriptSigner)}
 }
 
-var testInstance *TransactionSigner
-var mainInstance *TransactionSigner
+var testInstance = NewTransactionSigner()
+var mainInstance = NewTransactionSigner()
 
 func GetTransactionSignerInstance(network types.Network) *TransactionSigner {
-	var instance *TransactionSigner
-	var isInitialized = true
 	if network == types.NetworkTest {
-		if testInstance == nil {
-			testInstance = NewTransactionSigner()
-			isInitialized = false
-		}
-		instance = testInstance
+		return testInstance
 	} else if network == types.NetworkMain {
-		if mainInstance == nil {
-			mainInstance = NewTransactionSigner()
-			isInitialized = false
-		}
-		instance = mainInstance
+		return mainInstance
 	} else {
 		return nil
 	}
-
-	if !isInitialized {
-		instance.RegisterLockSigner(
-			script.GetCodeHash(network, script.SystemScriptSecp256k1Blake160SighashAll), &Secp256k1Blake160SighashAllSigner{})
-		instance.RegisterLockSigner(
-			script.GetCodeHash(network, script.SystemScriptSecp256k1Blake160MultisigAll), &Secp256k1Blake160MultisigAllSigner{})
-		instance.RegisterLockSigner(
-			script.GetCodeHash(network, script.SystemScriptAnyoneCanPay), &AnyCanPaySigner{})
-		instance.RegisterLockSigner(
-			script.GetCodeHash(network, script.SystemScriptPwLock), &PWLockSigner{})
-	}
-	return instance
 }
 
 func (r *TransactionSigner) RegisterSigner(codeHash types.Hash, scriptType types.ScriptType, signer ScriptSigner) {
@@ -73,10 +51,10 @@ func hash(codeHash types.Hash, scriptType types.ScriptType) types.Hash {
 	return types.BytesToHash(blake2b.Blake256(data))
 }
 
-func (r *TransactionSigner) SignTransactionByPrivateKeys(tx *TransactionWithScriptGroups, privKeys ...string) ([]int, error) {
-	var ctxs []*Context
+func (r *TransactionSigner) SignTransactionByPrivateKeys(tx *transaction.TransactionWithScriptGroups, privKeys ...string) ([]int, error) {
+	var ctxs []*transaction.Context
 	for _, key := range privKeys {
-		ctx, err := NewContext(key)
+		ctx, err := transaction.NewContext(key)
 		if err != nil {
 			return nil, err
 		}
@@ -85,7 +63,7 @@ func (r *TransactionSigner) SignTransactionByPrivateKeys(tx *TransactionWithScri
 	return r.SignTransaction(tx, ctxs...)
 }
 
-func (r *TransactionSigner) SignTransaction(tx *TransactionWithScriptGroups, contexts ...*Context) ([]int, error) {
+func (r *TransactionSigner) SignTransaction(tx *transaction.TransactionWithScriptGroups, contexts ...*transaction.Context) ([]int, error) {
 	var err error
 	signedIndex := make([]int, 0)
 	for i, group := range tx.ScriptGroups {
@@ -110,7 +88,7 @@ func (r *TransactionSigner) SignTransaction(tx *TransactionWithScriptGroups, con
 	return signedIndex, nil
 }
 
-func checkScriptGroup(group *ScriptGroup) error {
+func checkScriptGroup(group *transaction.ScriptGroup) error {
 	if group == nil {
 		return fmt.Errorf("nil ScriptGroup")
 	}

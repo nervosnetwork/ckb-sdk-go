@@ -5,7 +5,7 @@ import (
 	"github.com/nervosnetwork/ckb-sdk-go/collector"
 	"github.com/nervosnetwork/ckb-sdk-go/collector/handler"
 	"github.com/nervosnetwork/ckb-sdk-go/script/address"
-	"github.com/nervosnetwork/ckb-sdk-go/script/signer"
+	"github.com/nervosnetwork/ckb-sdk-go/transaction"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 	"reflect"
 	"strconv"
@@ -20,7 +20,7 @@ type SimpleTransactionBuilder struct {
 	OutputsData [][]byte
 	Witnesses   [][]byte
 
-	scriptGroups   []*signer.ScriptGroup
+	scriptGroups   []*transaction.ScriptGroup
 	ScriptHandlers []collector.ScriptHandler
 }
 
@@ -135,17 +135,17 @@ func (r *SimpleTransactionBuilder) SetWitness(index uint, witnessType types.Witn
 	return nil
 }
 
-func (r *SimpleTransactionBuilder) AddScriptGroup(group *signer.ScriptGroup) int {
+func (r *SimpleTransactionBuilder) AddScriptGroup(group *transaction.ScriptGroup) int {
 	r.scriptGroups = append(r.scriptGroups, group)
 	return len(r.scriptGroups) - 1
 }
 
-func (r *SimpleTransactionBuilder) Build(contexts ...interface{}) (*signer.TransactionWithScriptGroups, error) {
+func (r *SimpleTransactionBuilder) Build(contexts ...interface{}) (*transaction.TransactionWithScriptGroups, error) {
 	return r.BuildTransaction(), nil
 }
 
-func (r *SimpleTransactionBuilder) BuildTransaction() *signer.TransactionWithScriptGroups {
-	return &signer.TransactionWithScriptGroups{
+func (r *SimpleTransactionBuilder) BuildTransaction() *transaction.TransactionWithScriptGroups {
+	return &transaction.TransactionWithScriptGroups{
 		TxView: &types.Transaction{
 			Version:     r.Version,
 			CellDeps:    r.CellDeps,

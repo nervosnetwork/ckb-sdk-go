@@ -5,7 +5,7 @@ import (
 	"github.com/nervosnetwork/ckb-sdk-go/collector"
 	"github.com/nervosnetwork/ckb-sdk-go/script"
 	"github.com/nervosnetwork/ckb-sdk-go/script/address"
-	"github.com/nervosnetwork/ckb-sdk-go/script/signer"
+	"github.com/nervosnetwork/ckb-sdk-go/transaction"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 	"math/big"
 	"reflect"
@@ -98,7 +98,7 @@ func (r *SudtTransactionBuilder) AddChangeOutputByAddress(addr string) error {
 	return err
 }
 
-func (r *SudtTransactionBuilder) Build(contexts ...interface{}) (*signer.TransactionWithScriptGroups, error) {
+func (r *SudtTransactionBuilder) Build(contexts ...interface{}) (*transaction.TransactionWithScriptGroups, error) {
 	if r.SudtType == nil {
 		return nil, errors.New("sudt type is not set")
 	}
@@ -112,8 +112,8 @@ func (r *SudtTransactionBuilder) Build(contexts ...interface{}) (*signer.Transac
 	var (
 		err              error
 		s                *types.Script
-		g                *signer.ScriptGroup
-		m                = make(map[types.Hash]*signer.ScriptGroup)
+		g                *transaction.ScriptGroup
+		m                = make(map[types.Hash]*transaction.ScriptGroup)
 		outputsCapacity  = uint64(0)
 		outputSudtAmount = big.NewInt(0)
 	)
@@ -208,7 +208,7 @@ func (r *SudtTransactionBuilder) Build(contexts ...interface{}) (*signer.Transac
 	if !enoughCapacity {
 		return nil, errors.New("no enough capacity")
 	}
-	r.scriptGroups = make([]*signer.ScriptGroup, 0)
+	r.scriptGroups = make([]*transaction.ScriptGroup, 0)
 	for _, g := range m {
 		r.scriptGroups = append(r.scriptGroups, g)
 	}

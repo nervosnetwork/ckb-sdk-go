@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/nervosnetwork/ckb-sdk-go/crypto/secp256k1"
 	"github.com/nervosnetwork/ckb-sdk-go/script"
+	"github.com/nervosnetwork/ckb-sdk-go/transaction"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 	"reflect"
 )
@@ -12,7 +13,7 @@ import (
 type Secp256k1Blake160MultisigAllSigner struct {
 }
 
-func (s *Secp256k1Blake160MultisigAllSigner) SignTransaction(transaction *types.Transaction, group *ScriptGroup, ctx *Context) (bool, error) {
+func (s *Secp256k1Blake160MultisigAllSigner) SignTransaction(transaction *types.Transaction, group *transaction.ScriptGroup, ctx *transaction.Context) (bool, error) {
 	var m *script.MultisigConfig
 	switch ctx.Payload.(type) {
 	case script.MultisigConfig:
