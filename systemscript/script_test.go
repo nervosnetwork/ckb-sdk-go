@@ -2,7 +2,6 @@ package systemscript
 
 import (
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 	"github.com/stretchr/testify/assert"
 	"math/big"
@@ -48,18 +47,23 @@ func getKeysHashes() [][20]byte {
 	return keysHashes
 }
 
-func TestDecodeSudtAmount(t *testing.T) {
-	data := hexutil.MustDecode("0x0010a5d4e80000000000000000000000")
-	amount, err := DecodeSudtAmount(data)
-	if err != nil {
-		t.Error(err)
-	}
-	assert.Equal(t, big.NewInt(1000000000000), amount)
+func TestEncodeSudtAmount(t *testing.T) {
+	amount := big.NewInt(10000000)
+	data := EncodeSudtAmount(amount)
+	expectedData := []byte{0x80, 0x96, 0x98, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}
+
+	assert.Equal(t, expectedData, data)
 }
 
-func TestEncodeSudtAmount(t *testing.T) {
-	data := EncodeSudtAmount(big.NewInt(1000000000000))
-	assert.Equal(t, hexutil.MustDecode("0x0010a5d4e80000000000000000000000"), data)
+func TestDecodeSudtAmount(t *testing.T) {
+	data := []byte{0x80, 0xC3, 0xC9, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}
+	amount, err := DecodeSudtAmount(data)
+	assert.NoError(t, err)
+	assert.Equal(t, big.NewInt(30000000), amount)
+
+	data = []byte{0x80, 0x96}
+	_, err = DecodeSudtAmount(data)
+	assert.Error(t, err)
 }
 
 func TestChequeArgs(t *testing.T) {
