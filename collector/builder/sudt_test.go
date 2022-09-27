@@ -2,7 +2,7 @@ package builder
 
 import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
-	address2 "github.com/nervosnetwork/ckb-sdk-go/address"
+	"github.com/nervosnetwork/ckb-sdk-go/address"
 	"github.com/nervosnetwork/ckb-sdk-go/systemscript"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 	"github.com/stretchr/testify/assert"
@@ -26,7 +26,7 @@ func (m *sudtMockIterator) Next() *types.TransactionInput {
 }
 
 var (
-	sudtSender, _ = address2.Decode("ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq02cgdvd5mng9924xarf3rflqzafzmzlpsuhh83c")
+	sudtSender, _ = address.Decode("ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq02cgdvd5mng9924xarf3rflqzafzmzlpsuhh83c")
 	sudtArgs, _   = hexutil.Decode("0xae4147ba8412767b3fd9bd16d45dab2fa5df283a6fd68dae5367524daa767ca7")
 	sudtType      = &types.Script{
 		CodeHash: types.HexToHash("0xc5e5dcf215925f7ef4dfaf5f4b4f105bc321c02776d6e7d52a1db3fcd9d011a4"),

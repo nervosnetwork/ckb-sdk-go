@@ -5,7 +5,7 @@ import (
 	"context"
 	"encoding/binary"
 	"errors"
-	address2 "github.com/nervosnetwork/ckb-sdk-go/address"
+	"github.com/nervosnetwork/ckb-sdk-go/address"
 	"github.com/nervosnetwork/ckb-sdk-go/collector"
 	"github.com/nervosnetwork/ckb-sdk-go/collector/handler"
 	"github.com/nervosnetwork/ckb-sdk-go/rpc"
@@ -64,7 +64,7 @@ func NewDaoTransactionBuilder(network types.Network, iterator collector.CellIter
 		}
 	}
 
-	b := &DaoTransactionBuilder{
+	builder := &DaoTransactionBuilder{
 		CkbTransactionBuilder: CkbTransactionBuilder{
 			SimpleTransactionBuilder: *NewSimpleTransactionBuilder(network),
 			FeeRate:                  1000,
@@ -79,7 +79,7 @@ func NewDaoTransactionBuilder(network types.Network, iterator collector.CellIter
 		depositBlockNumber:  depositBlockNumber,
 		depositCellCapacity: depositCellCapacity,
 	}
-	return b, nil
+	return builder, nil
 }
 
 func getTransactionType(outputData []byte) (DaoTransactionType, error) {
@@ -159,7 +159,7 @@ func (r *DaoTransactionBuilder) AddWithdrawOutput(addr string) error {
 	if r.depositBlockNumber == 0 {
 		return errors.New("deposit block number not initialized")
 	}
-	a, err := address2.Decode(addr)
+	a, err := address.Decode(addr)
 	if err != nil {
 		return err
 	}

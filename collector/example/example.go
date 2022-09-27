@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/ethereum/go-ethereum/common/hexutil"
-	address2 "github.com/nervosnetwork/ckb-sdk-go/address"
+	"github.com/nervosnetwork/ckb-sdk-go/address"
 	"github.com/nervosnetwork/ckb-sdk-go/collector"
 	"github.com/nervosnetwork/ckb-sdk-go/collector/builder"
 	"github.com/nervosnetwork/ckb-sdk-go/collector/handler"
@@ -68,7 +68,7 @@ func SendCkbFromMultisigAddressExample() error {
 
 	args := multisigConfig.Hash160()
 	// ckt1qpw9q60tppt7l3j7r09qcp7lxnp3vcanvgha8pmvsa3jplykxn32sqdunqvd3g2felqv6qer8pkydws8jg9qxlca0st5v
-	sender, _ := address2.Address{
+	sender, _ := address.Address{
 		Script: &types.Script{
 			CodeHash: systemscript.GetCodeHash(network, systemscript.Secp256k1Blake160MultisigAll),
 			HashType: types.HashTypeType,

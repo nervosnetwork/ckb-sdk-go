@@ -3,7 +3,7 @@ package model
 import (
 	"errors"
 	"github.com/ethereum/go-ethereum/common/hexutil"
-	address2 "github.com/nervosnetwork/ckb-sdk-go/address"
+	"github.com/nervosnetwork/ckb-sdk-go/address"
 	"github.com/nervosnetwork/ckb-sdk-go/systemscript"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 	"reflect"
@@ -57,8 +57,8 @@ func NewIdentityItemByAddress(address string) (*Item, error) {
 	return &Item{ItemTypeIdentity, identity}, nil
 }
 
-func decodeItemAddress(addr string) (*address2.Address, error) {
-	a, err := address2.Decode(addr)
+func decodeItemAddress(addr string) (*address.Address, error) {
+	a, err := address.Decode(addr)
 	if err != nil {
 		return nil, err
 	}
