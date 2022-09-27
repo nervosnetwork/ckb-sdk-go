@@ -1,7 +1,7 @@
 package model
 
 import (
-	"github.com/nervosnetwork/ckb-sdk-go/types"
+	"github.com/nervosnetwork/ckb-sdk-go/v2/types"
 	"math/big"
 )
 

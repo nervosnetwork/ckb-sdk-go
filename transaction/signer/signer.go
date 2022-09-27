@@ -2,9 +2,9 @@ package signer
 
 import (
 	"errors"
-	"github.com/nervosnetwork/ckb-sdk-go/crypto/blake2b"
-	"github.com/nervosnetwork/ckb-sdk-go/transaction"
-	"github.com/nervosnetwork/ckb-sdk-go/types"
+	"github.com/nervosnetwork/ckb-sdk-go/v2/crypto/blake2b"
+	"github.com/nervosnetwork/ckb-sdk-go/v2/transaction"
+	"github.com/nervosnetwork/ckb-sdk-go/v2/types"
 )
 
 type ScriptSigner interface {
@@ -122,7 +122,7 @@ func checkScriptGroup(group *transaction.ScriptGroup) error {
 	}
 	switch group.GroupType {
 	case transaction.ScriptTypeType:
-		if len(group.OutputIndices) + len(group.InputIndices) < 0 {
+		if len(group.OutputIndices)+len(group.InputIndices) < 0 {
 			return errors.New("groupType is Type but OutputIndices and InputIndices are empty")
 		}
 	case transaction.ScriptTypeLock:

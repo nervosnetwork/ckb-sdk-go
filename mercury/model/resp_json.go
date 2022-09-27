@@ -3,7 +3,7 @@ package model
 import (
 	"encoding/json"
 	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/nervosnetwork/ckb-sdk-go/types"
+	"github.com/nervosnetwork/ckb-sdk-go/v2/types"
 	"github.com/pkg/errors"
 	"math/big"
 	"reflect"
@@ -237,6 +237,21 @@ func (e *DaoState) UnmarshalJSON(input []byte) error {
 		}
 	default:
 		return errors.New("invalid type while unmarshal DaoState")
+	}
+	return nil
+}
+
+func (r *DaoInfo) UnmarshalJSON(input []byte) error {
+	var jsonObj struct {
+		State  DaoState
+		Reward hexutil.Uint64
+	}
+	if err := json.Unmarshal(input, &jsonObj); err != nil {
+		return err
+	}
+	*r = DaoInfo{
+		State:  jsonObj.State,
+		Reward: uint64(jsonObj.Reward),
 	}
 	return nil
 }

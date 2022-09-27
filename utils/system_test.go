@@ -2,8 +2,8 @@ package utils
 
 import (
 	"context"
-	"github.com/nervosnetwork/ckb-sdk-go/mocks"
-	"github.com/nervosnetwork/ckb-sdk-go/types"
+	"github.com/nervosnetwork/ckb-sdk-go/v2/mocks"
+	"github.com/nervosnetwork/ckb-sdk-go/v2/types"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )

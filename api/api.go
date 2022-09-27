@@ -2,14 +2,14 @@ package api
 
 import (
 	"context"
-	"github.com/nervosnetwork/ckb-sdk-go/transaction"
+	"github.com/nervosnetwork/ckb-sdk-go/v2/transaction"
 
 	"github.com/ethereum/go-ethereum/rpc"
-	"github.com/nervosnetwork/ckb-sdk-go/indexer"
-	"github.com/nervosnetwork/ckb-sdk-go/mercury"
-	"github.com/nervosnetwork/ckb-sdk-go/mercury/model"
-	C "github.com/nervosnetwork/ckb-sdk-go/rpc"
-	"github.com/nervosnetwork/ckb-sdk-go/types"
+	"github.com/nervosnetwork/ckb-sdk-go/v2/indexer"
+	"github.com/nervosnetwork/ckb-sdk-go/v2/mercury"
+	"github.com/nervosnetwork/ckb-sdk-go/v2/mercury/model"
+	C "github.com/nervosnetwork/ckb-sdk-go/v2/rpc"
+	"github.com/nervosnetwork/ckb-sdk-go/v2/types"
 )
 
 type CkbApi interface {
