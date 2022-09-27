@@ -486,23 +486,27 @@ func (r *PeerSyncState) UnmarshalJSON(input []byte) error {
 	type PeerSyncStateAlias PeerSyncState
 	var jsonObj struct {
 		PeerSyncStateAlias
-		BestKnownHeaderNumber  hexutil.Uint64 `json:"best_known_header_number,omitempty"`
-		LastCommonHeaderNumber hexutil.Uint64 `json:"last_common_header_number,omitempty"`
-		UnknownHeaderListSize  hexutil.Uint64 `json:"unknown_header_list_size"`
-		InflightCount          hexutil.Uint64 `json:"inflight_count"`
-		CanFetchCount          hexutil.Uint64 `json:"can_fetch_count"`
+		BestKnownHeaderNumber  *hexutil.Uint64 `json:"best_known_header_number,omitempty"`
+		LastCommonHeaderNumber *hexutil.Uint64 `json:"last_common_header_number,omitempty"`
+		UnknownHeaderListSize  hexutil.Uint64  `json:"unknown_header_list_size"`
+		InflightCount          hexutil.Uint64  `json:"inflight_count"`
+		CanFetchCount          hexutil.Uint64  `json:"can_fetch_count"`
 	}
 	if err := json.Unmarshal(input, &jsonObj); err != nil {
 		return err
 	}
 	*r = PeerSyncState{
-		BestKnownHeaderHash:    jsonObj.BestKnownHeaderHash,
-		BestKnownHeaderNumber:  uint64(jsonObj.BestKnownHeaderNumber),
-		LastCommonHeaderHash:   jsonObj.LastCommonHeaderHash,
-		LastCommonHeaderNumber: uint64(jsonObj.LastCommonHeaderNumber),
-		UnknownHeaderListSize:  uint64(jsonObj.UnknownHeaderListSize),
-		InflightCount:          uint64(jsonObj.InflightCount),
-		CanFetchCount:          uint64(jsonObj.CanFetchCount),
+		BestKnownHeaderHash:   jsonObj.BestKnownHeaderHash,
+		LastCommonHeaderHash:  jsonObj.LastCommonHeaderHash,
+		UnknownHeaderListSize: uint64(jsonObj.UnknownHeaderListSize),
+		InflightCount:         uint64(jsonObj.InflightCount),
+		CanFetchCount:         uint64(jsonObj.CanFetchCount),
+	}
+	if jsonObj.BestKnownHeaderNumber != nil {
+		r.BestKnownHeaderNumber = uint64(*jsonObj.BestKnownHeaderNumber)
+	}
+	if jsonObj.LastCommonHeaderNumber != nil {
+		r.LastCommonHeaderNumber = uint64(*jsonObj.LastCommonHeaderNumber)
 	}
 	return nil
 }

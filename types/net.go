@@ -37,9 +37,9 @@ type RemoteNodeProtocol struct {
 }
 
 type PeerSyncState struct {
-	BestKnownHeaderHash    Hash   `json:"best_known_header_hash,omitempty"`
+	BestKnownHeaderHash    *Hash  `json:"best_known_header_hash,omitempty"`
 	BestKnownHeaderNumber  uint64 `json:"best_known_header_number,omitempty"`
-	LastCommonHeaderHash   Hash   `json:"last_common_header_hash,omitempty"`
+	LastCommonHeaderHash   *Hash  `json:"last_common_header_hash,omitempty"`
 	LastCommonHeaderNumber uint64 `json:"last_common_header_number,omitempty"`
 	UnknownHeaderListSize  uint64 `json:"unknown_header_list_size"`
 	InflightCount          uint64 `json:"inflight_count"`

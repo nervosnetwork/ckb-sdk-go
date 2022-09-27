@@ -499,11 +499,11 @@ func TestJsonRemoteNode(t *testing.T) {
 	assert.Equal(t, 8, len(v.Protocols))
 	assert.Equal(t, uint64(0x67), v.Protocols[2].ID)
 	assert.Equal(t, "2", v.Protocols[2].Version)
-	assert.Equal(t, HexToHash("0x1201e4a20d3cddc682173f892bea13127d6de3e00719a038d16a660968be067e"), v.SyncState.BestKnownHeaderHash)
+	assert.Equal(t, HexToHash("0x1201e4a20d3cddc682173f892bea13127d6de3e00719a038d16a660968be067e"), *v.SyncState.BestKnownHeaderHash)
 	assert.Equal(t, uint64(0x583019), v.SyncState.BestKnownHeaderNumber)
 	assert.Equal(t, uint64(0x10), v.SyncState.CanFetchCount)
 	assert.Equal(t, uint64(0x0), v.SyncState.InflightCount)
-	assert.Equal(t, HexToHash("0x1201e4a20d3cddc682173f892bea13127d6de3e00719a038d16a660968be067e"), v.SyncState.LastCommonHeaderHash)
+	assert.Equal(t, HexToHash("0x1201e4a20d3cddc682173f892bea13127d6de3e00719a038d16a660968be067e"), *v.SyncState.LastCommonHeaderHash)
 	assert.Equal(t, uint64(0x583019), v.SyncState.LastCommonHeaderNumber)
 	assert.Equal(t, uint64(0x0), v.SyncState.UnknownHeaderListSize)
 }
