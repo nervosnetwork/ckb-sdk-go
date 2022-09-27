@@ -68,7 +68,6 @@ func NewDaoTransactionBuilder(network types.Network, iterator collector.CellIter
 		CkbTransactionBuilder: CkbTransactionBuilder{
 			SimpleTransactionBuilder: *NewSimpleTransactionBuilder(network),
 			FeeRate:                  1000,
-			Network:                  network,
 			iterator:                 iterator,
 			transactionInputs:        []*types.TransactionInput{input}, // add dao inputs
 			transactionInputsIndex:   0,

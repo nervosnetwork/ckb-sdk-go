@@ -67,11 +67,9 @@ func getSudtMockIterator() *sudtMockIterator {
 }
 
 func TestSudtTransactionBuilderBalance(t *testing.T) {
+	var err error
 	iterator := getSudtMockIterator()
-	b, err := NewSudtTransactionBuilderFromSudtArgs(types.NetworkTest, iterator, SudtTransactionTypeTransfer, sudtArgs)
-	if err != nil {
-		t.Error(err)
-	}
+	b := NewSudtTransactionBuilderFromSudtArgs(types.NetworkTest, iterator, SudtTransactionTypeTransfer, sudtArgs)
 
 	if _, err = b.AddSudtOutputByAddress("ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqdamwzrffgc54ef48493nfd2sd0h4cjnxg4850up", big.NewInt(1))
 		err != nil {

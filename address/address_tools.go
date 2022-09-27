@@ -2,7 +2,6 @@ package address
 
 import (
 	"errors"
-	"fmt"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/nervosnetwork/ckb-sdk-go/crypto/blake2b"
 	"github.com/nervosnetwork/ckb-sdk-go/crypto/secp256k1"
@@ -15,7 +14,7 @@ func GenerateScriptSecp256K1Blake160SignhashAll(key *secp256k1.Secp256k1Key) *ty
 	args, _ := blake2b.Blake160(key.PubKey())
 	return &types.Script{
 		// The same code hash is shared by mainnet and testnet
-		CodeHash: types.GetCodeHash(types.BuiltinScriptSecp256k1Blake160SighashAll, types.NetworkMain),
+		CodeHash: utils.GetCodeHash(types.NetworkMain, types.BuiltinScriptSecp256k1Blake160SighashAll),
 		HashType: types.HashTypeType,
 		Args:     args,
 	}
@@ -29,40 +28,17 @@ func GenerateScriptSecp256K1Blake160SignhashAllByPublicKey(pubKey string) (*type
 	args, _ := blake2b.Blake160(b)
 	return &types.Script{
 		// The same code hash is shared by mainnet and testnet
-		CodeHash: types.GetCodeHash(types.BuiltinScriptSecp256k1Blake160SighashAll, types.NetworkMain),
+		CodeHash: utils.GetCodeHash(types.NetworkMain, types.BuiltinScriptSecp256k1Blake160SighashAll),
 		HashType: types.HashTypeType,
 		Args:     args,
 	}, nil
 }
 
-func GenerateAddressSecp256K1Blake160SignhashAll(key *secp256k1.Secp256k1Key, network types.Network) *Address {
-	script := GenerateScriptSecp256K1Blake160SignhashAll(key)
-	return &Address{
-		Script:  script,
-		Network: network,
-	}
-}
-
-func ValidateChequeAddress(addr string, systemScripts *utils.SystemScripts) (*Address, error) {
-	address, err := Decode(addr)
-	if err != nil {
-		return nil, err
-	}
-	if isSecp256k1Lock(address, systemScripts) {
-		return address, nil
-	}
-	return nil, errors.New(fmt.Sprintf("address %s is not an SECP256K1 short format address", addr))
-}
-
-func isSecp256k1Lock(parsedSenderAddr *Address, systemScripts *utils.SystemScripts) bool {
-	return parsedSenderAddr.Script.CodeHash == systemScripts.SecpSingleSigCell.CellHash &&
-		parsedSenderAddr.Script.HashType == systemScripts.SecpSingleSigCell.HashType &&
-		len(parsedSenderAddr.Script.Args) == 20
-}
-
 // GenerateSecp256k1Blake160MultisigScript generate scep256k1 multisig script.
 // It can accept public key (in compressed format, 33 bytes each) array or public key hash (20 bytes) array, and
 // return error if giving none of them.
+// TODO: change method signature and only accepte MultisigScript as parameter
+// TODO: change method name to `GenerateScriptSecp256k1Blake160Multisig`
 func GenerateSecp256k1Blake160MultisigScript(requireN, threshold int, publicKeysOrHashes [][]byte) (*types.Script, []byte, error) {
 	multisigScript := signer.MultisigScript{
 		Version:    0,
@@ -102,7 +78,7 @@ func GenerateSecp256k1Blake160MultisigScript(requireN, threshold int, publicKeys
 	}
 
 	// secp256k1_blake160_multisig_all share the same code hash in network main and test
-	codeHash := types.GetCodeHash(types.BuiltinScriptSecp256k1Blake160MultisigAll, types.NetworkTest)
+	codeHash := utils.GetCodeHash(types.NetworkTest, types.BuiltinScriptSecp256k1Blake160MultisigAll)
 	return &types.Script{
 		CodeHash: codeHash,
 		HashType: types.HashTypeType,

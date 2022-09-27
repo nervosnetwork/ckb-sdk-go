@@ -4,12 +4,13 @@ import (
 	"github.com/nervosnetwork/ckb-sdk-go/collector"
 	"github.com/nervosnetwork/ckb-sdk-go/transaction"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
+	"github.com/nervosnetwork/ckb-sdk-go/utils"
 	"reflect"
 )
 
 type SudtScriptHandler struct {
-	cellDep *types.CellDep
-	network types.Network
+	CellDep  *types.CellDep
+	CodeHash types.Hash
 }
 
 func NewSudtScriptHandler(network types.Network) *SudtScriptHandler {
@@ -22,14 +23,14 @@ func NewSudtScriptHandler(network types.Network) *SudtScriptHandler {
 		return nil
 	}
 	return &SudtScriptHandler{
-		cellDep: &types.CellDep{
+		CellDep: &types.CellDep{
 			OutPoint: &types.OutPoint{
 				TxHash: txHash,
 				Index:  0,
 			},
 			DepType: types.DepTypeCode,
 		},
-		network: network,
+		CodeHash: utils.GetCodeHash(network, types.BuiltinScriptSudt),
 	}
 }
 
@@ -37,14 +38,13 @@ func (r *SudtScriptHandler) isMatched(script *types.Script) bool {
 	if script == nil {
 		return false
 	}
-	codeHash := types.GetCodeHash(types.BuiltinScriptSudt, r.network)
-	return reflect.DeepEqual(script.CodeHash, codeHash)
+	return reflect.DeepEqual(script.CodeHash, r.CodeHash)
 }
 
 func (r *SudtScriptHandler) BuildTransaction(builder collector.TransactionBuilder, group *transaction.ScriptGroup, context interface{}) (bool, error) {
 	if group == nil || !r.isMatched(group.Script) {
 		return false, nil
 	}
-	builder.AddCellDep(r.cellDep)
+	builder.AddCellDep(r.CellDep)
 	return true, nil
 }

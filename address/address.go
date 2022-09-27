@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/nervosnetwork/ckb-sdk-go/crypto/bech32"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
+	"github.com/nervosnetwork/ckb-sdk-go/utils"
 )
 
 type Address struct {
@@ -70,7 +71,7 @@ func decodeShort(payload []byte, network types.Network) (*Address, error) {
 	default:
 		return nil, errors.New("unknown code hash index")
 	}
-	codeHash := types.GetCodeHash(scriptType, network)
+	codeHash := utils.GetCodeHash(network, scriptType)
 	return &Address{
 		Script: &types.Script{
 			CodeHash: codeHash,
@@ -135,11 +136,11 @@ func (a Address) Encode() (string, error) {
 func (a Address) EncodeShort() (string, error) {
 	payload := make([]byte, 0)
 	payload = append(payload, 0x01)
-	if a.Script.CodeHash == types.GetCodeHash(types.BuiltinScriptSecp256k1Blake160SighashAll, a.Network) {
+	if a.Script.CodeHash == utils.GetCodeHash(a.Network, types.BuiltinScriptSecp256k1Blake160SighashAll) {
 		payload = append(payload, 0x00)
-	} else if a.Script.CodeHash == types.GetCodeHash(types.BuiltinScriptSecp256k1Blake160MultisigAll, a.Network) {
+	} else if a.Script.CodeHash == utils.GetCodeHash(a.Network, types.BuiltinScriptSecp256k1Blake160MultisigAll) {
 		payload = append(payload, 0x01)
-	} else if a.Script.CodeHash == types.GetCodeHash(types.BuiltinScriptAnyoneCanPay, a.Network) {
+	} else if a.Script.CodeHash == utils.GetCodeHash(a.Network, types.BuiltinScriptAnyoneCanPay) {
 		payload = append(payload, 0x02)
 	} else {
 		return "", errors.New("encoding to short address for given script is unsupported")

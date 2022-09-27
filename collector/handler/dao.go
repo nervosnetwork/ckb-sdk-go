@@ -8,6 +8,7 @@ import (
 	"github.com/nervosnetwork/ckb-sdk-go/rpc"
 	"github.com/nervosnetwork/ckb-sdk-go/transaction"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
+	"github.com/nervosnetwork/ckb-sdk-go/utils"
 	"reflect"
 )
 
@@ -16,15 +17,15 @@ const DaoLockPeriodEpochs = 180
 var (
 	DaoDepositOutputData = []byte{0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}
 	DaoScript            = &types.Script{
-		CodeHash: types.GetCodeHash(types.BuiltinScriptDao, types.NetworkMain),
+		CodeHash: utils.GetCodeHash(types.NetworkMain, types.BuiltinScriptDao),
 		HashType: types.HashTypeType,
 		Args:     []byte{},
 	}
 )
 
 type DaoScriptHandler struct {
-	cellDep *types.CellDep
-	network types.Network
+	CellDep  *types.CellDep
+	CodeHash types.Hash
 }
 
 func NewDaoScriptHandler(network types.Network) *DaoScriptHandler {
@@ -38,14 +39,14 @@ func NewDaoScriptHandler(network types.Network) *DaoScriptHandler {
 	}
 
 	return &DaoScriptHandler{
-		cellDep: &types.CellDep{
+		CellDep: &types.CellDep{
 			OutPoint: &types.OutPoint{
 				TxHash: txHash,
 				Index:  2,
 			},
 			DepType: types.DepTypeCode,
 		},
-		network: network,
+		CodeHash: utils.GetCodeHash(network, types.BuiltinScriptDao),
 	}
 }
 
@@ -53,14 +54,12 @@ func (r *DaoScriptHandler) isMatched(script *types.Script) bool {
 	if script == nil {
 		return false
 	}
-	codeHash := types.GetCodeHash(types.BuiltinScriptDao, r.network)
-	return reflect.DeepEqual(script.CodeHash, codeHash)
+	return reflect.DeepEqual(script.CodeHash, r.CodeHash)
 }
 
 func IsDepositCell(output *types.CellOutput, outputData []byte) bool {
 	return reflect.DeepEqual(DaoScript, output.Type) &&
 		bytes.Equal(DaoDepositOutputData, outputData)
-	return false
 }
 
 func (r *DaoScriptHandler) BuildTransaction(builder collector.TransactionBuilder, group *transaction.ScriptGroup, context interface{}) (bool, error) {
@@ -68,7 +67,7 @@ func (r *DaoScriptHandler) BuildTransaction(builder collector.TransactionBuilder
 		return false, nil
 	}
 
-	builder.AddCellDep(r.cellDep)
+	builder.AddCellDep(r.CellDep)
 
 	var ok bool
 	switch context.(type) {

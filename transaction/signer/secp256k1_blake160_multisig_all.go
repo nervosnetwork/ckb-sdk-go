@@ -196,6 +196,7 @@ func (r *MultisigScript) WitnessPlaceholderInLock() []byte {
 	return b
 }
 
+// TODO: return Blake256 hash
 func (r *MultisigScript) ComputeHash() ([]byte, error) {
 	hash, err := blake2b.Blake160(r.Encode()[:])
 	if err != nil {

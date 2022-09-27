@@ -21,7 +21,6 @@ const (
 type SudtTransactionBuilder struct {
 	SimpleTransactionBuilder
 	FeeRate  uint
-	Network  types.Network
 	SudtType *types.Script
 
 	iterator          collector.CellIterator
@@ -30,64 +29,36 @@ type SudtTransactionBuilder struct {
 }
 
 func NewSudtTransactionBuilderFromSudtArgs(network types.Network, iterator collector.CellIterator,
-	transactionType SudtTransactionType, sudtArgs []byte) (*SudtTransactionBuilder, error) {
+	transactionType SudtTransactionType, sudtArgs []byte) *SudtTransactionBuilder {
+	codeHash := utils.GetCodeHash(network, types.BuiltinScriptSudt)
 	s := &SudtTransactionBuilder{
 		SimpleTransactionBuilder: *NewSimpleTransactionBuilder(network),
 		FeeRate:                  1000,
-		Network:                  network,
+		SudtType: &types.Script{
+			CodeHash: codeHash,
+			HashType: types.HashTypeType,
+			Args:     sudtArgs,
+		},
 
 		iterator:          iterator,
 		changeOutputIndex: -1,
 		transactionType:   transactionType,
 	}
-	err := s.setSudtArgs(sudtArgs)
-	if err != nil {
-		return nil, err
-	}
-	return s, nil
+	return s
 }
 
 func NewSudtTransactionBuilderFromSudtOwnerAddress(network types.Network, iterator collector.CellIterator,
 	transactionType SudtTransactionType, sudtOwnerAddress string) (*SudtTransactionBuilder, error) {
-	s := &SudtTransactionBuilder{
-		SimpleTransactionBuilder: *NewSimpleTransactionBuilder(network),
-		FeeRate:                  1000,
-		Network:                  network,
 
-		iterator:          iterator,
-		changeOutputIndex: -1,
-		transactionType:   transactionType,
-	}
-	err := s.setSudtArgsByAddress(sudtOwnerAddress)
+	addr, err := address.Decode(sudtOwnerAddress)
 	if err != nil {
 		return nil, err
 	}
-	return s, nil
-}
-
-func (r *SudtTransactionBuilder) setSudtArgs(sudtArgs []byte) error {
-	codeHash := types.GetCodeHash(types.BuiltinScriptSudt, r.Network)
-	if reflect.DeepEqual(codeHash, types.Hash{}) {
-		return errors.New("can not find sudt code hash")
-	}
-	r.SudtType = &types.Script{
-		CodeHash: codeHash,
-		HashType: types.HashTypeType,
-		Args:     sudtArgs,
-	}
-	return nil
-}
-
-func (r *SudtTransactionBuilder) setSudtArgsByAddress(sudtOwnerAddress string) error {
-	addr, err := address.Decode(sudtOwnerAddress)
-	if err != nil {
-		return err
-	}
 	sudtArgs, err := addr.Script.Hash()
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return r.setSudtArgs(sudtArgs.Bytes())
+	return NewSudtTransactionBuilderFromSudtArgs(network, iterator, transactionType, sudtArgs.Bytes()), nil
 }
 
 func (r *SudtTransactionBuilder) AddSudtOutputByAddress(addr string, sudtAmount *big.Int) (int, error) {

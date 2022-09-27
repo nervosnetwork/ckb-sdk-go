@@ -14,6 +14,7 @@ func Blake160(data []byte) ([]byte, error) {
 	return blake[:20], nil
 }
 
+// TODO: remove returned error due to digiest won't return error
 func Blake256(data []byte) ([]byte, error) {
 	config := &blake2b.Config{
 		Size:   32,
