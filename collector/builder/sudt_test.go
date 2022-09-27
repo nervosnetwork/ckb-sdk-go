@@ -3,7 +3,7 @@ package builder
 import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	address2 "github.com/nervosnetwork/ckb-sdk-go/address"
-	"github.com/nervosnetwork/ckb-sdk-go/script"
+	"github.com/nervosnetwork/ckb-sdk-go/systemscript"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 	"github.com/stretchr/testify/assert"
 	"math/big"
@@ -48,7 +48,7 @@ func getSudtMockIterator() *sudtMockIterator {
 					Lock:     sudtSender.Script,
 					Type:     sudtType,
 				},
-				OutputData: script.EncodeSudtAmount(big.NewInt(100)),
+				OutputData: systemscript.EncodeSudtAmount(big.NewInt(100)),
 			},
 			{
 				OutPoint: &types.OutPoint{
@@ -60,7 +60,7 @@ func getSudtMockIterator() *sudtMockIterator {
 					Lock:     sudtSender.Script,
 					Type:     sudtType,
 				},
-				OutputData: script.EncodeSudtAmount(big.NewInt(10)),
+				OutputData: systemscript.EncodeSudtAmount(big.NewInt(10)),
 			},
 		},
 	}
@@ -83,11 +83,11 @@ func TestSudtTransactionBuilderBalance(t *testing.T) {
 		t.Error(err)
 	}
 
-	amount1, err := script.DecodeSudtAmount(tx.TxView.OutputsData[0])
+	amount1, err := systemscript.DecodeSudtAmount(tx.TxView.OutputsData[0])
 	if err != nil {
 		t.Error(err)
 	}
-	amount2, err := script.DecodeSudtAmount(tx.TxView.OutputsData[1])
+	amount2, err := systemscript.DecodeSudtAmount(tx.TxView.OutputsData[1])
 	if err != nil {
 		t.Error(err)
 	}

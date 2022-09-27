@@ -4,7 +4,7 @@ import (
 	"errors"
 	address2 "github.com/nervosnetwork/ckb-sdk-go/address"
 	"github.com/nervosnetwork/ckb-sdk-go/collector"
-	"github.com/nervosnetwork/ckb-sdk-go/script"
+	"github.com/nervosnetwork/ckb-sdk-go/systemscript"
 	"github.com/nervosnetwork/ckb-sdk-go/transaction"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 	"math/big"
@@ -30,7 +30,7 @@ type SudtTransactionBuilder struct {
 
 func NewSudtTransactionBuilderFromSudtArgs(network types.Network, iterator collector.CellIterator,
 	transactionType SudtTransactionType, sudtArgs []byte) *SudtTransactionBuilder {
-	codeHash := script.GetCodeHash(network, script.SystemScriptSudt)
+	codeHash := systemscript.GetCodeHash(network, systemscript.SystemScriptSudt)
 	s := &SudtTransactionBuilder{
 		SimpleTransactionBuilder: *NewSimpleTransactionBuilder(network),
 		FeeRate:                  1000,
@@ -68,7 +68,7 @@ func (r *SudtTransactionBuilder) AddSudtOutputByAddress(addr string, sudtAmount 
 		Lock:     a.Script,
 		Type:     r.SudtType,
 	}
-	data := script.EncodeSudtAmount(sudtAmount)
+	data := systemscript.EncodeSudtAmount(sudtAmount)
 	output.Capacity = output.OccupiedCapacity(data)
 	return r.AddOutput(output, data), nil
 }
@@ -83,7 +83,7 @@ func (r *SudtTransactionBuilder) AddSudtOutputWithCapacityByAddress(addr string,
 		Lock:     a.Script,
 		Type:     r.SudtType,
 	}
-	data := script.EncodeSudtAmount(sudtAmount)
+	data := systemscript.EncodeSudtAmount(sudtAmount)
 	return r.AddOutput(output, data), nil
 }
 
@@ -106,7 +106,7 @@ func (r *SudtTransactionBuilder) Build(contexts ...interface{}) (*transaction.Tr
 	// If transaction type is SudtTransactionTypeTransfer, we need the change output to receive SUDT
 	if r.transactionType == SudtTransactionTypeTransfer {
 		r.Outputs[r.changeOutputIndex].Type = r.SudtType
-		r.OutputsData[r.changeOutputIndex] = script.EncodeSudtAmount(big.NewInt(0))
+		r.OutputsData[r.changeOutputIndex] = systemscript.EncodeSudtAmount(big.NewInt(0))
 	}
 
 	var (
@@ -199,7 +199,7 @@ func (r *SudtTransactionBuilder) Build(contexts ...interface{}) (*transaction.Tr
 			if r.transactionType == SudtTransactionTypeTransfer {
 				diff := big.NewInt(0)
 				diff.Sub(inputsSudtAmount, outputSudtAmount)
-				r.OutputsData[r.changeOutputIndex] = script.EncodeSudtAmount(diff)
+				r.OutputsData[r.changeOutputIndex] = systemscript.EncodeSudtAmount(diff)
 			}
 			enoughCapacity = true
 			break
@@ -232,7 +232,7 @@ func addSudtAmount(a *big.Int, b []byte) error {
 	if len(b) == 0 {
 		return nil
 	}
-	amount, err := script.DecodeSudtAmount(b)
+	amount, err := systemscript.DecodeSudtAmount(b)
 	if err != nil {
 		return err
 	}

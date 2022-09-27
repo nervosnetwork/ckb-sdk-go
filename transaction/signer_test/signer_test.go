@@ -7,7 +7,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/nervosnetwork/ckb-sdk-go/crypto/secp256k1"
-	"github.com/nervosnetwork/ckb-sdk-go/script"
+	"github.com/nervosnetwork/ckb-sdk-go/systemscript"
 	"github.com/nervosnetwork/ckb-sdk-go/transaction"
 	signer2 "github.com/nervosnetwork/ckb-sdk-go/transaction/signer"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
@@ -141,7 +141,7 @@ func (r *signerChecker) UnmarshalJSON(input []byte) error {
 		}
 		if val, ok := c["multisig_script"]; ok {
 			v := val.(map[string]interface{})
-			m := script.NewMultisigConfig(byte(v["first_n"].(float64)),
+			m := systemscript.NewMultisigConfig(byte(v["first_n"].(float64)),
 				byte(v["threshold"].(float64)))
 			for _, h := range v["key_hashes"].([]interface{}) {
 				m.AddKeyHash(common.FromHex(h.(string)))

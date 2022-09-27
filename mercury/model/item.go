@@ -4,7 +4,7 @@ import (
 	"errors"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	address2 "github.com/nervosnetwork/ckb-sdk-go/address"
-	"github.com/nervosnetwork/ckb-sdk-go/script"
+	"github.com/nervosnetwork/ckb-sdk-go/systemscript"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 	"reflect"
 )
@@ -62,11 +62,11 @@ func decodeItemAddress(addr string) (*address2.Address, error) {
 	if err != nil {
 		return nil, err
 	}
-	ss := []script.SystemScript{
-		script.SystemScriptSecp256k1Blake160SighashAll,
-		script.SystemScriptAnyoneCanPay}
+	ss := []systemscript.SystemScript{
+		systemscript.SystemScriptSecp256k1Blake160SighashAll,
+		systemscript.SystemScriptAnyoneCanPay}
 	for _, s := range ss {
-		hash := script.GetCodeHash(a.Network, s)
+		hash := systemscript.GetCodeHash(a.Network, s)
 		if reflect.DeepEqual(hash, a.Script.CodeHash) {
 			return a, nil
 		}

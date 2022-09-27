@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"github.com/nervosnetwork/ckb-sdk-go/crypto/secp256k1"
-	"github.com/nervosnetwork/ckb-sdk-go/script"
+	"github.com/nervosnetwork/ckb-sdk-go/systemscript"
 	"github.com/nervosnetwork/ckb-sdk-go/transaction"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 	"reflect"
@@ -14,13 +14,13 @@ type Secp256k1Blake160MultisigAllSigner struct {
 }
 
 func (s *Secp256k1Blake160MultisigAllSigner) SignTransaction(transaction *types.Transaction, group *transaction.ScriptGroup, ctx *transaction.Context) (bool, error) {
-	var m *script.MultisigConfig
+	var m *systemscript.MultisigConfig
 	switch ctx.Payload.(type) {
-	case script.MultisigConfig:
-		mm := ctx.Payload.(script.MultisigConfig)
+	case systemscript.MultisigConfig:
+		mm := ctx.Payload.(systemscript.MultisigConfig)
 		m = &mm
-	case *script.MultisigConfig:
-		m = ctx.Payload.(*script.MultisigConfig)
+	case *systemscript.MultisigConfig:
+		m = ctx.Payload.(*systemscript.MultisigConfig)
 	default:
 		return false, nil
 	}
@@ -35,7 +35,7 @@ func (s *Secp256k1Blake160MultisigAllSigner) SignTransaction(transaction *types.
 	}
 }
 
-func MultiSignTransaction(tx *types.Transaction, group []int, key *secp256k1.Secp256k1Key, config *script.MultisigConfig) (bool, error) {
+func MultiSignTransaction(tx *types.Transaction, group []int, key *secp256k1.Secp256k1Key, config *systemscript.MultisigConfig) (bool, error) {
 	var err error
 	i0 := group[0]
 	witnessPlaceholder, err := config.WitnessPlaceholder(tx.Witnesses[i0])
@@ -52,7 +52,7 @@ func MultiSignTransaction(tx *types.Transaction, group []int, key *secp256k1.Sec
 	return true, nil
 }
 
-func setSignatureToWitness(witness []byte, signature []byte, config *script.MultisigConfig) ([]byte, error) {
+func setSignatureToWitness(witness []byte, signature []byte, config *systemscript.MultisigConfig) ([]byte, error) {
 	witnessArgs, err := types.DeserializeWitnessArgs(witness)
 	if err != nil {
 		return nil, err
@@ -72,7 +72,7 @@ func setSignatureToWitness(witness []byte, signature []byte, config *script.Mult
 	return w, err
 }
 
-func IsMultiSigMatched(key *secp256k1.Secp256k1Key, config *script.MultisigConfig, scriptArgs []byte) (bool, error) {
+func IsMultiSigMatched(key *secp256k1.Secp256k1Key, config *systemscript.MultisigConfig, scriptArgs []byte) (bool, error) {
 	if key == nil || scriptArgs == nil {
 		return false, errors.New("key or scriptArgs is nil")
 	}

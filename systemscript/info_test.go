@@ -1,4 +1,4 @@
-package script
+package systemscript
 
 import (
 	"github.com/nervosnetwork/ckb-sdk-go/types"

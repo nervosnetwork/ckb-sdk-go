@@ -6,7 +6,7 @@ import (
 	"errors"
 	"github.com/nervosnetwork/ckb-sdk-go/collector"
 	"github.com/nervosnetwork/ckb-sdk-go/rpc"
-	"github.com/nervosnetwork/ckb-sdk-go/script"
+	"github.com/nervosnetwork/ckb-sdk-go/systemscript"
 	"github.com/nervosnetwork/ckb-sdk-go/transaction"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 	"reflect"
@@ -17,7 +17,7 @@ const DaoLockPeriodEpochs = 180
 var (
 	DaoDepositOutputData = []byte{0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}
 	DaoScript            = &types.Script{
-		CodeHash: script.GetCodeHash(types.NetworkMain, script.SystemScriptDao),
+		CodeHash: systemscript.GetCodeHash(types.NetworkMain, systemscript.SystemScriptDao),
 		HashType: types.HashTypeType,
 		Args:     []byte{},
 	}
@@ -46,7 +46,7 @@ func NewDaoScriptHandler(network types.Network) *DaoScriptHandler {
 			},
 			DepType: types.DepTypeCode,
 		},
-		CodeHash: script.GetCodeHash(network, script.SystemScriptDao),
+		CodeHash: systemscript.GetCodeHash(network, systemscript.SystemScriptDao),
 	}
 }
 

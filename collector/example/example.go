@@ -10,7 +10,7 @@ import (
 	"github.com/nervosnetwork/ckb-sdk-go/collector/handler"
 	"github.com/nervosnetwork/ckb-sdk-go/indexer"
 	"github.com/nervosnetwork/ckb-sdk-go/rpc"
-	"github.com/nervosnetwork/ckb-sdk-go/script"
+	"github.com/nervosnetwork/ckb-sdk-go/systemscript"
 	"github.com/nervosnetwork/ckb-sdk-go/transaction"
 	"github.com/nervosnetwork/ckb-sdk-go/transaction/signer"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
@@ -62,7 +62,7 @@ func SendCkbExample() error {
 func SendCkbFromMultisigAddressExample() error {
 	network := types.NetworkTest
 
-	multisigConfig := script.NewMultisigConfig(0, 2)
+	multisigConfig := systemscript.NewMultisigConfig(0, 2)
 	multisigConfig.AddKeyHash(hexutil.MustDecode("0x7336b0ba900684cb3cb00f0d46d4f64c0994a562"))
 	multisigConfig.AddKeyHash(hexutil.MustDecode("0x5724c1e3925a5206944d753a6f3edaedf977d77f"))
 
@@ -70,7 +70,7 @@ func SendCkbFromMultisigAddressExample() error {
 	// ckt1qpw9q60tppt7l3j7r09qcp7lxnp3vcanvgha8pmvsa3jplykxn32sqdunqvd3g2felqv6qer8pkydws8jg9qxlca0st5v
 	sender, _ := address2.Address{
 		Script: &types.Script{
-			CodeHash: script.GetCodeHash(network, script.SystemScriptSecp256k1Blake160MultisigAll),
+			CodeHash: systemscript.GetCodeHash(network, systemscript.SystemScriptSecp256k1Blake160MultisigAll),
 			HashType: types.HashTypeType,
 			Args:     args,
 		},

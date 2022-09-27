@@ -2,7 +2,7 @@ package handler
 
 import (
 	"github.com/nervosnetwork/ckb-sdk-go/collector"
-	"github.com/nervosnetwork/ckb-sdk-go/script"
+	"github.com/nervosnetwork/ckb-sdk-go/systemscript"
 	"github.com/nervosnetwork/ckb-sdk-go/transaction"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 	"reflect"
@@ -31,7 +31,7 @@ func NewSecp256k1Blake160SighashAllScriptHandler(network types.Network) *Secp256
 			},
 			DepType: types.DepTypeDepGroup,
 		},
-		CodeHash: script.GetCodeHash(network, script.SystemScriptSecp256k1Blake160SighashAll),
+		CodeHash: systemscript.GetCodeHash(network, systemscript.SystemScriptSecp256k1Blake160SighashAll),
 	}
 }
 
@@ -86,7 +86,7 @@ func (r *Secp256k1Blake160MultisigAllScriptHandler) isMatched(s *types.Script) b
 	if s == nil {
 		return false
 	}
-	codeHash := script.GetCodeHash(r.network, script.SystemScriptSecp256k1Blake160MultisigAll)
+	codeHash := systemscript.GetCodeHash(r.network, systemscript.SystemScriptSecp256k1Blake160MultisigAll)
 	return reflect.DeepEqual(s.CodeHash, codeHash)
 }
 
@@ -96,13 +96,13 @@ func (r *Secp256k1Blake160MultisigAllScriptHandler) BuildTransaction(builder col
 	}
 	var lock []byte
 	switch context.(type) {
-	case script.MultisigConfig, *script.MultisigConfig:
+	case systemscript.MultisigConfig, *systemscript.MultisigConfig:
 		var (
-			config *script.MultisigConfig
+			config *systemscript.MultisigConfig
 			ok     bool
 		)
-		if config, ok = context.(*script.MultisigConfig); !ok {
-			v, _ := context.(script.MultisigConfig)
+		if config, ok = context.(*systemscript.MultisigConfig); !ok {
+			v, _ := context.(systemscript.MultisigConfig)
 			config = &v
 		}
 		lock = config.WitnessPlaceholderInLock()
