@@ -10,12 +10,12 @@ func init() {
 	for _, network := range ns {
 		instance := GetTransactionSignerInstance(network)
 		instance.RegisterLockSigner(
-			systemscript.GetCodeHash(network, systemscript.SystemScriptSecp256k1Blake160SighashAll), &Secp256k1Blake160SighashAllSigner{})
+			systemscript.GetCodeHash(network, systemscript.Secp256k1Blake160SighashAll), &Secp256k1Blake160SighashAllSigner{})
 		instance.RegisterLockSigner(
-			systemscript.GetCodeHash(network, systemscript.SystemScriptSecp256k1Blake160MultisigAll), &Secp256k1Blake160MultisigAllSigner{})
+			systemscript.GetCodeHash(network, systemscript.Secp256k1Blake160MultisigAll), &Secp256k1Blake160MultisigAllSigner{})
 		instance.RegisterLockSigner(
-			systemscript.GetCodeHash(network, systemscript.SystemScriptAnyoneCanPay), &AnyCanPaySigner{})
+			systemscript.GetCodeHash(network, systemscript.AnyoneCanPay), &AnyCanPaySigner{})
 		instance.RegisterLockSigner(
-			systemscript.GetCodeHash(network, systemscript.SystemScriptPwLock), &PWLockSigner{})
+			systemscript.GetCodeHash(network, systemscript.PwLock), &PWLockSigner{})
 	}
 }

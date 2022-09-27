@@ -25,7 +25,7 @@ func Secp256K1Blake160SignhashAllByPublicKey(compressedPubKey []byte) (*types.Sc
 	args := blake2b.Blake160(compressedPubKey)
 	return &types.Script{
 		// The same code hash is shared by mainnet and testnet
-		CodeHash: GetCodeHash(types.NetworkMain, SystemScriptSecp256k1Blake160SighashAll),
+		CodeHash: GetCodeHash(types.NetworkMain, Secp256k1Blake160SighashAll),
 		HashType: types.HashTypeType,
 		Args:     args,
 	}, nil
@@ -35,7 +35,7 @@ func Secp256K1Blake160SignhashAllByPublicKey(compressedPubKey []byte) (*types.Sc
 func Secp256k1Blake160Multisig(config *MultisigConfig) (*types.Script, error) {
 	args := config.Hash160()
 	// secp256k1_blake160_multisig_all share the same code hash in network main and test
-	codeHash := GetCodeHash(types.NetworkTest, SystemScriptSecp256k1Blake160MultisigAll)
+	codeHash := GetCodeHash(types.NetworkTest, Secp256k1Blake160MultisigAll)
 	return &types.Script{
 		CodeHash: codeHash,
 		HashType: types.HashTypeType,

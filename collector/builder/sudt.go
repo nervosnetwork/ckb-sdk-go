@@ -30,7 +30,7 @@ type SudtTransactionBuilder struct {
 
 func NewSudtTransactionBuilderFromSudtArgs(network types.Network, iterator collector.CellIterator,
 	transactionType SudtTransactionType, sudtArgs []byte) *SudtTransactionBuilder {
-	codeHash := systemscript.GetCodeHash(network, systemscript.SystemScriptSudt)
+	codeHash := systemscript.GetCodeHash(network, systemscript.Sudt)
 	s := &SudtTransactionBuilder{
 		SimpleTransactionBuilder: *NewSimpleTransactionBuilder(network),
 		FeeRate:                  1000,

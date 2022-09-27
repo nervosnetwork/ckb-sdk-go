@@ -30,7 +30,7 @@ func NewSudtScriptHandler(network types.Network) *SudtScriptHandler {
 			},
 			DepType: types.DepTypeCode,
 		},
-		CodeHash: systemscript.GetCodeHash(network, systemscript.SystemScriptSudt),
+		CodeHash: systemscript.GetCodeHash(network, systemscript.Sudt),
 	}
 }
 

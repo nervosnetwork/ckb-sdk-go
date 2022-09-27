@@ -17,7 +17,7 @@ const DaoLockPeriodEpochs = 180
 var (
 	DaoDepositOutputData = []byte{0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}
 	DaoScript            = &types.Script{
-		CodeHash: systemscript.GetCodeHash(types.NetworkMain, systemscript.SystemScriptDao),
+		CodeHash: systemscript.GetCodeHash(types.NetworkMain, systemscript.Dao),
 		HashType: types.HashTypeType,
 		Args:     []byte{},
 	}
@@ -46,7 +46,7 @@ func NewDaoScriptHandler(network types.Network) *DaoScriptHandler {
 			},
 			DepType: types.DepTypeCode,
 		},
-		CodeHash: systemscript.GetCodeHash(network, systemscript.SystemScriptDao),
+		CodeHash: systemscript.GetCodeHash(network, systemscript.Dao),
 	}
 }
 

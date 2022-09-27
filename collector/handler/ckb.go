@@ -31,7 +31,7 @@ func NewSecp256k1Blake160SighashAllScriptHandler(network types.Network) *Secp256
 			},
 			DepType: types.DepTypeDepGroup,
 		},
-		CodeHash: systemscript.GetCodeHash(network, systemscript.SystemScriptSecp256k1Blake160SighashAll),
+		CodeHash: systemscript.GetCodeHash(network, systemscript.Secp256k1Blake160SighashAll),
 	}
 }
 
@@ -86,7 +86,7 @@ func (r *Secp256k1Blake160MultisigAllScriptHandler) isMatched(s *types.Script) b
 	if s == nil {
 		return false
 	}
-	codeHash := systemscript.GetCodeHash(r.network, systemscript.SystemScriptSecp256k1Blake160MultisigAll)
+	codeHash := systemscript.GetCodeHash(r.network, systemscript.Secp256k1Blake160MultisigAll)
 	return reflect.DeepEqual(s.CodeHash, codeHash)
 }
 
