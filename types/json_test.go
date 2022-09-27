@@ -506,6 +506,29 @@ func TestJsonRemoteNode(t *testing.T) {
 	assert.Equal(t, HexToHash("0x1201e4a20d3cddc682173f892bea13127d6de3e00719a038d16a660968be067e"), *v.SyncState.LastCommonHeaderHash)
 	assert.Equal(t, uint64(0x583019), v.SyncState.LastCommonHeaderNumber)
 	assert.Equal(t, uint64(0x0), v.SyncState.UnknownHeaderListSize)
+	jsonText = []byte(`
+{
+    "addresses": [
+    ],
+    "connected_duration": "0x909ae7b6",
+    "is_outbound": true,
+    "last_ping_duration": "0x1a0",
+    "node_id": "QmPhgweKm2ciYq52LjtEDmKFqHxGcg2WQ8RLCayRRycanD",
+    "protocols": [
+    ],
+    "sync_state": {
+        "best_known_header_hash": null,
+        "best_known_header_number": null,
+        "can_fetch_count": "0x10",
+        "inflight_count": "0x0",
+        "last_common_header_hash": null,
+        "last_common_header_number": null,
+        "unknown_header_list_size": "0x0"
+    },
+    "version": "0.103.0 (e77138e 2022-04-11)"
+}`)
+	err := json.Unmarshal(jsonText, &v)
+	assert.Nil(t, err)
 }
 
 func TestJsonLocalNode(t *testing.T) {
