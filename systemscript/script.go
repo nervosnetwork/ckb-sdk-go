@@ -1,7 +1,7 @@
 package systemscript
 
 import (
-	"errors"
+	"fmt"
 	"github.com/nervosnetwork/ckb-sdk-go/crypto/blake2b"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 	"math/big"
@@ -45,13 +45,13 @@ func (r *MultisigConfig) Encode() []byte {
 func DecodeToMultisigConfig(in []byte) (*MultisigConfig, error) {
 	length := len(in)
 	if length < 24 {
-		return nil, errors.New("bytes length should be greater than 24")
+		return nil, fmt.Errorf("bytes length should be greater than 24 but receive %d bytes", length)
 	}
 	if (length-4)%4 != 0 {
-		return nil, errors.New("invalid bytes length")
+		return nil, fmt.Errorf("invalid bytes length %d", length)
 	}
 	if length != int(in[3])*20+4 {
-		return nil, errors.New("invalid public key list size")
+		return nil, fmt.Errorf("invalid public key list size")
 	}
 	m := &MultisigConfig{
 		Version:    in[0],
@@ -94,37 +94,28 @@ func (r *MultisigConfig) Hash160() []byte {
 	return blake2b.Blake160(r.Encode()[:])
 }
 
-func DecodeSudtAmount(outputData []byte) (*big.Int, error) {
-	if len(outputData) == 0 {
-		return big.NewInt(0), nil
+func DecodeSudtAmount(in []byte) (*big.Int, error) {
+	if len(in) != 16 {
+		return nil, fmt.Errorf("only accept 16 bytes but receive %d bytes", len(in))
 	}
-	tmpData := make([]byte, len(outputData))
-	copy(tmpData, outputData)
-	if len(tmpData) < 16 {
-		return nil, errors.New("invalid sUDT amount")
-	}
-	out := tmpData[0:16]
-	out = reverse(out)
-
+	out := reverse(in)
 	return big.NewInt(0).SetBytes(out), nil
 }
 
 func EncodeSudtAmount(amount *big.Int) []byte {
-	out := amount.Bytes()
+	out := make([]byte, 16)
+	amount.FillBytes(out)
 	out = reverse(out)
-	if len(out) < 16 {
-		for i := len(out); i < 16; i++ {
-			out = append(out, 0)
-		}
-	}
 	return out
 }
 
 func reverse(in []byte) []byte {
-	for i := 0; i < len(in)/2; i++ {
-		in[i], in[len(in)-i-1] = in[len(in)-i-1], in[i]
+	length := len(in)
+	out := make([]byte, length)
+	for i, v := range in {
+		out[length-1-i] = v
 	}
-	return in
+	return out
 }
 
 // ChequeArgs generates a args for cheque script
