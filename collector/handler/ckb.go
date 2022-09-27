@@ -82,12 +82,12 @@ func NewSecp256k1Blake160MultisigAllScriptHandler(network types.Network) *Secp25
 	}
 }
 
-func (r *Secp256k1Blake160MultisigAllScriptHandler) isMatched(s *types.Script) bool {
-	if s == nil {
+func (r *Secp256k1Blake160MultisigAllScriptHandler) isMatched(script *types.Script) bool {
+	if script == nil {
 		return false
 	}
 	codeHash := systemscript.GetCodeHash(r.network, systemscript.Secp256k1Blake160MultisigAll)
-	return reflect.DeepEqual(s.CodeHash, codeHash)
+	return reflect.DeepEqual(script.CodeHash, codeHash)
 }
 
 func (r *Secp256k1Blake160MultisigAllScriptHandler) BuildTransaction(builder collector.TransactionBuilder, group *transaction.ScriptGroup, context interface{}) (bool, error) {
