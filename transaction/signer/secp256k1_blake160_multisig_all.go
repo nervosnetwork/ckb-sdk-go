@@ -14,22 +14,22 @@ type Secp256k1Blake160MultisigAllSigner struct {
 }
 
 func (s *Secp256k1Blake160MultisigAllSigner) SignTransaction(transaction *types.Transaction, group *transaction.ScriptGroup, ctx *transaction.Context) (bool, error) {
-	var m *systemscript.MultisigConfig
+	var config *systemscript.MultisigConfig
 	switch ctx.Payload.(type) {
 	case systemscript.MultisigConfig:
 		mm := ctx.Payload.(systemscript.MultisigConfig)
-		m = &mm
+		config = &mm
 	case *systemscript.MultisigConfig:
-		m = ctx.Payload.(*systemscript.MultisigConfig)
+		config = ctx.Payload.(*systemscript.MultisigConfig)
 	default:
 		return false, nil
 	}
-	matched, err := IsMultiSigMatched(ctx.Key, m, group.Script.Args)
+	matched, err := IsMultiSigMatched(ctx.Key, config, group.Script.Args)
 	if err != nil {
 		return false, err
 	}
 	if matched {
-		return MultiSignTransaction(transaction, uint32ArrayToIntArray(group.InputIndices), ctx.Key, m)
+		return MultiSignTransaction(transaction, uint32ArrayToIntArray(group.InputIndices), ctx.Key, config)
 	} else {
 		return false, nil
 	}

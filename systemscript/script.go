@@ -43,14 +43,14 @@ func (r *MultisigConfig) Encode() []byte {
 }
 
 func DecodeToMultisigConfig(in []byte) (*MultisigConfig, error) {
-	l := len(in)
-	if l < 24 {
+	length := len(in)
+	if length < 24 {
 		return nil, errors.New("bytes length should be greater than 24")
 	}
-	if (l-4)%4 != 0 {
+	if (length-4)%4 != 0 {
 		return nil, errors.New("invalid bytes length")
 	}
-	if l != int(in[3])*20+4 {
+	if length != int(in[3])*20+4 {
 		return nil, errors.New("invalid public key list size")
 	}
 	m := &MultisigConfig{
@@ -80,15 +80,14 @@ func (r *MultisigConfig) WitnessPlaceholder(originalWitness []byte) ([]byte, err
 		}
 	}
 	witnessArgs.Lock = r.WitnessPlaceholderInLock()
-	b := witnessArgs.Serialize()
-	return b, nil
+	return witnessArgs.Serialize(), nil
 }
 
 func (r *MultisigConfig) WitnessPlaceholderInLock() []byte {
 	header := r.Encode()
-	b := make([]byte, len(header)+65*int(r.Threshold))
-	copy(b[:len(header)], header)
-	return b
+	out := make([]byte, len(header)+65*int(r.Threshold))
+	copy(out[:len(header)], header)
+	return out
 }
 
 func (r *MultisigConfig) Hash160() []byte {
@@ -104,28 +103,28 @@ func DecodeSudtAmount(outputData []byte) (*big.Int, error) {
 	if len(tmpData) < 16 {
 		return nil, errors.New("invalid sUDT amount")
 	}
-	b := tmpData[0:16]
-	b = reverse(b)
+	out := tmpData[0:16]
+	out = reverse(out)
 
-	return big.NewInt(0).SetBytes(b), nil
+	return big.NewInt(0).SetBytes(out), nil
 }
 
 func EncodeSudtAmount(amount *big.Int) []byte {
-	b := amount.Bytes()
-	b = reverse(b)
-	if len(b) < 16 {
-		for i := len(b); i < 16; i++ {
-			b = append(b, 0)
+	out := amount.Bytes()
+	out = reverse(out)
+	if len(out) < 16 {
+		for i := len(out); i < 16; i++ {
+			out = append(out, 0)
 		}
 	}
-	return b
+	return out
 }
 
-func reverse(b []byte) []byte {
-	for i := 0; i < len(b)/2; i++ {
-		b[i], b[len(b)-i-1] = b[len(b)-i-1], b[i]
+func reverse(in []byte) []byte {
+	for i := 0; i < len(in)/2; i++ {
+		in[i], in[len(in)-i-1] = in[len(in)-i-1], in[i]
 	}
-	return b
+	return in
 }
 
 // ChequeArgs generates a args for cheque script

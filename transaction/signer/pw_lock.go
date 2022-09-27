@@ -25,8 +25,8 @@ func (s *PWLockSigner) SignTransaction(transaction *types.Transaction, group *tr
 func PWLockSignTransaction(tx *types.Transaction, group *transaction.ScriptGroup, key *secp256k1.Secp256k1Key) (bool, error) {
 	txHash := tx.ComputeHash()
 	data := txHash.Bytes()
-	for _, v := range group.InputIndices {
-		witness := tx.Witnesses[v]
+	for _, inputIndex := range group.InputIndices {
+		witness := tx.Witnesses[inputIndex]
 		data = append(data, types.SerializeUint64(uint64(len(witness)))...)
 		data = append(data, witness...)
 	}
@@ -44,8 +44,8 @@ func PWLockSignTransaction(tx *types.Transaction, group *transaction.ScriptGroup
 		return false, err
 	}
 	i := group.InputIndices[0]
-	w := tx.Witnesses[i]
-	witnessArgs, err := types.DeserializeWitnessArgs(w)
+	witness := tx.Witnesses[i]
+	witnessArgs, err := types.DeserializeWitnessArgs(witness)
 	if err != nil {
 		return false, err
 	}

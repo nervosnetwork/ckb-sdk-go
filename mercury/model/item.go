@@ -62,10 +62,10 @@ func decodeItemAddress(addr string) (*address.Address, error) {
 	if err != nil {
 		return nil, err
 	}
-	ss := []systemscript.SystemScript{
+	systemScripts := []systemscript.SystemScript{
 		systemscript.Secp256k1Blake160SighashAll,
 		systemscript.AnyoneCanPay}
-	for _, s := range ss {
+	for _, s := range systemScripts {
 		hash := systemscript.GetCodeHash(a.Network, s)
 		if reflect.DeepEqual(hash, a.Script.CodeHash) {
 			return a, nil

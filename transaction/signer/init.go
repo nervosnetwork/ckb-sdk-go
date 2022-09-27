@@ -6,8 +6,8 @@ import (
 )
 
 func init() {
-	ns := []types.Network{types.NetworkMain, types.NetworkTest}
-	for _, network := range ns {
+	networks := []types.Network{types.NetworkMain, types.NetworkTest}
+	for _, network := range networks {
 		instance := GetTransactionSignerInstance(network)
 		instance.RegisterLockSigner(
 			systemscript.GetCodeHash(network, systemscript.Secp256k1Blake160SighashAll), &Secp256k1Blake160SighashAllSigner{})

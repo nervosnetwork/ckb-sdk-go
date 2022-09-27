@@ -15,12 +15,12 @@ import (
 type Secp256k1Blake160SighashAllSigner struct {
 }
 
-func uint32ArrayToIntArray(uint32Array []uint32) []int {
-	var intArray []int
-	for _, i := range uint32Array {
-		intArray = append(intArray, int(i))
+func uint32ArrayToIntArray(in []uint32) []int {
+	var out []int
+	for _, v := range in {
+		out = append(out, int(v))
 	}
-	return intArray
+	return out
 }
 
 func (s *Secp256k1Blake160SighashAllSigner) SignTransaction(tx *types.Transaction, group *transaction.ScriptGroup, ctx *transaction.Context) (bool, error) {

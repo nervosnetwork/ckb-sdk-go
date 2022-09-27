@@ -31,13 +31,13 @@ func SendCkbExample() error {
 	}
 
 	// build transaction
-	b := builder.NewCkbTransactionBuilder(network, iterator)
-	b.FeeRate = 1000
-	if err := b.AddOutputByAddress(receiver, 50100000000); err != nil {
+	builder := builder.NewCkbTransactionBuilder(network, iterator)
+	builder.FeeRate = 1000
+	if err := builder.AddOutputByAddress(receiver, 50100000000); err != nil {
 		return err
 	}
-	b.AddChangeOutputByAddress(sender)
-	txWithGroups, err := b.Build()
+	builder.AddChangeOutputByAddress(sender)
+	txWithGroups, err := builder.Build()
 	if err != nil {
 		return err
 	}

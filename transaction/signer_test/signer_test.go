@@ -127,19 +127,19 @@ func (r *signerChecker) UnmarshalJSON(input []byte) error {
 	}
 	r.Transaction = jsonObj.Transaction
 	r.ExpectedWitnesses = jsonObj.ExpectedWitnesses
-	for _, c := range jsonObj.Contexts {
+	for _, context := range jsonObj.Contexts {
 		var (
 			ctx *transaction.Context
 			err error
 		)
-		if val, ok := c["private_key"]; ok {
+		if val, ok := context["private_key"]; ok {
 			if ctx, err = transaction.NewContext(val.(string)); err != nil {
 				return err
 			}
 		} else {
 			return errors.New("not find private_key")
 		}
-		if val, ok := c["multisig_script"]; ok {
+		if val, ok := context["multisig_script"]; ok {
 			v := val.(map[string]interface{})
 			m := systemscript.NewMultisigConfig(byte(v["first_n"].(float64)),
 				byte(v["threshold"].(float64)))

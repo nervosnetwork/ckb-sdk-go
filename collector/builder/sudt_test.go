@@ -69,16 +69,16 @@ func getSudtMockIterator() *sudtMockIterator {
 func TestSudtTransactionBuilderBalance(t *testing.T) {
 	var err error
 	iterator := getSudtMockIterator()
-	b := NewSudtTransactionBuilderFromSudtArgs(types.NetworkTest, iterator, SudtTransactionTypeTransfer, sudtArgs)
+	builder := NewSudtTransactionBuilderFromSudtArgs(types.NetworkTest, iterator, SudtTransactionTypeTransfer, sudtArgs)
 
-	if _, err = b.AddSudtOutputByAddress("ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqdamwzrffgc54ef48493nfd2sd0h4cjnxg4850up", big.NewInt(1)); err != nil {
+	if _, err = builder.AddSudtOutputByAddress("ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqdamwzrffgc54ef48493nfd2sd0h4cjnxg4850up", big.NewInt(1)); err != nil {
 		t.Error(err)
 	}
-	b.FeeRate = 1000
-	if err = b.AddChangeOutputByAddress("ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqdamwzrffgc54ef48493nfd2sd0h4cjnxg4850up"); err != nil {
+	builder.FeeRate = 1000
+	if err = builder.AddChangeOutputByAddress("ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqdamwzrffgc54ef48493nfd2sd0h4cjnxg4850up"); err != nil {
 		t.Error(err)
 	}
-	tx, err := b.Build()
+	tx, err := builder.Build()
 	if err != nil {
 		t.Error(err)
 	}

@@ -167,8 +167,8 @@ func (r *CkbTransactionBuilder) Build(contexts ...interface{}) (*transaction.Tra
 		return nil, errors.New("no enough capacity")
 	}
 	r.scriptGroups = make([]*transaction.ScriptGroup, 0)
-	for _, g := range scriptGroupMap {
-		r.scriptGroups = append(r.scriptGroups, g)
+	for _, v := range scriptGroupMap {
+		r.scriptGroups = append(r.scriptGroups, v)
 	}
 	return r.BuildTransaction(), nil
 }

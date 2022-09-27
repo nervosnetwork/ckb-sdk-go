@@ -209,8 +209,8 @@ func (r *SudtTransactionBuilder) Build(contexts ...interface{}) (*transaction.Tr
 		return nil, errors.New("no enough capacity")
 	}
 	r.scriptGroups = make([]*transaction.ScriptGroup, 0)
-	for _, group := range scriptGroupMap {
-		r.scriptGroups = append(r.scriptGroups, group)
+	for _, g := range scriptGroupMap {
+		r.scriptGroups = append(r.scriptGroups, g)
 	}
 	return r.BuildTransaction(), nil
 }

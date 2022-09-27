@@ -28,12 +28,12 @@ func (r *ScriptGroup) UnmarshalJSON(input []byte) error {
 	if err := json.Unmarshal(input, &jsonObj); err != nil {
 		return err
 	}
-	toUint32Array := func(a []hexutil.Uint) []uint32 {
-		result := make([]uint32, len(a))
-		for i, data := range a {
-			result[i] = uint32(data)
+	toUint32Array := func(in []hexutil.Uint) []uint32 {
+		out := make([]uint32, len(in))
+		for i, data := range in {
+			out[i] = uint32(data)
 		}
-		return result
+		return out
 	}
 	*r = ScriptGroup{
 		Script:        jsonObj.Script,
