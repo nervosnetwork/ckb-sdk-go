@@ -158,9 +158,9 @@ type Client interface {
 
 	CallContext(ctx context.Context, result interface{}, method string, args ...interface{}) error
 }
+
 type client struct {
-	c       *rpc.Client
-	indexer indexer.Client
+	c *rpc.Client
 }
 
 func (cli *client) CallContext(ctx context.Context, result interface{}, method string, args ...interface{}) error {
@@ -183,28 +183,8 @@ func DialContext(ctx context.Context, url string) (Client, error) {
 	return NewClient(c), nil
 }
 
-func DialWithIndexer(ckbUrl string, indexerUrl string) (Client, error) {
-	return DialWithIndexerContext(context.Background(), ckbUrl, indexerUrl)
-}
-
-func DialWithIndexerContext(ctx context.Context, ckbUrl string, indexerUrl string) (Client, error) {
-	ckb, err := rpc.DialContext(ctx, ckbUrl)
-	if err != nil {
-		return nil, err
-	}
-	index, err := indexer.DialContext(ctx, indexerUrl)
-	if err != nil {
-		return nil, err
-	}
-	return NewClientWithIndexer(ckb, index), nil
-}
-
 func NewClient(c *rpc.Client) Client {
-	return &client{c, nil}
-}
-
-func NewClientWithIndexer(c *rpc.Client, indexer indexer.Client) Client {
-	return &client{c, indexer}
+	return &client{c}
 }
 
 func (cli *client) Close() {
@@ -584,31 +564,53 @@ func (cli *client) BatchLiveCells(ctx context.Context, batch []types.BatchLiveCe
 }
 
 func (cli *client) GetTip(ctx context.Context) (*indexer.TipHeader, error) {
-	if cli.indexer == nil {
-		return nil, errors.New("please set indexer client")
+	var result indexer.TipHeader
+	err := cli.c.CallContext(ctx, &result, "get_tip")
+	if err != nil {
+		return nil, err
 	}
-	return cli.indexer.GetTip(ctx)
+	return &result, nil
 }
 
 func (cli *client) GetCellsCapacity(ctx context.Context, searchKey *indexer.SearchKey) (*indexer.Capacity, error) {
-	if cli.indexer == nil {
-		return nil, errors.New("please set indexer client")
+	var result indexer.Capacity
+	err := cli.c.CallContext(ctx, &result, "get_cells_capacity", searchKey)
+	if err != nil {
+		return nil, err
 	}
-	return cli.indexer.GetCellsCapacity(ctx, searchKey)
+	return &result, nil
 }
 
 func (cli *client) GetCells(ctx context.Context, searchKey *indexer.SearchKey, order indexer.SearchOrder, limit uint64, afterCursor string) (*indexer.LiveCells, error) {
-	if cli.indexer == nil {
-		return nil, errors.New("please set indexer client")
+	var (
+		result indexer.LiveCells
+		err    error
+	)
+	if afterCursor == "" {
+		err = cli.c.CallContext(ctx, &result, "get_cells", searchKey, order, hexutil.Uint64(limit))
+	} else {
+		err = cli.c.CallContext(ctx, &result, "get_cells", searchKey, order, hexutil.Uint64(limit), afterCursor)
 	}
-	return cli.indexer.GetCells(ctx, searchKey, order, limit, afterCursor)
+	if err != nil {
+		return nil, err
+	}
+	return &result, err
 }
 
 func (cli *client) GetTransactions(ctx context.Context, searchKey *indexer.SearchKey, order indexer.SearchOrder, limit uint64, afterCursor string) (*indexer.Transactions, error) {
-	if cli.indexer == nil {
-		return nil, errors.New("please set indexer client")
+	var (
+		result indexer.Transactions
+		err    error
+	)
+	if afterCursor == "" {
+		err = cli.c.CallContext(ctx, &result, "get_transactions", searchKey, order, hexutil.Uint64(limit))
+	} else {
+		err = cli.c.CallContext(ctx, &result, "get_transactions", searchKey, order, hexutil.Uint64(limit), afterCursor)
 	}
-	return cli.indexer.GetTransactions(ctx, searchKey, order, limit, afterCursor)
+	if err != nil {
+		return nil, err
+	}
+	return &result, err
 }
 
 func (cli *client) GetBlockEconomicState(ctx context.Context, blockHash types.Hash) (*types.BlockEconomicState, error) {
