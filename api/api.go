@@ -2,13 +2,12 @@ package api
 
 import (
 	"context"
-	"github.com/nervosnetwork/ckb-sdk-go/transaction"
-
 	"github.com/ethereum/go-ethereum/rpc"
 	"github.com/nervosnetwork/ckb-sdk-go/indexer"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury"
 	"github.com/nervosnetwork/ckb-sdk-go/mercury/model"
 	C "github.com/nervosnetwork/ckb-sdk-go/rpc"
+	"github.com/nervosnetwork/ckb-sdk-go/transaction"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 )
 

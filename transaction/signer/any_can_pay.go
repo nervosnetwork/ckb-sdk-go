@@ -9,14 +9,24 @@ import (
 type AnyCanPaySigner struct {
 }
 
-func (s *AnyCanPaySigner) SignTransaction(transaction *types.Transaction, group *transaction.ScriptGroup, ctx *transaction.Context) (bool, error) {
-	key := ctx.Key
-	matched, err := IsAnyCanPayMatched(key, group.Script.Args)
+func (s *AnyCanPaySigner) SignTransaction(tx *types.Transaction, group *transaction.ScriptGroup, ctx *transaction.Context) (bool, error) {
+	matched, err := IsAnyCanPayMatched(ctx.Key, group.Script.Args)
 	if err != nil {
 		return false, err
 	}
 	if matched {
-		return SingleSignTransaction(transaction, group, key)
+		i0 := group.InputIndices[0]
+		signature, err := SignTransaction(tx, uint32ArrayToIntArray(group.InputIndices), tx.Witnesses[i0], ctx.Key)
+		if err != nil {
+			return false, err
+		}
+		witnessArgs, err := types.DeserializeWitnessArgs(tx.Witnesses[i0])
+		if err != nil {
+			return false, err
+		}
+		witnessArgs.Lock = signature
+		tx.Witnesses[i0] = witnessArgs.Serialize()
+		return true, nil
 	} else {
 		return false, nil
 	}

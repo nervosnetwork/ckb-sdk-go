@@ -2,9 +2,9 @@ package handler
 
 import (
 	"github.com/nervosnetwork/ckb-sdk-go/collector"
+	"github.com/nervosnetwork/ckb-sdk-go/systemscript"
 	"github.com/nervosnetwork/ckb-sdk-go/transaction"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
-	"github.com/nervosnetwork/ckb-sdk-go/utils"
 	"reflect"
 )
 
@@ -30,7 +30,7 @@ func NewSudtScriptHandler(network types.Network) *SudtScriptHandler {
 			},
 			DepType: types.DepTypeCode,
 		},
-		CodeHash: utils.GetCodeHash(network, types.BuiltinScriptSudt),
+		CodeHash: systemscript.GetCodeHash(network, systemscript.Sudt),
 	}
 }
 

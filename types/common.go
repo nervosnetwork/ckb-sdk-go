@@ -8,8 +8,8 @@ import (
 )
 
 type Network uint
-type BuiltinScript uint
 type WitnessType uint
+type ScriptType string
 
 const (
 	HashLength = 32
@@ -17,17 +17,12 @@ const (
 	NetworkMain Network = iota
 	NetworkTest
 
-	BuiltinScriptSecp256k1Blake160SighashAll BuiltinScript = iota
-	BuiltinScriptSecp256k1Blake160MultisigAll
-	BuiltinScriptAnyoneCanPay
-	BuiltinScriptDao
-	BuiltinScriptSudt
-	BuiltinScriptCheque
-	BuiltinScriptPwLock
-
 	WitnessTypeLock WitnessType = iota
 	WitnessTypeInputType
 	WitnessTypeOutputType
+
+	ScriptTypeLock ScriptType = "lock"
+	ScriptTypeType ScriptType = "type"
 )
 
 var (

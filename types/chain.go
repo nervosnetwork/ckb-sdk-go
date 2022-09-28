@@ -2,7 +2,7 @@ package types
 
 import (
 	"github.com/nervosnetwork/ckb-sdk-go/crypto/blake2b"
-	"github.com/nervosnetwork/ckb-sdk-go/utils/amount"
+	"github.com/nervosnetwork/ckb-sdk-go/types/numeric"
 	"math/big"
 )
 
@@ -33,7 +33,7 @@ type Epoch struct {
 }
 
 type Header struct {
-	CompactTarget    uint     `json:"compact_target"`
+	CompactTarget    uint32   `json:"compact_target"`
 	Dao              Hash     `json:"dao"`
 	Epoch            uint64   `json:"epoch"`
 	Hash             Hash     `json:"hash"`
@@ -44,12 +44,12 @@ type Header struct {
 	Timestamp        uint64   `json:"timestamp"`
 	TransactionsRoot Hash     `json:"transactions_root"`
 	ExtraHash        Hash     `json:"extra_hash"`
-	Version          uint     `json:"version"`
+	Version          uint32   `json:"version"`
 }
 
 type OutPoint struct {
-	TxHash Hash `json:"tx_hash"`
-	Index  uint `json:"index"`
+	TxHash Hash   `json:"tx_hash"`
+	Index  uint32 `json:"index"`
 }
 
 type CellDep struct {
@@ -64,18 +64,14 @@ type Script struct {
 }
 
 func (r *Script) OccupiedCapacity() uint64 {
-	ckBytes := uint64(len(r.Args)) + uint64(len(r.CodeHash.Bytes())) + 1
-	return amount.CkbToShannon(ckBytes)
+	ckBytes := len(r.Args) + len(r.CodeHash.Bytes()) + 1
+	return numeric.NewCapacityFromCKBytes(float64(ckBytes)).Shannon()
 }
 
-func (r *Script) Hash() (Hash, error) {
+func (r *Script) Hash() Hash {
 	data := r.Serialize()
-	hash, err := blake2b.Blake256(data)
-	if err != nil {
-		return Hash{}, err
-	}
-
-	return BytesToHash(hash), nil
+	hash := blake2b.Blake256(data)
+	return BytesToHash(hash)
 }
 
 func (r *Script) Equals(obj *Script) bool {
@@ -83,8 +79,8 @@ func (r *Script) Equals(obj *Script) bool {
 		return false
 	}
 
-	sh, _ := r.Hash()
-	oh, _ := obj.Hash()
+	sh := r.Hash()
+	oh := obj.Hash()
 	return sh.String() == oh.String()
 }
 
@@ -100,7 +96,7 @@ type CellOutput struct {
 }
 
 func (r CellOutput) OccupiedCapacity(outputData []byte) uint64 {
-	occupiedCapacity := amount.CkbToShannon(8 + uint64(len(outputData)))
+	occupiedCapacity := numeric.NewCapacityFromCKBytes(float64(8 + len(outputData))).Shannon()
 	occupiedCapacity += r.Lock.OccupiedCapacity()
 	if r.Type != nil {
 		occupiedCapacity += r.Type.OccupiedCapacity()
@@ -109,7 +105,7 @@ func (r CellOutput) OccupiedCapacity(outputData []byte) uint64 {
 }
 
 type Transaction struct {
-	Version     uint          `json:"version"`
+	Version     uint32        `json:"version"`
 	Hash        Hash          `json:"hash"`
 	CellDeps    []*CellDep    `json:"cell_deps"`
 	HeaderDeps  []Hash        `json:"header_deps"`
@@ -119,15 +115,10 @@ type Transaction struct {
 	Witnesses   [][]byte      `json:"witnesses"`
 }
 
-func (t *Transaction) ComputeHash() (Hash, error) {
+func (t *Transaction) ComputeHash() Hash {
 	data := t.SerializeWithoutWitnesses()
-
-	hash, err := blake2b.Blake256(data)
-	if err != nil {
-		return Hash{}, err
-	}
-
-	return BytesToHash(hash), nil
+	hash := blake2b.Blake256(data)
+	return BytesToHash(hash)
 }
 
 func (t *Transaction) SizeInBlock() uint64 {
@@ -141,6 +132,15 @@ func (t *Transaction) OutputsCapacity() (totalCapacity uint64) {
 		totalCapacity += output.Capacity
 	}
 	return
+}
+
+func (t Transaction) CalculateFee(feeRate uint64) uint64 {
+	txSize := t.SizeInBlock()
+	fee := txSize * feeRate / 1000
+	if fee*1000 < txSize*feeRate {
+		fee += 1
+	}
+	return fee
 }
 
 type WitnessArgs struct {
@@ -256,8 +256,8 @@ type Consensus struct {
 	MedianTimeBlockCount                 uint64             `json:"median_time_block_count"`
 	MaxBlockCycles                       uint64             `json:"max_block_cycles"`
 	MaxBlockBytes                        uint64             `json:"max_block_bytes"`
-	BlockVersion                         uint               `json:"block_version"`
-	TxVersion                            uint               `json:"tx_version"`
+	BlockVersion                         uint32             `json:"block_version"`
+	TxVersion                            uint32             `json:"tx_version"`
 	TypeIdCodeHash                       Hash               `json:"type_id_code_hash"`
 	MaxBlockProposalsLimit               uint64             `json:"max_block_proposals_limit"`
 	PrimaryEpochRewardHalvingInterval    uint64             `json:"primary_epoch_reward_halving_interval"`
@@ -268,4 +268,15 @@ type Consensus struct {
 type HardForkFeature struct {
 	Rfc         string `json:"rfc"`
 	EpochNumber uint64 `json:"epoch_number,omitempty"`
+}
+
+type TransactionProof struct {
+	Proof         *Proof `json:"proof"`
+	BlockHash     Hash   `json:"block_hash"`
+	WitnessesRoot Hash   `json:"witnesses_root"`
+}
+
+type Proof struct {
+	Indices []uint `json:"indices"`
+	Lemmas  []Hash `json:"lemmas"`
 }

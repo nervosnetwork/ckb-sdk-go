@@ -57,30 +57,27 @@ func (r *CkbTransactionBuilder) AddDaoDepositOutputByAddress(addr string, capaci
 	return nil
 }
 
-func getOrPutScriptGroup(m map[types.Hash]*transaction.ScriptGroup, script *types.Script, scriptType transaction.ScriptType) (*transaction.ScriptGroup, error) {
+func getOrPutScriptGroup(scriptGroupMap map[types.Hash]*transaction.ScriptGroup, script *types.Script, scriptType types.ScriptType) (*transaction.ScriptGroup, error) {
 	if script == nil {
 		return nil, nil
 	}
-	hash, err := script.Hash()
-	if err != nil {
-		return nil, err
-	}
-	if m[hash] == nil {
-		m[hash] = &transaction.ScriptGroup{
+	hash := script.Hash()
+	if scriptGroupMap[hash] == nil {
+		scriptGroupMap[hash] = &transaction.ScriptGroup{
 			Script:    script,
 			GroupType: scriptType,
 		}
 	}
-	return m[hash], nil
+	return scriptGroupMap[hash], nil
 }
 
-func executeHandlers(s *SimpleTransactionBuilder, group *transaction.ScriptGroup, contexts ...interface{}) error {
+func executeHandlers(builder *SimpleTransactionBuilder, group *transaction.ScriptGroup, contexts ...interface{}) error {
 	if len(contexts) == 0 {
 		contexts = append(contexts, nil)
 	}
-	for _, v := range s.ScriptHandlers {
+	for _, v := range builder.ScriptHandlers {
 		for _, c := range contexts {
-			if _, err := v.BuildTransaction(s, group, c); err != nil {
+			if _, err := v.BuildTransaction(builder, group, c); err != nil {
 				return err
 			}
 		}
@@ -93,14 +90,14 @@ func (r *CkbTransactionBuilder) Build(contexts ...interface{}) (*transaction.Tra
 		err             error
 		script          *types.Script
 		group           *transaction.ScriptGroup
-		m               = make(map[types.Hash]*transaction.ScriptGroup)
+		scriptGroupMap  = make(map[types.Hash]*transaction.ScriptGroup)
 		outputsCapacity = uint64(0)
 	)
 	for i := 0; i < len(r.Outputs); i++ {
 		outputsCapacity += r.Outputs[i].Capacity
 		script = r.Outputs[i].Type
 		if script != nil {
-			if group, err = getOrPutScriptGroup(m, script, transaction.ScriptTypeType); err != nil {
+			if group, err = getOrPutScriptGroup(scriptGroupMap, script, types.ScriptTypeType); err != nil {
 				return nil, err
 			}
 			group.OutputIndices = append(group.OutputIndices, uint32(i))
@@ -129,7 +126,7 @@ func (r *CkbTransactionBuilder) Build(contexts ...interface{}) (*transaction.Tra
 		// process input's LOCK
 		script = cell.Output.Lock
 		if script != nil {
-			if group, err = getOrPutScriptGroup(m, script, transaction.ScriptTypeLock); err != nil {
+			if group, err = getOrPutScriptGroup(scriptGroupMap, script, types.ScriptTypeLock); err != nil {
 				return nil, err
 			}
 			group.InputIndices = append(group.InputIndices, uint32(i))
@@ -141,7 +138,7 @@ func (r *CkbTransactionBuilder) Build(contexts ...interface{}) (*transaction.Tra
 		// process input's TYPE
 		script = cell.Output.Type
 		if script != nil {
-			if group, err = getOrPutScriptGroup(m, script, transaction.ScriptTypeType); err != nil {
+			if group, err = getOrPutScriptGroup(scriptGroupMap, script, types.ScriptTypeType); err != nil {
 				return nil, err
 			}
 			group.InputIndices = append(group.InputIndices, uint32(i))
@@ -153,7 +150,7 @@ func (r *CkbTransactionBuilder) Build(contexts ...interface{}) (*transaction.Tra
 		inputsCapacity += cell.Output.Capacity
 		tx := r.BuildTransaction().TxView
 		// check if there is enough capacity for output capacity and change
-		fee := transaction.CalculateTransactionFee(tx, uint64(r.FeeRate))
+		fee := tx.CalculateFee(uint64(r.FeeRate))
 		if (inputsCapacity + r.reward) < (outputsCapacity + fee) {
 			continue
 		}
@@ -170,8 +167,8 @@ func (r *CkbTransactionBuilder) Build(contexts ...interface{}) (*transaction.Tra
 		return nil, errors.New("no enough capacity")
 	}
 	r.scriptGroups = make([]*transaction.ScriptGroup, 0)
-	for _, g := range m {
-		r.scriptGroups = append(r.scriptGroups, g)
+	for _, v := range scriptGroupMap {
+		r.scriptGroups = append(r.scriptGroups, v)
 	}
 	return r.BuildTransaction(), nil
 }

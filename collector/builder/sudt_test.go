@@ -3,8 +3,8 @@ package builder
 import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/nervosnetwork/ckb-sdk-go/address"
+	"github.com/nervosnetwork/ckb-sdk-go/systemscript"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
-	"github.com/nervosnetwork/ckb-sdk-go/utils"
 	"github.com/stretchr/testify/assert"
 	"math/big"
 	"testing"
@@ -48,7 +48,7 @@ func getSudtMockIterator() *sudtMockIterator {
 					Lock:     sudtSender.Script,
 					Type:     sudtType,
 				},
-				OutputData: utils.GenerateSudtAmount(big.NewInt(100)),
+				OutputData: systemscript.EncodeSudtAmount(big.NewInt(100)),
 			},
 			{
 				OutPoint: &types.OutPoint{
@@ -60,7 +60,7 @@ func getSudtMockIterator() *sudtMockIterator {
 					Lock:     sudtSender.Script,
 					Type:     sudtType,
 				},
-				OutputData: utils.GenerateSudtAmount(big.NewInt(10)),
+				OutputData: systemscript.EncodeSudtAmount(big.NewInt(10)),
 			},
 		},
 	}
@@ -69,26 +69,25 @@ func getSudtMockIterator() *sudtMockIterator {
 func TestSudtTransactionBuilderBalance(t *testing.T) {
 	var err error
 	iterator := getSudtMockIterator()
-	b := NewSudtTransactionBuilderFromSudtArgs(types.NetworkTest, iterator, SudtTransactionTypeTransfer, sudtArgs)
+	builder := NewSudtTransactionBuilderFromSudtArgs(types.NetworkTest, iterator, SudtTransactionTypeTransfer, sudtArgs)
 
-	if _, err = b.AddSudtOutputByAddress("ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqdamwzrffgc54ef48493nfd2sd0h4cjnxg4850up", big.NewInt(1))
-		err != nil {
+	if _, err = builder.AddSudtOutputByAddress("ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqdamwzrffgc54ef48493nfd2sd0h4cjnxg4850up", big.NewInt(1)); err != nil {
 		t.Error(err)
 	}
-	b.FeeRate = 1000
-	if err = b.AddChangeOutputByAddress("ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqdamwzrffgc54ef48493nfd2sd0h4cjnxg4850up"); err != nil {
+	builder.FeeRate = 1000
+	if err = builder.AddChangeOutputByAddress("ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqdamwzrffgc54ef48493nfd2sd0h4cjnxg4850up"); err != nil {
 		t.Error(err)
 	}
-	tx, err := b.Build()
+	tx, err := builder.Build()
 	if err != nil {
 		t.Error(err)
 	}
 
-	amount1, err := utils.ParseSudtAmount(tx.TxView.OutputsData[0])
+	amount1, err := systemscript.DecodeSudtAmount(tx.TxView.OutputsData[0])
 	if err != nil {
 		t.Error(err)
 	}
-	amount2, err := utils.ParseSudtAmount(tx.TxView.OutputsData[1])
+	amount2, err := systemscript.DecodeSudtAmount(tx.TxView.OutputsData[1])
 	if err != nil {
 		t.Error(err)
 	}

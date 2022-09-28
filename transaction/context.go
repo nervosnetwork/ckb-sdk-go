@@ -29,29 +29,3 @@ func NewContextWithPayload(ecPrivateKey string, payload interface{}) (*Context, 
 	context.Payload = payload
 	return context, nil
 }
-
-type Contexts []*Context
-
-func NewContexts() Contexts {
-	c := make([]*Context, 0)
-	return c
-}
-
-func (r *Contexts) AddByPrivateKeys(ecPrivateKeys ...string) error {
-	for _, key := range ecPrivateKeys {
-		context, err := NewContext(key)
-		if err != nil {
-			return err
-		}
-		r.Add(context)
-	}
-	return nil
-}
-
-func (r *Contexts) Add(context *Context) bool {
-	if context == nil {
-		return false
-	}
-	*r = append(*r, context)
-	return true
-}

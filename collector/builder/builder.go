@@ -12,7 +12,7 @@ import (
 )
 
 type SimpleTransactionBuilder struct {
-	Version     uint
+	Version     uint32
 	CellDeps    []*types.CellDep
 	HeaderDeps  []types.Hash
 	Inputs      []*types.CellInput
@@ -41,7 +41,7 @@ func (r *SimpleTransactionBuilder) Register(handler collector.ScriptHandler) {
 	r.ScriptHandlers = append(r.ScriptHandlers, handler)
 }
 
-func (r *SimpleTransactionBuilder) SetVersion(version uint) {
+func (r *SimpleTransactionBuilder) SetVersion(version uint32) {
 	r.Version = version
 }
 

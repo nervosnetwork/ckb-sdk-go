@@ -4,9 +4,9 @@ import (
 	"errors"
 	"github.com/nervosnetwork/ckb-sdk-go/address"
 	"github.com/nervosnetwork/ckb-sdk-go/collector"
+	"github.com/nervosnetwork/ckb-sdk-go/systemscript"
 	"github.com/nervosnetwork/ckb-sdk-go/transaction"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
-	"github.com/nervosnetwork/ckb-sdk-go/utils"
 	"math/big"
 	"reflect"
 )
@@ -30,8 +30,8 @@ type SudtTransactionBuilder struct {
 
 func NewSudtTransactionBuilderFromSudtArgs(network types.Network, iterator collector.CellIterator,
 	transactionType SudtTransactionType, sudtArgs []byte) *SudtTransactionBuilder {
-	codeHash := utils.GetCodeHash(network, types.BuiltinScriptSudt)
-	s := &SudtTransactionBuilder{
+	codeHash := systemscript.GetCodeHash(network, systemscript.Sudt)
+	builder := &SudtTransactionBuilder{
 		SimpleTransactionBuilder: *NewSimpleTransactionBuilder(network),
 		FeeRate:                  1000,
 		SudtType: &types.Script{
@@ -44,7 +44,7 @@ func NewSudtTransactionBuilderFromSudtArgs(network types.Network, iterator colle
 		changeOutputIndex: -1,
 		transactionType:   transactionType,
 	}
-	return s
+	return builder
 }
 
 func NewSudtTransactionBuilderFromSudtOwnerAddress(network types.Network, iterator collector.CellIterator,
@@ -54,10 +54,7 @@ func NewSudtTransactionBuilderFromSudtOwnerAddress(network types.Network, iterat
 	if err != nil {
 		return nil, err
 	}
-	sudtArgs, err := addr.Script.Hash()
-	if err != nil {
-		return nil, err
-	}
+	sudtArgs := addr.Script.Hash()
 	return NewSudtTransactionBuilderFromSudtArgs(network, iterator, transactionType, sudtArgs.Bytes()), nil
 }
 
@@ -71,7 +68,7 @@ func (r *SudtTransactionBuilder) AddSudtOutputByAddress(addr string, sudtAmount 
 		Lock:     a.Script,
 		Type:     r.SudtType,
 	}
-	data := utils.GenerateSudtAmount(sudtAmount)
+	data := systemscript.EncodeSudtAmount(sudtAmount)
 	output.Capacity = output.OccupiedCapacity(data)
 	return r.AddOutput(output, data), nil
 }
@@ -86,7 +83,7 @@ func (r *SudtTransactionBuilder) AddSudtOutputWithCapacityByAddress(addr string,
 		Lock:     a.Script,
 		Type:     r.SudtType,
 	}
-	data := utils.GenerateSudtAmount(sudtAmount)
+	data := systemscript.EncodeSudtAmount(sudtAmount)
 	return r.AddOutput(output, data), nil
 }
 
@@ -109,14 +106,14 @@ func (r *SudtTransactionBuilder) Build(contexts ...interface{}) (*transaction.Tr
 	// If transaction type is SudtTransactionTypeTransfer, we need the change output to receive SUDT
 	if r.transactionType == SudtTransactionTypeTransfer {
 		r.Outputs[r.changeOutputIndex].Type = r.SudtType
-		r.OutputsData[r.changeOutputIndex] = utils.GenerateSudtAmount(big.NewInt(0))
+		r.OutputsData[r.changeOutputIndex] = systemscript.EncodeSudtAmount(big.NewInt(0))
 	}
 
 	var (
 		err              error
 		script           *types.Script
-		group            *transaction.ScriptGroup
-		m                = make(map[types.Hash]*transaction.ScriptGroup)
+		scriptGroup      *transaction.ScriptGroup
+		scriptGroupMap   = make(map[types.Hash]*transaction.ScriptGroup)
 		outputsCapacity  = uint64(0)
 		outputSudtAmount = big.NewInt(0)
 	)
@@ -128,11 +125,11 @@ func (r *SudtTransactionBuilder) Build(contexts ...interface{}) (*transaction.Tr
 		}
 		script = r.Outputs[i].Type
 		if script != nil {
-			if group, err = getOrPutScriptGroup(m, script, transaction.ScriptTypeType); err != nil {
+			if scriptGroup, err = getOrPutScriptGroup(scriptGroupMap, script, types.ScriptTypeType); err != nil {
 				return nil, err
 			}
-			group.OutputIndices = append(group.OutputIndices, uint32(i))
-			if err := executeHandlers(&r.SimpleTransactionBuilder, group, contexts); err != nil {
+			scriptGroup.OutputIndices = append(scriptGroup.OutputIndices, uint32(i))
+			if err := executeHandlers(&r.SimpleTransactionBuilder, scriptGroup, contexts); err != nil {
 				return nil, err
 			}
 		}
@@ -155,26 +152,26 @@ func (r *SudtTransactionBuilder) Build(contexts ...interface{}) (*transaction.Tr
 		})
 		i += 1
 
-		// process input's LOCK
+		// process input' LOCK
 		script = cell.Output.Lock
 		if script != nil {
-			if group, err = getOrPutScriptGroup(m, script, transaction.ScriptTypeLock); err != nil {
+			if scriptGroup, err = getOrPutScriptGroup(scriptGroupMap, script, types.ScriptTypeLock); err != nil {
 				return nil, err
 			}
-			group.InputIndices = append(group.InputIndices, uint32(i))
-			if err := executeHandlers(&r.SimpleTransactionBuilder, group, contexts...); err != nil {
+			scriptGroup.InputIndices = append(scriptGroup.InputIndices, uint32(i))
+			if err := executeHandlers(&r.SimpleTransactionBuilder, scriptGroup, contexts...); err != nil {
 				return nil, err
 			}
 		}
 
-		// process input's TYPE
+		// process input' TYPE
 		script = cell.Output.Type
 		if script != nil {
-			if group, err = getOrPutScriptGroup(m, script, transaction.ScriptTypeType); err != nil {
+			if scriptGroup, err = getOrPutScriptGroup(scriptGroupMap, script, types.ScriptTypeType); err != nil {
 				return nil, err
 			}
-			group.InputIndices = append(group.InputIndices, uint32(i))
-			if err := executeHandlers(&r.SimpleTransactionBuilder, group, contexts...); err != nil {
+			scriptGroup.InputIndices = append(scriptGroup.InputIndices, uint32(i))
+			if err := executeHandlers(&r.SimpleTransactionBuilder, scriptGroup, contexts...); err != nil {
 				return nil, err
 			}
 		}
@@ -190,7 +187,7 @@ func (r *SudtTransactionBuilder) Build(contexts ...interface{}) (*transaction.Tr
 
 		tx := r.BuildTransaction().TxView
 		// check if there is enough capacity for output capacity and change
-		fee := transaction.CalculateTransactionFee(tx, uint64(r.FeeRate))
+		fee := tx.CalculateFee(uint64(r.FeeRate))
 		if inputsCapacity < (outputsCapacity + fee) {
 			continue
 		}
@@ -202,7 +199,7 @@ func (r *SudtTransactionBuilder) Build(contexts ...interface{}) (*transaction.Tr
 			if r.transactionType == SudtTransactionTypeTransfer {
 				diff := big.NewInt(0)
 				diff.Sub(inputsSudtAmount, outputSudtAmount)
-				r.OutputsData[r.changeOutputIndex] = utils.GenerateSudtAmount(diff)
+				r.OutputsData[r.changeOutputIndex] = systemscript.EncodeSudtAmount(diff)
 			}
 			enoughCapacity = true
 			break
@@ -212,7 +209,7 @@ func (r *SudtTransactionBuilder) Build(contexts ...interface{}) (*transaction.Tr
 		return nil, errors.New("no enough capacity")
 	}
 	r.scriptGroups = make([]*transaction.ScriptGroup, 0)
-	for _, g := range m {
+	for _, g := range scriptGroupMap {
 		r.scriptGroups = append(r.scriptGroups, g)
 	}
 	return r.BuildTransaction(), nil
@@ -235,7 +232,7 @@ func addSudtAmount(a *big.Int, b []byte) error {
 	if len(b) == 0 {
 		return nil
 	}
-	amount, err := utils.ParseSudtAmount(b)
+	amount, err := systemscript.DecodeSudtAmount(b)
 	if err != nil {
 		return err
 	}

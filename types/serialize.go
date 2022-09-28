@@ -3,7 +3,7 @@ package types
 import (
 	"errors"
 	"fmt"
-	"github.com/nervosnetwork/ckb-sdk-go/molecule"
+	"github.com/nervosnetwork/ckb-sdk-go/types/molecule"
 )
 
 func SerializeUint32(n uint32) []byte {

@@ -2,11 +2,27 @@ package types
 
 import (
 	"encoding/json"
-	"errors"
+	"fmt"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"math/big"
 	"strings"
 )
+
+func (r *ScriptType) UnmarshalJSON(input []byte) error {
+	var jsonObj string
+	if err := json.Unmarshal(input, &jsonObj); err != nil {
+		return err
+	}
+	switch strings.ToLower(jsonObj) {
+	case strings.ToLower(string(ScriptTypeLock)):
+		*r = ScriptTypeLock
+	case strings.ToLower(string(ScriptTypeType)):
+		*r = ScriptTypeType
+	default:
+		return fmt.Errorf("can't unmarshal json from unknown script type %s", input)
+	}
+	return nil
+}
 
 type jsonEpoch struct {
 	CompactTarget hexutil.Uint64 `json:"compact_target"`
@@ -69,7 +85,7 @@ func (r *Header) UnmarshalJSON(input []byte) error {
 		return err
 	}
 	*r = Header{
-		CompactTarget:    uint(jsonObj.CompactTarget),
+		CompactTarget:    uint32(jsonObj.CompactTarget),
 		Dao:              jsonObj.Dao,
 		Epoch:            uint64(jsonObj.Epoch),
 		Hash:             jsonObj.Hash,
@@ -80,7 +96,7 @@ func (r *Header) UnmarshalJSON(input []byte) error {
 		Timestamp:        uint64(jsonObj.Timestamp),
 		TransactionsRoot: jsonObj.TransactionsRoot,
 		ExtraHash:        jsonObj.ExtraHash,
-		Version:          uint(jsonObj.Version),
+		Version:          uint32(jsonObj.Version),
 	}
 	return nil
 }
@@ -106,7 +122,7 @@ func (r *OutPoint) UnmarshalJSON(input []byte) error {
 	}
 	*r = OutPoint{
 		TxHash: jsonObj.TxHash,
-		Index:  uint(jsonObj.Index),
+		Index:  uint32(jsonObj.Index),
 	}
 	return nil
 }
@@ -240,7 +256,7 @@ func (t *Transaction) UnmarshalJSON(input []byte) error {
 		return result
 	}
 	*t = Transaction{
-		Version:     uint(jsonObj.Version),
+		Version:     uint32(jsonObj.Version),
 		Hash:        jsonObj.Hash,
 		CellDeps:    jsonObj.CellDeps,
 		HeaderDeps:  jsonObj.HeaderDeps,
@@ -271,7 +287,7 @@ func (r *TransactionStatus) UnmarshalJSON(input []byte) error {
 	case strings.ToLower(string(TransactionStatusRejected)):
 		*r = TransactionStatusRejected
 	default:
-		return errors.New("can't unmarshal json from unknown transaction status value " + jsonObj)
+		return fmt.Errorf("can't unmarshal json from unknown transaction status value %s", jsonObj)
 	}
 	return nil
 }
@@ -377,8 +393,8 @@ func (r *Consensus) UnmarshalJSON(input []byte) error {
 		MedianTimeBlockCount:              uint64(jsonObj.MedianTimeBlockCount),
 		MaxBlockCycles:                    uint64(jsonObj.MaxBlockCycles),
 		MaxBlockBytes:                     uint64(jsonObj.MaxBlockBytes),
-		BlockVersion:                      uint(jsonObj.BlockVersion),
-		TxVersion:                         uint(jsonObj.TxVersion),
+		BlockVersion:                      uint32(jsonObj.BlockVersion),
+		TxVersion:                         uint32(jsonObj.TxVersion),
 		TypeIdCodeHash:                    jsonObj.TypeIdCodeHash,
 		MaxBlockProposalsLimit:            uint64(jsonObj.MaxBlockProposalsLimit),
 		PrimaryEpochRewardHalvingInterval: uint64(jsonObj.PrimaryEpochRewardHalvingInterval),
@@ -470,23 +486,27 @@ func (r *PeerSyncState) UnmarshalJSON(input []byte) error {
 	type PeerSyncStateAlias PeerSyncState
 	var jsonObj struct {
 		PeerSyncStateAlias
-		BestKnownHeaderNumber  hexutil.Uint64 `json:"best_known_header_number,omitempty"`
-		LastCommonHeaderNumber hexutil.Uint64 `json:"last_common_header_number,omitempty"`
-		UnknownHeaderListSize  hexutil.Uint64 `json:"unknown_header_list_size"`
-		InflightCount          hexutil.Uint64 `json:"inflight_count"`
-		CanFetchCount          hexutil.Uint64 `json:"can_fetch_count"`
+		BestKnownHeaderNumber  *hexutil.Uint64 `json:"best_known_header_number,omitempty"`
+		LastCommonHeaderNumber *hexutil.Uint64 `json:"last_common_header_number,omitempty"`
+		UnknownHeaderListSize  hexutil.Uint64  `json:"unknown_header_list_size"`
+		InflightCount          hexutil.Uint64  `json:"inflight_count"`
+		CanFetchCount          hexutil.Uint64  `json:"can_fetch_count"`
 	}
 	if err := json.Unmarshal(input, &jsonObj); err != nil {
 		return err
 	}
 	*r = PeerSyncState{
-		BestKnownHeaderHash:    jsonObj.BestKnownHeaderHash,
-		BestKnownHeaderNumber:  uint64(jsonObj.BestKnownHeaderNumber),
-		LastCommonHeaderHash:   jsonObj.LastCommonHeaderHash,
-		LastCommonHeaderNumber: uint64(jsonObj.LastCommonHeaderNumber),
-		UnknownHeaderListSize:  uint64(jsonObj.UnknownHeaderListSize),
-		InflightCount:          uint64(jsonObj.InflightCount),
-		CanFetchCount:          uint64(jsonObj.CanFetchCount),
+		BestKnownHeaderHash:   jsonObj.BestKnownHeaderHash,
+		LastCommonHeaderHash:  jsonObj.LastCommonHeaderHash,
+		UnknownHeaderListSize: uint64(jsonObj.UnknownHeaderListSize),
+		InflightCount:         uint64(jsonObj.InflightCount),
+		CanFetchCount:         uint64(jsonObj.CanFetchCount),
+	}
+	if jsonObj.BestKnownHeaderNumber != nil {
+		r.BestKnownHeaderNumber = uint64(*jsonObj.BestKnownHeaderNumber)
+	}
+	if jsonObj.LastCommonHeaderNumber != nil {
+		r.LastCommonHeaderNumber = uint64(*jsonObj.LastCommonHeaderNumber)
 	}
 	return nil
 }
@@ -510,8 +530,8 @@ func (r *RemoteNode) UnmarshalJSON(input []byte) error {
 	type RemoteAlias RemoteNode
 	var jsonObj struct {
 		RemoteAlias
-		ConnectedDuration hexutil.Uint64 `json:"connected_duration"`
-		LastPingDuration  hexutil.Uint64 `json:"last_ping_duration,omitempty"`
+		ConnectedDuration hexutil.Uint64  `json:"connected_duration"`
+		LastPingDuration  *hexutil.Uint64 `json:"last_ping_duration,omitempty"`
 	}
 	if err := json.Unmarshal(input, &jsonObj); err != nil {
 		return err
@@ -522,9 +542,11 @@ func (r *RemoteNode) UnmarshalJSON(input []byte) error {
 		Addresses:         jsonObj.Addresses,
 		IsOutbound:        jsonObj.IsOutbound,
 		ConnectedDuration: uint64(jsonObj.ConnectedDuration),
-		LastPingDuration:  uint64(jsonObj.LastPingDuration),
 		SyncState:         jsonObj.SyncState,
 		Protocols:         jsonObj.Protocols,
+	}
+	if jsonObj.LastPingDuration != nil {
+		r.LastPingDuration = uint64(*jsonObj.LastPingDuration)
 	}
 	return nil
 }

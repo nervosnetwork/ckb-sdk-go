@@ -37,9 +37,9 @@ type RemoteNodeProtocol struct {
 }
 
 type PeerSyncState struct {
-	BestKnownHeaderHash    Hash   `json:"best_known_header_hash,omitempty"`
+	BestKnownHeaderHash    *Hash  `json:"best_known_header_hash,omitempty"`
 	BestKnownHeaderNumber  uint64 `json:"best_known_header_number,omitempty"`
-	LastCommonHeaderHash   Hash   `json:"last_common_header_hash,omitempty"`
+	LastCommonHeaderHash   *Hash  `json:"last_common_header_hash,omitempty"`
 	LastCommonHeaderNumber uint64 `json:"last_common_header_number,omitempty"`
 	UnknownHeaderListSize  uint64 `json:"unknown_header_list_size"`
 	InflightCount          uint64 `json:"inflight_count"`
@@ -51,4 +51,15 @@ type BannedAddress struct {
 	BanReason string `json:"ban_reason"`
 	BanUntil  uint64 `json:"ban_until"`
 	CreatedAt uint64 `json:"created_at"`
+}
+
+type SyncState struct {
+	Ibd                     bool   `json:"ibd"`
+	BestKnownBlockNumber    uint64 `json:"best_known_block_number"`
+	BestKnownBlockTimestamp uint64 `json:"best_known_block_timestamp"`
+	OrphanBlocksCount       uint64 `json:"orphan_blocks_count"`
+	InflightBlocksCount     uint64 `json:"inflight_blocks_count"`
+	FastTime                uint64 `json:"fast_time"`
+	LowTime                 uint64 `json:"low_time"`
+	NormalTime              uint64 `json:"normal_time"`
 }

@@ -64,7 +64,7 @@ func NewDaoTransactionBuilder(network types.Network, iterator collector.CellIter
 		}
 	}
 
-	b := &DaoTransactionBuilder{
+	builder := &DaoTransactionBuilder{
 		CkbTransactionBuilder: CkbTransactionBuilder{
 			SimpleTransactionBuilder: *NewSimpleTransactionBuilder(network),
 			FeeRate:                  1000,
@@ -79,7 +79,7 @@ func NewDaoTransactionBuilder(network types.Network, iterator collector.CellIter
 		depositBlockNumber:  depositBlockNumber,
 		depositCellCapacity: depositCellCapacity,
 	}
-	return b, nil
+	return builder, nil
 }
 
 func getTransactionType(outputData []byte) (DaoTransactionType, error) {

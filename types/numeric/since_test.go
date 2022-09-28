@@ -1,4 +1,4 @@
-package utils
+package numeric
 
 import "testing"
 
@@ -9,7 +9,7 @@ func TestSinceFromAbsoluteBlockNumber(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		want uint64
+		want Since
 	}{
 		{
 			"absolute block number",
@@ -21,8 +21,8 @@ func TestSinceFromAbsoluteBlockNumber(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := SinceFromAbsoluteBlockNumber(tt.args.blockNumber); got != tt.want {
-				t.Errorf("SinceFromAbsoluteBlockNumber() = %v, want %v", got, tt.want)
+			if got := NewSinceFromAbsoluteBlockNumber(tt.args.blockNumber); got != tt.want {
+				t.Errorf("NewSinceFromAbsoluteBlockNumber() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -35,7 +35,7 @@ func TestSinceFromAbsoluteEpochNumber(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		want uint64
+		want Since
 	}{
 		{
 			"absolute epoch number",
@@ -47,8 +47,8 @@ func TestSinceFromAbsoluteEpochNumber(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := SinceFromAbsoluteEpochNumber(tt.args.epochNumber); got != tt.want {
-				t.Errorf("SinceFromAbsoluteEpochNumber() = %v, want %v", got, tt.want)
+			if got := NewSinceFromAbsoluteEpochNumber(tt.args.epochNumber); got != tt.want {
+				t.Errorf("NewSinceFromAbsoluteEpochNumber() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -61,7 +61,7 @@ func TestSinceFromAbsoluteTimestamp(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		want uint64
+		want Since
 	}{
 		{
 			"absolute timestamp",
@@ -73,8 +73,8 @@ func TestSinceFromAbsoluteTimestamp(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := SinceFromAbsoluteTimestamp(tt.args.timestamp); got != tt.want {
-				t.Errorf("SinceFromAbsoluteTimestamp() = %v, want %v", got, tt.want)
+			if got := NewSinceFromAbsoluteTimestamp(tt.args.timestamp); got != tt.want {
+				t.Errorf("NewSinceFromAbsoluteTimestamp() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -87,7 +87,7 @@ func TestSinceFromRelativeBlockNumber(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		want uint64
+		want Since
 	}{
 		{
 			"relative block number",
@@ -99,8 +99,8 @@ func TestSinceFromRelativeBlockNumber(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := SinceFromRelativeBlockNumber(tt.args.blockNumber); got != tt.want {
-				t.Errorf("SinceFromRelativeBlockNumber() = %v, want %v", got, tt.want)
+			if got := NewSinceFromRelativeBlockNumber(tt.args.blockNumber); got != tt.want {
+				t.Errorf("NewSinceFromRelativeBlockNumber() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -113,7 +113,7 @@ func TestSinceFromRelativeEpochNumber(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		want uint64
+		want Since
 	}{
 		{
 			"relative epoch number",
@@ -125,8 +125,8 @@ func TestSinceFromRelativeEpochNumber(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := SinceFromRelativeEpochNumber(tt.args.epochNumber); got != tt.want {
-				t.Errorf("SinceFromRelativeEpochNumber() = %v, want %v", got, tt.want)
+			if got := NewSinceFromRelativeEpochNumber(tt.args.epochNumber); got != tt.want {
+				t.Errorf("NewSinceFromRelativeEpochNumber() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -139,7 +139,7 @@ func TestSinceFromRelativeTimestamp(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		want uint64
+		want Since
 	}{
 		{
 			"relative timestamp",
@@ -151,8 +151,8 @@ func TestSinceFromRelativeTimestamp(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := SinceFromRelativeTimestamp(tt.args.timestamp); got != tt.want {
-				t.Errorf("SinceFromRelativeTimestamp() = %v, want %v", got, tt.want)
+			if got := NewSinceFromRelativeTimestamp(tt.args.timestamp); got != tt.want {
+				t.Errorf("NewSinceFromRelativeTimestamp() = %v, want %v", got, tt.want)
 			}
 		})
 	}

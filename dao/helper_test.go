@@ -19,7 +19,7 @@ func TestGetDaoDepositCellInfo(t *testing.T) {
 
 	daoCellInfo, err := daoHelper.GetDaoDepositCellInfo(&outpoint, withdrawBlockHash)
 	if err != nil {
-		panic(err)
+		t.Error(err)
 	}
 
 	assert.Equal(t, outpoint, daoCellInfo.Outpoint)
@@ -44,7 +44,7 @@ func TestGetDaoDepositCellInfoWithWithdrawOutpoint(t *testing.T) {
 
 	daoCellInfo, err := daoHelper.GetDaoDepositCellInfoWithWithdrawOutpoint(&outpoint, &withdrawOutpoint)
 	if err != nil {
-		panic(err)
+		t.Error(err)
 	}
 
 	assert.Equal(t, outpoint, daoCellInfo.Outpoint)

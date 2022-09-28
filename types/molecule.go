@@ -2,7 +2,7 @@ package types
 
 import (
 	"encoding/binary"
-	"github.com/nervosnetwork/ckb-sdk-go/molecule"
+	"github.com/nervosnetwork/ckb-sdk-go/types/molecule"
 )
 
 func (r *WitnessArgs) Pack() *molecule.WitnessArgs {
@@ -31,43 +31,43 @@ func UnpackWitnessArgs(v *molecule.WitnessArgs) *WitnessArgs {
 	return w
 }
 
-func (r *Transaction) PackToRawTransaction() *molecule.RawTransaction {
+func (t *Transaction) PackToRawTransaction() *molecule.RawTransaction {
 	builder := molecule.NewRawTransactionBuilder()
-	builder.Version(*PackUint32(uint32(r.Version)))
+	builder.Version(*PackUint32(uint32(t.Version)))
 
 	cellDepsVecBuilder := molecule.NewCellDepVecBuilder()
-	for _, v := range r.CellDeps {
+	for _, v := range t.CellDeps {
 		cellDepsVecBuilder.Push(*v.Pack())
 	}
 	builder.CellDeps(cellDepsVecBuilder.Build())
 
 	byte32VecBuilder := molecule.NewByte32VecBuilder()
-	for _, v := range r.HeaderDeps {
+	for _, v := range t.HeaderDeps {
 		byte32VecBuilder.Push(*v.Pack())
 	}
 	builder.HeaderDeps(byte32VecBuilder.Build())
 
 	inputVecBuilder := molecule.NewCellInputVecBuilder()
-	for _, v := range r.Inputs {
+	for _, v := range t.Inputs {
 		inputVecBuilder.Push(*v.Pack())
 	}
 	builder.Inputs(inputVecBuilder.Build())
 
 	outputVecBuilder := molecule.NewCellOutputVecBuilder()
-	for _, v := range r.Outputs {
+	for _, v := range t.Outputs {
 		outputVecBuilder.Push(*v.Pack())
 	}
 	builder.Outputs(outputVecBuilder.Build())
 
-	builder.OutputsData(*PackBytesVec(r.OutputsData))
+	builder.OutputsData(*PackBytesVec(t.OutputsData))
 	b := builder.Build()
 	return &b
 }
 
-func (r *Transaction) Pack() *molecule.Transaction {
+func (t *Transaction) Pack() *molecule.Transaction {
 	builder := molecule.NewTransactionBuilder()
-	builder.Raw(*r.PackToRawTransaction())
-	builder.Witnesses(*PackBytesVec(r.Witnesses))
+	builder.Raw(*t.PackToRawTransaction())
+	builder.Witnesses(*PackBytesVec(t.Witnesses))
 	b := builder.Build()
 	return &b
 }

@@ -4,8 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"github.com/nervosnetwork/ckb-sdk-go/crypto/bech32"
+	"github.com/nervosnetwork/ckb-sdk-go/systemscript"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
-	"github.com/nervosnetwork/ckb-sdk-go/utils"
 )
 
 type Address struct {
@@ -51,27 +51,27 @@ func decodeShort(payload []byte, network types.Network) (*Address, error) {
 	codeHashIndex := payload[1]
 	args := payload[2:]
 	argsLen := len(args)
-	var scriptType types.BuiltinScript
+	var scriptType systemscript.SystemScript
 	switch codeHashIndex {
 	case 0x00: // secp256k1_blake160_sighash_all
 		if argsLen != 20 {
-			return nil, errors.New(fmt.Sprintf("invalid args length %d", argsLen))
+			return nil, fmt.Errorf("invalid args length %d", argsLen)
 		}
-		scriptType = types.BuiltinScriptSecp256k1Blake160SighashAll
+		scriptType = systemscript.Secp256k1Blake160SighashAll
 	case 0x01: // secp256k1_blake160_multisig_all
 		if argsLen != 20 {
-			return nil, errors.New(fmt.Sprintf("invalid args length %d", argsLen))
+			return nil, fmt.Errorf("invalid args length %d", argsLen)
 		}
-		scriptType = types.BuiltinScriptSecp256k1Blake160MultisigAll
+		scriptType = systemscript.Secp256k1Blake160MultisigAll
 	case 0x02: // anyone_can_pay
 		if argsLen < 20 || argsLen > 22 {
-			return nil, errors.New(fmt.Sprintf("invalid args length %d", argsLen))
+			return nil, fmt.Errorf("invalid args length %d", argsLen)
 		}
-		scriptType = types.BuiltinScriptAnyoneCanPay
+		scriptType = systemscript.AnyoneCanPay
 	default:
 		return nil, errors.New("unknown code hash index")
 	}
-	codeHash := utils.GetCodeHash(network, scriptType)
+	codeHash := systemscript.GetCodeHash(network, scriptType)
 	return &Address{
 		Script: &types.Script{
 			CodeHash: codeHash,
@@ -106,7 +106,7 @@ func decodeLongBech32(payload []byte, network types.Network) (*Address, error) {
 
 func decodeLongBech32M(payload []byte, network types.Network) (*Address, error) {
 	if payload[0] != 0x00 {
-		return nil, errors.New(fmt.Sprintf("invalid payload header 0x%d", payload[0]))
+		return nil, fmt.Errorf("invalid payload header 0x%d", payload[0])
 	}
 	codeHash := types.BytesToHash(payload[1:33])
 	hashType, err := types.DeserializeHashTypeByte(payload[33])
@@ -136,11 +136,11 @@ func (a Address) Encode() (string, error) {
 func (a Address) EncodeShort() (string, error) {
 	payload := make([]byte, 0)
 	payload = append(payload, 0x01)
-	if a.Script.CodeHash == utils.GetCodeHash(a.Network, types.BuiltinScriptSecp256k1Blake160SighashAll) {
+	if a.Script.CodeHash == systemscript.GetCodeHash(a.Network, systemscript.Secp256k1Blake160SighashAll) {
 		payload = append(payload, 0x00)
-	} else if a.Script.CodeHash == utils.GetCodeHash(a.Network, types.BuiltinScriptSecp256k1Blake160MultisigAll) {
+	} else if a.Script.CodeHash == systemscript.GetCodeHash(a.Network, systemscript.Secp256k1Blake160MultisigAll) {
 		payload = append(payload, 0x01)
-	} else if a.Script.CodeHash == utils.GetCodeHash(a.Network, types.BuiltinScriptAnyoneCanPay) {
+	} else if a.Script.CodeHash == systemscript.GetCodeHash(a.Network, systemscript.AnyoneCanPay) {
 		payload = append(payload, 0x02)
 	} else {
 		return "", errors.New("encoding to short address for given script is unsupported")

@@ -6,14 +6,14 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/nervosnetwork/ckb-sdk-go/address"
 	"github.com/nervosnetwork/ckb-sdk-go/collector"
-	builder2 "github.com/nervosnetwork/ckb-sdk-go/collector/builder"
+	"github.com/nervosnetwork/ckb-sdk-go/collector/builder"
 	"github.com/nervosnetwork/ckb-sdk-go/collector/handler"
 	"github.com/nervosnetwork/ckb-sdk-go/indexer"
 	"github.com/nervosnetwork/ckb-sdk-go/rpc"
+	"github.com/nervosnetwork/ckb-sdk-go/systemscript"
 	"github.com/nervosnetwork/ckb-sdk-go/transaction"
 	"github.com/nervosnetwork/ckb-sdk-go/transaction/signer"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
-	"github.com/nervosnetwork/ckb-sdk-go/utils"
 	"math/big"
 )
 
@@ -31,7 +31,7 @@ func SendCkbExample() error {
 	}
 
 	// build transaction
-	builder := builder2.NewCkbTransactionBuilder(network, iterator)
+	builder := builder.NewCkbTransactionBuilder(network, iterator)
 	builder.FeeRate = 1000
 	if err := builder.AddOutputByAddress(receiver, 50100000000); err != nil {
 		return err
@@ -62,15 +62,15 @@ func SendCkbExample() error {
 func SendCkbFromMultisigAddressExample() error {
 	network := types.NetworkTest
 
-	multisigScript := signer.NewMultisigScript(0, 2)
-	multisigScript.AddKeyHashBySlice(hexutil.MustDecode("0x7336b0ba900684cb3cb00f0d46d4f64c0994a562"))
-	multisigScript.AddKeyHashBySlice(hexutil.MustDecode("0x5724c1e3925a5206944d753a6f3edaedf977d77f"))
+	multisigConfig := systemscript.NewMultisigConfig(0, 2)
+	multisigConfig.AddKeyHash(hexutil.MustDecode("0x7336b0ba900684cb3cb00f0d46d4f64c0994a562"))
+	multisigConfig.AddKeyHash(hexutil.MustDecode("0x5724c1e3925a5206944d753a6f3edaedf977d77f"))
 
-	args, _ := multisigScript.ComputeHash()
+	args := multisigConfig.Hash160()
 	// ckt1qpw9q60tppt7l3j7r09qcp7lxnp3vcanvgha8pmvsa3jplykxn32sqdunqvd3g2felqv6qer8pkydws8jg9qxlca0st5v
 	sender, _ := address.Address{
 		Script: &types.Script{
-			CodeHash: utils.GetCodeHash(network, types.BuiltinScriptSecp256k1Blake160MultisigAll),
+			CodeHash: systemscript.GetCodeHash(network, systemscript.Secp256k1Blake160MultisigAll),
 			HashType: types.HashTypeType,
 			Args:     args,
 		},
@@ -88,13 +88,13 @@ func SendCkbFromMultisigAddressExample() error {
 	}
 
 	// build transaction
-	builder := builder2.NewCkbTransactionBuilder(network, iterator)
+	builder := builder.NewCkbTransactionBuilder(network, iterator)
 	builder.FeeRate = 1000
 	if err := builder.AddOutputByAddress(receiver, 50100000000); err != nil {
 		return err
 	}
 	builder.AddChangeOutputByAddress(sender)
-	txWithGroups, err := builder.Build(multisigScript)
+	txWithGroups, err := builder.Build(multisigConfig)
 	if err != nil {
 		return err
 	}
@@ -102,17 +102,13 @@ func SendCkbFromMultisigAddressExample() error {
 	// sign transaction
 	txSigner := signer.GetTransactionSignerInstance(network)
 	// first signature
-	ctx1, _ := transaction.NewContextWithPayload("0x4fd809631a6aa6e3bb378dd65eae5d71df895a82c91a615a1e8264741515c79c", multisigScript)
-	ctxs1 := transaction.NewContexts()
-	ctxs1.Add(ctx1)
-	if _, err = txSigner.SignTransaction(txWithGroups, ctxs1); err != nil {
+	ctx1, _ := transaction.NewContextWithPayload("0x4fd809631a6aa6e3bb378dd65eae5d71df895a82c91a615a1e8264741515c79c", multisigConfig)
+	if _, err = txSigner.SignTransaction(txWithGroups, ctx1); err != nil {
 		return err
 	}
 	// second signature
-	ctx2, _ := transaction.NewContextWithPayload("0x7438f7b35c355e3d2fb9305167a31a72d22ddeafb80a21cc99ff6329d92e8087", multisigScript)
-	ctxs2 := transaction.NewContexts()
-	ctxs2.Add(ctx2)
-	if _, err = txSigner.SignTransaction(txWithGroups, ctxs2); err != nil {
+	ctx2, _ := transaction.NewContextWithPayload("0x7438f7b35c355e3d2fb9305167a31a72d22ddeafb80a21cc99ff6329d92e8087", multisigConfig)
+	if _, err = txSigner.SignTransaction(txWithGroups, ctx2); err != nil {
 		return err
 	}
 
@@ -139,7 +135,7 @@ func IssueSudtExample() error {
 	}
 
 	// build transaction
-	builder, err := builder2.NewSudtTransactionBuilderFromSudtOwnerAddress(network, iterator, builder2.SudtTransactionTypeIssue, sender)
+	builder, err := builder.NewSudtTransactionBuilderFromSudtOwnerAddress(network, iterator, builder.SudtTransactionTypeIssue, sender)
 	if err != nil {
 		return err
 	}
@@ -187,7 +183,7 @@ func SendSudtExample() error {
 	}
 
 	// build transaction
-	builder := builder2.NewSudtTransactionBuilderFromSudtArgs(network, iterator, builder2.SudtTransactionTypeTransfer, sudtArgs)
+	builder := builder.NewSudtTransactionBuilderFromSudtArgs(network, iterator, builder.SudtTransactionTypeTransfer, sudtArgs)
 	builder.FeeRate = 1000
 	_, err = builder.AddSudtOutputByAddress(receiver, big.NewInt(1))
 	if err != nil {
@@ -229,7 +225,7 @@ func DepositDaoExample() error {
 	}
 
 	// build transaction
-	builder := builder2.NewCkbTransactionBuilder(network, iterator)
+	builder := builder.NewCkbTransactionBuilder(network, iterator)
 	builder.FeeRate = 1000
 	if err := builder.AddDaoDepositOutputByAddress(sender, 50100000000); err != nil {
 		return err
@@ -279,7 +275,7 @@ func WithdrawDaoExample() error {
 	}
 
 	// build transaction
-	builder, err := builder2.NewDaoTransactionBuilder(network, iterator, depositOutPoint, ckbClient)
+	builder, err := builder.NewDaoTransactionBuilder(network, iterator, depositOutPoint, ckbClient)
 	if err != nil {
 		return err
 	}
@@ -337,7 +333,7 @@ func ClaimDaoExample() error {
 	}
 
 	// build transaction
-	builder, err := builder2.NewDaoTransactionBuilder(network, iterator, withdrawOutPoint, ckbClient)
+	builder, err := builder.NewDaoTransactionBuilder(network, iterator, withdrawOutPoint, ckbClient)
 	if err != nil {
 		return err
 	}
