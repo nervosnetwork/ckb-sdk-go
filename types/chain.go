@@ -193,8 +193,9 @@ type CellWithStatus struct {
 }
 
 type TxStatus struct {
-	BlockHash Hash              `json:"block_hash"`
 	Status    TransactionStatus `json:"status"`
+	BlockHash *Hash             `json:"block_hash"`
+	Reason    *string           `json:"reason"`
 }
 
 type TransactionWithStatus struct {
@@ -242,9 +243,9 @@ type ProposalWindow struct {
 type Consensus struct {
 	Id                                   string             `json:"ID"`
 	GenesisHash                          Hash               `json:"genesis_hash"`
-	DaoTypeHash                          Hash               `json:"dao_type_hash"`
-	Secp256k1Blake160SighashAllTypeHash  Hash               `json:"secp256k1_blake160_sighash_all_type_hash"`
-	Secp256k1Blake160MultisigAllTypeHash Hash               `json:"secp256k1_blake160_multisig_all_type_hash"`
+	DaoTypeHash                          *Hash              `json:"dao_type_hash"`
+	Secp256k1Blake160SighashAllTypeHash  *Hash              `json:"secp256k1_blake160_sighash_all_type_hash"`
+	Secp256k1Blake160MultisigAllTypeHash *Hash              `json:"secp256k1_blake160_multisig_all_type_hash"`
 	InitialPrimaryEpochReward            uint64             `json:"initial_primary_epoch_reward"`
 	SecondaryEpochReward                 uint64             `json:"secondary_epoch_reward"`
 	MaxUnclesNum                         uint64             `json:"max_uncles_num"`
@@ -266,8 +267,8 @@ type Consensus struct {
 }
 
 type HardForkFeature struct {
-	Rfc         string `json:"rfc"`
-	EpochNumber uint64 `json:"epoch_number,omitempty"`
+	Rfc         string  `json:"rfc"`
+	EpochNumber *uint64 `json:"epoch_number,omitempty"`
 }
 
 type TransactionProof struct {
