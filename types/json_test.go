@@ -2,6 +2,7 @@ package types
 
 import (
 	"encoding/json"
+	"fmt"
 	ethcommon "github.com/ethereum/go-ethereum/common"
 	"github.com/stretchr/testify/assert"
 	"math/big"
@@ -167,6 +168,18 @@ func TestJsonTransactionWithStatus(t *testing.T) {
 	AssertJsonEqual(t, jsonText1, jsonText2)
 }
 
+func Test4(t *testing.T) {
+	type X struct {
+		v *[]uint64 `json:"v"`
+	}
+	jsonText := []byte(`
+{
+}
+`)
+	var x X
+	json.Unmarshal(jsonText, x)
+	fmt.Println(x)
+}
 func TestTransactionHashNotToMarshal(t *testing.T) {
 	jsonText1 := []byte(`
 {

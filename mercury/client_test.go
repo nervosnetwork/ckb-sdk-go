@@ -174,9 +174,9 @@ func TestGetSpentTransactionWithTransactionView(t *testing.T) {
 	resp, err := c.GetSpentTransactionWithTransactionView(payload)
 	checkError(t, err)
 	assert.NotNil(t, resp.Value.Transaction)
-	assert.Equal(t, types.HexToHash("0x407033c3baa6104c9f46d3c7948b812274556148d74b0db251f50fc6e7507233"), resp.Value.TxStatus.BlockHash)
+	assert.Equal(t, types.HexToHash("0x407033c3baa6104c9f46d3c7948b812274556148d74b0db251f50fc6e7507233"), *resp.Value.TxStatus.BlockHash)
 	assert.Equal(t, types.TransactionStatusCommitted, resp.Value.TxStatus.Status)
-	assert.Equal(t, uint64(0x17bc67c4078), resp.Value.TxStatus.Timestamp)
+	assert.Equal(t, uint64(0x17bc67c4078), *resp.Value.TxStatus.Timestamp)
 }
 
 func TestGetSpentTransactionWithTransactionInfo(t *testing.T) {
@@ -244,7 +244,7 @@ func TestQueryTransactionsWithPage(t *testing.T) {
 		Item:       item,
 		AssetInfos: []*model.AssetInfo{},
 		Pagination: &model.PaginationRequest{
-			Cursor:      resp.NextCursor,
+			Cursor:      *resp.NextCursor,
 			Order:       model.OrderDesc,
 			Limit:       2,
 			ReturnCount: true,
