@@ -538,7 +538,7 @@ func (cli *client) BatchLiveCells(ctx context.Context, batch []types.BatchLiveCe
 
 func (cli *client) GetTip(ctx context.Context) (*indexer.TipHeader, error) {
 	var result indexer.TipHeader
-	err := cli.c.CallContext(ctx, &result, "get_tip")
+	err := cli.c.CallContext(ctx, &result, "get_indexer_tip")
 	if err != nil {
 		return nil, err
 	}
