@@ -118,7 +118,7 @@ func NewClaimInfo(client rpc.Client, withdrawOutpoint *types.OutPoint) (*ClaimIn
 		tx := txWithStatus.Transaction
 		index := outPoint.Index
 		if IsDepositCell(tx.Outputs[index], tx.OutputsData[index]) {
-			depositBlockHash = txWithStatus.TxStatus.BlockHash
+			depositBlockHash = *txWithStatus.TxStatus.BlockHash
 			break
 		}
 	}
@@ -129,7 +129,7 @@ func NewClaimInfo(client rpc.Client, withdrawOutpoint *types.OutPoint) (*ClaimIn
 	if err != nil {
 		return nil, err
 	}
-	withdrawBlockHeader, err := client.GetHeader(context.Background(), withdrawBlockHash)
+	withdrawBlockHeader, err := client.GetHeader(context.Background(), *withdrawBlockHash)
 	if err != nil {
 		return nil, err
 	}
@@ -180,13 +180,13 @@ func NewWithdrawInfo(client rpc.Client, depositOutPoint *types.OutPoint) (*Withd
 		return nil, err
 	}
 	depositBlockHash := txWithStatus.TxStatus.BlockHash
-	header, err := client.GetHeader(context.Background(), depositBlockHash)
+	header, err := client.GetHeader(context.Background(), *depositBlockHash)
 	if err != nil {
 		return nil, err
 	}
 	return &WithdrawInfo{
 		DepositOutPoint:    depositOutPoint,
 		DepositBlockNumber: header.Number,
-		DepositBlockHash:   depositBlockHash,
+		DepositBlockHash:   *depositBlockHash,
 	}, nil
 }
