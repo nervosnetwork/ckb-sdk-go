@@ -131,27 +131,27 @@ type DaoState struct {
 }
 
 type TransactionWithRichStatus struct {
-	Transaction types.Transaction `json:"transaction,omitempty"`
-	TxStatus    TxRichStatus      `json:"tx_status"`
+	Transaction *types.Transaction `json:"transaction,omitempty"`
+	TxStatus    TxRichStatus       `json:"tx_status"`
 }
 
 type TxRichStatus struct {
 	Status    types.TransactionStatus `json:"status"`
-	BlockHash types.Hash              `json:"block_hash,omitempty"`
-	Reason    string                  `json:"reason,omitempty"`
-	Timestamp uint64                  `json:"timestamp,omitempty"`
+	BlockHash *types.Hash             `json:"block_hash,omitempty"`
+	Reason    *string                 `json:"reason,omitempty"`
+	Timestamp *uint64                 `json:"timestamp,omitempty"`
 }
 
 type PaginationResponseTransactionWithRichStatus struct {
 	Response   []*TransactionWithRichStatusWrapper `json:"response"`
-	Count      uint64                              `json:"count,omitempty"`
-	NextCursor uint64                              `json:"next_cursor,omitempty"`
+	Count      *uint64                             `json:"count,omitempty"`
+	NextCursor *uint64                             `json:"next_cursor,omitempty"`
 }
 
 type PaginationResponseTransactionInfo struct {
 	Response   []*TransactionInfoWrapper `json:"response"`
-	Count      uint64                    `json:"count,omitempty"`
-	NextCursor uint64                    `json:"next_cursor,omitempty"`
+	Count      *uint64                   `json:"count,omitempty"`
+	NextCursor *uint64                   `json:"next_cursor,omitempty"`
 }
 
 type MercuryInfo struct {
