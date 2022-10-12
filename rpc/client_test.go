@@ -280,7 +280,7 @@ func TestClient_GetLiveCell(t *testing.T) {
 }
 
 func TestGetTip(t *testing.T) {
-	resp, err := testClient.GetTip(context.Background())
+	resp, err := testClient.GetIndexerTip(context.Background())
 	assert.NoError(t, err)
 	assert.NotEqual(t, 0, resp.BlockNumber)
 	assert.NotEqual(t, types.Hash{}, resp.BlockHash)

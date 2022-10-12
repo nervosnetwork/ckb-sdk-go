@@ -18,7 +18,6 @@ var (
 
 // Client for the Nervos RPC API.
 type Client interface {
-	indexer.Client
 	////// Chain
 	// GetTipBlockNumber returns the number of blocks in the longest blockchain.
 	GetTipBlockNumber(ctx context.Context) (uint64, error)
@@ -137,6 +136,18 @@ type Client interface {
 
 	// Batch Live cells
 	BatchLiveCells(ctx context.Context, batch []types.BatchLiveCellItem) error
+
+	// GetCells returns the live cells collection by the lock or type script.
+	GetCells(ctx context.Context, searchKey *indexer.SearchKey, order indexer.SearchOrder, limit uint64, afterCursor string) (*indexer.LiveCells, error)
+
+	// GetTransactions returns the transactions collection by the lock or type script.
+	GetTransactions(ctx context.Context, searchKey *indexer.SearchKey, order indexer.SearchOrder, limit uint64, afterCursor string) (*indexer.Transactions, error)
+
+	//GetTip returns the latest height processed by indexer
+	GetIndexerTip(ctx context.Context) (*indexer.TipHeader, error)
+
+	//GetCellsCapacity returns the live cells capacity by the lock or type script.
+	GetCellsCapacity(ctx context.Context, searchKey *indexer.SearchKey) (*indexer.Capacity, error)
 
 	// Close close client
 	Close()
@@ -536,7 +547,7 @@ func (cli *client) BatchLiveCells(ctx context.Context, batch []types.BatchLiveCe
 	return nil
 }
 
-func (cli *client) GetTip(ctx context.Context) (*indexer.TipHeader, error) {
+func (cli *client) GetIndexerTip(ctx context.Context) (*indexer.TipHeader, error) {
 	var result indexer.TipHeader
 	err := cli.c.CallContext(ctx, &result, "get_indexer_tip")
 	if err != nil {
