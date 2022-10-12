@@ -16,10 +16,11 @@ const (
 )
 
 type SearchKey struct {
-	Script     *types.Script    `json:"script"`
-	ScriptType types.ScriptType `json:"script_type"`
-	Filter     *Filter          `json:"filter,omitempty"`
-	WithData   bool             `json:"with_data"`
+	Script             *types.Script    `json:"script"`
+	ScriptType         types.ScriptType `json:"script_type"`
+	Filter             *Filter          `json:"filter,omitempty"`
+	WithData           bool             `json:"with_data"`
+	GroupByTransaction bool             `json:"group_by_transaction"`
 }
 
 type Filter struct {
