@@ -8,7 +8,6 @@ import (
 	"github.com/nervosnetwork/ckb-sdk-go/collector"
 	"github.com/nervosnetwork/ckb-sdk-go/collector/builder"
 	"github.com/nervosnetwork/ckb-sdk-go/collector/handler"
-	"github.com/nervosnetwork/ckb-sdk-go/indexer"
 	"github.com/nervosnetwork/ckb-sdk-go/rpc"
 	"github.com/nervosnetwork/ckb-sdk-go/systemscript"
 	"github.com/nervosnetwork/ckb-sdk-go/transaction"
@@ -21,11 +20,11 @@ func SendCkbExample() error {
 	sender := "ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq2qf8keemy2p5uu0g0gn8cd4ju23s5269qk8rg4r"
 	receiver := "ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq2qf8keemy2p5uu0g0gn8cd4ju23s5269qk8rg4r"
 	network := types.NetworkTest
-	indexerClient, err := indexer.Dial("https://testnet.ckb.dev/indexer")
+	client, err := rpc.Dial("https://testnet.ckb.dev")
 	if err != nil {
 		return err
 	}
-	iterator, err := collector.NewLiveCellIteratorFromAddress(indexerClient, sender)
+	iterator, err := collector.NewLiveCellIteratorFromAddress(client, sender)
 	if err != nil {
 		return err
 	}
@@ -50,8 +49,7 @@ func SendCkbExample() error {
 	}
 
 	// send transaction
-	ckbClient, err := rpc.Dial("https://testnet.ckb.dev")
-	hash, err := ckbClient.SendTransaction(context.Background(), txWithGroups.TxView)
+	hash, err := client.SendTransaction(context.Background(), txWithGroups.TxView)
 	if err != nil {
 		return err
 	}
@@ -78,11 +76,11 @@ func SendCkbFromMultisigAddressExample() error {
 	}.Encode()
 
 	receiver := "ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq2qf8keemy2p5uu0g0gn8cd4ju23s5269qk8rg4r"
-	indexerClient, err := indexer.Dial("https://testnet.ckb.dev/indexer")
+	client, err := rpc.Dial("https://testnet.ckb.dev")
 	if err != nil {
 		return err
 	}
-	iterator, err := collector.NewLiveCellIteratorFromAddress(indexerClient, sender)
+	iterator, err := collector.NewLiveCellIteratorFromAddress(client, sender)
 	if err != nil {
 		return err
 	}
@@ -113,8 +111,7 @@ func SendCkbFromMultisigAddressExample() error {
 	}
 
 	// send transaction
-	ckbClient, err := rpc.Dial("https://testnet.ckb.dev")
-	hash, err := ckbClient.SendTransaction(context.Background(), txWithGroups.TxView)
+	hash, err := client.SendTransaction(context.Background(), txWithGroups.TxView)
 	if err != nil {
 		return err
 	}
@@ -125,11 +122,11 @@ func SendCkbFromMultisigAddressExample() error {
 func IssueSudtExample() error {
 	sender := "ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqdamwzrffgc54ef48493nfd2sd0h4cjnxg4850up"
 	network := types.NetworkTest
-	indexerClient, err := indexer.Dial("https://testnet.ckb.dev/indexer")
+	client, err := rpc.Dial("https://testnet.ckb.dev")
 	if err != nil {
 		return err
 	}
-	iterator, err := collector.NewLiveCellIteratorFromAddress(indexerClient, sender)
+	iterator, err := collector.NewLiveCellIteratorFromAddress(client, sender)
 	if err != nil {
 		return err
 	}
@@ -158,8 +155,7 @@ func IssueSudtExample() error {
 	}
 
 	// send transaction
-	ckbClient, err := rpc.Dial("https://testnet.ckb.dev")
-	hash, err := ckbClient.SendTransaction(context.Background(), txWithGroups.TxView)
+	hash, err := client.SendTransaction(context.Background(), txWithGroups.TxView)
 	if err != nil {
 		return err
 	}
@@ -173,11 +169,11 @@ func SendSudtExample() error {
 	sudtArgs := hexutil.MustDecode("0x9d2dab815b9158b2344827749d769fd66e2d3ebdfca32e5628ba0454651851f5")
 
 	network := types.NetworkTest
-	indexerClient, err := indexer.Dial("https://testnet.ckb.dev/indexer")
+	client, err := rpc.Dial("https://testnet.ckb.dev")
 	if err != nil {
 		return err
 	}
-	iterator, err := collector.NewLiveCellIteratorFromAddress(indexerClient, sender)
+	iterator, err := collector.NewLiveCellIteratorFromAddress(client, sender)
 	if err != nil {
 		return err
 	}
@@ -203,8 +199,7 @@ func SendSudtExample() error {
 	}
 
 	// send transaction
-	ckbClient, err := rpc.Dial("https://testnet.ckb.dev")
-	hash, err := ckbClient.SendTransaction(context.Background(), txWithGroups.TxView)
+	hash, err := client.SendTransaction(context.Background(), txWithGroups.TxView)
 	if err != nil {
 		return err
 	}
@@ -215,11 +210,11 @@ func SendSudtExample() error {
 func DepositDaoExample() error {
 	sender := "ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq2qf8keemy2p5uu0g0gn8cd4ju23s5269qk8rg4r"
 	network := types.NetworkTest
-	indexerClient, err := indexer.Dial("https://testnet.ckb.dev/indexer")
+	client, err := rpc.Dial("https://testnet.ckb.dev")
 	if err != nil {
 		return err
 	}
-	iterator, err := collector.NewLiveCellIteratorFromAddress(indexerClient, sender)
+	iterator, err := collector.NewLiveCellIteratorFromAddress(client, sender)
 	if err != nil {
 		return err
 	}
@@ -244,8 +239,7 @@ func DepositDaoExample() error {
 	}
 
 	// send transaction
-	ckbClient, err := rpc.Dial("https://testnet.ckb.dev")
-	hash, err := ckbClient.SendTransaction(context.Background(), txWithGroups.TxView)
+	hash, err := client.SendTransaction(context.Background(), txWithGroups.TxView)
 	if err != nil {
 		return err
 	}
@@ -261,21 +255,17 @@ func WithdrawDaoExample() error {
 	}
 
 	network := types.NetworkTest
-	indexerClient, err := indexer.Dial("https://testnet.ckb.dev/indexer")
+	client, err := rpc.Dial("https://testnet.ckb.dev")
 	if err != nil {
 		return err
 	}
-	ckbClient, err := rpc.Dial("https://testnet.ckb.dev")
-	if err != nil {
-		return err
-	}
-	iterator, err := collector.NewLiveCellIteratorFromAddress(indexerClient, sender)
+	iterator, err := collector.NewLiveCellIteratorFromAddress(client, sender)
 	if err != nil {
 		return err
 	}
 
 	// build transaction
-	builder, err := builder.NewDaoTransactionBuilder(network, iterator, depositOutPoint, ckbClient)
+	builder, err := builder.NewDaoTransactionBuilder(network, iterator, depositOutPoint, client)
 	if err != nil {
 		return err
 	}
@@ -285,7 +275,7 @@ func WithdrawDaoExample() error {
 	}
 	builder.AddChangeOutputByAddress(sender)
 
-	withdrawInfo, err := handler.NewWithdrawInfo(ckbClient, depositOutPoint)
+	withdrawInfo, err := handler.NewWithdrawInfo(client, depositOutPoint)
 	if err != nil {
 		return err
 	}
@@ -302,7 +292,7 @@ func WithdrawDaoExample() error {
 	}
 
 	// send transaction
-	hash, err := ckbClient.SendTransaction(context.Background(), txWithGroups.TxView)
+	hash, err := client.SendTransaction(context.Background(), txWithGroups.TxView)
 	if err != nil {
 		return err
 	}
@@ -318,29 +308,25 @@ func ClaimDaoExample() error {
 	}
 
 	network := types.NetworkTest
-	indexerClient, err := indexer.Dial("https://testnet.ckb.dev/indexer")
-	if err != nil {
-		return err
-	}
-	ckbClient, err := rpc.Dial("https://testnet.ckb.dev")
+	client, err := rpc.Dial("https://testnet.ckb.dev")
 	if err != nil {
 		return err
 	}
 
-	iterator, err := collector.NewLiveCellIteratorFromAddress(indexerClient, sender)
+	iterator, err := collector.NewLiveCellIteratorFromAddress(client, sender)
 	if err != nil {
 		return err
 	}
 
 	// build transaction
-	builder, err := builder.NewDaoTransactionBuilder(network, iterator, withdrawOutPoint, ckbClient)
+	builder, err := builder.NewDaoTransactionBuilder(network, iterator, withdrawOutPoint, client)
 	if err != nil {
 		return err
 	}
 	builder.FeeRate = 1000
 	builder.AddChangeOutputByAddress(sender)
 
-	claimInfo, err := handler.NewClaimInfo(ckbClient, withdrawOutPoint)
+	claimInfo, err := handler.NewClaimInfo(client, withdrawOutPoint)
 	if err != nil {
 		return err
 	}
@@ -357,7 +343,7 @@ func ClaimDaoExample() error {
 	}
 
 	// send transaction
-	hash, err := ckbClient.SendTransaction(context.Background(), txWithGroups.TxView)
+	hash, err := client.SendTransaction(context.Background(), txWithGroups.TxView)
 	if err != nil {
 		return err
 	}

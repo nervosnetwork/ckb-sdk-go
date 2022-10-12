@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/nervosnetwork/ckb-sdk-go/address"
 	"github.com/nervosnetwork/ckb-sdk-go/indexer"
+	"github.com/nervosnetwork/ckb-sdk-go/rpc"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 )
 
@@ -12,7 +13,7 @@ type CellIterator interface {
 	Next() *types.TransactionInput
 }
 
-func NewLiveCellIterator(client indexer.Client, key *indexer.SearchKey) CellIterator {
+func NewLiveCellIterator(client rpc.Client, key *indexer.SearchKey) CellIterator {
 	return &LiveCellIterator{
 		Client:      client,
 		SearchKey:   key,
@@ -24,7 +25,7 @@ func NewLiveCellIterator(client indexer.Client, key *indexer.SearchKey) CellIter
 	}
 }
 
-func NewLiveCellIteratorFromAddress(client indexer.Client, addr string) (CellIterator, error) {
+func NewLiveCellIteratorFromAddress(client rpc.Client, addr string) (CellIterator, error) {
 	a, err := address.Decode(addr)
 	if err != nil {
 		return nil, err
@@ -39,7 +40,7 @@ func NewLiveCellIteratorFromAddress(client indexer.Client, addr string) (CellIte
 }
 
 type LiveCellIterator struct {
-	Client      indexer.Client
+	Client      rpc.Client
 	SearchKey   *indexer.SearchKey
 	SearchOrder indexer.SearchOrder
 	Limit       uint64
