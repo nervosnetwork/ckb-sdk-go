@@ -50,7 +50,7 @@ func TestJsonTransaction(t *testing.T) {
     "tx_hash": "0xf9f01917312da067c235f790ba2d316cae884ce94f0131d7a3aee649dc1001c6",
     "tx_index": "0x8"
 }`)
-	var v Transaction
+	var v TxWithCell
 	json.Unmarshal(jsonText, &v)
 	assert.Equal(t, uint64(0x529381), v.BlockNumber)
 	assert.Equal(t, uint(0x0), v.IoIndex)

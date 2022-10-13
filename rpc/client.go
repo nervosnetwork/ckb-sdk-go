@@ -141,10 +141,10 @@ type Client interface {
 	GetCells(ctx context.Context, searchKey *indexer.SearchKey, order indexer.SearchOrder, limit uint64, afterCursor string) (*indexer.LiveCells, error)
 
 	// GetTransactions returns the transactions collection by the lock or type script.
-	GetTransactions(ctx context.Context, searchKey *indexer.SearchKey, order indexer.SearchOrder, limit uint64, afterCursor string) (*indexer.Transactions, error)
+	GetTransactions(ctx context.Context, searchKey *indexer.SearchKey, order indexer.SearchOrder, limit uint64, afterCursor string) (*indexer.TxsWithCell, error)
 
 	// GetTransactionsUngrouped returns the grouped transactions collection by the lock or type script.
-	GetTransactionsUngrouped(ctx context.Context, searchKey *indexer.SearchKey, order indexer.SearchOrder, limit uint64, afterCursor string) (*indexer.TransactionsWithCells, error)
+	GetTransactionsUngrouped(ctx context.Context, searchKey *indexer.SearchKey, order indexer.SearchOrder, limit uint64, afterCursor string) (*indexer.TxsWithCells, error)
 
 	//GetTip returns the latest height processed by indexer
 	GetIndexerTip(ctx context.Context) (*indexer.TipHeader, error)
@@ -584,9 +584,9 @@ func (cli *client) GetCells(ctx context.Context, searchKey *indexer.SearchKey, o
 	return &result, err
 }
 
-func (cli *client) GetTransactions(ctx context.Context, searchKey *indexer.SearchKey, order indexer.SearchOrder, limit uint64, afterCursor string) (*indexer.Transactions, error) {
+func (cli *client) GetTransactions(ctx context.Context, searchKey *indexer.SearchKey, order indexer.SearchOrder, limit uint64, afterCursor string) (*indexer.TxsWithCell, error) {
 	var (
-		result indexer.Transactions
+		result indexer.TxsWithCell
 		err    error
 	)
 	if afterCursor == "" {
@@ -600,7 +600,7 @@ func (cli *client) GetTransactions(ctx context.Context, searchKey *indexer.Searc
 	return &result, err
 }
 
-func (cli *client) GetTransactionsUngrouped(ctx context.Context, searchKey *indexer.SearchKey, order indexer.SearchOrder, limit uint64, afterCursor string) (*indexer.TransactionsWithCells, error) {
+func (cli *client) GetTransactionsUngrouped(ctx context.Context, searchKey *indexer.SearchKey, order indexer.SearchOrder, limit uint64, afterCursor string) (*indexer.TxsWithCells, error) {
 	payload := &struct {
 		indexer.SearchKey
 		GroupByTransaction bool `json:"group_by_transaction"`
@@ -608,7 +608,7 @@ func (cli *client) GetTransactionsUngrouped(ctx context.Context, searchKey *inde
 		SearchKey:          *searchKey,
 		GroupByTransaction: true,
 	}
-	var result indexer.TransactionsWithCells
+	var result indexer.TxsWithCells
 	var err error
 	if afterCursor == "" {
 		err = cli.c.CallContext(ctx, &result, "get_transactions", payload, order, hexutil.Uint64(limit))

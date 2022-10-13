@@ -64,12 +64,12 @@ type jsonTransaction struct {
 	TxIndex     hexutil.Uint   `json:"tx_index"`
 }
 
-func (r *Transaction) UnmarshalJSON(input []byte) error {
+func (r *TxWithCell) UnmarshalJSON(input []byte) error {
 	var jsonObj jsonTransaction
 	if err := json.Unmarshal(input, &jsonObj); err != nil {
 		return err
 	}
-	*r = Transaction{
+	*r = TxWithCell{
 		BlockNumber: uint64(jsonObj.BlockNumber),
 		IoIndex:     uint(jsonObj.IoIndex),
 		IoType:      jsonObj.IoType,
@@ -86,12 +86,12 @@ type jsonTransactionWithCells struct {
 	Cells       [][]string     `json:"Cells"`
 }
 
-func (r *TransactionWithCells) UnmarshalJSON(input []byte) error {
+func (r *TxWithCells) UnmarshalJSON(input []byte) error {
 	var jsonObj jsonTransactionWithCells
 	if err := json.Unmarshal(input, &jsonObj); err != nil {
 		return err
 	}
-	*r = TransactionWithCells{
+	*r = TxWithCells{
 		BlockNumber: uint64(jsonObj.BlockNumber),
 		TxHash:      jsonObj.TxHash,
 		TxIndex:     uint(jsonObj.TxIndex),
