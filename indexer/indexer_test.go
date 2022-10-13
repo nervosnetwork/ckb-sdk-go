@@ -78,7 +78,7 @@ func TestGetTransactions(t *testing.T) {
 	assert.NotEqual(t, "", resp.Objects[0].IoType)
 }
 
-func TestGetTransactionsUngrouped(t *testing.T) {
+func TestGetTransactionsGrouped(t *testing.T) {
 	s := &SearchKey{
 		Script: &types.Script{
 			CodeHash: types.HexToHash("0x58c5f491aba6d61678b7cf7edf4910b1f5e00ec0cde2f42e0abb4fd9aff25a63"),
@@ -87,7 +87,7 @@ func TestGetTransactionsUngrouped(t *testing.T) {
 		},
 		ScriptType: types.ScriptTypeLock,
 	}
-	resp, err := c.GetTransactionsUngrouped(context.Background(), s, SearchOrderAsc, 10, "")
+	resp, err := c.GetTransactionsGrouped(context.Background(), s, SearchOrderAsc, 10, "")
 	checkError(t, err)
 	assert.Equal(t, 10, len(resp.Objects))
 	assert.NotEqual(t, 0, resp.Objects[0].BlockNumber)
