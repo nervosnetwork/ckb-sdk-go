@@ -56,7 +56,7 @@ func (r *LiveCell) UnmarshalJSON(input []byte) error {
 	return nil
 }
 
-type jsonTransaction struct {
+type jsonTxWithCell struct {
 	BlockNumber hexutil.Uint64 `json:"block_number"`
 	IoIndex     hexutil.Uint   `json:"io_index"`
 	IoType      IoType         `json:"io_type"`
@@ -65,7 +65,7 @@ type jsonTransaction struct {
 }
 
 func (r *TxWithCell) UnmarshalJSON(input []byte) error {
-	var jsonObj jsonTransaction
+	var jsonObj jsonTxWithCell
 	if err := json.Unmarshal(input, &jsonObj); err != nil {
 		return err
 	}
@@ -79,7 +79,7 @@ func (r *TxWithCell) UnmarshalJSON(input []byte) error {
 	return nil
 }
 
-type jsonTransactionWithCells struct {
+type jsonTxWithCells struct {
 	TxHash      types.Hash     `json:"tx_hash"`
 	BlockNumber hexutil.Uint64 `json:"block_number"`
 	TxIndex     hexutil.Uint   `json:"tx_index"`
@@ -87,7 +87,7 @@ type jsonTransactionWithCells struct {
 }
 
 func (r *TxWithCells) UnmarshalJSON(input []byte) error {
-	var jsonObj jsonTransactionWithCells
+	var jsonObj jsonTxWithCells
 	if err := json.Unmarshal(input, &jsonObj); err != nil {
 		return err
 	}
