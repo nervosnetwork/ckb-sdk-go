@@ -143,6 +143,9 @@ type Client interface {
 	// GetTransactions returns the transactions collection by the lock or type script.
 	GetTransactions(ctx context.Context, searchKey *indexer.SearchKey, order indexer.SearchOrder, limit uint64, afterCursor string) (*indexer.Transactions, error)
 
+	// GetTransactionsUngrouped returns the grouped transactions collection by the lock or type script.
+	GetTransactionsUngrouped(ctx context.Context, searchKey *indexer.SearchKey, order indexer.SearchOrder, limit uint64, afterCursor string) (*indexer.TransactionsWithCells, error)
+
 	//GetTip returns the latest height processed by indexer
 	GetIndexerTip(ctx context.Context) (*indexer.TipHeader, error)
 
@@ -590,6 +593,27 @@ func (cli *client) GetTransactions(ctx context.Context, searchKey *indexer.Searc
 		err = cli.c.CallContext(ctx, &result, "get_transactions", searchKey, order, hexutil.Uint64(limit))
 	} else {
 		err = cli.c.CallContext(ctx, &result, "get_transactions", searchKey, order, hexutil.Uint64(limit), afterCursor)
+	}
+	if err != nil {
+		return nil, err
+	}
+	return &result, err
+}
+
+func (cli *client) GetTransactionsUngrouped(ctx context.Context, searchKey *indexer.SearchKey, order indexer.SearchOrder, limit uint64, afterCursor string) (*indexer.TransactionsWithCells, error) {
+	payload := &struct {
+		indexer.SearchKey
+		GroupByTransaction bool `json:"group_by_transaction"`
+	}{
+		SearchKey:          *searchKey,
+		GroupByTransaction: true,
+	}
+	var result indexer.TransactionsWithCells
+	var err error
+	if afterCursor == "" {
+		err = cli.c.CallContext(ctx, &result, "get_transactions", payload, order, hexutil.Uint64(limit))
+	} else {
+		err = cli.c.CallContext(ctx, &result, "get_transactions", payload, order, hexutil.Uint64(limit), afterCursor)
 	}
 	if err != nil {
 		return nil, err

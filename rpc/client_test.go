@@ -345,3 +345,21 @@ func TestGetTransactions(t *testing.T) {
 	assert.NotEqual(t, 0, resp.Objects[0].BlockNumber)
 	assert.NotEqual(t, "", resp.Objects[0].IoType)
 }
+
+func TestGetTransactionsUngrouped(t *testing.T) {
+	s := &indexer.SearchKey{
+		Script: &types.Script{
+			CodeHash: types.HexToHash("0x58c5f491aba6d61678b7cf7edf4910b1f5e00ec0cde2f42e0abb4fd9aff25a63"),
+			HashType: types.HashTypeType,
+			Args:     ethcommon.FromHex("0xe53f35ccf63bb37a3bb0ac3b7f89808077a78eae"),
+		},
+		ScriptType: types.ScriptTypeLock,
+	}
+	resp, err := testClient.GetTransactionsUngrouped(context.Background(), s, indexer.SearchOrderAsc, 10, "")
+	assert.NoError(t, err)
+	assert.Equal(t, 10, len(resp.Objects))
+	assert.NotEqual(t, 0, resp.Objects[0].BlockNumber)
+	assert.NotEmpty(t, resp.Objects[0].Cells[0])
+	assert.NotEmpty(t, resp.Objects[0].Cells[0].IoType)
+	assert.NotEmpty(t, resp.Objects[0].Cells[0].IoIndex)
+}
