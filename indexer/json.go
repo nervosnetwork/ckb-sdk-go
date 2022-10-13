@@ -83,7 +83,7 @@ type jsonTransactionWithCells struct {
 	TxHash      types.Hash     `json:"tx_hash"`
 	BlockNumber hexutil.Uint64 `json:"block_number"`
 	TxIndex     hexutil.Uint   `json:"tx_index"`
-	Cells       []Cell         `json:"Cells"`
+	Cells       []*Cell        `json:"Cells"`
 }
 
 func (r *TxWithCells) UnmarshalJSON(input []byte) error {

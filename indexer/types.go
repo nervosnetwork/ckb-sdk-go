@@ -55,7 +55,7 @@ type TxWithCells struct {
 	TxHash      types.Hash `json:"tx_hash"`
 	BlockNumber uint64     `json:"block_number"`
 	TxIndex     uint       `json:"tx_index"`
-	Cells       []Cell     `json:"Cells"`
+	Cells       []*Cell    `json:"Cells"`
 }
 
 type Cell struct {
