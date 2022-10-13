@@ -16,11 +16,10 @@ const (
 )
 
 type SearchKey struct {
-	Script             *types.Script    `json:"script"`
-	ScriptType         types.ScriptType `json:"script_type"`
-	Filter             *Filter          `json:"filter,omitempty"`
-	WithData           bool             `json:"with_data"`
-	GroupByTransaction bool             `json:"group_by_transaction"`
+	Script     *types.Script    `json:"script"`
+	ScriptType types.ScriptType `json:"script_type"`
+	Filter     *Filter          `json:"filter,omitempty"`
+	WithData   bool             `json:"with_data"`
 }
 
 type Filter struct {
@@ -52,9 +51,26 @@ type Transaction struct {
 	TxIndex     uint       `json:"tx_index"`
 }
 
+type TransactionWithCells struct {
+	TxHash      types.Hash `json:"tx_hash"`
+	BlockNumber uint64     `json:"block_number"`
+	TxIndex     uint       `json:"tx_index"`
+	Cells       []Cell     `json:"Cells"`
+}
+
+type Cell struct {
+	IoType  IoType `json:"io_type"`
+	IoIndex uint   `json:"io_index"`
+}
+
 type Transactions struct {
 	LastCursor string         `json:"last_cursor"`
 	Objects    []*Transaction `json:"objects"`
+}
+
+type TransactionsWithCells struct {
+	LastCursor string                  `json:"last_cursor"`
+	Objects    []*TransactionWithCells `json:"objects"`
 }
 
 type TipHeader struct {

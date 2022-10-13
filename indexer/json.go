@@ -79,6 +79,37 @@ func (r *Transaction) UnmarshalJSON(input []byte) error {
 	return nil
 }
 
+type jsonTransactionWithCells struct {
+	TxHash      types.Hash     `json:"tx_hash"`
+	BlockNumber hexutil.Uint64 `json:"block_number"`
+	TxIndex     hexutil.Uint   `json:"tx_index"`
+	Cells       [][]string     `json:"Cells"`
+}
+
+func (r *TransactionWithCells) UnmarshalJSON(input []byte) error {
+	var jsonObj jsonTransactionWithCells
+	if err := json.Unmarshal(input, &jsonObj); err != nil {
+		return err
+	}
+	*r = TransactionWithCells{
+		BlockNumber: uint64(jsonObj.BlockNumber),
+		TxHash:      jsonObj.TxHash,
+		TxIndex:     uint(jsonObj.TxIndex),
+	}
+	for _, cell := range jsonObj.Cells {
+		var ioIndex hexutil.Uint
+		if err := json.Unmarshal([]byte("\""+cell[1]+"\""), &ioIndex); err != nil {
+			return err
+		}
+		c := Cell{
+			IoType:  IoType(cell[0]),
+			IoIndex: uint(ioIndex),
+		}
+		r.Cells = append(r.Cells, c)
+	}
+	return nil
+}
+
 func (r *Capacity) UnmarshalJSON(input []byte) error {
 	var jsonObj struct {
 		Capacity    hexutil.Uint64 `json:"capacity"`
