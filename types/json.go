@@ -323,8 +323,8 @@ type jsonRationalU256 struct {
 }
 
 type jsonHardForkFeature struct {
-	Rfc         string         `json:"rfc"`
-	EpochNumber hexutil.Uint64 `json:"epoch_number,omitempty"`
+	Rfc         string          `json:"rfc"`
+	EpochNumber *hexutil.Uint64 `json:"epoch_number,omitempty"`
 }
 
 type consensusAlias Consensus
@@ -362,7 +362,7 @@ func (r *Consensus) UnmarshalJSON(input []byte) error {
 		for i, data := range a {
 			result[i] = &HardForkFeature{
 				Rfc:         data.Rfc,
-				EpochNumber: uint64(data.EpochNumber),
+				EpochNumber: (*uint64)(data.EpochNumber),
 			}
 		}
 		return result
@@ -496,17 +496,13 @@ func (r *PeerSyncState) UnmarshalJSON(input []byte) error {
 		return err
 	}
 	*r = PeerSyncState{
-		BestKnownHeaderHash:   jsonObj.BestKnownHeaderHash,
-		LastCommonHeaderHash:  jsonObj.LastCommonHeaderHash,
-		UnknownHeaderListSize: uint64(jsonObj.UnknownHeaderListSize),
-		InflightCount:         uint64(jsonObj.InflightCount),
-		CanFetchCount:         uint64(jsonObj.CanFetchCount),
-	}
-	if jsonObj.BestKnownHeaderNumber != nil {
-		r.BestKnownHeaderNumber = uint64(*jsonObj.BestKnownHeaderNumber)
-	}
-	if jsonObj.LastCommonHeaderNumber != nil {
-		r.LastCommonHeaderNumber = uint64(*jsonObj.LastCommonHeaderNumber)
+		BestKnownHeaderHash:    jsonObj.BestKnownHeaderHash,
+		BestKnownHeaderNumber:  (*uint64)(jsonObj.BestKnownHeaderNumber),
+		LastCommonHeaderHash:   jsonObj.LastCommonHeaderHash,
+		LastCommonHeaderNumber: (*uint64)(jsonObj.LastCommonHeaderNumber),
+		UnknownHeaderListSize:  uint64(jsonObj.UnknownHeaderListSize),
+		InflightCount:          uint64(jsonObj.InflightCount),
+		CanFetchCount:          uint64(jsonObj.CanFetchCount),
 	}
 	return nil
 }
@@ -542,11 +538,9 @@ func (r *RemoteNode) UnmarshalJSON(input []byte) error {
 		Addresses:         jsonObj.Addresses,
 		IsOutbound:        jsonObj.IsOutbound,
 		ConnectedDuration: uint64(jsonObj.ConnectedDuration),
+		LastPingDuration:  (*uint64)(jsonObj.LastPingDuration),
 		SyncState:         jsonObj.SyncState,
 		Protocols:         jsonObj.Protocols,
-	}
-	if jsonObj.LastPingDuration != nil {
-		r.LastPingDuration = uint64(*jsonObj.LastPingDuration)
 	}
 	return nil
 }

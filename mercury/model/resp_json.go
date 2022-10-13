@@ -141,10 +141,10 @@ func (r *PaginationResponseTransactionWithRichStatus) UnmarshalJSON(input []byte
 		Response: jsonObj.Response,
 	}
 	if jsonObj.Count != nil {
-		r.Count = uint64(*jsonObj.Count)
+		r.Count = (*uint64)(jsonObj.Count)
 	}
 	if jsonObj.NextCursor != nil {
-		r.NextCursor = uint64(*jsonObj.NextCursor)
+		r.NextCursor = (*uint64)(jsonObj.NextCursor)
 	}
 	return nil
 }
@@ -162,10 +162,10 @@ func (r *PaginationResponseTransactionInfo) UnmarshalJSON(input []byte) error {
 		Response: jsonObj.Response,
 	}
 	if jsonObj.Count != nil {
-		r.Count = uint64(*jsonObj.Count)
+		r.Count = (*uint64)(jsonObj.Count)
 	}
 	if jsonObj.NextCursor != nil {
-		r.NextCursor = uint64(*jsonObj.NextCursor)
+		r.NextCursor = (*uint64)(jsonObj.NextCursor)
 	}
 	return nil
 }
@@ -191,7 +191,7 @@ func (r *TxRichStatus) UnmarshalJSON(input []byte) error {
 	type txRichStatusAlias TxRichStatus
 	var jsonObj struct {
 		txRichStatusAlias
-		Timestamp hexutil.Uint64 `json:"timestamp,omitempty"`
+		Timestamp *hexutil.Uint64 `json:"timestamp,omitempty"`
 	}
 	if err := json.Unmarshal(input, &jsonObj); err != nil {
 		return err
@@ -200,7 +200,7 @@ func (r *TxRichStatus) UnmarshalJSON(input []byte) error {
 		Status:    jsonObj.Status,
 		BlockHash: jsonObj.BlockHash,
 		Reason:    jsonObj.Reason,
-		Timestamp: uint64(jsonObj.Timestamp),
+		Timestamp: (*uint64)(jsonObj.Timestamp),
 	}
 	return nil
 }

@@ -13,7 +13,10 @@ type Client interface {
 	GetCells(ctx context.Context, searchKey *SearchKey, order SearchOrder, limit uint64, afterCursor string) (*LiveCells, error)
 
 	// GetTransactions returns the transactions collection by the lock or type script.
-	GetTransactions(ctx context.Context, searchKey *SearchKey, order SearchOrder, limit uint64, afterCursor string) (*Transactions, error)
+	GetTransactions(ctx context.Context, searchKey *SearchKey, order SearchOrder, limit uint64, afterCursor string) (*TxsWithCell, error)
+
+	// GetTransactionsGrouped returns the grouped transactions collection by the lock or type script.
+	GetTransactionsGrouped(ctx context.Context, searchKey *SearchKey, order SearchOrder, limit uint64, afterCursor string) (*TxsWithCells, error)
 
 	//GetTip returns the latest height processed by indexer
 	GetTip(ctx context.Context) (*TipHeader, error)
@@ -63,13 +66,34 @@ func (cli *client) GetCells(ctx context.Context, searchKey *SearchKey, order Sea
 	return &result, err
 }
 
-func (cli *client) GetTransactions(ctx context.Context, searchKey *SearchKey, order SearchOrder, limit uint64, afterCursor string) (*Transactions, error) {
-	var result Transactions
+func (cli *client) GetTransactions(ctx context.Context, searchKey *SearchKey, order SearchOrder, limit uint64, afterCursor string) (*TxsWithCell, error) {
+	var result TxsWithCell
 	var err error
 	if afterCursor == "" {
 		err = cli.c.CallContext(ctx, &result, "get_transactions", searchKey, order, hexutil.Uint64(limit))
 	} else {
 		err = cli.c.CallContext(ctx, &result, "get_transactions", searchKey, order, hexutil.Uint64(limit), afterCursor)
+	}
+	if err != nil {
+		return nil, err
+	}
+	return &result, err
+}
+
+func (cli *client) GetTransactionsGrouped(ctx context.Context, searchKey *SearchKey, order SearchOrder, limit uint64, afterCursor string) (*TxsWithCells, error) {
+	payload := &struct {
+		SearchKey
+		GroupByTransaction bool `json:"group_by_transaction"`
+	}{
+		SearchKey:          *searchKey,
+		GroupByTransaction: true,
+	}
+	var result TxsWithCells
+	var err error
+	if afterCursor == "" {
+		err = cli.c.CallContext(ctx, &result, "get_transactions", payload, order, hexutil.Uint64(limit))
+	} else {
+		err = cli.c.CallContext(ctx, &result, "get_transactions", payload, order, hexutil.Uint64(limit), afterCursor)
 	}
 	if err != nil {
 		return nil, err

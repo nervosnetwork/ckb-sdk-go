@@ -2,14 +2,14 @@ package collector
 
 import (
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/nervosnetwork/ckb-sdk-go/indexer"
+	"github.com/nervosnetwork/ckb-sdk-go/rpc"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 func TestLiveCellIterator(t *testing.T) {
-	client, err := indexer.Dial("https://testnet.ckb.dev/indexer")
+	client, err := rpc.Dial("https://testnet.ckb.dev")
 	if err != nil {
 		t.Error(err)
 	}

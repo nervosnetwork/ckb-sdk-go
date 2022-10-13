@@ -118,9 +118,6 @@ type Client interface {
 	// SendTransaction send new transaction into transaction pool.
 	SendTransaction(ctx context.Context, tx *types.Transaction) (*types.Hash, error)
 
-	// SendTransactionNoneValidation send new transaction into transaction pool skipping outputs validation.
-	SendTransactionNoneValidation(ctx context.Context, tx *types.Transaction) (*types.Hash, error)
-
 	// TxPoolInfo return the transaction pool information
 	TxPoolInfo(ctx context.Context) (*types.TxPoolInfo, error)
 
@@ -140,27 +137,29 @@ type Client interface {
 	// Batch Live cells
 	BatchLiveCells(ctx context.Context, batch []types.BatchLiveCellItem) error
 
-	///// ckb-indexer
-	//GetTip returns the latest height processed by indexer
-	GetTip(ctx context.Context) (*indexer.TipHeader, error)
-
-	//GetCellsCapacity returns the live cells capacity by the lock or type script.
-	GetCellsCapacity(ctx context.Context, searchKey *indexer.SearchKey) (*indexer.Capacity, error)
-
 	// GetCells returns the live cells collection by the lock or type script.
 	GetCells(ctx context.Context, searchKey *indexer.SearchKey, order indexer.SearchOrder, limit uint64, afterCursor string) (*indexer.LiveCells, error)
 
 	// GetTransactions returns the transactions collection by the lock or type script.
-	GetTransactions(ctx context.Context, searchKey *indexer.SearchKey, order indexer.SearchOrder, limit uint64, afterCursor string) (*indexer.Transactions, error)
+	GetTransactions(ctx context.Context, searchKey *indexer.SearchKey, order indexer.SearchOrder, limit uint64, afterCursor string) (*indexer.TxsWithCell, error)
+
+	// GetTransactionsGrouped returns the grouped transactions collection by the lock or type script.
+	GetTransactionsGrouped(ctx context.Context, searchKey *indexer.SearchKey, order indexer.SearchOrder, limit uint64, afterCursor string) (*indexer.TxsWithCells, error)
+
+	//GetTip returns the latest height processed by indexer
+	GetIndexerTip(ctx context.Context) (*indexer.TipHeader, error)
+
+	//GetCellsCapacity returns the live cells capacity by the lock or type script.
+	GetCellsCapacity(ctx context.Context, searchKey *indexer.SearchKey) (*indexer.Capacity, error)
 
 	// Close close client
 	Close()
 
 	CallContext(ctx context.Context, result interface{}, method string, args ...interface{}) error
 }
+
 type client struct {
-	c       *rpc.Client
-	indexer indexer.Client
+	c *rpc.Client
 }
 
 func (cli *client) CallContext(ctx context.Context, result interface{}, method string, args ...interface{}) error {
@@ -183,28 +182,8 @@ func DialContext(ctx context.Context, url string) (Client, error) {
 	return NewClient(c), nil
 }
 
-func DialWithIndexer(ckbUrl string, indexerUrl string) (Client, error) {
-	return DialWithIndexerContext(context.Background(), ckbUrl, indexerUrl)
-}
-
-func DialWithIndexerContext(ctx context.Context, ckbUrl string, indexerUrl string) (Client, error) {
-	ckb, err := rpc.DialContext(ctx, ckbUrl)
-	if err != nil {
-		return nil, err
-	}
-	index, err := indexer.DialContext(ctx, indexerUrl)
-	if err != nil {
-		return nil, err
-	}
-	return NewClientWithIndexer(ckb, index), nil
-}
-
 func NewClient(c *rpc.Client) Client {
-	return &client{c, nil}
-}
-
-func NewClientWithIndexer(c *rpc.Client, indexer indexer.Client) Client {
-	return &client{c, indexer}
+	return &client{c}
 }
 
 func (cli *client) Close() {
@@ -483,18 +462,6 @@ func (cli *client) SendTransaction(ctx context.Context, tx *types.Transaction) (
 	return &result, err
 }
 
-// TODO: remove?
-func (cli *client) SendTransactionNoneValidation(ctx context.Context, tx *types.Transaction) (*types.Hash, error) {
-	var result types.Hash
-
-	err := cli.c.CallContext(ctx, &result, "send_transaction", *tx, "passthrough")
-	if err != nil {
-		return nil, err
-	}
-
-	return &result, err
-}
-
 func (cli *client) TxPoolInfo(ctx context.Context) (*types.TxPoolInfo, error) {
 	var result types.TxPoolInfo
 	err := cli.c.CallContext(ctx, &result, "tx_pool_info")
@@ -583,32 +550,75 @@ func (cli *client) BatchLiveCells(ctx context.Context, batch []types.BatchLiveCe
 	return nil
 }
 
-func (cli *client) GetTip(ctx context.Context) (*indexer.TipHeader, error) {
-	if cli.indexer == nil {
-		return nil, errors.New("please set indexer client")
+func (cli *client) GetIndexerTip(ctx context.Context) (*indexer.TipHeader, error) {
+	var result indexer.TipHeader
+	err := cli.c.CallContext(ctx, &result, "get_indexer_tip")
+	if err != nil {
+		return nil, err
 	}
-	return cli.indexer.GetTip(ctx)
+	return &result, nil
 }
 
 func (cli *client) GetCellsCapacity(ctx context.Context, searchKey *indexer.SearchKey) (*indexer.Capacity, error) {
-	if cli.indexer == nil {
-		return nil, errors.New("please set indexer client")
+	var result indexer.Capacity
+	err := cli.c.CallContext(ctx, &result, "get_cells_capacity", searchKey)
+	if err != nil {
+		return nil, err
 	}
-	return cli.indexer.GetCellsCapacity(ctx, searchKey)
+	return &result, nil
 }
 
 func (cli *client) GetCells(ctx context.Context, searchKey *indexer.SearchKey, order indexer.SearchOrder, limit uint64, afterCursor string) (*indexer.LiveCells, error) {
-	if cli.indexer == nil {
-		return nil, errors.New("please set indexer client")
+	var (
+		result indexer.LiveCells
+		err    error
+	)
+	if afterCursor == "" {
+		err = cli.c.CallContext(ctx, &result, "get_cells", searchKey, order, hexutil.Uint64(limit))
+	} else {
+		err = cli.c.CallContext(ctx, &result, "get_cells", searchKey, order, hexutil.Uint64(limit), afterCursor)
 	}
-	return cli.indexer.GetCells(ctx, searchKey, order, limit, afterCursor)
+	if err != nil {
+		return nil, err
+	}
+	return &result, err
 }
 
-func (cli *client) GetTransactions(ctx context.Context, searchKey *indexer.SearchKey, order indexer.SearchOrder, limit uint64, afterCursor string) (*indexer.Transactions, error) {
-	if cli.indexer == nil {
-		return nil, errors.New("please set indexer client")
+func (cli *client) GetTransactions(ctx context.Context, searchKey *indexer.SearchKey, order indexer.SearchOrder, limit uint64, afterCursor string) (*indexer.TxsWithCell, error) {
+	var (
+		result indexer.TxsWithCell
+		err    error
+	)
+	if afterCursor == "" {
+		err = cli.c.CallContext(ctx, &result, "get_transactions", searchKey, order, hexutil.Uint64(limit))
+	} else {
+		err = cli.c.CallContext(ctx, &result, "get_transactions", searchKey, order, hexutil.Uint64(limit), afterCursor)
 	}
-	return cli.indexer.GetTransactions(ctx, searchKey, order, limit, afterCursor)
+	if err != nil {
+		return nil, err
+	}
+	return &result, err
+}
+
+func (cli *client) GetTransactionsGrouped(ctx context.Context, searchKey *indexer.SearchKey, order indexer.SearchOrder, limit uint64, afterCursor string) (*indexer.TxsWithCells, error) {
+	payload := &struct {
+		indexer.SearchKey
+		GroupByTransaction bool `json:"group_by_transaction"`
+	}{
+		SearchKey:          *searchKey,
+		GroupByTransaction: true,
+	}
+	var result indexer.TxsWithCells
+	var err error
+	if afterCursor == "" {
+		err = cli.c.CallContext(ctx, &result, "get_transactions", payload, order, hexutil.Uint64(limit))
+	} else {
+		err = cli.c.CallContext(ctx, &result, "get_transactions", payload, order, hexutil.Uint64(limit), afterCursor)
+	}
+	if err != nil {
+		return nil, err
+	}
+	return &result, err
 }
 
 func (cli *client) GetBlockEconomicState(ctx context.Context, blockHash types.Hash) (*types.BlockEconomicState, error) {

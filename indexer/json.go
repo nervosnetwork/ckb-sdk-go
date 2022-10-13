@@ -56,7 +56,7 @@ func (r *LiveCell) UnmarshalJSON(input []byte) error {
 	return nil
 }
 
-type jsonTransaction struct {
+type jsonTxWithCell struct {
 	BlockNumber hexutil.Uint64 `json:"block_number"`
 	IoIndex     hexutil.Uint   `json:"io_index"`
 	IoType      IoType         `json:"io_type"`
@@ -64,17 +64,54 @@ type jsonTransaction struct {
 	TxIndex     hexutil.Uint   `json:"tx_index"`
 }
 
-func (r *Transaction) UnmarshalJSON(input []byte) error {
-	var jsonObj jsonTransaction
+func (r *TxWithCell) UnmarshalJSON(input []byte) error {
+	var jsonObj jsonTxWithCell
 	if err := json.Unmarshal(input, &jsonObj); err != nil {
 		return err
 	}
-	*r = Transaction{
+	*r = TxWithCell{
 		BlockNumber: uint64(jsonObj.BlockNumber),
 		IoIndex:     uint(jsonObj.IoIndex),
 		IoType:      jsonObj.IoType,
 		TxHash:      jsonObj.TxHash,
 		TxIndex:     uint(jsonObj.TxIndex),
+	}
+	return nil
+}
+
+type jsonTxWithCells struct {
+	TxHash      types.Hash     `json:"tx_hash"`
+	BlockNumber hexutil.Uint64 `json:"block_number"`
+	TxIndex     hexutil.Uint   `json:"tx_index"`
+	Cells       []*Cell        `json:"Cells"`
+}
+
+func (r *TxWithCells) UnmarshalJSON(input []byte) error {
+	var jsonObj jsonTxWithCells
+	if err := json.Unmarshal(input, &jsonObj); err != nil {
+		return err
+	}
+	*r = TxWithCells{
+		BlockNumber: uint64(jsonObj.BlockNumber),
+		TxHash:      jsonObj.TxHash,
+		TxIndex:     uint(jsonObj.TxIndex),
+		Cells:       jsonObj.Cells,
+	}
+	return nil
+}
+
+func (r *Cell) UnmarshalJSON(input []byte) error {
+	var jsonObj struct {
+		IoType  IoType       `json:"io_type"`
+		IoIndex hexutil.Uint `json:"io_index"`
+	}
+	tmp := []interface{}{&jsonObj.IoType, &jsonObj.IoIndex}
+	if err := json.Unmarshal(input, &tmp); err != nil {
+		return err
+	}
+	*r = Cell{
+		IoType:  jsonObj.IoType,
+		IoIndex: uint(jsonObj.IoIndex),
 	}
 	return nil
 }

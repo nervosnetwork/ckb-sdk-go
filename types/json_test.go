@@ -156,7 +156,8 @@ func TestJsonTransactionWithStatus(t *testing.T) {
     },
     "tx_status": {
         "block_hash": "0xe1ed2d2282aad742a95abe51c21d50b1c19e194f21fbd1ed2516f82bd042579a",
-        "status": "committed"
+        "status": "committed",
+        "reason": null
     }
 }`)
 	var v TransactionWithStatus
@@ -322,9 +323,9 @@ func TestJsonConsensus(t *testing.T) {
 	json.Unmarshal(jsonText, &v)
 	assert.Equal(t, "ckb_testnet", v.Id)
 	assert.Equal(t, HexToHash("0x10639e0895502b5688a6be8cf69460d76541bfa4821629d86d62ba0aae3f9606"), v.GenesisHash)
-	assert.Equal(t, HexToHash("0x82d76d1b75fe2fd9a27dfbaa65a039221a380d76c926f378d3f81cf3e7e13f2e"), v.DaoTypeHash)
-	assert.Equal(t, HexToHash("0x9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8"), v.Secp256k1Blake160SighashAllTypeHash)
-	assert.Equal(t, HexToHash("0x5c5069eb0857efc65e1bca0c07df34c31663b3622fd3876c876320fc9634e2a8"), v.Secp256k1Blake160MultisigAllTypeHash)
+	assert.Equal(t, HexToHash("0x82d76d1b75fe2fd9a27dfbaa65a039221a380d76c926f378d3f81cf3e7e13f2e"), *v.DaoTypeHash)
+	assert.Equal(t, HexToHash("0x9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8"), *v.Secp256k1Blake160SighashAllTypeHash)
+	assert.Equal(t, HexToHash("0x5c5069eb0857efc65e1bca0c07df34c31663b3622fd3876c876320fc9634e2a8"), *v.Secp256k1Blake160MultisigAllTypeHash)
 	assert.Equal(t, uint64(0xae6c73c3e070), v.InitialPrimaryEpochReward)
 	assert.Equal(t, uint64(0x37d0c8e28542), v.SecondaryEpochReward)
 	assert.Equal(t, uint64(0x2), v.MaxUnclesNum)
@@ -494,17 +495,17 @@ func TestJsonRemoteNode(t *testing.T) {
 	assert.Equal(t, "/ip4/47.74.66.72/tcp/8111/p2p/QmPhgweKm2ciYq52LjtEDmKFqHxGcg2WQ8RLCayRRycanD", v.Addresses[0].Address)
 	assert.Equal(t, uint64(0x64), v.Addresses[0].Score)
 	assert.Equal(t, uint64(0x909ae7b6), v.ConnectedDuration)
-	assert.Equal(t, uint64(0x1a0), v.LastPingDuration)
+	assert.Equal(t, uint64(0x1a0), *v.LastPingDuration)
 	assert.Equal(t, "QmPhgweKm2ciYq52LjtEDmKFqHxGcg2WQ8RLCayRRycanD", v.NodeID)
 	assert.Equal(t, 8, len(v.Protocols))
 	assert.Equal(t, uint64(0x67), v.Protocols[2].ID)
 	assert.Equal(t, "2", v.Protocols[2].Version)
 	assert.Equal(t, HexToHash("0x1201e4a20d3cddc682173f892bea13127d6de3e00719a038d16a660968be067e"), *v.SyncState.BestKnownHeaderHash)
-	assert.Equal(t, uint64(0x583019), v.SyncState.BestKnownHeaderNumber)
+	assert.Equal(t, uint64(0x583019), *v.SyncState.BestKnownHeaderNumber)
 	assert.Equal(t, uint64(0x10), v.SyncState.CanFetchCount)
 	assert.Equal(t, uint64(0x0), v.SyncState.InflightCount)
 	assert.Equal(t, HexToHash("0x1201e4a20d3cddc682173f892bea13127d6de3e00719a038d16a660968be067e"), *v.SyncState.LastCommonHeaderHash)
-	assert.Equal(t, uint64(0x583019), v.SyncState.LastCommonHeaderNumber)
+	assert.Equal(t, uint64(0x583019), *v.SyncState.LastCommonHeaderNumber)
 	assert.Equal(t, uint64(0x0), v.SyncState.UnknownHeaderListSize)
 	jsonText = []byte(`
 {

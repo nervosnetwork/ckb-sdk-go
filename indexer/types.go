@@ -43,7 +43,7 @@ type LiveCells struct {
 	Objects    []*LiveCell `json:"objects"`
 }
 
-type Transaction struct {
+type TxWithCell struct {
 	BlockNumber uint64     `json:"block_number"`
 	IoIndex     uint       `json:"io_index"`
 	IoType      IoType     `json:"io_type"`
@@ -51,9 +51,26 @@ type Transaction struct {
 	TxIndex     uint       `json:"tx_index"`
 }
 
-type Transactions struct {
+type TxWithCells struct {
+	TxHash      types.Hash `json:"tx_hash"`
+	BlockNumber uint64     `json:"block_number"`
+	TxIndex     uint       `json:"tx_index"`
+	Cells       []*Cell    `json:"Cells"`
+}
+
+type Cell struct {
+	IoType  IoType `json:"io_type"`
+	IoIndex uint   `json:"io_index"`
+}
+
+type TxsWithCell struct {
+	LastCursor string        `json:"last_cursor"`
+	Objects    []*TxWithCell `json:"objects"`
+}
+
+type TxsWithCells struct {
 	LastCursor string         `json:"last_cursor"`
-	Objects    []*Transaction `json:"objects"`
+	Objects    []*TxWithCells `json:"objects"`
 }
 
 type TipHeader struct {

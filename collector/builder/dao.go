@@ -51,7 +51,7 @@ func NewDaoTransactionBuilder(network types.Network, iterator collector.CellIter
 		if err != nil {
 			return nil, err
 		}
-		header, err := client.GetHeader(context.Background(), txWithStatus.TxStatus.BlockHash)
+		header, err := client.GetHeader(context.Background(), *txWithStatus.TxStatus.BlockHash)
 		if err != nil {
 			return nil, err
 		}
@@ -117,7 +117,7 @@ func getDaoReward(withdrawOutPoint *types.OutPoint, client rpc.Client) (uint64, 
 		if handler.IsDepositCell(output, data) {
 			depositCell = output
 			depositCellData = data
-			depositBlockHash = txWithStatus.TxStatus.BlockHash
+			depositBlockHash = *txWithStatus.TxStatus.BlockHash
 			break
 		}
 	}
@@ -128,7 +128,7 @@ func getDaoReward(withdrawOutPoint *types.OutPoint, client rpc.Client) (uint64, 
 	if err != nil {
 		return 0, err
 	}
-	withdrawBlockHeader, err := client.GetHeader(context.Background(), withdrawBlockHash)
+	withdrawBlockHeader, err := client.GetHeader(context.Background(), *withdrawBlockHash)
 	if err != nil {
 		return 0, err
 	}
