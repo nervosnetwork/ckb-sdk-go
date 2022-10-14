@@ -41,9 +41,10 @@ type GetAccountInfoPayload struct {
 }
 
 type GetBalancePayload struct {
-	AssetInfos     []*AssetInfo `json:"asset_infos"`
-	TipBlockNumber uint64       `json:"tip_block_number,omitempty"`
-	Item           *Item        `json:"item"`
+	AssetInfos     []*AssetInfo     `json:"asset_infos"`
+	TipBlockNumber uint64           `json:"tip_block_number,omitempty"`
+	Item           *Item            `json:"item"`
+	Extra          *ExtraFilterType `json:"extra,omitempty"`
 }
 
 type GetBlockInfoPayload struct {
