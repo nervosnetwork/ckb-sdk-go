@@ -6,6 +6,7 @@ import (
 	"github.com/nervosnetwork/ckb-sdk-go/indexer"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 	"github.com/stretchr/testify/assert"
+	"os"
 	"testing"
 )
 
@@ -18,7 +19,15 @@ var scriptForTest = &types.Script{
 	Args:     ethcommon.FromHex("0x4049ed9cec8a0d39c7a1e899f0dacb8a8c28ad14"),
 }
 
+// Remove when we have light client node
+func skipCI(t *testing.T) {
+	if os.Getenv("CI") != "" {
+		t.Skip("Skipping as we do not have light client node")
+	}
+}
+
 func TestSetScripts(t *testing.T) {
+	skipCI(t)
 	scriptDetail := ScriptDetail{
 		// ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq2qf8keemy2p5uu0g0gn8cd4ju23s5269qk8rg4r
 		Script:      scriptForTest,
@@ -30,6 +39,7 @@ func TestSetScripts(t *testing.T) {
 }
 
 func TestGetScripts(t *testing.T) {
+	skipCI(t)
 	scriptDetails, err := c.GetScripts(ctx)
 	assert.NoError(t, err)
 	assert.NotEmpty(t, scriptDetails)
@@ -38,12 +48,14 @@ func TestGetScripts(t *testing.T) {
 }
 
 func TestTipHeader(t *testing.T) {
+	skipCI(t)
 	header, err := c.GetTipHeader(ctx)
 	assert.NoError(t, err)
 	assert.NotEmpty(t, header)
 }
 
 func TestGetGenesisBlock(t *testing.T) {
+	skipCI(t)
 	block, err := c.GetGenesisBlock(ctx)
 	assert.NoError(t, err)
 	assert.NotEmpty(t, block)
@@ -52,6 +64,7 @@ func TestGetGenesisBlock(t *testing.T) {
 }
 
 func TestGetHeader(t *testing.T) {
+	skipCI(t)
 	header, err := c.GetHeader(ctx,
 		types.HexToHash("0xc78c65185c14e1b02d6457a06b4678bab7e15f194f49a840319b57c67d20053c"))
 	assert.NoError(t, err)
@@ -59,6 +72,7 @@ func TestGetHeader(t *testing.T) {
 }
 
 func TestGetTransaction(t *testing.T) {
+	skipCI(t)
 	txWitHeader, err := c.GetTransaction(ctx,
 		types.HexToHash("0x151d4d450c9e3bccf4b47d1ba6942d4e9c8c0eeeb7b9f708df827c164f035aa8"))
 	assert.NoError(t, err)
@@ -67,6 +81,7 @@ func TestGetTransaction(t *testing.T) {
 }
 
 func TestFetchHeader(t *testing.T) {
+	skipCI(t)
 	fetchedHeader, err := c.FetchHeader(ctx,
 		types.HexToHash("0xe3cca69c9d00064b3bd5fa49d3f5b47d0653fb241b1996e6968b0100f10b56e3"))
 	assert.NoError(t, err)
@@ -74,6 +89,7 @@ func TestFetchHeader(t *testing.T) {
 }
 
 func TestFetchTransaction(t *testing.T) {
+	skipCI(t)
 	fetchedTransaction, err := c.FetchTransaction(ctx,
 		types.HexToHash("0x716e211698d3d9499aae7903867c744b67b539beeceddad330e73d1b6b617aef"))
 	assert.NoError(t, err)
@@ -81,6 +97,7 @@ func TestFetchTransaction(t *testing.T) {
 }
 
 func TestGetCells(t *testing.T) {
+	skipCI(t)
 	s := &indexer.SearchKey{
 		Script:     scriptForTest,
 		ScriptType: types.ScriptTypeLock,
@@ -94,6 +111,7 @@ func TestGetCells(t *testing.T) {
 }
 
 func TestGetTransactions(t *testing.T) {
+	skipCI(t)
 	s := &indexer.SearchKey{
 		Script:     scriptForTest,
 		ScriptType: types.ScriptTypeLock,
@@ -106,6 +124,7 @@ func TestGetTransactions(t *testing.T) {
 }
 
 func TestGetCellsCapacity(t *testing.T) {
+	skipCI(t)
 	s := &indexer.SearchKey{
 		Script:     scriptForTest,
 		ScriptType: types.ScriptTypeLock,
