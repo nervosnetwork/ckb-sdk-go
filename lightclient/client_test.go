@@ -123,6 +123,20 @@ func TestGetTransactions(t *testing.T) {
 	assert.NotEmpty(t, resp.Objects[0].IoType)
 }
 
+func TestGetTransactionsGrouped(t *testing.T) {
+	skipCI(t)
+	s := &indexer.SearchKey{
+		Script:     scriptForTest,
+		ScriptType: types.ScriptTypeLock,
+	}
+	resp, err := c.GetTransactionsGrouped(context.Background(), s, indexer.SearchOrderAsc, 10, "")
+	assert.NoError(t, err)
+	assert.NotEqual(t, 0, len(resp.Objects))
+	assert.NotEqual(t, 0, resp.Objects[0].BlockNumber)
+	assert.NotEmpty(t, resp.Objects[0].Cells[0])
+	assert.NotEmpty(t, resp.Objects[0].Cells[0].IoType)
+}
+
 func TestGetCellsCapacity(t *testing.T) {
 	skipCI(t)
 	s := &indexer.SearchKey{
