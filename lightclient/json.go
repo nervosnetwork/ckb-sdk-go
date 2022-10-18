@@ -3,6 +3,7 @@ package lightclient
 import (
 	"encoding/json"
 	"github.com/ethereum/go-ethereum/common/hexutil"
+	"github.com/nervosnetwork/ckb-sdk-go/indexer"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 )
 
@@ -67,6 +68,50 @@ func (r *FetchedTransaction) UnmarshalJSON(input []byte) error {
 		Data:      jsonObj.Data,
 		FirstSent: uint64(jsonObj.FirstSent),
 		TimeStamp: uint64(jsonObj.TimeStamp),
+	}
+	return nil
+}
+
+type jsonTxWithCell struct {
+	BlockNumber hexutil.Uint64     `json:"block_number"`
+	IoIndex     hexutil.Uint       `json:"io_index"`
+	IoType      indexer.IoType     `json:"io_type"`
+	Transaction *types.Transaction `json:"transaction"`
+	TxIndex     hexutil.Uint       `json:"tx_index"`
+}
+
+func (r *TxWithCell) UnmarshalJSON(input []byte) error {
+	var jsonObj jsonTxWithCell
+	if err := json.Unmarshal(input, &jsonObj); err != nil {
+		return err
+	}
+	*r = TxWithCell{
+		BlockNumber: uint64(jsonObj.BlockNumber),
+		IoIndex:     uint(jsonObj.IoIndex),
+		IoType:      jsonObj.IoType,
+		Transaction: jsonObj.Transaction,
+		TxIndex:     uint(jsonObj.TxIndex),
+	}
+	return nil
+}
+
+type jsonTxWithCells struct {
+	Transaction *types.Transaction `json:"transaction"`
+	BlockNumber hexutil.Uint64     `json:"block_number"`
+	TxIndex     hexutil.Uint       `json:"tx_index"`
+	Cells       []*indexer.Cell    `json:"Cells"`
+}
+
+func (r *TxWithCells) UnmarshalJSON(input []byte) error {
+	var jsonObj jsonTxWithCells
+	if err := json.Unmarshal(input, &jsonObj); err != nil {
+		return err
+	}
+	*r = TxWithCells{
+		BlockNumber: uint64(jsonObj.BlockNumber),
+		Transaction: jsonObj.Transaction,
+		TxIndex:     uint(jsonObj.TxIndex),
+		Cells:       jsonObj.Cells,
 	}
 	return nil
 }

@@ -121,6 +121,7 @@ func TestGetTransactions(t *testing.T) {
 	assert.NotEmpty(t, resp)
 	assert.NotEmpty(t, resp.Objects[0].BlockNumber)
 	assert.NotEmpty(t, resp.Objects[0].IoType)
+	assert.NotEmpty(t, resp.Objects[0].Transaction)
 }
 
 func TestGetTransactionsGrouped(t *testing.T) {
@@ -133,6 +134,7 @@ func TestGetTransactionsGrouped(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotEqual(t, 0, len(resp.Objects))
 	assert.NotEqual(t, 0, resp.Objects[0].BlockNumber)
+	assert.NotEqual(t, 0, resp.Objects[0].Transaction)
 	assert.NotEmpty(t, resp.Objects[0].Cells[0])
 	assert.NotEmpty(t, resp.Objects[0].Cells[0].IoType)
 }

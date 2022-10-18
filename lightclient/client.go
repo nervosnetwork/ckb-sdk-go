@@ -19,8 +19,8 @@ type Client interface {
 	FetchHeader(ctx context.Context, hash types.Hash) (*FetchedHeader, error)
 	FetchTransaction(ctx context.Context, hash types.Hash) (*FetchedTransaction, error)
 	GetCells(ctx context.Context, searchKey *indexer.SearchKey, order indexer.SearchOrder, limit uint64, afterCursor string) (*indexer.LiveCells, error)
-	GetTransactions(ctx context.Context, searchKey *indexer.SearchKey, order indexer.SearchOrder, limit uint64, afterCursor string) (*indexer.TxsWithCell, error)
-	GetTransactionsGrouped(ctx context.Context, searchKey *indexer.SearchKey, order indexer.SearchOrder, limit uint64, afterCursor string) (*indexer.TxsWithCells, error)
+	GetTransactions(ctx context.Context, searchKey *indexer.SearchKey, order indexer.SearchOrder, limit uint64, afterCursor string) (*TxsWithCell, error)
+	GetTransactionsGrouped(ctx context.Context, searchKey *indexer.SearchKey, order indexer.SearchOrder, limit uint64, afterCursor string) (*TxsWithCells, error)
 	GetCellsCapacity(ctx context.Context, searchKey *indexer.SearchKey) (*indexer.Capacity, error)
 	CallContext(ctx context.Context, result interface{}, method string, args ...interface{}) error
 	Close()
@@ -124,9 +124,9 @@ func (cli *client) GetCells(ctx context.Context, searchKey *indexer.SearchKey, o
 
 }
 
-func (cli *client) GetTransactions(ctx context.Context, searchKey *indexer.SearchKey, order indexer.SearchOrder, limit uint64, afterCursor string) (*indexer.TxsWithCell, error) {
+func (cli *client) GetTransactions(ctx context.Context, searchKey *indexer.SearchKey, order indexer.SearchOrder, limit uint64, afterCursor string) (*TxsWithCell, error) {
 	var (
-		result indexer.TxsWithCell
+		result TxsWithCell
 		err    error
 	)
 	if afterCursor == "" {
@@ -140,7 +140,7 @@ func (cli *client) GetTransactions(ctx context.Context, searchKey *indexer.Searc
 	return &result, err
 }
 
-func (cli *client) GetTransactionsGrouped(ctx context.Context, searchKey *indexer.SearchKey, order indexer.SearchOrder, limit uint64, afterCursor string) (*indexer.TxsWithCells, error) {
+func (cli *client) GetTransactionsGrouped(ctx context.Context, searchKey *indexer.SearchKey, order indexer.SearchOrder, limit uint64, afterCursor string) (*TxsWithCells, error) {
 	payload := &struct {
 		indexer.SearchKey
 		GroupByTransaction bool `json:"group_by_transaction"`
@@ -148,7 +148,7 @@ func (cli *client) GetTransactionsGrouped(ctx context.Context, searchKey *indexe
 		SearchKey:          *searchKey,
 		GroupByTransaction: true,
 	}
-	var result indexer.TxsWithCells
+	var result TxsWithCells
 	var err error
 	if afterCursor == "" {
 		err = cli.c.CallContext(ctx, &result, "get_transactions", payload, order, hexutil.Uint64(limit))
