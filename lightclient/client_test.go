@@ -83,9 +83,10 @@ func TestGetTransaction(t *testing.T) {
 func TestFetchHeader(t *testing.T) {
 	skipCI(t)
 	fetchedHeader, err := c.FetchHeader(ctx,
-		types.HexToHash("0xe3cca69c9d00064b3bd5fa49d3f5b47d0653fb241b1996e6968b0100f10b56e3"))
+		types.HexToHash("0xcb5eae958e3ea24b0486a393133aa33d51224ffaab3c4819350095b3446e4f70"))
 	assert.NoError(t, err)
 	assert.NotEmpty(t, fetchedHeader.Status)
+	assert.NotEmpty(t, *fetchedHeader.Data)
 }
 
 func TestFetchTransaction(t *testing.T) {
