@@ -1,0 +1,25 @@
+// https://github.com/nervosnetwork/ckb-production-scripts/blob/master/c/omni_lock.mol
+// https://github.com/nervosnetwork/ckb-production-scripts/blob/master/c/xudt_rce.mol
+
+vector Bytes <byte>;
+option BytesOpt (Bytes);
+vector SmtProof <byte>;
+table SmtProofEntry {
+    mask: byte,
+    proof: SmtProof,
+}
+array Auth[byte; 21];
+vector SmtProofEntryVec <SmtProofEntry>;
+
+table Identity {
+    identity: Auth,
+    proofs: SmtProofEntryVec,
+}
+option IdentityOpt (Identity);
+
+// the data structure used in lock field of witness
+table OmniLockWitnessLock {
+    signature: BytesOpt,
+    omni_identity: IdentityOpt,
+    preimage: BytesOpt,
+}
