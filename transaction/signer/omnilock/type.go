@@ -10,7 +10,7 @@ import (
 type AuthFlag byte
 
 const (
-	AUthFlagCKBSecp256k1Blake160 AuthFlag = 0x0
+	AuthFlagCKBSecp256k1Blake160 AuthFlag = 0x0
 	AuthFlagEthereum             AuthFlag = 0x1
 	AuthFlagEOS                  AuthFlag = 0x2
 	AuthFlagTRON                 AuthFlag = 0x3
