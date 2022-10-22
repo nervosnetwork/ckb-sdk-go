@@ -44,11 +44,18 @@ func UnpackAuth(v *molecule.Auth) *Auth {
 }
 
 func UnpackOmnilockWitnessLock(v *molecule.OmniLockWitnessLock) *OmnilockWitnessLock {
-	return &OmnilockWitnessLock{
-		Signature:        v.Signature().AsSlice(),
+	o := &OmnilockWitnessLock{
 		OmnilockIdentity: UnpackIdentityOpt(v.OmniIdentity()),
-		Preimage:         v.Preimage().AsSlice(),
 	}
+	if v.Signature().IsSome() {
+		b, _ := v.Signature().IntoBytes()
+		o.Signature = b.RawData()
+	}
+	if v.Preimage().IsSome() {
+		b, _ := v.Preimage().IntoBytes()
+		o.Preimage = b.RawData()
+	}
+	return o
 }
 
 func (o *OmnilockWitnessLock) Serialize() []byte {
