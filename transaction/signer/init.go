@@ -17,5 +17,7 @@ func init() {
 			systemscript.GetCodeHash(network, systemscript.AnyoneCanPay), &AnyCanPaySigner{})
 		instance.RegisterLockSigner(
 			systemscript.GetCodeHash(network, systemscript.PwLock), &PWLockSigner{})
+		instance.RegisterLockSigner(
+			systemscript.GetCodeHash(network, systemscript.Omnilock), &OmnilockSigner{})
 	}
 }
