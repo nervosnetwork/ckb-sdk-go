@@ -10,6 +10,7 @@ import (
 	"github.com/nervosnetwork/ckb-sdk-go/systemscript"
 	"github.com/nervosnetwork/ckb-sdk-go/transaction"
 	"github.com/nervosnetwork/ckb-sdk-go/transaction/signer"
+	"github.com/nervosnetwork/ckb-sdk-go/transaction/signer/omnilock"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 	"github.com/stretchr/testify/assert"
 	"os"
@@ -71,6 +72,10 @@ func TestAnyoneCanPaySigner(t *testing.T) {
 
 func TestPWLockSigner(t *testing.T) {
 	testSignAndCheck(t, "pw_one_group.json")
+}
+
+func TestOmnilockSigner(t *testing.T) {
+	testSignAndCheck(t, "omnilock_secp256k1_blake160_sighash_all.json")
 }
 
 func testSignAndCheck(t *testing.T, fileName string) {
@@ -147,6 +152,24 @@ func (r *signerChecker) UnmarshalJSON(input []byte) error {
 				m.AddKeyHash(common.FromHex(h.(string)))
 			}
 			ctx.Payload = m
+		}
+		if val, ok := context["omnilock_config"]; ok {
+			v := val.(map[string]interface{})
+			config := new(signer.OmnilockConfiguration)
+			args, err := omnilock.NewOmnilockArgsFromAgrs(hexutil.MustDecode(v["args"].(string)))
+			if err != nil {
+				return err
+			}
+			config.Args = args
+			switch v["mode"].(string) {
+			case "AUTH":
+				config.Mode = signer.OmnolockModeAuth
+			case "ADMINISTRATOR":
+				config.Mode = signer.OmnolockModeAdministrator
+			default:
+				return fmt.Errorf("unknown mode %s", v["mode"])
+			}
+			ctx.Payload = config
 		}
 		r.Contexts = append(r.Contexts, ctx)
 	}
