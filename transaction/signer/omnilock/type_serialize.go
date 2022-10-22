@@ -71,7 +71,9 @@ func (o *SmtProofEntry) Pack() *molecule.SmtProofEntry {
 
 func (o *OmnilockIdentity) PackOpt() *molecule.IdentityOpt {
 	builder := molecule.NewIdentityOptBuilder()
-	builder.Set(*o.Pack())
+	if o != nil {
+		builder.Set(*o.Pack())
+	}
 	b := builder.Build()
 	return &b
 }
