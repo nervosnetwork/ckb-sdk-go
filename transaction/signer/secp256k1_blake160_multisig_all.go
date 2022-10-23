@@ -7,7 +7,6 @@ import (
 	"github.com/nervosnetwork/ckb-sdk-go/systemscript"
 	"github.com/nervosnetwork/ckb-sdk-go/transaction"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
-	"reflect"
 )
 
 type Secp256k1Blake160MultisigAllSigner struct {
@@ -46,30 +45,33 @@ func MultiSignTransaction(tx *types.Transaction, group []int, key *secp256k1.Sec
 	if err != nil {
 		return false, err
 	}
-	if tx.Witnesses[i0], err = setSignatureToWitness(tx.Witnesses[i0], signature, config); err != nil {
+	witnessArgs, err := types.DeserializeWitnessArgs(tx.Witnesses[i0])
+	if err != nil {
 		return false, err
 	}
+	witnessArgs.Lock = setMultisigSignature(witnessArgs.Lock, signature, config)
 	return true, nil
 }
 
-func setSignatureToWitness(witness []byte, signature []byte, config *systemscript.MultisigConfig) ([]byte, error) {
-	witnessArgs, err := types.DeserializeWitnessArgs(witness)
-	if err != nil {
-		return nil, err
-	}
-	lock := witnessArgs.Lock
-	pos := len(config.Encode())
-	emptySignature := [65]byte{}
-	for i := 0; i < int(config.Threshold); i++ {
-		if reflect.DeepEqual(emptySignature[:], lock[pos:pos+65]) {
-			copy(lock[pos:pos+65], signature[:])
+func setMultisigSignature(signatures []byte, signature []byte, multisigConfig *systemscript.MultisigConfig) []byte {
+	offset := len(multisigConfig.Encode())
+	for i := 0; i < int(multisigConfig.Threshold); i++ {
+		if isEmptyByteSlice(signatures, offset, 65) {
+			copy(signatures[offset:offset+65], signature[:])
 			break
 		}
-		pos += 65
+		offset += 65
 	}
-	witnessArgs.Lock = lock
-	w := witnessArgs.Serialize()
-	return w, err
+	return signatures
+}
+
+func isEmptyByteSlice(lock []byte, offset int, length int) bool {
+	for i := offset; i < offset+length; i++ {
+		if lock[i] != 0 {
+			return false
+		}
+	}
+	return true
 }
 
 func IsMultiSigMatched(key *secp256k1.Secp256k1Key, config *systemscript.MultisigConfig, scriptArgs []byte) (bool, error) {

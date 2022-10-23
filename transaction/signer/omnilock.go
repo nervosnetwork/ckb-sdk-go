@@ -122,7 +122,7 @@ func signForAuthMode(tx *types.Transaction, group *transaction.ScriptGroup, key 
 			}
 			oldSignatures = o.Signature
 		}
-		omnilockWitnessLock.Signature = setSignatureToWitnessOmnilock(oldSignatures, signature, multisigConfig)
+		omnilockWitnessLock.Signature = setMultisigSignature(oldSignatures, signature, multisigConfig)
 	case omnilock.AuthFlagLockScriptHash:
 	case omnilock.AuthFlagExec:
 		return nil, fmt.Errorf("unsupported flag Exec")
@@ -136,27 +136,6 @@ func signForAuthMode(tx *types.Transaction, group *transaction.ScriptGroup, key 
 
 func signForAdministratorMode(tx *types.Transaction, group *transaction.ScriptGroup, key crypto.Key, config *OmnilockConfiguration) (*omnilock.OmnilockWitnessLock, error) {
 	return nil, nil
-}
-
-func isEmptyByteSlice(lock []byte, offset int, length int) bool {
-	for i := offset; i < offset+length; i++ {
-		if lock[i] != 0 {
-			return false
-		}
-	}
-	return true
-}
-
-func setSignatureToWitnessOmnilock(signatures []byte, signature []byte, multisigConfig *systemscript.MultisigConfig) []byte {
-	offset := len(multisigConfig.Encode())
-	for i := 0; i < int(multisigConfig.Threshold); i++ {
-		if isEmptyByteSlice(signatures, offset, 65) {
-			copy(signatures[offset:offset+65], signature[:])
-			break
-		}
-		offset += 65
-	}
-	return signatures
 }
 
 type OmnilockConfiguration struct {
