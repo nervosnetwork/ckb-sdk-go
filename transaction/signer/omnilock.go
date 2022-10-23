@@ -6,6 +6,7 @@ import (
 	"github.com/nervosnetwork/ckb-sdk-go/crypto"
 	"github.com/nervosnetwork/ckb-sdk-go/crypto/blake2b"
 	"github.com/nervosnetwork/ckb-sdk-go/crypto/secp256k1"
+	"github.com/nervosnetwork/ckb-sdk-go/systemscript"
 	"github.com/nervosnetwork/ckb-sdk-go/transaction"
 	"github.com/nervosnetwork/ckb-sdk-go/transaction/signer/omnilock"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
@@ -84,7 +85,44 @@ func signForAuthMode(tx *types.Transaction, group *transaction.ScriptGroup, key 
 	case omnilock.AuthFlagDogcoin:
 		return nil, fmt.Errorf("unsupported flag Dogecoin")
 	case omnilock.AuthFlagCKBMultiSig:
-		// TODO
+		multisigConfig := config.MultisigConfig
+		if multisigConfig == nil || !bytes.Equal(multisigConfig.Hash160(), authArgs) {
+			return nil, nil
+		}
+		inMultisigConfig := false
+		hash := blake2b.Blake160(key.(*secp256k1.Secp256k1Key).PubKey())
+		for _, keysHash := range multisigConfig.KeysHashes {
+			if bytes.Equal(hash, keysHash[:]) {
+				inMultisigConfig = true
+				break
+			}
+		}
+		if !inMultisigConfig {
+			return nil, nil
+		}
+
+		witnessArgsPlaceholder, err := types.DeserializeWitnessArgs(firstWitness)
+		if err != nil {
+			return nil, err
+		}
+		omnilockWitnessLock.Signature = multisigConfig.WitnessEmptyPlaceholderInLock()
+		witnessArgsPlaceholder.Lock = omnilockWitnessLock.SerializeAsPlaceholder()
+		witnessPlaceholder := witnessArgsPlaceholder.Serialize()
+
+		signature, err := SignTransaction(tx, uint32ArrayToIntArray(group.InputIndices), witnessPlaceholder, key)
+
+		lockBytes := witnessArgs.Lock
+		var oldSignatures []byte
+		if isEmptyByteSlice(lockBytes, 0, len(lockBytes)) {
+			oldSignatures = multisigConfig.WitnessPlaceholderInLock()
+		} else {
+			o, err := omnilock.DeserializeOmnilockWitnessLock(lockBytes)
+			if err != nil {
+				return nil, err
+			}
+			oldSignatures = o.Signature
+		}
+		omnilockWitnessLock.Signature = setSignatureToWitnessOmnilock(oldSignatures, signature, multisigConfig)
 	case omnilock.AuthFlagLockScriptHash:
 	case omnilock.AuthFlagExec:
 		return nil, fmt.Errorf("unsupported flag Exec")
@@ -100,9 +138,33 @@ func signForAdministratorMode(tx *types.Transaction, group *transaction.ScriptGr
 	return nil, nil
 }
 
+func isEmptyByteSlice(lock []byte, offset int, length int) bool {
+	for i := offset; i < offset+length; i++ {
+		if lock[i] != 0 {
+			return false
+		}
+	}
+	return true
+}
+
+func setSignatureToWitnessOmnilock(signatures []byte, signature []byte, multisigConfig *systemscript.MultisigConfig) []byte {
+	offset := len(multisigConfig.Encode())
+	for i := 0; i < int(multisigConfig.Threshold); i++ {
+		if isEmptyByteSlice(signatures, offset, 65) {
+			copy(signatures[offset:offset+65], signature[:])
+			break
+		}
+		offset += 65
+	}
+	return signatures
+}
+
 type OmnilockConfiguration struct {
-	Args *omnilock.OmnilockArgs
-	Mode OmnilockMode
+	Args             *omnilock.OmnilockArgs
+	Mode             OmnilockMode
+	MultisigConfig   *systemscript.MultisigConfig
+	AdminListCell    *types.CellDep
+	OmnilockIdentity *omnilock.OmnilockIdentity
 }
 
 type OmnilockMode uint

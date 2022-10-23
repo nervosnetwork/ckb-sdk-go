@@ -62,6 +62,10 @@ func (o *OmnilockWitnessLock) Serialize() []byte {
 	return o.Pack().AsSlice()
 }
 
+func (o *OmnilockWitnessLock) SerializeAsPlaceholder() []byte {
+	return make([]byte, len(o.Pack().AsSlice()))
+}
+
 func (o *SmtProofEntry) Pack() *molecule.SmtProofEntry {
 	proofBuilder := molecule.NewSmtProofBuilder()
 	for _, vv := range o.SmtProof {
