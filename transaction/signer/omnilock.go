@@ -135,7 +135,19 @@ func signForAuthMode(tx *types.Transaction, group *transaction.ScriptGroup, key 
 }
 
 func signForAdministratorMode(tx *types.Transaction, group *transaction.ScriptGroup, key crypto.Key, config *OmnilockConfiguration) (*omnilock.OmnilockWitnessLock, error) {
-	return nil, nil
+	var signature []byte = nil
+	switch config.OmnilockIdentity.Identity.Flag {
+	case omnilock.OmnilockFlagCKBSecp256k1Blake160:
+		return nil, fmt.Errorf("unsupported flag CKB_Secp256k1_Blake160")
+	case omnilock.OmnilockFlagLockScriptHash:
+		// Do nothing
+	default:
+		return nil, fmt.Errorf("unknown flag %d", config.OmnilockIdentity.Identity.Flag)
+	}
+	omnilockWitnessLock := new(omnilock.OmnilockWitnessLock)
+	omnilockWitnessLock.OmnilockIdentity = config.OmnilockIdentity
+	omnilockWitnessLock.Signature = signature
+	return omnilockWitnessLock, nil
 }
 
 type OmnilockConfiguration struct {
