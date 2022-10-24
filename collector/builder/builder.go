@@ -31,6 +31,7 @@ func NewSimpleTransactionBuilder(network types.Network) *SimpleTransactionBuilde
 		s.Register(handler.NewSecp256k1Blake160MultisigAllScriptHandler(network))
 		s.Register(handler.NewSudtScriptHandler(network))
 		s.Register(handler.NewDaoScriptHandler(network))
+		s.Register(handler.NewOmnilockScriptHandler(network))
 		return &s
 	} else {
 		return nil
