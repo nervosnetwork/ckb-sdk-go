@@ -419,7 +419,7 @@ func SendCkbOmnilockExample() error {
 		return err
 	}
 
-	// Prepare context for building and signing transaction
+	// prepare context for building and signing transaction
 	config := new(signer.OmnilockConfiguration)
 	if args, err := omnilock.NewOmnilockArgsFromAddress(sender); err != nil {
 		return err
@@ -450,7 +450,74 @@ func SendCkbOmnilockExample() error {
 		return err
 	}
 
-	//send transaction
+	// send transaction
+	hash, err := client.SendTransaction(context.Background(), txWithGroups.TxView)
+	if err != nil {
+		return err
+	}
+	fmt.Println("transaction hash: " + hexutil.Encode(hash.Bytes()))
+	return nil
+}
+
+func SendCkbMultisigOmnilockExample() error {
+	sender := "ckt1qrejnmlar3r452tcg57gvq8patctcgy8acync0hxfnyka35ywafvkqgxhjvp3k9pf88upngryvuxc346q7fq5qmlqqlrhr0p"
+	receiver := "ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq2qf8keemy2p5uu0g0gn8cd4ju23s5269qk8rg4r"
+
+	network := types.NetworkTest
+	client, err := rpc.Dial("https://testnet.ckb.dev")
+	if err != nil {
+		return err
+	}
+	iterator, err := collector.NewLiveCellIteratorFromAddress(client, sender)
+	if err != nil {
+		return err
+	}
+
+	// prepare context for building and signing transaction
+	config := new(signer.OmnilockConfiguration)
+	if args, err := omnilock.NewOmnilockArgsFromAddress(sender); err != nil {
+		return err
+	} else {
+		config.Args = args
+	}
+	config.Mode = signer.OmnolockModeAuth
+	multisigConfig := systemscript.NewMultisigConfig(0, 2)
+	multisigConfig.AddKeyHash(hexutil.MustDecode("0x7336b0ba900684cb3cb00f0d46d4f64c0994a562"))
+	multisigConfig.AddKeyHash(hexutil.MustDecode("0x5724c1e3925a5206944d753a6f3edaedf977d77f"))
+	config.MultisigConfig = multisigConfig
+
+	// build transaction
+	builder := builder.NewCkbTransactionBuilder(network, iterator)
+	builder.FeeRate = 1000
+	if err := builder.AddOutputByAddress(receiver, 50100000000); err != nil {
+		return err
+	}
+	builder.AddChangeOutputByAddress(sender)
+	txWithGroups, err := builder.Build(config)
+	if err != nil {
+		return err
+	}
+
+	// sign transaction
+	txSigner := signer.GetTransactionSignerInstance(network)
+	// first signature
+	ctx, err := transaction.NewContextWithPayload("0x7438f7b35c355e3d2fb9305167a31a72d22ddeafb80a21cc99ff6329d92e8087", config)
+	if err != nil {
+		return err
+	}
+	if _, err = txSigner.SignTransaction(txWithGroups, ctx); err != nil {
+		return err
+	}
+	// second signature
+	ctx, err = transaction.NewContextWithPayload("0x4fd809631a6aa6e3bb378dd65eae5d71df895a82c91a615a1e8264741515c79c", config)
+	if err != nil {
+		return err
+	}
+	if _, err = txSigner.SignTransaction(txWithGroups, ctx); err != nil {
+		return err
+	}
+
+	// send transaction
 	hash, err := client.SendTransaction(context.Background(), txWithGroups.TxView)
 	if err != nil {
 		return err
