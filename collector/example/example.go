@@ -13,6 +13,7 @@ import (
 	"github.com/nervosnetwork/ckb-sdk-go/systemscript"
 	"github.com/nervosnetwork/ckb-sdk-go/transaction"
 	"github.com/nervosnetwork/ckb-sdk-go/transaction/signer"
+	"github.com/nervosnetwork/ckb-sdk-go/transaction/signer/omnilock"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 	"math/big"
 )
@@ -396,6 +397,60 @@ func ClaimDaoExample() error {
 	}
 
 	// send transaction
+	hash, err := client.SendTransaction(context.Background(), txWithGroups.TxView)
+	if err != nil {
+		return err
+	}
+	fmt.Println("transaction hash: " + hexutil.Encode(hash.Bytes()))
+	return nil
+}
+
+func SendCkbOmnilockExample() error {
+	sender := "ckt1qrejnmlar3r452tcg57gvq8patctcgy8acync0hxfnyka35ywafvkqgqgpy7m88v3gxnn3apazvlpkkt32xz3tg5qq3kzjf3"
+	receiver := "ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq2qf8keemy2p5uu0g0gn8cd4ju23s5269qk8rg4r"
+
+	network := types.NetworkTest
+	client, err := rpc.Dial("https://testnet.ckb.dev")
+	if err != nil {
+		return err
+	}
+	iterator, err := collector.NewLiveCellIteratorFromAddress(client, sender)
+	if err != nil {
+		return err
+	}
+
+	// Prepare context for building and signing transaction
+	config := new(signer.OmnilockConfiguration)
+	if args, err := omnilock.NewOmnilockArgsFromAddress(sender); err != nil {
+		return err
+	} else {
+		config.Args = args
+	}
+	config.Mode = signer.OmnolockModeAuth
+
+	// build transaction
+	builder := builder.NewCkbTransactionBuilder(network, iterator)
+	builder.FeeRate = 1000
+	if err := builder.AddOutputByAddress(receiver, 50100000000); err != nil {
+		return err
+	}
+	builder.AddChangeOutputByAddress(sender)
+	txWithGroups, err := builder.Build(config)
+	if err != nil {
+		return err
+	}
+
+	// sign transaction
+	txSigner := signer.GetTransactionSignerInstance(network)
+	ctx, err := transaction.NewContextWithPayload("0x6c9ed03816e3111e49384b8d180174ad08e29feb1393ea1b51cef1c505d4e36a", config)
+	if err != nil {
+		return err
+	}
+	if _, err = txSigner.SignTransaction(txWithGroups, ctx); err != nil {
+		return err
+	}
+
+	//send transaction
 	hash, err := client.SendTransaction(context.Background(), txWithGroups.TxView)
 	if err != nil {
 		return err
