@@ -44,9 +44,9 @@ func (c *LightClientLiveCellGetter) GetCells(searchKey *indexer.SearchKey, order
 	return c.Client.GetCells(ctx, searchKey, order, limit, afterCursor)
 }
 
-func NewLiveCellIterator(client rpc.Client, key *indexer.SearchKey) CellIterator {
+func newLiveCellIterator(getter LiveCellsGetter, key *indexer.SearchKey) CellIterator {
 	return &LiveCellIterator{
-		LiveCellGetter: &CkbLiveCellGetter{Client: client},
+		LiveCellGetter: getter,
 		SearchKey:      key,
 		SearchOrder:    indexer.SearchOrderAsc,
 		Limit:          100,
@@ -54,46 +54,36 @@ func NewLiveCellIterator(client rpc.Client, key *indexer.SearchKey) CellIterator
 		cells:          nil,
 		index:          0,
 	}
+}
+
+func newLiveCellIteratorFromAddress(getter LiveCellsGetter, addr string) (CellIterator, error) {
+	a, err := address.Decode(addr)
+	if err != nil {
+		return nil, err
+	}
+	searchKey := &indexer.SearchKey{
+		Script:     a.Script,
+		ScriptType: types.ScriptTypeLock,
+		Filter:     nil,
+		WithData:   true,
+	}
+	return newLiveCellIterator(getter, searchKey), nil
+}
+
+func NewLiveCellIterator(client rpc.Client, key *indexer.SearchKey) CellIterator {
+	return newLiveCellIterator(&CkbLiveCellGetter{Client: client}, key)
 }
 
 func NewLiveCellIteratorFromAddress(client rpc.Client, addr string) (CellIterator, error) {
-	a, err := address.Decode(addr)
-	if err != nil {
-		return nil, err
-	}
-	searchKey := &indexer.SearchKey{
-		Script:     a.Script,
-		ScriptType: types.ScriptTypeLock,
-		Filter:     nil,
-		WithData:   true,
-	}
-	return NewLiveCellIterator(client, searchKey), nil
+	return newLiveCellIteratorFromAddress(&CkbLiveCellGetter{Client: client}, addr)
 }
 
 func NewLiveCellIteratorByLightClient(client lightclient.Client, key *indexer.SearchKey) CellIterator {
-	return &LiveCellIterator{
-		LiveCellGetter: &LightClientLiveCellGetter{Client: client},
-		SearchKey:      key,
-		SearchOrder:    indexer.SearchOrderAsc,
-		Limit:          100,
-		afterCursor:    "",
-		cells:          nil,
-		index:          0,
-	}
+	return newLiveCellIterator(&LightClientLiveCellGetter{Client: client}, key)
 }
 
 func NewLiveCellIteratorByLightClientFromAddress(client lightclient.Client, addr string) (CellIterator, error) {
-	a, err := address.Decode(addr)
-	if err != nil {
-		return nil, err
-	}
-	searchKey := &indexer.SearchKey{
-		Script:     a.Script,
-		ScriptType: types.ScriptTypeLock,
-		Filter:     nil,
-		WithData:   true,
-	}
-	return NewLiveCellIteratorByLightClient(client, searchKey), nil
+	return newLiveCellIteratorFromAddress(&LightClientLiveCellGetter{Client: client}, addr)
 }
 
 type LiveCellIterator struct {
