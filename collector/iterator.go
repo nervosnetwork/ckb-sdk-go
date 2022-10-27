@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/nervosnetwork/ckb-sdk-go/address"
 	"github.com/nervosnetwork/ckb-sdk-go/indexer"
+	"github.com/nervosnetwork/ckb-sdk-go/lightclient"
 	"github.com/nervosnetwork/ckb-sdk-go/rpc"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 )
@@ -13,19 +14,49 @@ type CellIterator interface {
 	Next() *types.TransactionInput
 }
 
-func NewLiveCellIterator(client rpc.Client, key *indexer.SearchKey) CellIterator {
+type LiveCellsGetter interface {
+	GetCells(searchKey *indexer.SearchKey, order indexer.SearchOrder, limit uint64, afterCursor string) (*indexer.LiveCells, error)
+}
+
+type CkbLiveCellGetter struct {
+	Client  rpc.Client
+	Context context.Context
+}
+
+func (c *CkbLiveCellGetter) GetCells(searchKey *indexer.SearchKey, order indexer.SearchOrder, limit uint64, afterCursor string) (*indexer.LiveCells, error) {
+	ctx := c.Context
+	if ctx == nil {
+		ctx = context.Background()
+	}
+	return c.Client.GetCells(ctx, searchKey, order, limit, afterCursor)
+}
+
+type LightClientLiveCellGetter struct {
+	Client  lightclient.Client
+	Context context.Context
+}
+
+func (c *LightClientLiveCellGetter) GetCells(searchKey *indexer.SearchKey, order indexer.SearchOrder, limit uint64, afterCursor string) (*indexer.LiveCells, error) {
+	ctx := c.Context
+	if ctx == nil {
+		ctx = context.Background()
+	}
+	return c.Client.GetCells(ctx, searchKey, order, limit, afterCursor)
+}
+
+func newLiveCellIterator(getter LiveCellsGetter, key *indexer.SearchKey) CellIterator {
 	return &LiveCellIterator{
-		Client:      client,
-		SearchKey:   key,
-		SearchOrder: indexer.SearchOrderAsc,
-		Limit:       100,
-		afterCursor: "",
-		cells:       nil,
-		index:       0,
+		LiveCellGetter: getter,
+		SearchKey:      key,
+		SearchOrder:    indexer.SearchOrderAsc,
+		Limit:          100,
+		afterCursor:    "",
+		cells:          nil,
+		index:          0,
 	}
 }
 
-func NewLiveCellIteratorFromAddress(client rpc.Client, addr string) (CellIterator, error) {
+func newLiveCellIteratorFromAddress(getter LiveCellsGetter, addr string) (CellIterator, error) {
 	a, err := address.Decode(addr)
 	if err != nil {
 		return nil, err
@@ -36,17 +67,33 @@ func NewLiveCellIteratorFromAddress(client rpc.Client, addr string) (CellIterato
 		Filter:     nil,
 		WithData:   true,
 	}
-	return NewLiveCellIterator(client, searchKey), nil
+	return newLiveCellIterator(getter, searchKey), nil
+}
+
+func NewLiveCellIterator(client rpc.Client, key *indexer.SearchKey) CellIterator {
+	return newLiveCellIterator(&CkbLiveCellGetter{Client: client}, key)
+}
+
+func NewLiveCellIteratorFromAddress(client rpc.Client, addr string) (CellIterator, error) {
+	return newLiveCellIteratorFromAddress(&CkbLiveCellGetter{Client: client}, addr)
+}
+
+func NewLiveCellIteratorByLightClient(client lightclient.Client, key *indexer.SearchKey) CellIterator {
+	return newLiveCellIterator(&LightClientLiveCellGetter{Client: client}, key)
+}
+
+func NewLiveCellIteratorByLightClientFromAddress(client lightclient.Client, addr string) (CellIterator, error) {
+	return newLiveCellIteratorFromAddress(&LightClientLiveCellGetter{Client: client}, addr)
 }
 
 type LiveCellIterator struct {
-	Client      rpc.Client
-	SearchKey   *indexer.SearchKey
-	SearchOrder indexer.SearchOrder
-	Limit       uint64
-	afterCursor string
-	cells       []*types.TransactionInput
-	index       int
+	LiveCellGetter LiveCellsGetter
+	SearchKey      *indexer.SearchKey
+	SearchOrder    indexer.SearchOrder
+	Limit          uint64
+	afterCursor    string
+	cells          []*types.TransactionInput
+	index          int
 }
 
 func (r *LiveCellIterator) HasNext() bool {
@@ -64,7 +111,7 @@ func (r *LiveCellIterator) update() bool {
 	if r.index >= 0 && r.index < len(r.cells) {
 		return false
 	}
-	liveCells, err := r.Client.GetCells(context.Background(), r.SearchKey, r.SearchOrder, r.Limit, r.afterCursor)
+	liveCells, err := r.LiveCellGetter.GetCells(r.SearchKey, r.SearchOrder, r.Limit, r.afterCursor)
 	if err != nil {
 		return false
 	}

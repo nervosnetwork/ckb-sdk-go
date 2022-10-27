@@ -8,6 +8,7 @@ import (
 	"github.com/nervosnetwork/ckb-sdk-go/collector"
 	"github.com/nervosnetwork/ckb-sdk-go/collector/builder"
 	"github.com/nervosnetwork/ckb-sdk-go/collector/handler"
+	"github.com/nervosnetwork/ckb-sdk-go/lightclient"
 	"github.com/nervosnetwork/ckb-sdk-go/rpc"
 	"github.com/nervosnetwork/ckb-sdk-go/systemscript"
 	"github.com/nervosnetwork/ckb-sdk-go/transaction"
@@ -50,6 +51,58 @@ func SendCkbExample() error {
 
 	// send transaction
 	hash, err := client.SendTransaction(context.Background(), txWithGroups.TxView)
+	if err != nil {
+		return err
+	}
+	fmt.Println("transaction hash: " + hexutil.Encode(hash.Bytes()))
+	return nil
+}
+
+func SendCkbByLightClientExample() error {
+	sender := "ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq2qf8keemy2p5uu0g0gn8cd4ju23s5269qk8rg4r"
+	receiver := "ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq2qf8keemy2p5uu0g0gn8cd4ju23s5269qk8rg4r"
+	network := types.NetworkTest
+	lightClient, err := lightclient.Dial("http://localhost:9000/")
+	if err != nil {
+		return err
+	}
+	senderAddress, err := address.Decode(sender)
+	if err != nil {
+		return err
+	}
+	senderScriptDetail := &lightclient.ScriptDetail{
+		Script:      senderAddress.Script,
+		ScriptType:  types.ScriptTypeLock,
+		BlockNumber: 0,
+	}
+	// Set script to let light client sync information about this script on chain.
+	lightClient.SetScripts(context.Background(), []*lightclient.ScriptDetail{senderScriptDetail})
+	iterator, err := collector.NewLiveCellIteratorByLightClientFromAddress(lightClient, sender)
+	if err != nil {
+		return err
+	}
+
+	// build transaction
+	builder := builder.NewCkbTransactionBuilder(network, iterator)
+	builder.FeeRate = 1000
+	if err := builder.AddOutputByAddress(receiver, 50100000000); err != nil {
+		return err
+	}
+	builder.AddChangeOutputByAddress(sender)
+	txWithGroups, err := builder.Build()
+	if err != nil {
+		return err
+	}
+
+	// sign transaction
+	txSigner := signer.GetTransactionSignerInstance(network)
+	_, err = txSigner.SignTransactionByPrivateKeys(txWithGroups, "0x6c9ed03816e3111e49384b8d180174ad08e29feb1393ea1b51cef1c505d4e36a")
+	if err != nil {
+		return err
+	}
+
+	// send transaction
+	hash, err := lightClient.SendTransaction(context.Background(), txWithGroups.TxView)
 	if err != nil {
 		return err
 	}
