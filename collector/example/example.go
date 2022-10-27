@@ -66,6 +66,17 @@ func SendCkbByLightClientExample() error {
 	if err != nil {
 		return err
 	}
+	senderAddress, err := address.Decode(sender)
+	if err != nil {
+		return err
+	}
+	senderScriptDetail := &lightclient.ScriptDetail{
+		Script:      senderAddress.Script,
+		ScriptType:  types.ScriptTypeLock,
+		BlockNumber: 0,
+	}
+	// Set script to let light client sync information about this script on chain.
+	lightClient.SetScripts(context.Background(), []*lightclient.ScriptDetail{senderScriptDetail})
 	iterator, err := collector.NewLiveCellIteratorByLightClientFromAddress(lightClient, sender)
 	if err != nil {
 		return err
