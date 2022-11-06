@@ -78,7 +78,10 @@ type Client interface {
 	// This method will not check the transaction validity,
 	// but only run the lock script and type script and then return the execution cycles.
 	// Used to debug transaction scripts and query how many cycles the scripts consume.
+	// Deprecated
 	DryRunTransaction(ctx context.Context, transaction *types.Transaction) (*types.DryRunTransactionResult, error)
+
+	EstimateCycles(ctx context.Context, transaction *types.Transaction) (*types.EstimateCycles, error)
 
 	// CalculateDaoMaximumWithdraw calculate the maximum withdraw one can get, given a referenced DAO cell, and a withdraw block hash.
 	CalculateDaoMaximumWithdraw(ctx context.Context, point *types.OutPoint, hash types.Hash) (uint64, error)
@@ -335,6 +338,16 @@ func (cli *client) GetForkBlock(ctx context.Context, blockHash types.Hash) (*typ
 func (cli *client) DryRunTransaction(ctx context.Context, transaction *types.Transaction) (*types.DryRunTransactionResult, error) {
 	var result types.DryRunTransactionResult
 	err := cli.c.CallContext(ctx, &result, "dry_run_transaction", *transaction)
+	if err != nil {
+		return nil, err
+	}
+
+	return &result, nil
+}
+
+func (cli *client) EstimateCycles(ctx context.Context, transaction *types.Transaction) (*types.EstimateCycles, error) {
+	var result types.EstimateCycles
+	err := cli.c.CallContext(ctx, &result, "estimate_cycles", *transaction)
 	if err != nil {
 		return nil, err
 	}

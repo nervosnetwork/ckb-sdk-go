@@ -281,3 +281,7 @@ type Proof struct {
 	Indices []uint `json:"indices"`
 	Lemmas  []Hash `json:"lemmas"`
 }
+
+type EstimateCycles struct {
+	Cycles uint64 `json:"cycles"`
+}
