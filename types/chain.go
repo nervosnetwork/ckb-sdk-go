@@ -23,6 +23,8 @@ const (
 	TransactionStatusCommitted TransactionStatus = "committed"
 	TransactionStatusUnknown   TransactionStatus = "unknown"
 	TransactionStatusRejected  TransactionStatus = "rejected"
+
+	DefaultBytesPerCycle float64 = 0.000_170_571_4
 )
 
 type Epoch struct {
@@ -136,6 +138,19 @@ func (t *Transaction) OutputsCapacity() (totalCapacity uint64) {
 
 func (t Transaction) CalculateFee(feeRate uint64) uint64 {
 	txSize := t.SizeInBlock()
+	fee := txSize * feeRate / 1000
+	if fee*1000 < txSize*feeRate {
+		fee += 1
+	}
+	return fee
+}
+
+func (t Transaction) CalculateFeeWithCycles(cycles uint64, feeRate uint64) uint64 {
+	txSize := t.SizeInBlock()
+	virtualBytes := uint64(float64(cycles) * DefaultBytesPerCycle)
+	if virtualBytes > txSize {
+		txSize = virtualBytes
+	}
 	fee := txSize * feeRate / 1000
 	if fee*1000 < txSize*feeRate {
 		fee += 1
