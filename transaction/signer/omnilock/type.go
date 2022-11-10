@@ -6,6 +6,7 @@ import (
 	"fmt"
 	addr "github.com/nervosnetwork/ckb-sdk-go/address"
 	"github.com/nervosnetwork/ckb-sdk-go/systemscript"
+	"github.com/nervosnetwork/ckb-sdk-go/types"
 )
 
 type AuthFlag byte
@@ -141,7 +142,10 @@ func NewOmnilockArgsFromAddress(address string) (*OmnilockArgs, error) {
 		return nil, err
 	}
 	if a.Script.CodeHash != systemscript.GetCodeHash(a.Network, systemscript.Omnilock) {
-		return nil, fmt.Errorf("not a omnilock address: %s", address)
+		return nil, fmt.Errorf("invalid omnilock code hash in address: %s", address)
+	}
+	if a.Script.HashType != types.HashTypeType {
+		return nil, fmt.Errorf("invalid hashType %s in address: %s", a.Script.HashType, address)
 	}
 	return NewOmnilockArgsFromAgrs(a.Script.Args)
 }
