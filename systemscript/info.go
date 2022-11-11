@@ -21,6 +21,7 @@ const (
 	Sudt
 	Cheque
 	PwLock
+	Omnilock
 )
 
 var mainnetContracts = make(map[SystemScript]*Info)
@@ -95,6 +96,15 @@ func initMainnetSystemScript() {
 		},
 		DepType: types.DepTypeCode,
 	}
+	mainnetContracts[Omnilock] = &Info{
+		CodeHash: types.HexToHash("0x9b819793a64463aed77c615d6cb226eea5487ccfc0783043a587254cda2b6f26"),
+		HashType: types.HashTypeType,
+		OutPoint: &types.OutPoint{
+			TxHash: types.HexToHash("0xdfdb40f5d229536915f2d5403c66047e162e25dedd70a79ef5164356e1facdc8"),
+			Index:  0,
+		},
+		DepType: types.DepTypeCode,
+	}
 }
 
 func initTestnetSystemScript() {
@@ -157,6 +167,15 @@ func initTestnetSystemScript() {
 		HashType: types.HashTypeType,
 		OutPoint: &types.OutPoint{
 			TxHash: types.HexToHash("0x57a62003daeab9d54aa29b944fc3b451213a5ebdf2e232216a3cfed0dde61b38"),
+			Index:  0,
+		},
+		DepType: types.DepTypeCode,
+	}
+	testnetContracts[Omnilock] = &Info{
+		CodeHash: types.HexToHash("0xf329effd1c475a2978453c8600e1eaf0bc2087ee093c3ee64cc96ec6847752cb"),
+		HashType: types.HashTypeType,
+		OutPoint: &types.OutPoint{
+			TxHash: types.HexToHash("0x27b62d8be8ed80b9f56ee0fe41355becdb6f6a40aeba82d3900434f43b1c8b60"),
 			Index:  0,
 		},
 		DepType: types.DepTypeCode,

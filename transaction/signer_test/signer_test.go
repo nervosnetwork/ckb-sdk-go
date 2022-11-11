@@ -10,6 +10,7 @@ import (
 	"github.com/nervosnetwork/ckb-sdk-go/systemscript"
 	"github.com/nervosnetwork/ckb-sdk-go/transaction"
 	"github.com/nervosnetwork/ckb-sdk-go/transaction/signer"
+	"github.com/nervosnetwork/ckb-sdk-go/transaction/signer/omnilock"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 	"github.com/stretchr/testify/assert"
 	"os"
@@ -71,6 +72,12 @@ func TestAnyoneCanPaySigner(t *testing.T) {
 
 func TestPWLockSigner(t *testing.T) {
 	testSignAndCheck(t, "pw_one_group.json")
+}
+
+func TestOmnilockSigner(t *testing.T) {
+	testSignAndCheck(t, "omnilock_secp256k1_blake160_sighash_all.json")
+	testSignAndCheck(t, "omnilock_secp256k1_blake160_multisig_all_first.json")
+	testSignAndCheck(t, "omnilock_secp256k1_blake160_multisig_all_second.json")
 }
 
 func testSignAndCheck(t *testing.T, fileName string) {
@@ -140,15 +147,39 @@ func (r *signerChecker) UnmarshalJSON(input []byte) error {
 			return errors.New("not find private_key")
 		}
 		if val, ok := context["multisig_script"]; ok {
+			ctx.Payload = unmarshalMultisigConfig(val.(map[string]interface{}))
+		}
+		if val, ok := context["omnilock_config"]; ok {
 			v := val.(map[string]interface{})
-			m := systemscript.NewMultisigConfig(byte(v["first_n"].(float64)),
-				byte(v["threshold"].(float64)))
-			for _, h := range v["key_hashes"].([]interface{}) {
-				m.AddKeyHash(common.FromHex(h.(string)))
+			config := new(signer.OmnilockConfiguration)
+			args, err := omnilock.NewOmnilockArgsFromAgrs(hexutil.MustDecode(v["args"].(string)))
+			if err != nil {
+				return err
 			}
-			ctx.Payload = m
+			config.Args = args
+			switch v["mode"].(string) {
+			case "AUTH":
+				config.Mode = signer.OmnolockModeAuth
+			case "ADMINISTRATOR":
+				config.Mode = signer.OmnolockModeAdministrator
+			default:
+				return fmt.Errorf("unknown mode %s", v["mode"])
+			}
+			if val, ok := v["multisig_script"]; ok {
+				config.MultisigConfig = unmarshalMultisigConfig(val.(map[string]interface{}))
+			}
+			ctx.Payload = config
 		}
 		r.Contexts = append(r.Contexts, ctx)
 	}
 	return nil
+}
+
+func unmarshalMultisigConfig(input map[string]interface{}) *systemscript.MultisigConfig {
+	config := systemscript.NewMultisigConfig(byte(input["first_n"].(float64)),
+		byte(input["threshold"].(float64)))
+	for _, h := range input["key_hashes"].([]interface{}) {
+		config.AddKeyHash(common.FromHex(h.(string)))
+	}
+	return config
 }

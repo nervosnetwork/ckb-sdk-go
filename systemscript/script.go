@@ -90,6 +90,10 @@ func (r *MultisigConfig) WitnessPlaceholderInLock() []byte {
 	return out
 }
 
+func (r *MultisigConfig) WitnessEmptyPlaceholderInLock() []byte {
+	return make([]byte, len(r.WitnessPlaceholderInLock()))
+}
+
 func (r *MultisigConfig) Hash160() []byte {
 	return blake2b.Blake160(r.Encode()[:])
 }
