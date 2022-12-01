@@ -8,26 +8,26 @@ import (
 
 type OffChainInputCollector struct {
 	Client            rpc.Client
-	blockNumberOffset int64
+	blockNumberOffset uint64
 	usedLiveCells     list.List
 	offChainLiveCells list.List
 }
 
 type OutPointWithBlockNumber struct {
 	*types.OutPoint
-	blockNumber int64
+	blockNumber uint64
 }
 
 type TransactionInputWithBlockNumber struct {
 	types.TransactionInput
-	blockNumber int64
+	blockNumber uint64
 }
 
-func (c *OffChainInputCollector) setBlockNumberOffset(blockNumberOffset int64) {
+func (c *OffChainInputCollector) setBlockNumberOffset(blockNumberOffset uint64) {
 	c.blockNumberOffset = blockNumberOffset
 }
 
-func (c *OffChainInputCollector) applyOffChainTransaction(tipBlockNumber int64, transaction types.Transaction) {
+func (c *OffChainInputCollector) applyOffChainTransaction(tipBlockNumber uint64, transaction types.Transaction) {
 	transactionHash := transaction.ComputeHash()
 	var next *list.Element
 	for o := c.usedLiveCells.Front(); o != nil; o = next {
