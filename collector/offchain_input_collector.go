@@ -32,7 +32,8 @@ func (c *OffChainInputCollector) applyOffChainTransaction(tipBlockNumber uint64,
 	var next *list.Element
 	for o := c.usedLiveCells.Front(); o != nil; o = next {
 		next = o.Next()
-		if tipBlockNumber >= o.Value.(OutPointWithBlockNumber).blockNumber && tipBlockNumber-o.Value.(OutPointWithBlockNumber).blockNumber <= c.blockNumberOffset {
+		blockNumber := o.Value.(OutPointWithBlockNumber).blockNumber
+		if tipBlockNumber >= blockNumber && tipBlockNumber-blockNumber <= c.blockNumberOffset {
 			// keeps
 		} else {
 			c.usedLiveCells.Remove(o)
@@ -59,13 +60,13 @@ func (c *OffChainInputCollector) applyOffChainTransaction(tipBlockNumber uint64,
 		}
 	}
 
-	for i, tx_output := range transaction.Outputs {
+	for i, txOutput := range transaction.Outputs {
 		c.offChainLiveCells.PushBack(TransactionInputWithBlockNumber{
 			TransactionInput: types.TransactionInput{
 				OutPoint: &types.OutPoint{
-					transactionHash, uint32(i),
+					TxHash: transactionHash, Index: uint32(i),
 				},
-				Output:     tx_output,
+				Output:     txOutput,
 				OutputData: transaction.OutputsData[i],
 			},
 			blockNumber: tipBlockNumber,
