@@ -34,7 +34,7 @@ func (c *OffChainInputCollector) setBlockNumberOffset(blockNumberOffset uint64) 
 	c.blockNumberOffset = blockNumberOffset
 }
 
-func (c *OffChainInputCollector) applyOffChainTransaction(tipBlockNumber uint64, transaction types.Transaction) {
+func (c *OffChainInputCollector) ApplyOffChainTransaction(tipBlockNumber uint64, transaction types.Transaction) {
 	transactionHash := transaction.ComputeHash()
 	var next *list.Element
 	for o := c.usedLiveCells.Front(); o != nil; o = next {

@@ -525,3 +525,101 @@ func SendCkbMultisigOmnilockExample() error {
 	fmt.Println("transaction hash: " + hexutil.Encode(hash.Bytes()))
 	return nil
 }
+
+func SendChainedTransactionExample() error {
+	address1 := "ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq2qf8keemy2p5uu0g0gn8cd4ju23s5269qk8rg4r"
+	address2 := "ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqdamwzrffgc54ef48493nfd2sd0h4cjnxg4850up"
+	address3 := "ckt1qrejnmlar3r452tcg57gvq8patctcgy8acync0hxfnyka35ywafvkqgxhjvp3k9pf88upngryvuxc346q7fq5qmlqqlrhr0p"
+
+	network := types.NetworkTest
+	client, err := rpc.Dial("https://testnet.ckb.dev")
+	if err != nil {
+		return err
+	}
+
+	offChainInputCollector := collector.NewOffChainInputCollector(client)
+
+	it, _ := collector.NewLiveCellIteratorFromAddress(client, address1)
+	cell_iterator := it.(*collector.LiveCellIterator)
+	var iterator = collector.OffChainInputIterator{
+		Iterator:                    *cell_iterator,
+		Collector:                   offChainInputCollector,
+		ConsumeOffChainCellsFirstly: true,
+	}
+
+	txWithGroupsBuilder := builder.NewCkbTransactionBuilder(network, &iterator)
+	err = txWithGroupsBuilder.AddOutputByAddress(address2, 50100000000)
+	if err != nil {
+		return err
+	}
+
+	txWithGroupsBuilder.AddChangeOutputByAddress(address1)
+
+	txWithGroups := txWithGroupsBuilder.BuildTransaction()
+
+	// sign transaction
+	txSigner := signer.GetTransactionSignerInstance(network)
+	_, err = txSigner.SignTransactionByPrivateKeys(txWithGroups, "0x6c9ed03816e3111e49384b8d180174ad08e29feb1393ea1b51cef1c505d4e36a")
+	if err != nil {
+		return err
+	}
+
+	// send transaction
+	hash, err := client.SendTransaction(context.Background(), txWithGroups.TxView)
+
+	if err != nil {
+		return err
+	}
+
+	blockNumber, err := client.GetTipBlockNumber(context.Background())
+
+	if err != nil {
+		return err
+	}
+
+	offChainInputCollector.ApplyOffChainTransaction(blockNumber, *txWithGroups.TxView)
+	fmt.Println("transaction hash: " + hexutil.Encode(hash.Bytes()))
+
+	it2, _ := collector.NewLiveCellIteratorFromAddress(client, address2)
+	cell_iterator2 := it2.(*collector.LiveCellIterator)
+	var iterator2 = collector.OffChainInputIterator{
+		Iterator:                    *cell_iterator2,
+		Collector:                   offChainInputCollector,
+		ConsumeOffChainCellsFirstly: true,
+	}
+
+	txWithGroupsBuilder = builder.NewCkbTransactionBuilder(network, &iterator2)
+	err = txWithGroupsBuilder.AddOutputByAddress(address3, 100000000000)
+	if err != nil {
+		return err
+	}
+
+	txWithGroupsBuilder.AddChangeOutputByAddress(address2)
+
+	txWithGroups = txWithGroupsBuilder.BuildTransaction()
+
+	// sign transaction
+	txSigner = signer.GetTransactionSignerInstance(network)
+	_, err = txSigner.SignTransactionByPrivateKeys(txWithGroups, "0x0c982052ffd4af5f3bbf232301dcddf468009161fc48ba1426e3ce0929fb59f8")
+	if err != nil {
+		return err
+	}
+
+	// send transaction
+	hash, err = client.SendTransaction(context.Background(), txWithGroups.TxView)
+
+	if err != nil {
+		return err
+	}
+
+	blockNumber, err = client.GetTipBlockNumber(context.Background())
+
+	if err != nil {
+		return err
+	}
+
+	offChainInputCollector.ApplyOffChainTransaction(blockNumber, *txWithGroups.TxView)
+	fmt.Println("transaction hash: " + hexutil.Encode(hash.Bytes()))
+
+	return nil
+}

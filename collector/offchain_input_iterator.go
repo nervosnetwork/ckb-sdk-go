@@ -7,32 +7,31 @@ import (
 )
 
 type OffChainInputIterator struct {
-	iterator                    LiveCellIterator
-	collector                   OffChainInputCollector
-	consumeOffChainCellsFirstly bool
+	Iterator                    LiveCellIterator
+	Collector                   OffChainInputCollector
+	ConsumeOffChainCellsFirstly bool
 	isCurrentFromOffChain       bool
 	current                     *types.TransactionInput
 }
 
 func newOffChainInputIterator(iterator LiveCellIterator, collector OffChainInputCollector, consumeOffChainCellsFirstly bool) CellIterator {
 	return &OffChainInputIterator{
-		iterator,
-		collector,
-		consumeOffChainCellsFirstly,
-		true,
-		nil,
+		Iterator:                    iterator,
+		Collector:                   collector,
+		ConsumeOffChainCellsFirstly: consumeOffChainCellsFirstly,
+		isCurrentFromOffChain:       true,
 	}
 }
 
 func (r *OffChainInputIterator) HasNext() bool {
-	return r.iterator.HasNext()
+	return r.Iterator.HasNext()
 }
 
 func (r *OffChainInputIterator) Next() *types.TransactionInput {
-	r.current = r.iterator.cells[r.iterator.index]
+	r.current = r.Iterator.cells[r.Iterator.index]
 	if r.current != nil {
 		if !r.isCurrentFromOffChain {
-			r.iterator.index++
+			r.Iterator.index++
 		}
 		input := r.current
 		r.current = nil
@@ -44,11 +43,11 @@ func (r *OffChainInputIterator) Next() *types.TransactionInput {
 
 func (r *OffChainInputIterator) consumeNextOffChainCell() *types.TransactionInput {
 	var next *list.Element
-	for it := r.collector.offChainLiveCells.Front(); it != nil; it = next {
+	for it := r.Collector.offChainLiveCells.Front(); it != nil; it = next {
 		next = it.Next()
 		if next != nil {
-			if r.isTransactionInputForSearchKey(next.Value.(TransactionInputWithBlockNumber), r.iterator.SearchKey) {
-				r.collector.offChainLiveCells.Remove(it)
+			if r.isTransactionInputForSearchKey(next.Value.(TransactionInputWithBlockNumber), r.Iterator.SearchKey) {
+				r.Collector.offChainLiveCells.Remove(it)
 				var result = next.Value.(TransactionInputWithBlockNumber)
 				return &result.TransactionInput
 			}
@@ -58,12 +57,12 @@ func (r *OffChainInputIterator) consumeNextOffChainCell() *types.TransactionInpu
 }
 
 func (r *OffChainInputIterator) update() bool {
-	r.current = r.iterator.cells[r.iterator.index]
+	r.current = r.Iterator.cells[r.Iterator.index]
 	if r.isCurrentFromOffChain && r.current != nil {
 		return false
 	}
 
-	if r.consumeOffChainCellsFirstly {
+	if r.ConsumeOffChainCellsFirstly {
 		r.current = r.consumeNextOffChainCell()
 		if r.current != nil {
 			r.isCurrentFromOffChain = true
@@ -73,9 +72,9 @@ func (r *OffChainInputIterator) update() bool {
 	}
 
 	r.isCurrentFromOffChain = false
-	r.iterator.update()
-	r.current = r.iterator.cells[r.iterator.index]
-	if r.current == nil && !r.consumeOffChainCellsFirstly {
+	r.Iterator.update()
+	r.current = r.Iterator.cells[r.Iterator.index]
+	if r.current == nil && !r.ConsumeOffChainCellsFirstly {
 		r.current = r.consumeNextOffChainCell()
 		if r.current != nil {
 			r.isCurrentFromOffChain = true
@@ -144,5 +143,5 @@ func (r *OffChainInputIterator) isTransactionInputForSearchKey(transactionInputW
 }
 
 func (r *OffChainInputIterator) GetLiveCells(searchKey *indexer.SearchKey, order indexer.SearchOrder, limit uint64, afterCursor string) (*indexer.LiveCells, error) {
-	return r.iterator.LiveCellGetter.GetCells(searchKey, order, limit, afterCursor)
+	return r.Iterator.LiveCellGetter.GetCells(searchKey, order, limit, afterCursor)
 }

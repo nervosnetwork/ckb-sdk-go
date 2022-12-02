@@ -29,7 +29,7 @@ func TestOffChainInputCollector(t *testing.T) {
 	assert.Equal(t, 0, collector.usedLiveCells.Len())
 	assert.Equal(t, 1, collector.offChainLiveCells.Len())
 
-	collector.applyOffChainTransaction(500, tx)
+	collector.ApplyOffChainTransaction(500, tx)
 
 	assert.Equal(t, 1, collector.usedLiveCells.Len())
 
@@ -59,7 +59,7 @@ func TestOffChainInputCollector(t *testing.T) {
 	})
 	tx.Outputs = append(tx.Outputs, getRandomOutput())
 	tx.OutputsData = append(tx.OutputsData, make([]byte, 0))
-	collector.applyOffChainTransaction(999, tx)
+	collector.ApplyOffChainTransaction(999, tx)
 	// Because 999 > 500, so clear all usedLiveCells and offChainLiveCells at first.
 	assert.Equal(t, 1, collector.usedLiveCells.Len())
 	assert.Equal(t, 1, collector.offChainLiveCells.Len())
@@ -77,7 +77,7 @@ func TestOffChainInputCollector(t *testing.T) {
 		Lock:     addr.Script,
 	})
 	tx.OutputsData = append(tx.OutputsData, make([]byte, 0))
-	collector.applyOffChainTransaction(1000, tx)
+	collector.ApplyOffChainTransaction(1000, tx)
 	assert.Equal(t, 2, collector.usedLiveCells.Len())
 	assert.Equal(t, 2, collector.offChainLiveCells.Len())
 }
