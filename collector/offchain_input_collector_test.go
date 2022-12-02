@@ -15,9 +15,7 @@ func TestOffChainInputCollector(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	collector := OffChainInputCollector{
-		Client: client,
-	}
+	collector := NewOffChainInputCollector(client)
 	collector.offChainLiveCells.PushBack(input)
 	tx := types.Transaction{}
 	tx.Inputs = append(tx.Inputs, &types.CellInput{

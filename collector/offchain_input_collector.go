@@ -23,6 +23,13 @@ type TransactionInputWithBlockNumber struct {
 	blockNumber uint64
 }
 
+func NewOffChainInputCollector(Client rpc.Client) OffChainInputCollector {
+	return OffChainInputCollector{
+		Client:            Client,
+		blockNumberOffset: 13,
+	}
+}
+
 func (c *OffChainInputCollector) setBlockNumberOffset(blockNumberOffset uint64) {
 	c.blockNumberOffset = blockNumberOffset
 }
@@ -42,7 +49,8 @@ func (c *OffChainInputCollector) applyOffChainTransaction(tipBlockNumber uint64,
 	next = nil
 	for o := c.offChainLiveCells.Front(); o != nil; o = next {
 		next = o.Next()
-		if tipBlockNumber >= o.Value.(TransactionInputWithBlockNumber).blockNumber && tipBlockNumber-o.Value.(TransactionInputWithBlockNumber).blockNumber <= c.blockNumberOffset {
+		blockNumber := o.Value.(TransactionInputWithBlockNumber).blockNumber
+		if tipBlockNumber >= blockNumber && tipBlockNumber-blockNumber <= c.blockNumberOffset {
 
 		} else {
 			c.offChainLiveCells.Remove(o)
@@ -50,13 +58,17 @@ func (c *OffChainInputCollector) applyOffChainTransaction(tipBlockNumber uint64,
 	}
 
 	for _, tx_input := range transaction.Inputs {
-		c.usedLiveCells.PushBack(OutPointWithBlockNumber{tx_input.PreviousOutput, tipBlockNumber})
-		next = nil
-		for cell := c.offChainLiveCells.Front(); cell != nil; cell = next {
-			next = cell.Next()
-			if next != nil && tx_input.PreviousOutput == next.Value.(TransactionInputWithBlockNumber).OutPoint {
-				c.offChainLiveCells.Remove(cell)
+		consumedOutpoint := tx_input.PreviousOutput
+		c.usedLiveCells.PushBack(OutPointWithBlockNumber{consumedOutpoint, tipBlockNumber})
+		next = c.offChainLiveCells.Front()
+		for cell := next; cell != nil; cell = next {
+			if next != nil {
+				outpoint := next.Value.(TransactionInputWithBlockNumber).OutPoint
+				if tx_input.PreviousOutput == outpoint {
+					c.offChainLiveCells.Remove(cell)
+				}
 			}
+			next = cell.Next()
 		}
 	}
 
