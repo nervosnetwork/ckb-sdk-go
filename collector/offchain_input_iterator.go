@@ -92,12 +92,12 @@ func (r *OffChainInputIterator) isTransactionInputForSearchKey(transactionInputW
 	cellOutput := transactionInputWithBlockNumber.Output
 	cellOuputData := transactionInputWithBlockNumber.OutputData
 	switch searchKey.ScriptType {
-	case "lock":
+	case types.ScriptTypeLock:
 		if cellOutput.Lock != searchKey.Script {
 			return false
 		}
 		break
-	case "type":
+	case types.ScriptTypeType:
 		if cellOutput.Type != searchKey.Script {
 			return false
 		}
