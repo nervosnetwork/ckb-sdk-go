@@ -61,14 +61,25 @@ func TestClient_GetBlock(t *testing.T) {
 func TestClient_GetTransaction(t *testing.T) {
 	txView, err := testClient.GetTransaction(ctx,
 		types.HexToHash("0x8277d74d33850581f8d843613ded0c2a1722dec0e87e748f45c115dfb14210f1"))
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.NoError(t, err)
 	tx := txView.Transaction
+	status := txView.TxStatus
 	assert.Equal(t, 4, len(tx.CellDeps))
 	assert.Equal(t, 1, len(tx.Inputs))
 	assert.Equal(t, 3, len(tx.Outputs))
 	assert.Equal(t, uint64(30000000000), tx.Outputs[0].Capacity)
+	assert.Equal(t, types.TransactionStatusCommitted, status.Status)
+	assert.NotNil(t, status.BlockHash)
+
+	txView, err = testClient.GetTransaction(ctx,
+		types.HexToHash("0xb2b8911aeac92de53fc3edc218cf979ae4752a7a67e698b0b1726db53126f31f"))
+	assert.NoError(t, err)
+	tx = txView.Transaction
+	status = txView.TxStatus
+	assert.Nil(t, tx)
+	assert.Equal(t, types.TransactionStatusRejected, status.Status)
+	assert.NotNil(t, status.Reason)
+	assert.Nil(t, status.BlockHash)
 }
 
 func TestClient_GetTipHeader(t *testing.T) {
