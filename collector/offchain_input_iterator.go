@@ -3,24 +3,38 @@ package collector
 import (
 	"container/list"
 	"github.com/nervosnetwork/ckb-sdk-go/indexer"
+	"github.com/nervosnetwork/ckb-sdk-go/rpc"
 	"github.com/nervosnetwork/ckb-sdk-go/types"
 )
 
 type OffChainInputIterator struct {
-	Iterator                    LiveCellIterator
-	Collector                   OffChainInputCollector
+	Iterator                    *LiveCellIterator
+	Collector                   *OffChainInputCollector
 	ConsumeOffChainCellsFirstly bool
 	isCurrentFromOffChain       bool
 	current                     *types.TransactionInput
 }
 
-func newOffChainInputIterator(iterator LiveCellIterator, collector OffChainInputCollector, consumeOffChainCellsFirstly bool) CellIterator {
+func NewOffChainInputIterator(iterator CellIterator, collector *OffChainInputCollector, consumeOffChainCellsFirstly bool) *OffChainInputIterator {
 	return &OffChainInputIterator{
-		Iterator:                    iterator,
+		Iterator:                    iterator.(*LiveCellIterator),
 		Collector:                   collector,
 		ConsumeOffChainCellsFirstly: consumeOffChainCellsFirstly,
 		isCurrentFromOffChain:       true,
 	}
+}
+
+func NewOffChainInputIteratorFromAddress(client rpc.Client, addr string, collector *OffChainInputCollector, consumeOffChainCellsFirstly bool) (*OffChainInputIterator, error) {
+	iterator, err := NewLiveCellIteratorFromAddress(client, addr)
+	if err != nil {
+		return nil, err
+	}
+	return &OffChainInputIterator{
+		Iterator:                    iterator.(*LiveCellIterator),
+		Collector:                   collector,
+		ConsumeOffChainCellsFirstly: consumeOffChainCellsFirstly,
+		isCurrentFromOffChain:       true,
+	}, nil
 }
 
 func (r *OffChainInputIterator) HasNext() bool {
@@ -28,6 +42,7 @@ func (r *OffChainInputIterator) HasNext() bool {
 }
 
 func (r *OffChainInputIterator) Next() *types.TransactionInput {
+	r.update()
 	r.current = r.Iterator.cells[r.Iterator.index]
 	if r.current != nil {
 		if !r.isCurrentFromOffChain {
@@ -57,7 +72,7 @@ func (r *OffChainInputIterator) consumeNextOffChainCell() *types.TransactionInpu
 }
 
 func (r *OffChainInputIterator) update() bool {
-	r.current = r.Iterator.cells[r.Iterator.index]
+	//r.current = r.Iterator.cells[r.Iterator.index]
 	if r.isCurrentFromOffChain && r.current != nil {
 		return false
 	}

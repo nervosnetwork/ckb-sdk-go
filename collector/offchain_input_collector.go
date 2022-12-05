@@ -23,8 +23,8 @@ type TransactionInputWithBlockNumber struct {
 	blockNumber uint64
 }
 
-func NewOffChainInputCollector(Client rpc.Client) OffChainInputCollector {
-	return OffChainInputCollector{
+func NewOffChainInputCollector(Client rpc.Client) *OffChainInputCollector {
+	return &OffChainInputCollector{
 		Client:            Client,
 		blockNumberOffset: 13,
 	}

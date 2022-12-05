@@ -539,28 +539,31 @@ func SendChainedTransactionExample() error {
 
 	offChainInputCollector := collector.NewOffChainInputCollector(client)
 
-	it, _ := collector.NewLiveCellIteratorFromAddress(client, address1)
-	cell_iterator := it.(*collector.LiveCellIterator)
-	var iterator = collector.OffChainInputIterator{
-		Iterator:                    *cell_iterator,
-		Collector:                   offChainInputCollector,
-		ConsumeOffChainCellsFirstly: true,
+	var iterator, err_ = collector.NewOffChainInputIteratorFromAddress(client, address1, offChainInputCollector, true)
+	if err_ != nil {
+		return err_
 	}
 
-	txWithGroupsBuilder := builder.NewCkbTransactionBuilder(network, &iterator)
+	txWithGroupsBuilder := builder.NewCkbTransactionBuilder(network, iterator)
 	err = txWithGroupsBuilder.AddOutputByAddress(address2, 50100000000)
 	if err != nil {
 		return err
 	}
 
-	txWithGroupsBuilder.AddChangeOutputByAddress(address1)
+	err = txWithGroupsBuilder.AddChangeOutputByAddress(address1)
+	if err != nil {
+		return err
+	}
 
-	txWithGroups := txWithGroupsBuilder.BuildTransaction()
+	config := new(signer.TransactionSigner)
+	txWithGroups, err := txWithGroupsBuilder.Build(config)
+
+	if err != nil {
+		return err
+	}
 
 	// sign transaction
-	txSigner := signer.GetTransactionSignerInstance(network)
-	_, err = txSigner.SignTransactionByPrivateKeys(txWithGroups, "0x6c9ed03816e3111e49384b8d180174ad08e29feb1393ea1b51cef1c505d4e36a")
-	if err != nil {
+	if _, err = signer.GetTransactionSignerInstance(network).SignTransactionByPrivateKeys(txWithGroups, "0x6c9ed03816e3111e49384b8d180174ad08e29feb1393ea1b51cef1c505d4e36a"); err != nil {
 		return err
 	}
 
@@ -583,7 +586,7 @@ func SendChainedTransactionExample() error {
 	it2, _ := collector.NewLiveCellIteratorFromAddress(client, address2)
 	cell_iterator2 := it2.(*collector.LiveCellIterator)
 	var iterator2 = collector.OffChainInputIterator{
-		Iterator:                    *cell_iterator2,
+		Iterator:                    cell_iterator2,
 		Collector:                   offChainInputCollector,
 		ConsumeOffChainCellsFirstly: true,
 	}
@@ -596,10 +599,10 @@ func SendChainedTransactionExample() error {
 
 	txWithGroupsBuilder.AddChangeOutputByAddress(address2)
 
-	txWithGroups = txWithGroupsBuilder.BuildTransaction()
+	txWithGroups, err = txWithGroupsBuilder.Build(config)
 
 	// sign transaction
-	txSigner = signer.GetTransactionSignerInstance(network)
+	txSigner := signer.GetTransactionSignerInstance(network)
 	_, err = txSigner.SignTransactionByPrivateKeys(txWithGroups, "0x0c982052ffd4af5f3bbf232301dcddf468009161fc48ba1426e3ce0929fb59f8")
 	if err != nil {
 		return err
