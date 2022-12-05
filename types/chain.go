@@ -144,15 +144,18 @@ func (t Transaction) CalculateFee(feeRate uint64) uint64 {
 	}
 	return fee
 }
-
-func (t Transaction) CalculateFeeWithCycles(cycles uint64, feeRate uint64) uint64 {
-	txSize := t.SizeInBlock()
-	virtualBytes := uint64(float64(cycles) * DefaultBytesPerCycle)
-	if virtualBytes > txSize {
-		txSize = virtualBytes
+func getTransactionWeight(txSize uint64, cycles uint64) uint64 {
+	txWeight := uint64(float64(cycles) * DefaultBytesPerCycle)
+	if txWeight < txSize {
+		txWeight = txSize
 	}
-	fee := txSize * feeRate / 1000
-	if fee*1000 < txSize*feeRate {
+	return txWeight
+}
+
+func (t Transaction) CalculateFeeWithTxWeight(cycles uint64, feeRate uint64) uint64 {
+	txWeight := getTransactionWeight(t.SizeInBlock(), cycles)
+	fee := txWeight * feeRate / 1000
+	if fee*1000 < txWeight*feeRate {
 		fee += 1
 	}
 	return fee
