@@ -44,7 +44,7 @@ block, err := ckbClient.GetBlock(context.Background(), types.HexToHash("0x77fdd2
 For more details about JSON-RPC APIs, please check:
 
 - [CKB RPC doc](https://github.com/nervosnetwork/ckb/blob/develop/rpc/README.md)
-- [CKB-indexer RPC doc](https://github.com/nervosnetwork/ckb-indexer/blob/master/README.md)
+- [CKB Indexer Module RPC doc](https://github.com/nervosnetwork/ckb/blob/develop/rpc/README.md#module-indexer)
 - [Mercury RPC doc](https://github.com/nervosnetwork/mercury/blob/main/core/rpc/README.md).
 
 ### Build transaction manually
