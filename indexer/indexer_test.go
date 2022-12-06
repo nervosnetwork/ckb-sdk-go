@@ -9,7 +9,7 @@ import (
 	"testing"
 )
 
-var c, _ = Dial("https://testnet.ckb.dev/indexer")
+var c, _ = Dial("https://testnet.ckb.dev/")
 
 func TestGetTip(t *testing.T) {
 	resp, err := c.GetTip(context.Background())
