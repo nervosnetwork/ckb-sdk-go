@@ -154,7 +154,7 @@ func TestJsonTransactionWithStatus(t *testing.T) {
             "0xc200000010000000c2000000c2000000ae000000000002027336b0ba900684cb3cb00f0d46d4f64c0994a5625724c1e3925a5206944d753a6f3edaedf977d77f75ef2bf584ab0f400063964d5cddb3443fb5f11cbf00eedd76c64205f6c2d2ce342582871a010af6560bc6f559222852ffc44d3c9db9ae76092d843a05e39c0000ae2adec03512e320c2f0c087ec1d366c5fb43f7862fd1a7693284d356fbf56196e8f8ccd5cabe21bf3f0b2763d0c4f02c79af0d9993572eb3b752b09b08b6b1f00"
         ]
     },
-    "cycles": 0,
+    "cycles": "0x0",
     "tx_status": {
         "block_hash": "0xe1ed2d2282aad742a95abe51c21d50b1c19e194f21fbd1ed2516f82bd042579a",
         "status": "committed",
@@ -164,7 +164,7 @@ func TestJsonTransactionWithStatus(t *testing.T) {
 	var v TransactionWithStatus
 	json.Unmarshal(jsonText1, &v)
 
-	jsonText2, _ := json.Marshal(v)
+	jsonText2, _ := v.MarshalJSON()
 	AssertJsonEqual(t, jsonText1, jsonText2)
 }
 

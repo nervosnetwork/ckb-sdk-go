@@ -753,6 +753,20 @@ func (r *FeeRateStatics) MarshalJSON() ([]byte, error) {
 		Mean:   hexutil.Uint64(r.Mean),
 		Median: hexutil.Uint64(r.Median),
 	}
+	return json.Marshal(jsonObj)
+}
 
+type jsonTransactionWithStatus struct {
+	Transaction *Transaction   `json:"transaction"`
+	Cycles      hexutil.Uint64 `json:"cycles""`
+	TxStatus    *TxStatus      `json:"tx_status"`
+}
+
+func (r *TransactionWithStatus) MarshalJSON() ([]byte, error) {
+	jsonObj := &jsonTransactionWithStatus{
+		Transaction: r.Transaction,
+		Cycles:      hexutil.Uint64(r.Cycles),
+		TxStatus:    r.TxStatus,
+	}
 	return json.Marshal(jsonObj)
 }
