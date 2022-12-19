@@ -305,6 +305,6 @@ type EstimateCycles struct {
 }
 
 type FeeRateStatics struct {
-	Mean   float64 `json:"mean"`
-	Median float64 `json:"median"`
+	Mean   uint64 `json:"mean"`
+	Median uint64 `json:"median"`
 }

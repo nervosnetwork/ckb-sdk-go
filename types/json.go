@@ -729,3 +729,30 @@ func (r *EstimateCycles) UnmarshalJSON(input []byte) error {
 	}
 	return nil
 }
+
+type JsonFeeRateStatics struct {
+	Mean   hexutil.Uint64 `json:"mean"`
+	Median hexutil.Uint64 `json:"median"`
+}
+
+func (r *FeeRateStatics) UnmarshalJSON(input []byte) error {
+	var result JsonFeeRateStatics
+	if err := json.Unmarshal(input, &result); err != nil {
+		return err
+	}
+
+	*r = FeeRateStatics{
+		Mean:   uint64(result.Mean),
+		Median: uint64(result.Median),
+	}
+	return nil
+}
+
+func (r *FeeRateStatics) MarshalJSON() ([]byte, error) {
+	jsonObj := &JsonFeeRateStatics{
+		Mean:   hexutil.Uint64(r.Mean),
+		Median: hexutil.Uint64(r.Median),
+	}
+
+	return json.Marshal(jsonObj)
+}
