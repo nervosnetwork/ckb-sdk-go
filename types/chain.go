@@ -23,6 +23,8 @@ const (
 	TransactionStatusCommitted TransactionStatus = "committed"
 	TransactionStatusUnknown   TransactionStatus = "unknown"
 	TransactionStatusRejected  TransactionStatus = "rejected"
+
+	DefaultBytesPerCycle float64 = 0.000_170_571_4
 )
 
 type Epoch struct {
@@ -138,6 +140,22 @@ func (t Transaction) CalculateFee(feeRate uint64) uint64 {
 	txSize := t.SizeInBlock()
 	fee := txSize * feeRate / 1000
 	if fee*1000 < txSize*feeRate {
+		fee += 1
+	}
+	return fee
+}
+func getTransactionWeight(txSize uint64, cycles uint64) uint64 {
+	txWeight := uint64(float64(cycles) * DefaultBytesPerCycle)
+	if txWeight < txSize {
+		txWeight = txSize
+	}
+	return txWeight
+}
+
+func (t Transaction) CalculateFeeWithTxWeight(cycles uint64, feeRate uint64) uint64 {
+	txWeight := getTransactionWeight(t.SizeInBlock(), cycles)
+	fee := txWeight * feeRate / 1000
+	if fee*1000 < txWeight*feeRate {
 		fee += 1
 	}
 	return fee
@@ -280,4 +298,8 @@ type TransactionProof struct {
 type Proof struct {
 	Indices []uint `json:"indices"`
 	Lemmas  []Hash `json:"lemmas"`
+}
+
+type EstimateCycles struct {
+	Cycles uint64 `json:"cycles"`
 }

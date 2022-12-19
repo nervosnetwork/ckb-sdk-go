@@ -168,6 +168,22 @@ func TestClient_GetTransactionProof(t *testing.T) {
 	assert.Equal(t, 1, len(result))
 }
 
+func TestClient_EstimateCycles(t *testing.T) {
+	tx := &types.Transaction{
+		Version:     0,
+		Hash:        types.Hash{},
+		CellDeps:    make([]*types.CellDep, 0),
+		HeaderDeps:  make([]types.Hash, 0),
+		Inputs:      make([]*types.CellInput, 0),
+		Outputs:     make([]*types.CellOutput, 0),
+		OutputsData: make([][]byte, 0),
+		Witnesses:   make([][]byte, 0),
+	}
+	resp, err := testClient.EstimateCycles(context.Background(), tx)
+	assert.Empty(t, err, err)
+	assert.NotNil(t, resp)
+}
+
 func TestClient_LocalNodeInfo(t *testing.T) {
 	nodeInfo, err := testClient.LocalNodeInfo(ctx)
 	if err != nil {
