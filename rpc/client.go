@@ -73,6 +73,9 @@ type Client interface {
 	// Note that the given block is included in the median time. The included block number range is [MAX(block - 36, 0), block].
 	GetBlockMedianTime(ctx context.Context, blockHash types.Hash) (uint64, error)
 
+	// GetFeeRateStatics Returns the fee_rate statistics of confirmed blocks on the chain
+	GetFeeRateStatics(ctx context.Context, target uint64) (*types.FeeRateStatics, error)
+
 	////// Experiment
 	// DryRunTransaction dry run transaction and return the execution cycles.
 	// This method will not check the transaction validity,
@@ -154,6 +157,8 @@ type Client interface {
 
 	//GetCellsCapacity returns the live cells capacity by the lock or type script.
 	GetCellsCapacity(ctx context.Context, searchKey *indexer.SearchKey) (*indexer.Capacity, error)
+
+
 
 	// Close close client
 	Close()
@@ -381,6 +386,15 @@ func (cli *client) GetBlockMedianTime(ctx context.Context, blockHash types.Hash)
 		return uint64(result), nil
 	}
 	return uint64(result), nil
+}
+
+func (cli *client) GetFeeRateStatics(ctx context.Context, target uint64) (*types.FeeRateStatics, error) {
+	var result types.FeeRateStatics
+	err := cli.c.CallContext(ctx, &result, "get_fee_rate_statics", hexutil.Uint64(target))
+	if err != nil {
+		return nil, err
+	}
+	return &result, nil
 }
 
 func (cli *client) LocalNodeInfo(ctx context.Context) (*types.LocalNode, error) {

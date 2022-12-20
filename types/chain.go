@@ -303,3 +303,8 @@ type Proof struct {
 type EstimateCycles struct {
 	Cycles uint64 `json:"cycles"`
 }
+
+type FeeRateStatics struct {
+	Mean   uint64 `json:"mean"`
+	Median uint64 `json:"median"`
+}
