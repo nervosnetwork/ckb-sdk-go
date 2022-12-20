@@ -218,6 +218,7 @@ type TxStatus struct {
 
 type TransactionWithStatus struct {
 	Transaction *Transaction `json:"transaction"`
+	Cycles      uint64       `json:"cycles""`
 	TxStatus    *TxStatus    `json:"tx_status"`
 }
 

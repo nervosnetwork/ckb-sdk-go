@@ -71,15 +71,17 @@ func TestClient_GetTransaction(t *testing.T) {
 	assert.Equal(t, types.TransactionStatusCommitted, status.Status)
 	assert.NotNil(t, status.BlockHash)
 
-	txView, err = testClient.GetTransaction(ctx,
-		types.HexToHash("0xb2b8911aeac92de53fc3edc218cf979ae4752a7a67e698b0b1726db53126f31f"))
-	assert.NoError(t, err)
-	tx = txView.Transaction
-	status = txView.TxStatus
-	assert.Nil(t, tx)
-	assert.Equal(t, types.TransactionStatusRejected, status.Status)
-	assert.NotNil(t, status.Reason)
-	assert.Nil(t, status.BlockHash)
+	// NOTE: test commented because rejected tx will be removed after a expiry time by ckb
+	// TODO: Adding mock RPC returns to make unit test more standalone
+	//txView, err = testClient.GetTransaction(ctx,
+	//	types.HexToHash("0xb2b8911aeac92de53fc3edc218cf979ae4752a7a67e698b0b1726db53126f31f"))
+	//assert.NoError(t, err)
+	//tx = txView.Transaction
+	//status = txView.TxStatus
+	//assert.Nil(t, tx)
+	//assert.Equal(t, types.TransactionStatusRejected, status.Status)
+	//assert.NotNil(t, status.Reason)
+	//assert.Nil(t, status.BlockHash)
 }
 
 func TestClient_GetTipHeader(t *testing.T) {
@@ -213,6 +215,8 @@ func TestClient_SyncState(t *testing.T) {
 }
 
 func TestClient_SetNetworkActive(t *testing.T) {
+	// TODO: fix all deprecated RPC caused tests
+	t.Skip("Skipping testing")
 	err := testClient.SetNetworkActive(ctx, true)
 	if err != nil {
 		t.Fatal(err)
@@ -220,6 +224,8 @@ func TestClient_SetNetworkActive(t *testing.T) {
 }
 
 func TestClient_AddNode(t *testing.T) {
+	// TODO: fix all deprecated RPC caused tests
+	t.Skip("Skipping testing")
 	err := testClient.AddNode(ctx, "QmUsZHPbjjzU627UZFt4k8j6ycEcNvXRnVGxCPKqwbAfQS", "/ip4/192.168.2.100/tcp/8114")
 	if err != nil {
 		t.Fatal(err)
@@ -227,6 +233,8 @@ func TestClient_AddNode(t *testing.T) {
 }
 
 func TestClient_RemoveNode(t *testing.T) {
+	// TODO: fix all deprecated RPC caused tests
+	t.Skip("Skipping testing")
 	err := testClient.RemoveNode(ctx, "QmUsZHPbjjzU627UZFt4k8j6ycEcNvXRnVGxCPKqwbAfQS")
 	if err != nil {
 		t.Fatal(err)
@@ -234,6 +242,8 @@ func TestClient_RemoveNode(t *testing.T) {
 }
 
 func TestClient_SetBan(t *testing.T) {
+	// TODO: fix all deprecated RPC caused tests
+	t.Skip("Skipping testing")
 	err := testClient.SetBan(ctx, "192.168.0.2", "insert", 1840546800000, true, "test set_ban rpc")
 	if err != nil {
 		t.Fatal(err)
@@ -249,6 +259,8 @@ func TestClient_GetBannedAddresses(t *testing.T) {
 }
 
 func TestClient_ClearBannedAddresses(t *testing.T) {
+	// TODO: fix all deprecated RPC caused tests
+	t.Skip("Skipping testing")
 	err := testClient.ClearBannedAddresses(ctx)
 	if err != nil {
 		t.Fatal(err)
@@ -272,6 +284,8 @@ func TestClient_TxPoolInfo(t *testing.T) {
 }
 
 func TestClient_ClearTxPool(t *testing.T) {
+	// TODO: fix all deprecated RPC caused tests
+	t.Skip("Skipping testing")
 	err := testClient.ClearTxPool(ctx)
 	if err != nil {
 		t.Fatal(err)
