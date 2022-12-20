@@ -390,3 +390,9 @@ func TestGetTransactionsGrouped(t *testing.T) {
 	assert.NotEmpty(t, resp.Objects[0].Cells[0].IoType)
 	assert.NotEmpty(t, resp.Objects[0].Cells[0].IoIndex)
 }
+
+func TestClient_GetFeeRateStatics(t *testing.T) {
+	statics, err := testClient.GetFeeRateStatics(context.Background(), 1)
+	assert.NoError(t, err)
+	assert.NotNil(t, statics)
+}
