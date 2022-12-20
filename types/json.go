@@ -770,3 +770,16 @@ func (r *TransactionWithStatus) MarshalJSON() ([]byte, error) {
 	}
 	return json.Marshal(jsonObj)
 }
+
+func (r *TransactionWithStatus) UnmarshalJSON(input []byte) error {
+	var result jsonTransactionWithStatus
+	if err := json.Unmarshal(input, &result); err != nil {
+		return err
+	}
+	*r = TransactionWithStatus{
+		Transaction: result.Transaction,
+		Cycles:      uint64(result.Cycles),
+		TxStatus:    result.TxStatus,
+	}
+	return nil
+}

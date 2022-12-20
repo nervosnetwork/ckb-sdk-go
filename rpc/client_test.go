@@ -71,15 +71,17 @@ func TestClient_GetTransaction(t *testing.T) {
 	assert.Equal(t, types.TransactionStatusCommitted, status.Status)
 	assert.NotNil(t, status.BlockHash)
 
-	txView, err = testClient.GetTransaction(ctx,
-		types.HexToHash("0xb2b8911aeac92de53fc3edc218cf979ae4752a7a67e698b0b1726db53126f31f"))
-	assert.NoError(t, err)
-	tx = txView.Transaction
-	status = txView.TxStatus
-	assert.Nil(t, tx)
-	assert.Equal(t, types.TransactionStatusRejected, status.Status)
-	assert.NotNil(t, status.Reason)
-	assert.Nil(t, status.BlockHash)
+	// NOTE: test commented because rejected tx will be removed after a expiry time by ckb
+	// TODO: Adding mock RPC returns to make unit test more standalone
+	//txView, err = testClient.GetTransaction(ctx,
+	//	types.HexToHash("0xb2b8911aeac92de53fc3edc218cf979ae4752a7a67e698b0b1726db53126f31f"))
+	//assert.NoError(t, err)
+	//tx = txView.Transaction
+	//status = txView.TxStatus
+	//assert.Nil(t, tx)
+	//assert.Equal(t, types.TransactionStatusRejected, status.Status)
+	//assert.NotNil(t, status.Reason)
+	//assert.Nil(t, status.BlockHash)
 }
 
 func TestClient_GetTipHeader(t *testing.T) {
