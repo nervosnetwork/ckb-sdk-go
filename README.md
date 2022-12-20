@@ -31,7 +31,10 @@ ckb-sdk-go provides a convenient client to help you easily interact with [CKB](h
 
 ```go
 ckbClient, err := rpc.Dial("http://127.0.0.1:8114")
-indexerClient, err := indexer.Dial("http://127.0.0.1:8114")
+//!!NOTE: 
+// Indexer RPCs are now intergated into CKB, people now should directly use CKB clients, not the legacy indexer client
+// check https://github.com/nervosnetwork/ckb/blob/develop/rpc/README.md#module-indexer for equivalent RPCs
+//indexerClient, err := indexer.Dial("http://127.0.0.1:8114")
 mercuryClient , err := mercury.Dial("http://127.0.0.1:8116")
 ```
 
@@ -44,7 +47,7 @@ block, err := ckbClient.GetBlock(context.Background(), types.HexToHash("0x77fdd2
 For more details about JSON-RPC APIs, please check:
 
 - [CKB RPC doc](https://github.com/nervosnetwork/ckb/blob/develop/rpc/README.md)
-- [CKB-indexer RPC doc](https://github.com/nervosnetwork/ckb-indexer/blob/master/README.md)
+- [CKB Indexer Module RPC doc](https://github.com/nervosnetwork/ckb/blob/develop/rpc/README.md#module-indexer)
 - [Mercury RPC doc](https://github.com/nervosnetwork/mercury/blob/main/core/rpc/README.md).
 
 ### Build transaction manually
