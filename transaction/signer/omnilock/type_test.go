@@ -1,8 +1,8 @@
 package omnilock
 
 import (
-	"github.com/nervosnetwork/ckb-sdk-go/address"
-	"github.com/nervosnetwork/ckb-sdk-go/types"
+	"github.com/nervosnetwork/ckb-sdk-go/v2/address"
+	"github.com/nervosnetwork/ckb-sdk-go/v2/types"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )

@@ -2,9 +2,9 @@ package signer
 
 import (
 	"fmt"
-	"github.com/nervosnetwork/ckb-sdk-go/crypto/blake2b"
-	"github.com/nervosnetwork/ckb-sdk-go/transaction"
-	"github.com/nervosnetwork/ckb-sdk-go/types"
+	"github.com/nervosnetwork/ckb-sdk-go/v2/crypto/blake2b"
+	"github.com/nervosnetwork/ckb-sdk-go/v2/transaction"
+	"github.com/nervosnetwork/ckb-sdk-go/v2/types"
 )
 
 type ScriptSigner interface {

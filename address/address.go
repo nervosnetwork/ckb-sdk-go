@@ -3,9 +3,9 @@ package address
 import (
 	"errors"
 	"fmt"
-	"github.com/nervosnetwork/ckb-sdk-go/crypto/bech32"
-	"github.com/nervosnetwork/ckb-sdk-go/systemscript"
-	"github.com/nervosnetwork/ckb-sdk-go/types"
+	"github.com/nervosnetwork/ckb-sdk-go/v2/crypto/bech32"
+	"github.com/nervosnetwork/ckb-sdk-go/v2/systemscript"
+	"github.com/nervosnetwork/ckb-sdk-go/v2/types"
 )
 
 type Address struct {

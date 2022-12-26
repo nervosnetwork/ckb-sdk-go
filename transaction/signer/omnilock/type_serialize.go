@@ -1,7 +1,7 @@
 package omnilock
 
 import (
-	"github.com/nervosnetwork/ckb-sdk-go/transaction/signer/omnilock/molecule"
+	"github.com/nervosnetwork/ckb-sdk-go/v2/transaction/signer/omnilock/molecule"
 )
 
 func DeserializeOmnilockWitnessLock(in []byte) (*OmnilockWitnessLock, error) {

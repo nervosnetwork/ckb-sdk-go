@@ -1,8 +1,8 @@
 package mercury
 
 import (
-	"github.com/nervosnetwork/ckb-sdk-go/mercury/model"
-	"github.com/nervosnetwork/ckb-sdk-go/types"
+	"github.com/nervosnetwork/ckb-sdk-go/v2/mercury/model"
+	"github.com/nervosnetwork/ckb-sdk-go/v2/types"
 	"github.com/stretchr/testify/assert"
 	"math/big"
 	"runtime/debug"

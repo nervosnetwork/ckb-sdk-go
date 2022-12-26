@@ -1,4 +1,4 @@
-module github.com/nervosnetwork/ckb-sdk-go
+module github.com/nervosnetwork/ckb-sdk-go/v2
 
 go 1.17
 
