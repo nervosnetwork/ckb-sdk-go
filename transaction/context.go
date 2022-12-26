@@ -1,7 +1,7 @@
 package transaction
 
 import (
-	"github.com/nervosnetwork/ckb-sdk-go/crypto/secp256k1"
+	"github.com/nervosnetwork/ckb-sdk-go/v2/crypto/secp256k1"
 	"github.com/pkg/errors"
 )
 

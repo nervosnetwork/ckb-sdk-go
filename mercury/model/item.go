@@ -3,9 +3,9 @@ package model
 import (
 	"errors"
 	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/nervosnetwork/ckb-sdk-go/address"
-	"github.com/nervosnetwork/ckb-sdk-go/systemscript"
-	"github.com/nervosnetwork/ckb-sdk-go/types"
+	"github.com/nervosnetwork/ckb-sdk-go/v2/address"
+	"github.com/nervosnetwork/ckb-sdk-go/v2/systemscript"
+	"github.com/nervosnetwork/ckb-sdk-go/v2/types"
 	"reflect"
 )
 

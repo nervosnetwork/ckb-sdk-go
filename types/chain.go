@@ -1,8 +1,8 @@
 package types
 
 import (
-	"github.com/nervosnetwork/ckb-sdk-go/crypto/blake2b"
-	"github.com/nervosnetwork/ckb-sdk-go/types/numeric"
+	"github.com/nervosnetwork/ckb-sdk-go/v2/crypto/blake2b"
+	"github.com/nervosnetwork/ckb-sdk-go/v2/types/numeric"
 	"math/big"
 )
 

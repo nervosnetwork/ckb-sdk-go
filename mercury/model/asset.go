@@ -1,6 +1,6 @@
 package model
 
-import "github.com/nervosnetwork/ckb-sdk-go/types"
+import "github.com/nervosnetwork/ckb-sdk-go/v2/types"
 
 type AssetType string
 

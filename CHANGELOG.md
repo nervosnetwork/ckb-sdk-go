@@ -1,3 +1,38 @@
+# 2.0.3 (2022-12-26)
+
+## What's Changed
+### Repository change
+branch `v2` is now default branch, and all developer should use
+`github.com/nervosnetwork/ckb-sdk-go/v2` instead of `github.com/nervosnetwork/ckb-sdk-go`.
+
+A quick migration command is: 
+```bash
+find . -type f -name '*.go' \
+       -exec \
+       sed -i -e 's,github.com/nervosnetwork/ckb-sdk-go,github.com/nervosnetwork/ckb-sdk-go/v2,g' {} \;
+```
+
+### 🚀 Features
+* feat: refactor `SystemScriptCell` by @fjchen7 in https://github.com/nervosnetwork/ckb-sdk-go/pull/156
+* feat: refactor utility function and reorganize package by @fjchen7 in https://github.com/nervosnetwork/ckb-sdk-go/pull/158
+* feat: support mercury RPC `get_balance` extra by @fjchen7 in https://github.com/nervosnetwork/ckb-sdk-go/pull/167
+* feat: support light client RPC by @fjchen7 in https://github.com/nervosnetwork/ckb-sdk-go/pull/169
+* feat: support omnilock by @fjchen7 in https://github.com/nervosnetwork/ckb-sdk-go/pull/170
+* Add RPC method `EstimateCycles` by @fjchen7 in https://github.com/nervosnetwork/ckb-sdk-go/pull/174
+* feat: Support using OffChain Cell to build tx by @code-monad in https://github.com/nervosnetwork/ckb-sdk-go/pull/177
+* feat: support RPC: `get_fee_rate_statics` by @code-monad in https://github.com/nervosnetwork/ckb-sdk-go/pull/180
+* feat: upgrade `get_transaction` to be compatible with ckb 0.106 by @code-monad in https://github.com/nervosnetwork/ckb-sdk-go/pull/181
+
+### 🧰 Maintenance
+* fix: support indexer RPC in ckb node by @fjchen7 in https://github.com/nervosnetwork/ckb-sdk-go/pull/163
+* chore: add case for getting rejected tx by @fjchen7 in https://github.com/nervosnetwork/ckb-sdk-go/pull/176
+* chore: updates doc/examples about CKB-Indexer RPC  by @code-monad in https://github.com/nervosnetwork/ckb-sdk-go/pull/179
+
+## New Contributors
+* @code-monad made their first contribution in https://github.com/nervosnetwork/ckb-sdk-go/pull/177
+
+**Full Changelog**: https://github.com/nervosnetwork/ckb-sdk-go/compare/v2.0.1...v2.0.3
+
 # 2.0.1 (2022-09-05)
 
 ## 🚀 Features

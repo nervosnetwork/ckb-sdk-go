@@ -4,9 +4,9 @@ import (
 	"encoding/hex"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/nervosnetwork/ckb-sdk-go/crypto/blake2b"
-	"github.com/nervosnetwork/ckb-sdk-go/crypto/secp256k1"
-	"github.com/nervosnetwork/ckb-sdk-go/types"
+	"github.com/nervosnetwork/ckb-sdk-go/v2/crypto/blake2b"
+	"github.com/nervosnetwork/ckb-sdk-go/v2/crypto/secp256k1"
+	"github.com/nervosnetwork/ckb-sdk-go/v2/types"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )

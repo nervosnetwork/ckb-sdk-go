@@ -1,8 +1,8 @@
 package signer
 
 import (
-	"github.com/nervosnetwork/ckb-sdk-go/systemscript"
-	"github.com/nervosnetwork/ckb-sdk-go/types"
+	"github.com/nervosnetwork/ckb-sdk-go/v2/systemscript"
+	"github.com/nervosnetwork/ckb-sdk-go/v2/types"
 )
 
 func init() {

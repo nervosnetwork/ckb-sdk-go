@@ -2,9 +2,9 @@ package collector
 
 import (
 	"context"
-	"github.com/nervosnetwork/ckb-sdk-go/indexer"
-	"github.com/nervosnetwork/ckb-sdk-go/rpc"
-	"github.com/nervosnetwork/ckb-sdk-go/types"
+	"github.com/nervosnetwork/ckb-sdk-go/v2/indexer"
+	"github.com/nervosnetwork/ckb-sdk-go/v2/rpc"
+	"github.com/nervosnetwork/ckb-sdk-go/v2/types"
 	"github.com/pkg/errors"
 )
 

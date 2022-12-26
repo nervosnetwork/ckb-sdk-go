@@ -2,8 +2,8 @@ package systemscript
 
 import (
 	"fmt"
-	"github.com/nervosnetwork/ckb-sdk-go/crypto/blake2b"
-	"github.com/nervosnetwork/ckb-sdk-go/types"
+	"github.com/nervosnetwork/ckb-sdk-go/v2/crypto/blake2b"
+	"github.com/nervosnetwork/ckb-sdk-go/v2/types"
 	"math/big"
 )
 

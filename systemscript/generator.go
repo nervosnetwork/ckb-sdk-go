@@ -2,9 +2,9 @@ package systemscript
 
 import (
 	"fmt"
-	"github.com/nervosnetwork/ckb-sdk-go/crypto/blake2b"
-	"github.com/nervosnetwork/ckb-sdk-go/crypto/secp256k1"
-	"github.com/nervosnetwork/ckb-sdk-go/types"
+	"github.com/nervosnetwork/ckb-sdk-go/v2/crypto/blake2b"
+	"github.com/nervosnetwork/ckb-sdk-go/v2/crypto/secp256k1"
+	"github.com/nervosnetwork/ckb-sdk-go/v2/types"
 )
 
 func Secp256K1Blake160SignhashAll(key *secp256k1.Secp256k1Key) *types.Script {
