@@ -758,7 +758,7 @@ func (r *FeeRateStatics) MarshalJSON() ([]byte, error) {
 
 type jsonTransactionWithStatus struct {
 	Transaction *Transaction   `json:"transaction"`
-	Cycles      hexutil.Uint64 `json:"cycles""`
+	Cycles      hexutil.Uint64 `json:"cycles"`
 	TxStatus    *TxStatus      `json:"tx_status"`
 }
 
