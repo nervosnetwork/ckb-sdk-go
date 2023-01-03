@@ -175,7 +175,7 @@ key, err := secp256k1.RandomNew()
 if err != nil {
 	// handle error
 }
-script := address.GenerateScriptSecp256K1Blake160SignhashAll(key)
+script := systemscript.Secp256K1Blake160SignhashAll(key)
 addr := &address.Address{Script: script, Network: types.NetworkTest}
 encodedAddr, err := addr.Encode()
 ```
@@ -188,7 +188,7 @@ Convert elliptic curve public key to an address (`secp256k1_blake160_signash_all
 
 ```go
 // You should provide an elliptic curve public key of compressed format, with 33 bytes.
-script, err := address.GenerateScriptSecp256K1Blake160SignhashAllByPublicKey("0x03a0a7a7597b019828a1dda6ed52ab25181073ec3a9825d28b9abbb932fe1ec83d")
+script, err := systemscript.Secp256K1Blake160SignhashAllByPublicKey("0x03a0a7a7597b019828a1dda6ed52ab25181073ec3a9825d28b9abbb932fe1ec83d")
 if err != nil {
 	// handle error
 }
