@@ -74,7 +74,7 @@ type Client interface {
 	GetBlockMedianTime(ctx context.Context, blockHash types.Hash) (uint64, error)
 
 	// GetFeeRateStatics Returns the fee_rate statistics of confirmed blocks on the chain
-	GetFeeRateStatics(ctx context.Context, target uint64) (*types.FeeRateStatics, error)
+	GetFeeRateStatics(ctx context.Context, target interface{}) (*types.FeeRateStatics, error)
 
 	////// Experiment
 	// DryRunTransaction dry run transaction and return the execution cycles.
@@ -157,8 +157,6 @@ type Client interface {
 
 	//GetCellsCapacity returns the live cells capacity by the lock or type script.
 	GetCellsCapacity(ctx context.Context, searchKey *indexer.SearchKey) (*indexer.Capacity, error)
-
-
 
 	// Close close client
 	Close()
@@ -388,11 +386,27 @@ func (cli *client) GetBlockMedianTime(ctx context.Context, blockHash types.Hash)
 	return uint64(result), nil
 }
 
-func (cli *client) GetFeeRateStatics(ctx context.Context, target uint64) (*types.FeeRateStatics, error) {
+func (cli *client) GetFeeRateStatics(ctx context.Context, target interface{}) (*types.FeeRateStatics, error) {
 	var result types.FeeRateStatics
-	err := cli.c.CallContext(ctx, &result, "get_fee_rate_statics", hexutil.Uint64(target))
-	if err != nil {
-		return nil, err
+	switch target := target.(type) {
+	case nil:
+		if err := cli.c.CallContext(ctx, &result, "get_fee_rate_statics", nil); err != nil {
+			return nil, err
+		}
+		break
+	case uint64:
+		if err := cli.c.CallContext(ctx, &result, "get_fee_rate_statics", hexutil.Uint64(target)); err != nil {
+			return nil, err
+		}
+		break
+	default:
+	case int:
+	case int32:
+	case int64:
+		if err := cli.c.CallContext(ctx, &result, "get_fee_rate_statics", hexutil.Uint64(uint64(target))); err != nil {
+			return nil, err
+		}
+		break
 	}
 	return &result, nil
 }
