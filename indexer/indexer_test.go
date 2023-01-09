@@ -2,6 +2,8 @@ package indexer
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	ethcommon "github.com/ethereum/go-ethereum/common"
 	"github.com/nervosnetwork/ckb-sdk-go/v2/types"
 	"github.com/stretchr/testify/assert"
@@ -96,6 +98,30 @@ func TestGetTransactionsGrouped(t *testing.T) {
 	assert.NotEmpty(t, resp.Objects[0].Cells[0])
 	assert.NotEmpty(t, resp.Objects[0].Cells[0].IoType)
 	assert.NotEmpty(t, resp.Objects[0].Cells[0].IoIndex)
+}
+
+func TestFilter(t *testing.T) {
+	lockScript := &types.Script{
+		CodeHash: types.HexToHash("0x58c5f491aba6d61678b7cf7edf4910b1f5e00ec0cde2f42e0abb4fd9aff25a63"),
+		HashType: types.HashTypeType,
+		Args:     ethcommon.FromHex("0xe53f35ccf63bb37a3bb0ac3b7f89808077a78eae"),
+	}
+	filter := &Filter{
+		Script: &types.Script{
+			CodeHash: types.HexToHash("0x58c5f491aba6d61678b7cf7edf4910b1f5e00ec0cde2f42e0abb4fd9aff25a63"),
+			HashType: types.HashTypeType,
+			Args:     lockScript.Hash().Bytes()[:20],
+		},
+	}
+	s := &SearchKey{
+		Script:     lockScript,
+		ScriptType: types.ScriptTypeLock,
+		Filter:     filter,
+	}
+	jsonF, _ := json.Marshal(filter)
+	fmt.Println(string(jsonF))
+	_, err := c.GetTransactions(context.Background(), s, SearchOrderAsc, 1000, "")
+	checkError(t, err)
 }
 
 func checkError(t *testing.T, err error) {
