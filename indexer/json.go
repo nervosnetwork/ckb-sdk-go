@@ -7,19 +7,23 @@ import (
 )
 
 type jsonCellsFilter struct {
-	Script              *types.Script     `json:"script"`
-	ScriptLenRange      [2]hexutil.Uint64 `json:"script_len_range,omitempty"`
-	OutputDataLenRange  [2]hexutil.Uint64 `json:"output_data_len_range,omitempty"`
-	OutputCapacityRange [2]hexutil.Uint64 `json:"output_capacity_range,omitempty"`
-	BlockRange          [2]hexutil.Uint64 `json:"block_range,omitempty"`
+	Script              *types.Script      `json:"script"`
+	ScriptLenRange      *[2]hexutil.Uint64 `json:"script_len_range,omitempty"`
+	OutputDataLenRange  *[2]hexutil.Uint64 `json:"output_data_len_range,omitempty"`
+	OutputCapacityRange *[2]hexutil.Uint64 `json:"output_capacity_range,omitempty"`
+	BlockRange          *[2]hexutil.Uint64 `json:"block_range,omitempty"`
 }
 
 func (r Filter) MarshalJSON() ([]byte, error) {
-	toUint64Array := func(a *[2]uint64) [2]hexutil.Uint64 {
-		result := [2]hexutil.Uint64{}
-		result[0] = hexutil.Uint64(a[0])
-		result[0] = hexutil.Uint64(a[1])
-		return result
+	toUint64Array := func(a *[2]uint64) *[2]hexutil.Uint64 {
+		if a == nil {
+			return nil
+		} else {
+			result := [2]hexutil.Uint64{}
+			result[0] = hexutil.Uint64(a[0])
+			result[1] = hexutil.Uint64(a[1])
+			return &result
+		}
 	}
 	jsonObj := &jsonCellsFilter{
 		Script:              r.Script,
