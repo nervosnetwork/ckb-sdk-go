@@ -1,3 +1,13 @@
+# 2.1.1 (2023-01-09)
+## What's Changed
+* Supporting nil target in GetFeeRateStatics by @code-monad in https://github.com/nervosnetwork/ckb-sdk-go/pull/186
+* chore: format code by @shaojunda in https://github.com/nervosnetwork/ckb-sdk-go/pull/188
+* chore: update script generation statement on README by @shaojunda in https://github.com/nervosnetwork/ckb-sdk-go/pull/187
+* Fix indexer search key filter json encode error by @code-monad in https://github.com/nervosnetwork/ckb-sdk-go/pull/190
+
+
+**Full Changelog**: https://github.com/nervosnetwork/ckb-sdk-go/compare/v2.1.0...v2.1.1
+
 # 2.1.0 (2022-12-26)
 
 ## What's Changed
