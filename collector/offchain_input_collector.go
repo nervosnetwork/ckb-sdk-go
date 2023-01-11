@@ -57,14 +57,14 @@ func (c *OffChainInputCollector) ApplyOffChainTransaction(tipBlockNumber uint64,
 		}
 	}
 
-	for _, tx_input := range transaction.Inputs {
-		consumedOutpoint := tx_input.PreviousOutput
+	for _, txInput := range transaction.Inputs {
+		consumedOutpoint := txInput.PreviousOutput
 		c.usedLiveCells.PushBack(OutPointWithBlockNumber{consumedOutpoint, tipBlockNumber})
 		next = c.offChainLiveCells.Front()
 		for cell := next; cell != nil; cell = next {
 			if next != nil {
 				outpoint := next.Value.(TransactionInputWithBlockNumber).OutPoint
-				if tx_input.PreviousOutput == outpoint {
+				if txInput.PreviousOutput == outpoint {
 					c.offChainLiveCells.Remove(cell)
 				}
 			}

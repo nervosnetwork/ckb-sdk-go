@@ -584,9 +584,9 @@ func SendChainedTransactionExample() error {
 	fmt.Println("transaction hash: " + hexutil.Encode(hash.Bytes()))
 
 	it2, _ := collector.NewLiveCellIteratorFromAddress(client, address2)
-	cell_iterator2 := it2.(*collector.LiveCellIterator)
+	cellIterator2 := it2.(*collector.LiveCellIterator)
 	var iterator2 = collector.OffChainInputIterator{
-		Iterator:                    cell_iterator2,
+		Iterator:                    cellIterator2,
 		Collector:                   offChainInputCollector,
 		ConsumeOffChainCellsFirstly: true,
 	}
@@ -597,7 +597,9 @@ func SendChainedTransactionExample() error {
 		return err
 	}
 
-	txWithGroupsBuilder.AddChangeOutputByAddress(address2)
+	if err = txWithGroupsBuilder.AddChangeOutputByAddress(address2); err != nil {
+		return err
+	}
 
 	txWithGroups, err = txWithGroupsBuilder.Build(config)
 
