@@ -59,13 +59,13 @@ func (r *OffChainInputIterator) Next() *types.TransactionInput {
 func (r *OffChainInputIterator) consumeNextOffChainCell() *types.TransactionInput {
 	var next *list.Element
 	for it := r.Collector.offChainLiveCells.Front(); it != nil; it = next {
-		next = it.Next()
-		if next != nil {
+		if it != nil {
 			if r.isTransactionInputForSearchKey(next.Value.(TransactionInputWithBlockNumber), r.Iterator.SearchKey) {
 				r.Collector.offChainLiveCells.Remove(it)
 				var result = next.Value.(TransactionInputWithBlockNumber)
 				return &result.TransactionInput
 			}
+			next = it.Next()
 		}
 	}
 	return nil
