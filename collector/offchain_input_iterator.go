@@ -104,7 +104,7 @@ func (r *OffChainInputIterator) isTransactionInputForSearchKey(transactionInputW
 	}
 
 	cellOutput := transactionInputWithBlockNumber.Output
-	cellOuputData := transactionInputWithBlockNumber.OutputData
+	cellOutputData := transactionInputWithBlockNumber.OutputData
 	switch searchKey.ScriptType {
 	case types.ScriptTypeLock:
 		if cellOutput.Lock != searchKey.Script {
@@ -146,7 +146,7 @@ func (r *OffChainInputIterator) isTransactionInputForSearchKey(transactionInputW
 			}
 
 			if filter.OutputDataLenRange != nil {
-				length := uint64(len(cellOuputData))
+				length := uint64(len(cellOutputData))
 				if length < filter.OutputDataLenRange[0] ||
 					length >= filter.OutputDataLenRange[1] {
 					return false
