@@ -2,7 +2,6 @@ package collector
 
 import (
 	"container/list"
-	"fmt"
 	"github.com/nervosnetwork/ckb-sdk-go/v2/indexer"
 	"github.com/nervosnetwork/ckb-sdk-go/v2/rpc"
 	"github.com/nervosnetwork/ckb-sdk-go/v2/types"
@@ -44,7 +43,6 @@ func (r *OffChainInputIterator) HasNext() bool {
 
 func (r *OffChainInputIterator) Next() *types.TransactionInput {
 	r.update()
-	fmt.Printf("current: %+v\n", r.current)
 	if r.current != nil {
 		if !r.isCurrentFromOffChain {
 			r.Iterator.index++
@@ -60,10 +58,8 @@ func (r *OffChainInputIterator) Next() *types.TransactionInput {
 func (r *OffChainInputIterator) consumeNextOffChainCell() *types.TransactionInput {
 	var next *list.Element
 	for it := r.Collector.offChainLiveCells.Front(); it != nil; it = next {
-		fmt.Printf("it: %+v\n", it)
 		if it != nil {
 			if r.isTransactionInputForSearchKey(it.Value.(TransactionInputWithBlockNumber), r.Iterator.SearchKey) {
-				fmt.Println("pass")
 				r.Collector.offChainLiveCells.Remove(it)
 				var result = it.Value.(TransactionInputWithBlockNumber)
 				return &result.TransactionInput
@@ -82,7 +78,6 @@ func (r *OffChainInputIterator) update() bool {
 
 	if r.ConsumeOffChainCellsFirstly {
 		r.current = r.consumeNextOffChainCell()
-		fmt.Printf("current: %+v\n", r.current)
 		if r.current != nil {
 			r.isCurrentFromOffChain = true
 			return true
@@ -111,27 +106,25 @@ func (r *OffChainInputIterator) isTransactionInputForSearchKey(transactionInputW
 	cellOutputData := transactionInputWithBlockNumber.OutputData
 	switch searchKey.ScriptType {
 	case types.ScriptTypeLock:
-		if cellOutput.Lock != searchKey.Script {
+		if !cellOutput.Lock.Equals(searchKey.Script) {
 			return false
 		}
-		break
 	case types.ScriptTypeType:
-		if cellOutput.Type != searchKey.Script {
+		if !cellOutput.Type.Equals(searchKey.Script) {
 			return false
 		}
-		break
 	}
 	filter := searchKey.Filter
 	if filter != nil {
 		if filter.Script != nil {
 			switch searchKey.ScriptType {
 			case "lock":
-				if cellOutput.Type != filter.Script {
+				if !cellOutput.Type.Equals(filter.Script) {
 					return false
 				}
 				break
 			case "type":
-				if cellOutput.Lock != filter.Script {
+				if !cellOutput.Lock.Equals(filter.Script) {
 					return false
 				}
 			}
