@@ -2,6 +2,7 @@ package collector
 
 import (
 	"container/list"
+	"fmt"
 	"github.com/nervosnetwork/ckb-sdk-go/v2/indexer"
 	"github.com/nervosnetwork/ckb-sdk-go/v2/rpc"
 	"github.com/nervosnetwork/ckb-sdk-go/v2/types"
@@ -43,7 +44,7 @@ func (r *OffChainInputIterator) HasNext() bool {
 
 func (r *OffChainInputIterator) Next() *types.TransactionInput {
 	r.update()
-	r.current = r.Iterator.cells[r.Iterator.index]
+	fmt.Printf("current: %+v\n", r.current)
 	if r.current != nil {
 		if !r.isCurrentFromOffChain {
 			r.Iterator.index++
@@ -59,8 +60,10 @@ func (r *OffChainInputIterator) Next() *types.TransactionInput {
 func (r *OffChainInputIterator) consumeNextOffChainCell() *types.TransactionInput {
 	var next *list.Element
 	for it := r.Collector.offChainLiveCells.Front(); it != nil; it = next {
+		fmt.Printf("it: %+v\n", it)
 		if it != nil {
 			if r.isTransactionInputForSearchKey(it.Value.(TransactionInputWithBlockNumber), r.Iterator.SearchKey) {
+				fmt.Println("pass")
 				r.Collector.offChainLiveCells.Remove(it)
 				var result = it.Value.(TransactionInputWithBlockNumber)
 				return &result.TransactionInput
@@ -79,6 +82,7 @@ func (r *OffChainInputIterator) update() bool {
 
 	if r.ConsumeOffChainCellsFirstly {
 		r.current = r.consumeNextOffChainCell()
+		fmt.Printf("current: %+v\n", r.current)
 		if r.current != nil {
 			r.isCurrentFromOffChain = true
 			return true
