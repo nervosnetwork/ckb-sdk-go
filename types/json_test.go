@@ -2,6 +2,7 @@ package types
 
 import (
 	"encoding/json"
+	"fmt"
 	ethcommon "github.com/ethereum/go-ethereum/common"
 	"github.com/stretchr/testify/assert"
 	"math/big"
@@ -163,6 +164,46 @@ func TestJsonTransactionWithStatus(t *testing.T) {
 }`)
 	var v TransactionWithStatus
 	json.Unmarshal(jsonText1, &v)
+
+	jsonText2, _ := v.MarshalJSON()
+	AssertJsonEqual(t, jsonText1, jsonText2)
+}
+
+func TestRejectedJsonTransactionWithStatus(t *testing.T) {
+	jsonText1 := []byte(`
+{
+    "transaction": null,
+    "cycles": null,
+    "tx_status": {
+        "block_hash": "0xe1ed2d2282aad742a95abe51c21d50b1c19e194f21fbd1ed2516f82bd042579a",
+        "status": "rejected",
+        "reason": "{\"type\":\"Resolve\",\"description\":\"Resolve failed Dead(OutPoint(0xb7c0dff4c715fe47950f5192fa275bbfe76735eeba0017b7da77d5cd6e6a501200000000))\"}"
+    }
+}`)
+	var v TransactionWithStatus
+	json.Unmarshal(jsonText1, &v)
+
+	fmt.Printf("v1: %+v\n", v)
+
+	jsonText2, _ := v.MarshalJSON()
+	AssertJsonEqual(t, jsonText1, jsonText2)
+}
+
+func TestUnknownJsonTransactionWithStatus(t *testing.T) {
+	jsonText1 := []byte(`
+{
+    "transaction": null,
+    "cycles": null,
+    "tx_status": {
+        "block_hash": "0x7b00ed399a69eb6b4191ce45e8337835bf3ecadabb8d7281de50fa07fb2034f1",
+        "status": "unknown",
+        "reason": null
+    }
+}`)
+	var v TransactionWithStatus
+	json.Unmarshal(jsonText1, &v)
+
+	fmt.Printf("v1: %+v\n", v)
 
 	jsonText2, _ := v.MarshalJSON()
 	AssertJsonEqual(t, jsonText1, jsonText2)
