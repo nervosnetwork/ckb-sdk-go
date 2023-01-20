@@ -43,7 +43,6 @@ func (r *OffChainInputIterator) HasNext() bool {
 
 func (r *OffChainInputIterator) Next() *types.TransactionInput {
 	r.update()
-	r.current = r.Iterator.cells[r.Iterator.index]
 	if r.current != nil {
 		if !r.isCurrentFromOffChain {
 			r.Iterator.index++
@@ -60,9 +59,9 @@ func (r *OffChainInputIterator) consumeNextOffChainCell() *types.TransactionInpu
 	var next *list.Element
 	for it := r.Collector.offChainLiveCells.Front(); it != nil; it = next {
 		if it != nil {
-			if r.isTransactionInputForSearchKey(next.Value.(TransactionInputWithBlockNumber), r.Iterator.SearchKey) {
+			if r.isTransactionInputForSearchKey(it.Value.(TransactionInputWithBlockNumber), r.Iterator.SearchKey) {
 				r.Collector.offChainLiveCells.Remove(it)
-				var result = next.Value.(TransactionInputWithBlockNumber)
+				var result = it.Value.(TransactionInputWithBlockNumber)
 				return &result.TransactionInput
 			}
 			next = it.Next()
@@ -107,27 +106,25 @@ func (r *OffChainInputIterator) isTransactionInputForSearchKey(transactionInputW
 	cellOutputData := transactionInputWithBlockNumber.OutputData
 	switch searchKey.ScriptType {
 	case types.ScriptTypeLock:
-		if cellOutput.Lock != searchKey.Script {
+		if !cellOutput.Lock.Equals(searchKey.Script) {
 			return false
 		}
-		break
 	case types.ScriptTypeType:
-		if cellOutput.Type != searchKey.Script {
+		if !cellOutput.Type.Equals(searchKey.Script) {
 			return false
 		}
-		break
 	}
 	filter := searchKey.Filter
 	if filter != nil {
 		if filter.Script != nil {
 			switch searchKey.ScriptType {
 			case "lock":
-				if cellOutput.Type != filter.Script {
+				if !cellOutput.Type.Equals(filter.Script) {
 					return false
 				}
 				break
 			case "type":
-				if cellOutput.Lock != filter.Script {
+				if !cellOutput.Lock.Equals(filter.Script) {
 					return false
 				}
 			}
