@@ -15,9 +15,11 @@ type Client interface {
 	GetTipHeader(ctx context.Context) (*types.Header, error)
 	GetGenesisBlock(ctx context.Context) (*types.Block, error)
 	GetHeader(ctx context.Context, hash types.Hash) (*types.Header, error)
-	GetTransaction(ctx context.Context, hash types.Hash) (*TransactionWithHeader, error)
+	GetTransaction(ctx context.Context, hash types.Hash) (*TransactionStatus, error)
 	FetchHeader(ctx context.Context, hash types.Hash) (*FetchedHeader, error)
 	FetchTransaction(ctx context.Context, hash types.Hash) (*FetchedTransaction, error)
+	GetPeers(ctx context.Context) ([]*types.RemoteNode, error)
+	LocalNodeInfo(ctx context.Context) (*types.LocalNode, error)
 	GetCells(ctx context.Context, searchKey *indexer.SearchKey, order indexer.SearchOrder, limit uint64, afterCursor string) (*indexer.LiveCells, error)
 	GetTransactions(ctx context.Context, searchKey *indexer.SearchKey, order indexer.SearchOrder, limit uint64, afterCursor string) (*TxsWithCell, error)
 	GetTransactionsGrouped(ctx context.Context, searchKey *indexer.SearchKey, order indexer.SearchOrder, limit uint64, afterCursor string) (*TxsWithCells, error)
@@ -80,8 +82,8 @@ func (cli *client) GetHeader(ctx context.Context, hash types.Hash) (*types.Heade
 	return &result, nil
 }
 
-func (cli *client) GetTransaction(ctx context.Context, hash types.Hash) (*TransactionWithHeader, error) {
-	var result TransactionWithHeader
+func (cli *client) GetTransaction(ctx context.Context, hash types.Hash) (*TransactionStatus, error) {
+	var result TransactionStatus
 	err := cli.c.CallContext(ctx, &result, "get_transaction", hash)
 	if err != nil {
 		return nil, err
@@ -105,6 +107,28 @@ func (cli *client) FetchTransaction(ctx context.Context, hash types.Hash) (*Fetc
 		return nil, err
 	}
 	return &result, nil
+}
+
+func (cli *client) GetPeers(ctx context.Context) ([]*types.RemoteNode, error) {
+	var result []*types.RemoteNode
+
+	err := cli.c.CallContext(ctx, &result, "get_peers")
+	if err != nil {
+		return nil, err
+	}
+
+	return result, err
+}
+
+func (cli *client) LocalNodeInfo(ctx context.Context) (*types.LocalNode, error) {
+	var result types.LocalNode
+
+	err := cli.c.CallContext(ctx, &result, "local_node_info")
+	if err != nil {
+		return nil, err
+	}
+
+	return &result, err
 }
 
 func (cli *client) GetCells(ctx context.Context, searchKey *indexer.SearchKey, order indexer.SearchOrder, limit uint64, afterCursor string) (*indexer.LiveCells, error) {

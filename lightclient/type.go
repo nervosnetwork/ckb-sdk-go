@@ -11,9 +11,28 @@ type ScriptDetail struct {
 	BlockNumber uint64           `json:"block_number"`
 }
 
+type TxStatusString string
+
+const (
+	TxStatusPending   TxStatusString = "pending"
+	TxStatusCommitted TxStatusString = "committed"
+	TxStatusUnknown   TxStatusString = "unknown"
+)
+
+type TxStatus struct {
+	Status    TxStatusString `json:"status"`
+	BlockHash *types.Hash    `json:"block_hash"`
+}
+
 type TransactionWithHeader struct {
 	Transaction *types.Transaction `json:"transaction"`
 	Header      *types.Header      `json:"header"`
+}
+
+type TransactionStatus struct {
+	Transaction *types.Transaction `json:"transaction"`
+	Cycles      uint64             `json:"cycles"`
+	TxStatus    *TxStatus          `json:"tx_status"`
 }
 
 type FetchStatus string
