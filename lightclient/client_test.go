@@ -27,7 +27,6 @@ func skipCI(t *testing.T) {
 }
 
 func TestSetScripts(t *testing.T) {
-	skipCI(t)
 	scriptDetail := ScriptDetail{
 		// ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq2qf8keemy2p5uu0g0gn8cd4ju23s5269qk8rg4r
 		Script:      scriptForTest,
@@ -39,7 +38,6 @@ func TestSetScripts(t *testing.T) {
 }
 
 func TestGetScripts(t *testing.T) {
-	skipCI(t)
 	scriptDetails, err := c.GetScripts(ctx)
 	assert.NoError(t, err)
 	assert.NotEmpty(t, scriptDetails)
@@ -66,7 +64,7 @@ func TestGetGenesisBlock(t *testing.T) {
 func TestGetHeader(t *testing.T) {
 	skipCI(t)
 	header, err := c.GetHeader(ctx,
-		types.HexToHash("0xc78c65185c14e1b02d6457a06b4678bab7e15f194f49a840319b57c67d20053c"))
+		types.HexToHash("0x86487ca41db5141bb750a0b5dbea8b87c0b3a05dda1c1e587ca9f7ccae3b4ad5"))
 	assert.NoError(t, err)
 	assert.NotEmpty(t, header)
 }
@@ -77,7 +75,7 @@ func TestGetTransaction(t *testing.T) {
 		types.HexToHash("0x151d4d450c9e3bccf4b47d1ba6942d4e9c8c0eeeb7b9f708df827c164f035aa8"))
 	assert.NoError(t, err)
 	assert.NotEmpty(t, txWitHeader.Transaction)
-	assert.NotEmpty(t, txWitHeader.Header)
+	assert.NotEmpty(t, txWitHeader.TxStatus)
 }
 
 func TestFetchHeader(t *testing.T) {
@@ -151,4 +149,24 @@ func TestGetCellsCapacity(t *testing.T) {
 	assert.NotEmpty(t, resp.BlockNumber)
 	assert.NotEmpty(t, resp.BlockHash)
 	assert.NotEmpty(t, resp.Capacity)
+}
+
+func TestGetPeers(t *testing.T) {
+	peers, err := c.GetPeers(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.True(t, len(peers) > 0)
+	assert.True(t, len(peers[0].Addresses) > 0)
+	assert.True(t, len(peers[0].Protocols) > 0)
+}
+
+func TestClient_LocalNodeInfo(t *testing.T) {
+	nodeInfo, err := c.LocalNodeInfo(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.True(t, len(nodeInfo.Addresses) > 0)
+	assert.True(t, len(nodeInfo.Protocols) > 0)
+	assert.True(t, len(nodeInfo.Protocols[0].SupportVersions) > 0)
 }
