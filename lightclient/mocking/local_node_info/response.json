@@ -1,0 +1,82 @@
+{
+  "jsonrpc": "2.0",
+  "result": {
+    "active": true,
+    "addresses": [
+      {
+        "address": "/ip4/0.0.0.0/tcp/8118",
+        "score": "0x1"
+      }
+    ],
+    "connections": "0x4",
+    "node_id": "QmPhgeb9wnBZ9Dcc2cNsJUAB24mE9DeJZN1adhwqTr3Agp",
+    "protocols": [
+      {
+        "id": "0x64",
+        "name": "/ckb/syn",
+        "support_versions": [
+          "2"
+        ]
+      },
+      {
+        "id": "0x65",
+        "name": "/ckb/relay",
+        "support_versions": [
+          "2"
+        ]
+      },
+      {
+        "id": "0x78",
+        "name": "/ckb/lightclient",
+        "support_versions": [
+          "2"
+        ]
+      },
+      {
+        "id": "0x79",
+        "name": "/ckb/filter",
+        "support_versions": [
+          "2"
+        ]
+      },
+      {
+        "id": "0x2",
+        "name": "/ckb/identify",
+        "support_versions": [
+          "2"
+        ]
+      },
+      {
+        "id": "0x0",
+        "name": "/ckb/ping",
+        "support_versions": [
+          "2"
+        ]
+      },
+      {
+        "id": "0x1",
+        "name": "/ckb/discovery",
+        "support_versions": [
+          "2",
+          "2.1"
+        ]
+      },
+      {
+        "id": "0x3",
+        "name": "/ckb/flr",
+        "support_versions": [
+          "2"
+        ]
+      },
+      {
+        "id": "0x4",
+        "name": "/ckb/disconnectmsg",
+        "support_versions": [
+          "2"
+        ]
+      }
+    ],
+    "version": "0.2.1"
+  },
+  "id": 1
+}

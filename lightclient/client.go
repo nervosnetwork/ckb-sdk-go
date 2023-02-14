@@ -5,6 +5,7 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/rpc"
 	"github.com/nervosnetwork/ckb-sdk-go/v2/indexer"
+	"github.com/nervosnetwork/ckb-sdk-go/v2/mocking"
 	"github.com/nervosnetwork/ckb-sdk-go/v2/types"
 )
 
@@ -26,20 +27,25 @@ type Client interface {
 	GetCellsCapacity(ctx context.Context, searchKey *indexer.SearchKey) (*indexer.Capacity, error)
 	CallContext(ctx context.Context, result interface{}, method string, args ...interface{}) error
 	Close()
+	GetRawClient() types.GenericRPCClient
 }
 
 type client struct {
-	c *rpc.Client
+	c types.GenericRPCClient
+}
+
+func (cli *client) GetRawClient() types.GenericRPCClient {
+	return cli.c
 }
 
 func (cli *client) SetScripts(ctx context.Context, scriptDetails []*ScriptDetail) error {
-	err := cli.c.CallContext(ctx, nil, "set_scripts", scriptDetails)
+	err := cli.GetRawClient().CallContext(ctx, nil, "set_scripts", scriptDetails)
 	return err
 }
 
 func (cli *client) GetScripts(ctx context.Context) ([]*ScriptDetail, error) {
 	var result []*ScriptDetail
-	err := cli.c.CallContext(ctx, &result, "get_scripts")
+	err := cli.GetRawClient().CallContext(ctx, &result, "get_scripts")
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +54,7 @@ func (cli *client) GetScripts(ctx context.Context) ([]*ScriptDetail, error) {
 
 func (cli *client) SendTransaction(ctx context.Context, tx *types.Transaction) (*types.Hash, error) {
 	var result types.Hash
-	err := cli.c.CallContext(ctx, &result, "send_transaction", *tx)
+	err := cli.GetRawClient().CallContext(ctx, &result, "send_transaction", *tx)
 	if err != nil {
 		return nil, err
 	}
@@ -57,7 +63,7 @@ func (cli *client) SendTransaction(ctx context.Context, tx *types.Transaction) (
 
 func (cli *client) GetTipHeader(ctx context.Context) (*types.Header, error) {
 	var result types.Header
-	err := cli.c.CallContext(ctx, &result, "get_tip_header")
+	err := cli.GetRawClient().CallContext(ctx, &result, "get_tip_header")
 	if err != nil {
 		return nil, err
 	}
@@ -66,7 +72,7 @@ func (cli *client) GetTipHeader(ctx context.Context) (*types.Header, error) {
 
 func (cli *client) GetGenesisBlock(ctx context.Context) (*types.Block, error) {
 	var result types.Block
-	err := cli.c.CallContext(ctx, &result, "get_genesis_block")
+	err := cli.GetRawClient().CallContext(ctx, &result, "get_genesis_block")
 	if err != nil {
 		return nil, err
 	}
@@ -75,7 +81,7 @@ func (cli *client) GetGenesisBlock(ctx context.Context) (*types.Block, error) {
 
 func (cli *client) GetHeader(ctx context.Context, hash types.Hash) (*types.Header, error) {
 	var result types.Header
-	err := cli.c.CallContext(ctx, &result, "get_header", hash)
+	err := cli.GetRawClient().CallContext(ctx, &result, "get_header", hash)
 	if err != nil {
 		return nil, err
 	}
@@ -84,7 +90,7 @@ func (cli *client) GetHeader(ctx context.Context, hash types.Hash) (*types.Heade
 
 func (cli *client) GetTransaction(ctx context.Context, hash types.Hash) (*TransactionStatus, error) {
 	var result TransactionStatus
-	err := cli.c.CallContext(ctx, &result, "get_transaction", hash)
+	err := cli.GetRawClient().CallContext(ctx, &result, "get_transaction", hash)
 	if err != nil {
 		return nil, err
 	}
@@ -93,7 +99,7 @@ func (cli *client) GetTransaction(ctx context.Context, hash types.Hash) (*Transa
 
 func (cli *client) FetchHeader(ctx context.Context, hash types.Hash) (*FetchedHeader, error) {
 	var result FetchedHeader
-	err := cli.c.CallContext(ctx, &result, "fetch_header", hash)
+	err := cli.GetRawClient().CallContext(ctx, &result, "fetch_header", hash)
 	if err != nil {
 		return nil, err
 	}
@@ -102,7 +108,7 @@ func (cli *client) FetchHeader(ctx context.Context, hash types.Hash) (*FetchedHe
 
 func (cli *client) FetchTransaction(ctx context.Context, hash types.Hash) (*FetchedTransaction, error) {
 	var result FetchedTransaction
-	err := cli.c.CallContext(ctx, &result, "fetch_transaction", hash)
+	err := cli.GetRawClient().CallContext(ctx, &result, "fetch_transaction", hash)
 	if err != nil {
 		return nil, err
 	}
@@ -112,7 +118,7 @@ func (cli *client) FetchTransaction(ctx context.Context, hash types.Hash) (*Fetc
 func (cli *client) GetPeers(ctx context.Context) ([]*types.RemoteNode, error) {
 	var result []*types.RemoteNode
 
-	err := cli.c.CallContext(ctx, &result, "get_peers")
+	err := cli.GetRawClient().CallContext(ctx, &result, "get_peers")
 	if err != nil {
 		return nil, err
 	}
@@ -123,7 +129,7 @@ func (cli *client) GetPeers(ctx context.Context) ([]*types.RemoteNode, error) {
 func (cli *client) LocalNodeInfo(ctx context.Context) (*types.LocalNode, error) {
 	var result types.LocalNode
 
-	err := cli.c.CallContext(ctx, &result, "local_node_info")
+	err := cli.GetRawClient().CallContext(ctx, &result, "local_node_info")
 	if err != nil {
 		return nil, err
 	}
@@ -137,9 +143,9 @@ func (cli *client) GetCells(ctx context.Context, searchKey *indexer.SearchKey, o
 		err    error
 	)
 	if afterCursor == "" {
-		err = cli.c.CallContext(ctx, &result, "get_cells", searchKey, order, hexutil.Uint64(limit))
+		err = cli.GetRawClient().CallContext(ctx, &result, "get_cells", searchKey, order, hexutil.Uint64(limit))
 	} else {
-		err = cli.c.CallContext(ctx, &result, "get_cells", searchKey, order, hexutil.Uint64(limit), afterCursor)
+		err = cli.GetRawClient().CallContext(ctx, &result, "get_cells", searchKey, order, hexutil.Uint64(limit), afterCursor)
 	}
 	if err != nil {
 		return nil, err
@@ -154,9 +160,9 @@ func (cli *client) GetTransactions(ctx context.Context, searchKey *indexer.Searc
 		err    error
 	)
 	if afterCursor == "" {
-		err = cli.c.CallContext(ctx, &result, "get_transactions", searchKey, order, hexutil.Uint64(limit))
+		err = cli.GetRawClient().CallContext(ctx, &result, "get_transactions", searchKey, order, hexutil.Uint64(limit))
 	} else {
-		err = cli.c.CallContext(ctx, &result, "get_transactions", searchKey, order, hexutil.Uint64(limit), afterCursor)
+		err = cli.GetRawClient().CallContext(ctx, &result, "get_transactions", searchKey, order, hexutil.Uint64(limit), afterCursor)
 	}
 	if err != nil {
 		return nil, err
@@ -175,9 +181,9 @@ func (cli *client) GetTransactionsGrouped(ctx context.Context, searchKey *indexe
 	var result TxsWithCells
 	var err error
 	if afterCursor == "" {
-		err = cli.c.CallContext(ctx, &result, "get_transactions", payload, order, hexutil.Uint64(limit))
+		err = cli.GetRawClient().CallContext(ctx, &result, "get_transactions", payload, order, hexutil.Uint64(limit))
 	} else {
-		err = cli.c.CallContext(ctx, &result, "get_transactions", payload, order, hexutil.Uint64(limit), afterCursor)
+		err = cli.GetRawClient().CallContext(ctx, &result, "get_transactions", payload, order, hexutil.Uint64(limit), afterCursor)
 	}
 	if err != nil {
 		return nil, err
@@ -187,7 +193,7 @@ func (cli *client) GetTransactionsGrouped(ctx context.Context, searchKey *indexe
 
 func (cli *client) GetCellsCapacity(ctx context.Context, searchKey *indexer.SearchKey) (*indexer.Capacity, error) {
 	var result indexer.Capacity
-	err := cli.c.CallContext(ctx, &result, "get_cells_capacity", searchKey)
+	err := cli.GetRawClient().CallContext(ctx, &result, "get_cells_capacity", searchKey)
 	if err != nil {
 		return nil, err
 	}
@@ -195,7 +201,7 @@ func (cli *client) GetCellsCapacity(ctx context.Context, searchKey *indexer.Sear
 }
 
 func (cli *client) CallContext(ctx context.Context, result interface{}, method string, args ...interface{}) error {
-	err := cli.c.CallContext(ctx, result, method, args...)
+	err := cli.GetRawClient().CallContext(ctx, result, method, args...)
 	if err != nil {
 		return err
 	}
@@ -203,7 +209,7 @@ func (cli *client) CallContext(ctx context.Context, result interface{}, method s
 }
 
 func (cli *client) Close() {
-	cli.c.Close()
+	cli.GetRawClient().Close()
 }
 
 func Dial(url string) (Client, error) {
@@ -218,6 +224,18 @@ func DialContext(ctx context.Context, url string) (Client, error) {
 	return NewClient(c), nil
 }
 
+func DialMockContext(ctx context.Context, url string) (Client, error) {
+	c, err := mocking.DialContext(ctx, url)
+	if err != nil {
+		return nil, err
+	}
+	return NewMockingClient(c), err
+}
+
 func NewClient(c *rpc.Client) Client {
+	return &client{c}
+}
+
+func NewMockingClient(c *mocking.MockClient) Client {
 	return &client{c}
 }

@@ -1,0 +1,254 @@
+{
+  "jsonrpc": "2.0",
+  "result": [
+    {
+      "addresses": [
+        {
+          "address": "/ip4/18.136.60.221/tcp/8111/p2p/QmTt6HeNakL8Fpmevrhdna7J4NzEMf9pLchf1CXtmtSrwb",
+          "score": "0x64"
+        },
+        {
+          "address": "/ip4/18.136.60.221/tcp/8111/p2p/QmTt6HeNakL8Fpmevrhdna7J4NzEMf9pLchf1CXtmtSrwb",
+          "score": "0x64"
+        }
+      ],
+      "connected_duration": "0x550a7c7",
+      "node_id": "QmTt6HeNakL8Fpmevrhdna7J4NzEMf9pLchf1CXtmtSrwb",
+      "protocols": [
+        {
+          "id": "0x0",
+          "version": "2"
+        },
+        {
+          "id": "0x79",
+          "version": "2"
+        },
+        {
+          "id": "0x2",
+          "version": "2"
+        },
+        {
+          "id": "0x64",
+          "version": "2"
+        },
+        {
+          "id": "0x1",
+          "version": "2.1"
+        },
+        {
+          "id": "0x4",
+          "version": "2"
+        },
+        {
+          "id": "0x78",
+          "version": "2"
+        }
+      ],
+      "sync_state": {
+        "proved_best_known_header": {
+          "compact_target": "0x1d08ac5c",
+          "dao": "0x445d53d1b63fa1434e2f49a1d4e02600bac785e7d12c690400b6072078c18008",
+          "epoch": "0x7080492001759",
+          "extra_hash": "0xfae050358e5f7bb1d9b865075d1b124dec8660deb170e140e93c62021625be5c",
+          "hash": "0xd53873d9b57563acad98f6a75dd090db33161f0399307d33b369283a191c5e90",
+          "nonce": "0x78f01d65a22733493a84cf7ea2362457",
+          "number": "0x7f26fd",
+          "parent_hash": "0x585b96d83110eed71dfcee6b6df0a1a5f40734ff4b0306332b35d6c00b9a372c",
+          "proposals_hash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "timestamp": "0x1864d1c62b6",
+          "transactions_root": "0x7f71f2ce477a70daecd60da7507754d92b742a2d3facf450a319797b97cf4bc8",
+          "version": "0x0"
+        },
+        "requested_best_known_header": null
+      },
+      "version": "0.107.0 (30e1255 2023-01-30)"
+    },
+    {
+      "addresses": [
+        {
+          "address": "/ip4/35.176.207.239/tcp/8111/p2p/QmSJTsMsMGBjzv1oBNwQU36VhQRxc2WQpFoRu1ZifYKrjZ",
+          "score": "0x64"
+        },
+        {
+          "address": "/ip4/35.176.207.239/tcp/8111/p2p/QmSJTsMsMGBjzv1oBNwQU36VhQRxc2WQpFoRu1ZifYKrjZ",
+          "score": "0x64"
+        }
+      ],
+      "connected_duration": "0x550a502",
+      "node_id": "QmSJTsMsMGBjzv1oBNwQU36VhQRxc2WQpFoRu1ZifYKrjZ",
+      "protocols": [
+        {
+          "id": "0x1",
+          "version": "2.1"
+        },
+        {
+          "id": "0x79",
+          "version": "2"
+        },
+        {
+          "id": "0x2",
+          "version": "2"
+        },
+        {
+          "id": "0x64",
+          "version": "2"
+        },
+        {
+          "id": "0x0",
+          "version": "2"
+        },
+        {
+          "id": "0x78",
+          "version": "2"
+        },
+        {
+          "id": "0x4",
+          "version": "2"
+        }
+      ],
+      "sync_state": {
+        "proved_best_known_header": {
+          "compact_target": "0x1d08ac5c",
+          "dao": "0xea861095543fa14398799893d4e02600c9c87a15bd2c69040093923163c18008",
+          "epoch": "0x708048f001759",
+          "extra_hash": "0x8d775c9a7b0e27fd37476f7395839ab3f505f166ac19286ad2a6f09c867b658c",
+          "hash": "0x7727a646165e1d073f7b30a5be1138e0b0d94c41616584c7dd9dba6306c17b88",
+          "nonce": "0x4a39e081043015da08d8f8d9122ff1bc",
+          "number": "0x7f26fa",
+          "parent_hash": "0xad485d8edbc4ce1519bbff93206ed002337d175be8c2280bdf14bdbd66fc63cc",
+          "proposals_hash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "timestamp": "0x1864d1c3dbf",
+          "transactions_root": "0xb0e4572cef8ca39bc64891828ca30b5bc50aefa5782b049986d70db7bf1de145",
+          "version": "0x0"
+        },
+        "requested_best_known_header": null
+      },
+      "version": "0.107.0 (30e1255 2023-01-30)"
+    },
+    {
+      "addresses": [
+        {
+          "address": "/ip4/18.217.146.65/tcp/8111/p2p/QmT6DFfm18wtbJz3y4aPNn3ac86N4d4p4xtfQRRPf73frC",
+          "score": "0x64"
+        },
+        {
+          "address": "/ip4/18.217.146.65/tcp/8111/p2p/QmT6DFfm18wtbJz3y4aPNn3ac86N4d4p4xtfQRRPf73frC",
+          "score": "0x64"
+        }
+      ],
+      "connected_duration": "0x550a4ec",
+      "node_id": "QmT6DFfm18wtbJz3y4aPNn3ac86N4d4p4xtfQRRPf73frC",
+      "protocols": [
+        {
+          "id": "0x78",
+          "version": "2"
+        },
+        {
+          "id": "0x64",
+          "version": "2"
+        },
+        {
+          "id": "0x1",
+          "version": "2.1"
+        },
+        {
+          "id": "0x2",
+          "version": "2"
+        },
+        {
+          "id": "0x4",
+          "version": "2"
+        },
+        {
+          "id": "0x0",
+          "version": "2"
+        },
+        {
+          "id": "0x79",
+          "version": "2"
+        }
+      ],
+      "sync_state": {
+        "proved_best_known_header": {
+          "compact_target": "0x1d08ac5c",
+          "dao": "0xaea28e17133fa1436c00788ad4e02600e6181e34af2c6904005d06b439c18008",
+          "epoch": "0x708048d001759",
+          "extra_hash": "0xa0d71e575f4af638b613d254993ee0fa15a04f7ee5546ffc489ce4ec431239ca",
+          "hash": "0xe25bb0c3cc0760260bc1e20812fa7d1ae09d53fac7bf03804f750c3cb2ba7d58",
+          "nonce": "0xc9662cadc26010b2626f94f5c825afd9",
+          "number": "0x7f26f8",
+          "parent_hash": "0xbd405dbdeda3a664eb4c5a8b10d7bc1f8a606dd56c8110ad55e95f4e91de62ba",
+          "proposals_hash": "0x8c3143b93c5c91393cf4517f97a454685c01cdeefff2be7467117fa156af4449",
+          "timestamp": "0x1864d1c2d00",
+          "transactions_root": "0x7f0adc76d8b27d82072cf747e88563d42230781a22607bcdff08c93e27335d97",
+          "version": "0x0"
+        },
+        "requested_best_known_header": null
+      },
+      "version": "0.107.0 (30e1255 2023-01-30)"
+    },
+    {
+      "addresses": [
+        {
+          "address": "/ip4/47.111.169.36/tcp/8111/p2p/QmNQ4jky6uVqLDrPU7snqxARuNGWNLgSrTnssbRuy3ij2W",
+          "score": "0x64"
+        },
+        {
+          "address": "/ip4/47.111.169.36/tcp/8111/p2p/QmNQ4jky6uVqLDrPU7snqxARuNGWNLgSrTnssbRuy3ij2W",
+          "score": "0x64"
+        }
+      ],
+      "connected_duration": "0x550a7df",
+      "node_id": "QmNQ4jky6uVqLDrPU7snqxARuNGWNLgSrTnssbRuy3ij2W",
+      "protocols": [
+        {
+          "id": "0x78",
+          "version": "2"
+        },
+        {
+          "id": "0x2",
+          "version": "2"
+        },
+        {
+          "id": "0x64",
+          "version": "2"
+        },
+        {
+          "id": "0x0",
+          "version": "2"
+        },
+        {
+          "id": "0x1",
+          "version": "2.1"
+        },
+        {
+          "id": "0x79",
+          "version": "2"
+        },
+        {
+          "id": "0x4",
+          "version": "2"
+        }
+      ],
+      "sync_state": {
+        "proved_best_known_header": {
+          "compact_target": "0x1d08ac5c",
+          "dao": "0x90b0cd58f23ea143d3c3e785d4e0260016bf6f43a82c690400040df72ac18008",
+          "epoch": "0x708048c001759",
+          "extra_hash": "0x4e7cf03fb5b35a2214929bd0d5320921ec31631b5b56ed7b8e71c5967b0eebc7",
+          "hash": "0xbd405dbdeda3a664eb4c5a8b10d7bc1f8a606dd56c8110ad55e95f4e91de62ba",
+          "nonce": "0xdd8442c45e5caef9065db1b1a4a8d5b0",
+          "number": "0x7f26f7",
+          "parent_hash": "0x86e5fdd11bd6a25a4c78dfafd2ead838cb72895714645f6264256057ab69db3f",
+          "proposals_hash": "0x4c93bc3bcf52fb44ecbbcf0567a2d21fe0288ad004da7b2ea1f6a7fa04d31212",
+          "timestamp": "0x1864d1bf042",
+          "transactions_root": "0xe4b7807416612965e73988a1b7e38039111729bf35db74e1a40ffab909e9bba9",
+          "version": "0x0"
+        },
+        "requested_best_known_header": null
+      },
+      "version": "0.107.0 (30e1255 2023-01-30)"
+    }
+  ],
+  "id": 1
+}
