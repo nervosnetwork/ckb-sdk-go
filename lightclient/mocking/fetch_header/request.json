@@ -1,0 +1,8 @@
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "fetch_header",
+  "params": [
+    "0xcb5eae958e3ea24b0486a393133aa33d51224ffaab3c4819350095b3446e4f70"
+  ]
+}

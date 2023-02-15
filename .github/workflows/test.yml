@@ -10,18 +10,7 @@ jobs:
         uses: actions/setup-go@v2
         with:
           go-version: '1.17'
-      - name: Install Rust tools
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Install ckb-light-client
-        uses: actions-rs/cargo@v1
-        with:
-          command: install
-          args: --locked --git https://github.com/nervosnetwork/ckb-light-client.git
-      - name: Run CKB Light Client
-        run: wget https://raw.githubusercontent.com/nervosnetwork/ckb-light-client/develop/config/testnet.toml && ckb-light-client run --config-file testnet.toml &
       - name: Test
         run: go test ./... -short
