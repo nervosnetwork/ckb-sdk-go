@@ -37,6 +37,9 @@ type Client interface {
 	// GetBlock returns the information about a block by hash.
 	GetBlock(ctx context.Context, hash types.Hash) (*types.Block, error)
 
+	// GetBlockWithCycles returns the information about a block by hash(with cycles info).
+	GetBlockWithCycles(ctx context.Context, hash types.Hash) (*types.BlockWithCycles, error)
+
 	// GetHeader returns the information about a block header by hash.
 	GetHeader(ctx context.Context, hash types.Hash) (*types.Header, error)
 
@@ -61,6 +64,9 @@ type Client interface {
 
 	// GetBlockByNumber get block by number
 	GetBlockByNumber(ctx context.Context, number uint64) (*types.Block, error)
+
+	// GetBlockByNumber get block by number
+	GetBlockByNumberWithCycles(ctx context.Context, number uint64) (*types.BlockWithCycles, error)
 
 	// GetForkBlock The RPC returns a fork block or null. When the RPC returns a block, the block hash must equal to the parameter block_hash.
 	GetForkBlock(ctx context.Context, blockHash types.Hash) (*types.Block, error)
@@ -257,6 +263,30 @@ func (cli *client) GetBlock(ctx context.Context, hash types.Hash) (*types.Block,
 	return &result, nil
 }
 
+func (cli *client) GetBlockWithCycles(ctx context.Context, hash types.Hash) (*types.BlockWithCycles, error) {
+	var result types.BlockWithCycles
+	err := cli.c.CallContext(ctx, &result, "get_block", hash, nil, true)
+	if err != nil {
+		return nil, err
+	}
+	if (reflect.DeepEqual(result, types.BlockWithCycles{})) {
+		return nil, NotFound
+	}
+	return &result, nil
+}
+
+func (cli *client) GetBlockVerbosity0(ctx context.Context, hash types.Hash) (*types.BlockVerbosity0, error) {
+	var result types.BlockVerbosity0
+	err := cli.c.CallContext(ctx, &result, "get_block", hash, hexutil.Uint64(0))
+	if err != nil {
+		return nil, err
+	}
+	if (reflect.DeepEqual(result, types.BlockVerbosity0{})) {
+		return nil, NotFound
+	}
+	return &result, nil
+}
+
 func (cli *client) GetHeader(ctx context.Context, hash types.Hash) (*types.Header, error) {
 	var result types.Header
 	err := cli.c.CallContext(ctx, &result, "get_header", hash)
@@ -316,6 +346,18 @@ func (cli *client) GetTransaction(ctx context.Context, hash types.Hash) (*types.
 func (cli *client) GetBlockByNumber(ctx context.Context, number uint64) (*types.Block, error) {
 	var result types.Block
 	err := cli.c.CallContext(ctx, &result, "get_block_by_number", hexutil.Uint64(number))
+	if err != nil {
+		return nil, err
+	}
+	if (reflect.DeepEqual(result, types.Block{})) {
+		return nil, NotFound
+	}
+	return &result, nil
+}
+
+func (cli *client) GetBlockByNumberWithCycles(ctx context.Context, number uint64) (*types.BlockWithCycles, error) {
+	var result types.BlockWithCycles
+	err := cli.c.CallContext(ctx, &result, "get_block_by_number", hexutil.Uint64(number), nil, true)
 	if err != nil {
 		return nil, err
 	}

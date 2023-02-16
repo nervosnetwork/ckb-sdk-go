@@ -179,6 +179,15 @@ type Block struct {
 	Uncles       []*UncleBlock  `json:"uncles"`
 }
 
+type BlockVerbosity0 struct {
+	BlockHash string `json:"block"`
+}
+
+type BlockWithCycles struct {
+	Block  *Block   `json:"block"`
+	Cycles []uint64 `json:"cycles"`
+}
+
 type TransactionInput struct {
 	OutPoint   *OutPoint   `json:"out_point"`
 	Output     *CellOutput `json:"output"`

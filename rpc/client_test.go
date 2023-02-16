@@ -29,6 +29,14 @@ func TestClient_GetBlockByNumber(t *testing.T) {
 	assert.Equal(t, 1, len(block.Transactions))
 }
 
+func TestClient_GetBlockByNumberWithCycles(t *testing.T) {
+	block, err := testClient.GetBlockByNumberWithCycles(ctx, 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.Equal(t, 1, len(block.Block.Transactions))
+}
+
 func TestClient_GetBlockHash(t *testing.T) {
 	blockHash, err := testClient.GetBlockHash(ctx, 1)
 	if err != nil {
@@ -56,6 +64,16 @@ func TestClient_GetBlock(t *testing.T) {
 	}
 	assert.Equal(t, 1, len(block.Transactions))
 	assert.NotNil(t, block.Header)
+}
+
+func TestClient_GetBlockWithCycles(t *testing.T) {
+	block, err := testClient.GetBlockWithCycles(ctx,
+		types.HexToHash("0xd5ac7cf8c34a975bf258a34f1c2507638487ab71aa4d10a9ec73704aa3abf9cd"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.Equal(t, 1, len(block.Block.Transactions))
+	assert.NotNil(t, block.Block.Header)
 }
 
 func TestClient_GetTransaction(t *testing.T) {
