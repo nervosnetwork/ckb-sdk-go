@@ -49,7 +49,7 @@ type Header struct {
 	Version          uint32   `json:"version"`
 }
 
-type HeaderVerbosity0 struct {
+type PackedHeader struct {
 	Header string `json:"header"`
 }
 
@@ -183,7 +183,7 @@ type Block struct {
 	Uncles       []*UncleBlock  `json:"uncles"`
 }
 
-type BlockVerbosity0 struct {
+type PackedBlock struct {
 	Block string `json:"block"`
 }
 
@@ -192,7 +192,7 @@ type BlockWithCycles struct {
 	Cycles []uint64 `json:"cycles"`
 }
 
-type BlockVerbosity0WithCycles struct {
+type PackedBlockWithCycles struct {
 	Block  string   `json:"block"`
 	Cycles []uint64 `json:"cycles"`
 }

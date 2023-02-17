@@ -67,7 +67,7 @@ func TestClient_GetBlock(t *testing.T) {
 }
 
 func TestClient_GetBlockVerbosity0(t *testing.T) {
-	block, err := testClient.GetBlockVerbosity0(ctx,
+	block, err := testClient.GetPackedBlock(ctx,
 		types.HexToHash("0xd5ac7cf8c34a975bf258a34f1c2507638487ab71aa4d10a9ec73704aa3abf9cd"))
 	if err != nil {
 		t.Fatal(err)
@@ -168,7 +168,7 @@ func TestClient_GetHeader(t *testing.T) {
 }
 
 func TestClient_GetHeaderVerbosity0(t *testing.T) {
-	header, err := testClient.GetHeaderVerbosity0(ctx,
+	header, err := testClient.GetPackedHeader(ctx,
 		types.HexToHash("0xd5ac7cf8c34a975bf258a34f1c2507638487ab71aa4d10a9ec73704aa3abf9cd"))
 	if err != nil {
 		t.Fatal(err)
@@ -187,7 +187,7 @@ func TestClient_GetHeaderByNumber(t *testing.T) {
 }
 
 func TestClient_GetHeaderByNumberVerbosity0(t *testing.T) {
-	header, err := testClient.GetHeaderByNumberVerbosity0(ctx, 1)
+	header, err := testClient.GetPackedHeaderByNumber(ctx, 1)
 	if err != nil {
 		t.Fatal(err)
 	}
