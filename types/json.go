@@ -793,7 +793,7 @@ func (r *TransactionWithStatus) UnmarshalJSON(input []byte) error {
 }
 
 func (r *BlockVerbosity0) UnmarshalJSON(input []byte) error {
-	if err := json.Unmarshal(input, &r.BlockHash); err != nil {
+	if err := json.Unmarshal(input, &r.Block); err != nil {
 		return err
 	}
 	return nil

@@ -49,6 +49,10 @@ type Header struct {
 	Version          uint32   `json:"version"`
 }
 
+type HeaderVerbosity0 struct {
+	Header string `json:"header"`
+}
+
 type OutPoint struct {
 	TxHash Hash   `json:"tx_hash"`
 	Index  uint32 `json:"index"`
@@ -180,11 +184,16 @@ type Block struct {
 }
 
 type BlockVerbosity0 struct {
-	BlockHash string `json:"block"`
+	Block string `json:"block"`
 }
 
 type BlockWithCycles struct {
 	Block  *Block   `json:"block"`
+	Cycles []uint64 `json:"cycles"`
+}
+
+type BlockVerbosity0WithCycles struct {
+	Block  string   `json:"block"`
 	Cycles []uint64 `json:"cycles"`
 }
 

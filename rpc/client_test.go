@@ -66,6 +66,26 @@ func TestClient_GetBlock(t *testing.T) {
 	assert.NotNil(t, block.Header)
 }
 
+func TestClient_GetBlockVerbosity0(t *testing.T) {
+	block, err := testClient.GetBlockVerbosity0(ctx,
+		types.HexToHash("0xd5ac7cf8c34a975bf258a34f1c2507638487ab71aa4d10a9ec73704aa3abf9cd"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.Equal(t, 1, len(block.Transactions))
+	assert.NotNil(t, block.Header)
+
+	// verify equivalent
+	block2, err := testClient.GetBlock(ctx,
+		types.HexToHash("0xd5ac7cf8c34a975bf258a34f1c2507638487ab71aa4d10a9ec73704aa3abf9cd"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	b1str := block.Header.Hash.String()
+	b2str := block2.Header.Hash.String()
+	assert.Equal(t, b1str, b2str)
+}
+
 func TestClient_GetBlockWithCycles(t *testing.T) {
 	block, err := testClient.GetBlockWithCycles(ctx,
 		types.HexToHash("0xd5ac7cf8c34a975bf258a34f1c2507638487ab71aa4d10a9ec73704aa3abf9cd"))
@@ -99,7 +119,7 @@ func TestClient_GetTransaction(t *testing.T) {
 	//assert.Nil(t, tx)
 	//assert.Equal(t, types.TransactionStatusRejected, status.Status)
 	//assert.NotNil(t, status.Reason)
-	//assert.Nil(t, status.BlockHash)
+	//assert.Nil(t, status.Block)
 }
 
 func TestClient_GetTipHeader(t *testing.T) {
@@ -147,8 +167,27 @@ func TestClient_GetHeader(t *testing.T) {
 	assert.Equal(t, uint64(1590137711584), header.Timestamp)
 }
 
+func TestClient_GetHeaderVerbosity0(t *testing.T) {
+	header, err := testClient.GetHeaderVerbosity0(ctx,
+		types.HexToHash("0xd5ac7cf8c34a975bf258a34f1c2507638487ab71aa4d10a9ec73704aa3abf9cd"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.Equal(t, uint64(1), header.Number)
+	assert.Equal(t, uint64(1590137711584), header.Timestamp)
+}
+
 func TestClient_GetHeaderByNumber(t *testing.T) {
 	header, err := testClient.GetHeaderByNumber(ctx, 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.Equal(t, uint64(1), header.Number)
+	assert.Equal(t, uint64(1590137711584), header.Timestamp)
+}
+
+func TestClient_GetHeaderByNumberVerbosity0(t *testing.T) {
+	header, err := testClient.GetHeaderByNumberVerbosity0(ctx, 1)
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -2,7 +2,10 @@ package types
 
 import (
 	"encoding/binary"
+	"github.com/ethereum/go-ethereum/common/hexutil"
+	"github.com/nervosnetwork/ckb-sdk-go/v2/crypto/blake2b"
 	"github.com/nervosnetwork/ckb-sdk-go/v2/types/molecule"
+	"math/big"
 )
 
 func (r *WitnessArgs) Pack() *molecule.WitnessArgs {
@@ -70,6 +73,169 @@ func (t *Transaction) Pack() *molecule.Transaction {
 	builder.Witnesses(*PackBytesVec(t.Witnesses))
 	b := builder.Build()
 	return &b
+}
+
+func UnpackScript(v *molecule.Script) *Script {
+	s := &Script{}
+	if !v.IsEmpty() {
+		s.HashType = ScriptHashType(v.HashType().AsSlice())
+	}
+	s.Args = v.Args().RawData()
+	s.CodeHash = BytesToHash(v.CodeHash().RawData())
+	return s
+}
+
+func UnpackScriptOpt(v *molecule.ScriptOpt) *Script {
+	s := &Script{}
+	if v.IsSome() {
+		rs, err := v.IntoScript()
+		if err != nil {
+			panic("Failed to turn ScriptOpt into Script in molecule params")
+		}
+		s = UnpackScript(rs)
+	}
+	return s
+}
+
+func UnpackCellOutput(v *molecule.CellOutput) *CellOutput {
+	output := &CellOutput{}
+	output.Capacity = binary.LittleEndian.Uint64(v.Capacity().RawData())
+	output.Lock = UnpackScript(v.Lock())
+	output.Type = UnpackScriptOpt(v.Type())
+	return output
+}
+
+func UnpackOutPoint(v *molecule.OutPoint) *OutPoint {
+	outPoint := &OutPoint{}
+	outPoint.Index = binary.LittleEndian.Uint32(v.Index().RawData())
+	outPoint.TxHash = BytesToHash(v.TxHash().RawData())
+	return outPoint
+}
+
+func UnpackCellInput(v *molecule.CellInput) *CellInput {
+	input := &CellInput{}
+	input.Since = binary.LittleEndian.Uint64(v.Since().RawData())
+	input.PreviousOutput = UnpackOutPoint(v.PreviousOutput())
+	return input
+}
+
+func UnpackCellDep(v *molecule.CellDep) *CellDep {
+	c := &CellDep{}
+	c.DepType = DepType(v.DepType().AsSlice())
+	c.OutPoint = UnpackOutPoint(v.OutPoint())
+	return c
+}
+
+func UnpackTrasaction(v *molecule.Transaction) *Transaction {
+	tx := &Transaction{}
+
+	rawTx := v.Raw()
+	// Witnesses
+	if !v.Witnesses().IsEmpty() {
+		for i := uint(0); i < v.Witnesses().ItemCount(); i++ {
+			w := v.Witnesses().Get(i)
+			tx.Witnesses = append(tx.Witnesses, w.AsSlice())
+		}
+	}
+	tx.Version = binary.LittleEndian.Uint32(rawTx.Version().RawData())
+	// Outputs
+	if !rawTx.Outputs().IsEmpty() {
+		for i := uint(0); i < rawTx.Outputs().ItemCount(); i++ {
+			o := rawTx.Outputs().Get(i)
+			tx.Outputs = append(tx.Outputs, UnpackCellOutput(o))
+		}
+	}
+	// Inputs
+	if !rawTx.Inputs().IsEmpty() {
+		for i := uint(0); i < rawTx.Inputs().ItemCount(); i++ {
+			input := rawTx.Inputs().Get(i)
+			tx.Inputs = append(tx.Inputs, UnpackCellInput(input))
+		}
+	}
+	// CellDeps
+	if !rawTx.CellDeps().IsEmpty() {
+		for i := uint(0); i < rawTx.CellDeps().ItemCount(); i++ {
+			celldep := UnpackCellDep(rawTx.CellDeps().Get(i))
+			tx.CellDeps = append(tx.CellDeps, celldep)
+		}
+	}
+
+	if !rawTx.OutputsData().IsEmpty() {
+		for i := uint(0); i < rawTx.OutputsData().ItemCount(); i++ {
+			data := rawTx.OutputsData().Get(i).RawData()
+			tx.OutputsData = append(tx.OutputsData, data)
+		}
+	}
+	if !rawTx.HeaderDeps().IsEmpty() {
+		for i := uint(0); i < rawTx.HeaderDeps().ItemCount(); i++ {
+			deps := rawTx.HeaderDeps().Get(i).RawData()
+			tx.HeaderDeps = append(tx.HeaderDeps, BytesToHash(deps))
+		}
+	}
+
+	tx.Hash = tx.ComputeHash()
+	return tx
+}
+
+func UnpackHeader(v *molecule.Header) *Header {
+	header := &Header{}
+
+	header.CompactTarget = binary.LittleEndian.Uint32(v.Raw().CompactTarget().RawData())
+	header.Dao = BytesToHash(v.Raw().Dao().RawData())
+	header.Epoch = binary.LittleEndian.Uint64(v.Raw().Epoch().RawData())
+	// Nonce
+	header.Nonce = new(big.Int)
+	header.Nonce.SetBytes(v.Nonce().RawData())
+	header.Number = binary.LittleEndian.Uint64(v.Raw().Number().RawData())
+	header.ParentHash = BytesToHash(v.Raw().ParentHash().RawData())
+	header.ProposalsHash = BytesToHash(v.Raw().ProposalsHash().RawData())
+	header.Timestamp = binary.LittleEndian.Uint64(v.Raw().Timestamp().RawData())
+	header.TransactionsRoot = BytesToHash(v.Raw().TransactionsRoot().RawData())
+	header.ExtraHash = BytesToHash(v.Raw().ExtraHash().RawData())
+	header.Version = binary.LittleEndian.Uint32(v.Raw().Version().RawData())
+	header.Hash = BytesToHash(blake2b.Blake256(v.AsSlice()))
+	return header
+}
+
+func UnpackUncleBlock(v *molecule.UncleBlock) *UncleBlock {
+	block := &UncleBlock{}
+	block.Header = UnpackHeader(v.Header())
+	if !v.Proposals().IsEmpty() {
+		for i := uint(0); i < v.Proposals().ItemCount(); i++ {
+			block.Proposals = append(block.Proposals, hexutil.Encode(v.Proposals().Get(i).RawData()))
+		}
+	}
+	return block
+}
+
+func UnpackBlock(v *molecule.Block) *Block {
+	block := &Block{}
+
+	// Header
+	block.Header = UnpackHeader(v.Header())
+
+	// Proposals
+	if !v.Proposals().IsEmpty() {
+		for i := uint(0); i < v.Proposals().ItemCount(); i++ {
+			block.Proposals = append(block.Proposals, hexutil.Encode(v.Proposals().Get(i).RawData()))
+		}
+	}
+
+	// Trasactions
+	if !v.Transactions().IsEmpty() {
+		for i := uint(0); i < v.Transactions().ItemCount(); i++ {
+			block.Transactions = append(block.Transactions, UnpackTrasaction(v.Transactions().Get(i)))
+		}
+	}
+
+	// Uncles
+	if !v.Uncles().IsEmpty() {
+		for i := uint(0); i < v.Transactions().ItemCount(); i++ {
+			block.Uncles = append(block.Uncles, UnpackUncleBlock(v.Uncles().Get(i)))
+		}
+	}
+
+	return block
 }
 
 func (r *Script) Pack() *molecule.Script {
