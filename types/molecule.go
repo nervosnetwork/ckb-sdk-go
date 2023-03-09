@@ -126,7 +126,7 @@ func UnpackCellDep(v *molecule.CellDep) *CellDep {
 	return c
 }
 
-func UnpackTrasaction(v *molecule.Transaction) *Transaction {
+func UnpackTransaction(v *molecule.Transaction) *Transaction {
 	tx := &Transaction{}
 
 	rawTx := v.Raw()
@@ -221,10 +221,10 @@ func UnpackBlock(v *molecule.Block) *Block {
 		}
 	}
 
-	// Trasactions
+	// Transactions
 	if !v.Transactions().IsEmpty() {
 		for i := uint(0); i < v.Transactions().ItemCount(); i++ {
-			block.Transactions = append(block.Transactions, UnpackTrasaction(v.Transactions().Get(i)))
+			block.Transactions = append(block.Transactions, UnpackTransaction(v.Transactions().Get(i)))
 		}
 	}
 
