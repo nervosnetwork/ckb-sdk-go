@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"github.com/nervosnetwork/ckb-sdk-go/v2/indexer"
+	"github.com/nervosnetwork/ckb-sdk-go/v2/types/molecule"
 	"reflect"
 
 	"github.com/ethereum/go-ethereum/common/hexutil"
@@ -37,12 +38,26 @@ type Client interface {
 	// GetBlock returns the information about a block by hash.
 	GetBlock(ctx context.Context, hash types.Hash) (*types.Block, error)
 
+	// GetBlockVerbosity0 returns the information about a block by hash, but with verbosity specified to 0.
+	GetPackedBlock(ctx context.Context, hash types.Hash) (*types.Block, error)
+
+	// GetBlockWithCycles returns the information about a block by hash(with cycles info).
+	GetBlockWithCycles(ctx context.Context, hash types.Hash) (*types.BlockWithCycles, error)
+
+	// GetBlockWithCyclesVerbosity0 returns the information about a block by hash(with cycles info), but with verbosity specified to 0.
+	GetPackedBlockWithCycles(ctx context.Context, hash types.Hash) (*types.BlockWithCycles, error)
+
 	// GetHeader returns the information about a block header by hash.
 	GetHeader(ctx context.Context, hash types.Hash) (*types.Header, error)
+
+	// GetHeaderVerbosity0 returns the information about a block header by hash, but with verbosity specified to 0.
+	GetPackedHeader(ctx context.Context, hash types.Hash) (*types.Header, error)
 
 	// GetHeaderByNumber returns the information about a block header by block number.
 	GetHeaderByNumber(ctx context.Context, number uint64) (*types.Header, error)
 
+	// GetHeaderByNumberVerbosity0 returns the information about a block header by block number.
+	GetPackedHeaderByNumber(ctx context.Context, number uint64) (*types.Header, error)
 	// GetLiveCell returns the information about a cell by out_point if it is live.
 	// If second with_data argument set to true, will return cell data and data_hash if it is live.
 	GetLiveCell(ctx context.Context, outPoint *types.OutPoint, withData bool) (*types.CellWithStatus, error)
@@ -61,6 +76,9 @@ type Client interface {
 
 	// GetBlockByNumber get block by number
 	GetBlockByNumber(ctx context.Context, number uint64) (*types.Block, error)
+
+	// GetBlockByNumber get block by number
+	GetBlockByNumberWithCycles(ctx context.Context, number uint64) (*types.BlockWithCycles, error)
 
 	// GetForkBlock The RPC returns a fork block or null. When the RPC returns a block, the block hash must equal to the parameter block_hash.
 	GetForkBlock(ctx context.Context, blockHash types.Hash) (*types.Block, error)
@@ -257,6 +275,63 @@ func (cli *client) GetBlock(ctx context.Context, hash types.Hash) (*types.Block,
 	return &result, nil
 }
 
+func (cli *client) GetPackedBlock(ctx context.Context, hash types.Hash) (*types.Block, error) {
+	var jsonResult types.PackedBlock
+	err := cli.c.CallContext(ctx, &jsonResult, "get_block", hash, hexutil.Uint64(0))
+	if err != nil {
+		return nil, err
+	}
+	if (reflect.DeepEqual(jsonResult, types.PackedBlock{})) {
+		return nil, NotFound
+	}
+
+	blockBytes, err := hexutil.Decode(jsonResult.Block)
+	if err != nil {
+		return nil, err
+	}
+	rawBlock, err := molecule.BlockFromSlice(blockBytes, false)
+	if err != nil {
+		return nil, err
+	}
+	return types.UnpackBlock(rawBlock), nil
+}
+
+func (cli *client) GetBlockWithCycles(ctx context.Context, hash types.Hash) (*types.BlockWithCycles, error) {
+	var result types.BlockWithCycles
+	err := cli.c.CallContext(ctx, &result, "get_block", hash, nil, true)
+	if err != nil {
+		return nil, err
+	}
+	if (reflect.DeepEqual(result, types.BlockWithCycles{})) {
+		return nil, NotFound
+	}
+	return &result, nil
+}
+
+func (cli *client) GetPackedBlockWithCycles(ctx context.Context, hash types.Hash) (*types.BlockWithCycles, error) {
+	var jsonResult types.PackedBlockWithCycles
+	err := cli.c.CallContext(ctx, &jsonResult, "get_block", hash, hexutil.Uint64(0), true)
+	if err != nil {
+		return nil, err
+	}
+	if (reflect.DeepEqual(jsonResult, types.PackedBlock{})) {
+		return nil, NotFound
+	}
+	blockBytes, err := hexutil.Decode(jsonResult.Block)
+	if err != nil {
+		return nil, err
+	}
+	rawBlock, err := molecule.BlockFromSlice(blockBytes, true)
+	if err != nil {
+		return nil, err
+	}
+	result := &types.BlockWithCycles{
+		Block:  types.UnpackBlock(rawBlock),
+		Cycles: jsonResult.Cycles,
+	}
+	return result, nil
+}
+
 func (cli *client) GetHeader(ctx context.Context, hash types.Hash) (*types.Header, error) {
 	var result types.Header
 	err := cli.c.CallContext(ctx, &result, "get_header", hash)
@@ -266,6 +341,23 @@ func (cli *client) GetHeader(ctx context.Context, hash types.Hash) (*types.Heade
 	return &result, nil
 }
 
+func (cli *client) GetPackedHeader(ctx context.Context, hash types.Hash) (*types.Header, error) {
+	var headerHash string
+	err := cli.c.CallContext(ctx, &headerHash, "get_header", hash, hexutil.Uint64(0))
+	if err != nil {
+		return nil, err
+	}
+	headerBytes, err := hexutil.Decode(headerHash)
+	if err != nil {
+		return nil, err
+	}
+	rawHeader, err := molecule.HeaderFromSlice(headerBytes, true)
+	if err != nil {
+		return nil, err
+	}
+	return types.UnpackHeader(rawHeader), nil
+}
+
 func (cli *client) GetHeaderByNumber(ctx context.Context, number uint64) (*types.Header, error) {
 	var result types.Header
 	err := cli.c.CallContext(ctx, &result, "get_header_by_number", hexutil.Uint64(number))
@@ -273,6 +365,23 @@ func (cli *client) GetHeaderByNumber(ctx context.Context, number uint64) (*types
 		return nil, err
 	}
 	return &result, nil
+}
+
+func (cli *client) GetPackedHeaderByNumber(ctx context.Context, number uint64) (*types.Header, error) {
+	var headerHash string
+	err := cli.c.CallContext(ctx, &headerHash, "get_header_by_number", hexutil.Uint64(number), hexutil.Uint64(0))
+	if err != nil {
+		return nil, err
+	}
+	headerBytes, err := hexutil.Decode(headerHash)
+	if err != nil {
+		return nil, err
+	}
+	rawHeader, err := molecule.HeaderFromSlice(headerBytes, true)
+	if err != nil {
+		return nil, err
+	}
+	return types.UnpackHeader(rawHeader), nil
 }
 
 func (cli *client) GetTransactionProof(ctx context.Context, txHashes []string, blockHash *types.Hash) (*types.TransactionProof, error) {
@@ -316,6 +425,18 @@ func (cli *client) GetTransaction(ctx context.Context, hash types.Hash) (*types.
 func (cli *client) GetBlockByNumber(ctx context.Context, number uint64) (*types.Block, error) {
 	var result types.Block
 	err := cli.c.CallContext(ctx, &result, "get_block_by_number", hexutil.Uint64(number))
+	if err != nil {
+		return nil, err
+	}
+	if (reflect.DeepEqual(result, types.Block{})) {
+		return nil, NotFound
+	}
+	return &result, nil
+}
+
+func (cli *client) GetBlockByNumberWithCycles(ctx context.Context, number uint64) (*types.BlockWithCycles, error) {
+	var result types.BlockWithCycles
+	err := cli.c.CallContext(ctx, &result, "get_block_by_number", hexutil.Uint64(number), nil, true)
 	if err != nil {
 		return nil, err
 	}

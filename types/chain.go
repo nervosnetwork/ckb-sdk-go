@@ -49,6 +49,10 @@ type Header struct {
 	Version          uint32   `json:"version"`
 }
 
+type PackedHeader struct {
+	Header string `json:"header"`
+}
+
 type OutPoint struct {
 	TxHash Hash   `json:"tx_hash"`
 	Index  uint32 `json:"index"`
@@ -177,6 +181,20 @@ type Block struct {
 	Proposals    []string       `json:"proposals"`
 	Transactions []*Transaction `json:"transactions"`
 	Uncles       []*UncleBlock  `json:"uncles"`
+}
+
+type PackedBlock struct {
+	Block string `json:"block"`
+}
+
+type BlockWithCycles struct {
+	Block  *Block   `json:"block"`
+	Cycles []uint64 `json:"cycles"`
+}
+
+type PackedBlockWithCycles struct {
+	Block  string   `json:"block"`
+	Cycles []uint64 `json:"cycles"`
 }
 
 type TransactionInput struct {
