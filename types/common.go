@@ -10,6 +10,7 @@ import (
 type Network uint
 type WitnessType uint
 type ScriptType string
+type ScriptSearchMode string
 
 const (
 	HashLength = 32
@@ -23,6 +24,9 @@ const (
 
 	ScriptTypeLock ScriptType = "lock"
 	ScriptTypeType ScriptType = "type"
+
+	ScriptSearchModePrefix ScriptSearchMode = "prefix"
+	ScriptSearchModeExact  ScriptSearchMode = "exact"
 )
 
 var (

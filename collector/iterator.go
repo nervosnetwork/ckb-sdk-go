@@ -62,10 +62,11 @@ func newLiveCellIteratorFromAddress(getter LiveCellsGetter, addr string) (CellIt
 		return nil, err
 	}
 	searchKey := &indexer.SearchKey{
-		Script:     a.Script,
-		ScriptType: types.ScriptTypeLock,
-		Filter:     nil,
-		WithData:   true,
+		Script:           a.Script,
+		ScriptType:       types.ScriptTypeLock,
+		ScriptSearchMode: types.ScriptSearchModePrefix,
+		Filter:           nil,
+		WithData:         true,
 	}
 	return newLiveCellIterator(getter, searchKey), nil
 }
