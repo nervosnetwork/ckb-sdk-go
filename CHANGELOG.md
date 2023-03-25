@@ -1,3 +1,17 @@
+# 2.2.0 (2023-03-26)
+## What's Changed
+* chore: format code by @shaojunda in https://github.com/nervosnetwork/ckb-sdk-go/pull/192
+* Fix: last elem in offchancell skipped by @code-monad in https://github.com/nervosnetwork/ckb-sdk-go/pull/193
+* fix: TransactionWithStatus Marshal/UnMarshal with rejected/unknown tx by @shaojunda in https://github.com/nervosnetwork/ckb-sdk-go/pull/195
+* fix: consume off chain cell bug by @shaojunda in https://github.com/nervosnetwork/ckb-sdk-go/pull/196
+* updates for ckb-light-client rpc by @code-monad in https://github.com/nervosnetwork/ckb-sdk-go/pull/198
+* chore: using mocking to test lightclient by @code-monad in https://github.com/nervosnetwork/ckb-sdk-go/pull/199
+* feat: adding support for get block rpcs `with_cycles` and `verbosity0` version by @code-monad in https://github.com/nervosnetwork/ckb-sdk-go/pull/200
+* feat: support indexer search mode in SearchKey by @code-monad in https://github.com/nervosnetwork/ckb-sdk-go/pull/202
+
+
+**Full Changelog**: https://github.com/nervosnetwork/ckb-sdk-go/compare/v2.1.1...v2.2.0
+
 # 2.1.1 (2023-01-09)
 ## What's Changed
 * Supporting nil target in GetFeeRateStatics by @code-monad in https://github.com/nervosnetwork/ckb-sdk-go/pull/186
