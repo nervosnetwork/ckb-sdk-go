@@ -768,8 +768,8 @@ func (r *TransactionWithStatus) MarshalJSON() ([]byte, error) {
 		TxStatus:    r.TxStatus,
 	}
 
-	if r.Cycles > 0 {
-		jsonObj.Cycles = (*hexutil.Uint64)(&r.Cycles)
+	if r.Cycles != nil {
+		jsonObj.Cycles = (*hexutil.Uint64)(r.Cycles)
 	}
 
 	return json.Marshal(jsonObj)
@@ -787,7 +787,7 @@ func (r *TransactionWithStatus) UnmarshalJSON(input []byte) error {
 	}
 
 	if result.Cycles != nil {
-		r.Cycles = uint64(*result.Cycles)
+		r.Cycles = (*uint64)(result.Cycles)
 	}
 	return nil
 }
