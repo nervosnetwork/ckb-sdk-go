@@ -3,9 +3,10 @@ package rpc
 import (
 	"context"
 	"errors"
+	"reflect"
+
 	"github.com/nervosnetwork/ckb-sdk-go/v2/indexer"
 	"github.com/nervosnetwork/ckb-sdk-go/v2/types/molecule"
-	"reflect"
 
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/rpc"
@@ -73,6 +74,12 @@ type Client interface {
 
 	//VerifyTransactionProof verifies that a proof points to transactions in a block, returning the transaction hashes it commits to.
 	VerifyTransactionProof(ctx context.Context, proof *types.TransactionProof) ([]*types.Hash, error)
+
+	// GetTransactionAndWitnessProof returns a Merkle proof of transactions’ witness included in a block.
+	GetTransactionAndWitnessProof(ctx context.Context, txHashes []string, blockHash *types.Hash) (*types.TransactionAndWitnessProof, error)
+
+	// VerifyTransactionAndWitnessProof verifies that a proof points to transactions in a block, returning the transaction hashes it commits to.
+	VerifyTransactionAndWitnessProof(ctx context.Context, proof *types.TransactionAndWitnessProof) ([]*types.Hash, error)
 
 	// GetBlockByNumber get block by number
 	GetBlockByNumber(ctx context.Context, number uint64) (*types.Block, error)
@@ -398,9 +405,29 @@ func (cli *client) VerifyTransactionProof(ctx context.Context, proof *types.Tran
 	var result []*types.Hash
 	err := cli.c.CallContext(ctx, &result, "verify_transaction_proof", *proof)
 	if err != nil {
-		return result, err
+		return nil, err
 	}
 
+	return result, err
+}
+
+// GetTransactionAndWitnessProof implements Client
+func (cli *client) GetTransactionAndWitnessProof(ctx context.Context, txHashes []string, blockHash *types.Hash) (*types.TransactionAndWitnessProof, error) {
+	var transactionAndWitnessProof types.TransactionAndWitnessProof
+	err := cli.c.CallContext(ctx, &transactionAndWitnessProof, "get_transaction_and_witness_proof", txHashes, blockHash)
+	if err != nil {
+		return nil, err
+	}
+	return &transactionAndWitnessProof, err
+}
+
+// VerifyTransactionAndWitnessProof implements Client
+func (cli *client) VerifyTransactionAndWitnessProof(ctx context.Context, proof *types.TransactionAndWitnessProof) ([]*types.Hash, error) {
+	var result []*types.Hash
+	err := cli.c.CallContext(ctx, &result, "verify_transaction_and_witness_proof", *proof)
+	if err != nil {
+		return nil, err
+	}
 	return result, err
 }
 

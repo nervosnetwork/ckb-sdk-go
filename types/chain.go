@@ -1,9 +1,10 @@
 package types
 
 import (
+	"math/big"
+
 	"github.com/nervosnetwork/ckb-sdk-go/v2/crypto/blake2b"
 	"github.com/nervosnetwork/ckb-sdk-go/v2/types/numeric"
-	"math/big"
 )
 
 type ScriptHashType string
@@ -326,4 +327,10 @@ type EstimateCycles struct {
 type FeeRateStatics struct {
 	Mean   uint64 `json:"mean"`
 	Median uint64 `json:"median"`
+}
+
+type TransactionAndWitnessProof struct {
+	BlockHash         Hash   `json:"block_hash"`
+	TransactionsProof *Proof `json:"transactions_proof"`
+	WitnessesProof    *Proof `json:"witnesses_proof"`
 }
