@@ -2,12 +2,13 @@ package rpc
 
 import (
 	"context"
+	"testing"
+
 	ethcommon "github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/nervosnetwork/ckb-sdk-go/v2/indexer"
 	"github.com/nervosnetwork/ckb-sdk-go/v2/types"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 var testClient, _ = DialContext(context.Background(), "https://testnet.ckb.dev")
@@ -225,6 +226,28 @@ func TestClient_GetTransactionProof(t *testing.T) {
 		t.Fatal(err)
 	}
 	assert.Equal(t, 1, len(result))
+}
+
+func TestClient_GetTransactionAndWitnessProof(t *testing.T) {
+	txHashes := []string{"0x8277d74d33850581f8d843613ded0c2a1722dec0e87e748f45c115dfb14210f1"}
+	proof, err := testClient.GetTransactionAndWitnessProof(ctx, txHashes, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.NotNil(t, proof.BlockHash)
+	assert.Equal(t, 1, len(proof.TransactionsProof.Indices))
+	assert.Equal(t, 1, len(proof.WitnessesProof.Indices))
+
+	proof2, err := testClient.GetTransactionAndWitnessProof(ctx, txHashes, &proof.BlockHash)
+	assert.Equal(t, proof, proof2)
+
+	result, err := testClient.VerifyTransactionAndWitnessProof(ctx, proof)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.Equal(t, 1, len(result))
+	actual := result[0].String()
+	assert.Equal(t, txHashes[0], actual)
 }
 
 func TestClient_EstimateCycles(t *testing.T) {
