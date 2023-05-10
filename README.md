@@ -44,6 +44,9 @@ You can call JSON-RPC APIs via these clients.
 block, err := ckbClient.GetBlock(context.Background(), types.HexToHash("0x77fdd22f6ae8a717de9ae2b128834e9b2a1424378b5fc95606ba017aab5fed75"))
 ```
 
+For examples, you can check [collector usage examples](./collector/example)
+
+
 For more details about JSON-RPC APIs, please check:
 
 - [CKB RPC doc](https://github.com/nervosnetwork/ckb/blob/develop/rpc/README.md)
