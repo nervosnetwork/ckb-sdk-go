@@ -156,6 +156,7 @@ func TestJsonTransactionWithStatus(t *testing.T) {
         ]
     },
     "cycles": "0x16e04e",
+    "time_added_to_pool": null,
     "tx_status": {
         "block_hash": "0xe1ed2d2282aad742a95abe51c21d50b1c19e194f21fbd1ed2516f82bd042579a",
         "status": "committed",
@@ -174,6 +175,7 @@ func TestRejectedJsonTransactionWithStatus(t *testing.T) {
 {
     "transaction": null,
     "cycles": null,
+    "time_added_to_pool": null,
     "tx_status": {
         "block_hash": "0xe1ed2d2282aad742a95abe51c21d50b1c19e194f21fbd1ed2516f82bd042579a",
         "status": "rejected",
@@ -194,6 +196,7 @@ func TestUnknownJsonTransactionWithStatus(t *testing.T) {
 {
     "transaction": null,
     "cycles": null,
+    "time_added_to_pool": null,
     "tx_status": {
         "block_hash": "0x7b00ed399a69eb6b4191ce45e8337835bf3ecadabb8d7281de50fa07fb2034f1",
         "status": "unknown",
