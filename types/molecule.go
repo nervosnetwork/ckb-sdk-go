@@ -2,10 +2,12 @@ package types
 
 import (
 	"encoding/binary"
+	"fmt"
+	"math/big"
+
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/nervosnetwork/ckb-sdk-go/v2/crypto/blake2b"
 	"github.com/nervosnetwork/ckb-sdk-go/v2/types/molecule"
-	"math/big"
 )
 
 func (r *WitnessArgs) Pack() *molecule.WitnessArgs {
@@ -78,11 +80,19 @@ func (t *Transaction) Pack() *molecule.Transaction {
 func UnpackScript(v *molecule.Script) *Script {
 	s := &Script{}
 	if !v.IsEmpty() {
-		s.HashType = ScriptHashType(v.HashType().AsSlice())
+		s.HashType = requireHashTypeByte(v.HashType())
 	}
 	s.Args = v.Args().RawData()
 	s.CodeHash = BytesToHash(v.CodeHash().RawData())
 	return s
+}
+
+func requireHashTypeByte(serializedHashType *molecule.Byte) ScriptHashType {
+	sht, err := DeserializeHashTypeByte(serializedHashType[0])
+	if err != nil {
+		panic(fmt.Sprintf("Deserializing HashType: %v", err))
+	}
+	return sht
 }
 
 func UnpackScriptOpt(v *molecule.ScriptOpt) *Script {
