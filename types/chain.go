@@ -236,9 +236,10 @@ type TxStatus struct {
 }
 
 type TransactionWithStatus struct {
-	Transaction *Transaction `json:"transaction"`
-	Cycles      *uint64      `json:"cycles"`
-	TxStatus    *TxStatus    `json:"tx_status"`
+	Transaction     *Transaction `json:"transaction"`
+	Cycles          *uint64      `json:"cycles"`
+	TimeAddedToPool *uint64      `json:"time_added_to_pool"`
+	TxStatus        *TxStatus    `json:"tx_status"`
 }
 
 type BlockReward struct {

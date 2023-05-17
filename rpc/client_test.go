@@ -103,10 +103,12 @@ func TestClient_GetTransaction(t *testing.T) {
 	assert.NoError(t, err)
 	tx := txView.Transaction
 	status := txView.TxStatus
+	timeAdded := txView.TimeAddedToPool
 	assert.Equal(t, 4, len(tx.CellDeps))
 	assert.Equal(t, 1, len(tx.Inputs))
 	assert.Equal(t, 3, len(tx.Outputs))
 	assert.Equal(t, uint64(30000000000), tx.Outputs[0].Capacity)
+	assert.NotEqual(t, nil, timeAdded)
 	assert.Equal(t, types.TransactionStatusCommitted, status.Status)
 	assert.NotNil(t, status.BlockHash)
 

@@ -757,9 +757,10 @@ func (r *FeeRateStatics) MarshalJSON() ([]byte, error) {
 }
 
 type jsonTransactionWithStatus struct {
-	Transaction *Transaction    `json:"transaction"`
-	Cycles      *hexutil.Uint64 `json:"cycles"`
-	TxStatus    *TxStatus       `json:"tx_status"`
+	Transaction     *Transaction    `json:"transaction"`
+	Cycles          *hexutil.Uint64 `json:"cycles"`
+	TimeAddedToPool *hexutil.Uint64 `json:"time_added_to_pool"`
+	TxStatus        *TxStatus       `json:"tx_status"`
 }
 
 func (r *TransactionWithStatus) MarshalJSON() ([]byte, error) {
@@ -770,6 +771,10 @@ func (r *TransactionWithStatus) MarshalJSON() ([]byte, error) {
 
 	if r.Cycles != nil {
 		jsonObj.Cycles = (*hexutil.Uint64)(r.Cycles)
+	}
+
+	if r.TimeAddedToPool != nil {
+		jsonObj.TimeAddedToPool = (*hexutil.Uint64)(r.TimeAddedToPool)
 	}
 
 	return json.Marshal(jsonObj)
@@ -789,6 +794,11 @@ func (r *TransactionWithStatus) UnmarshalJSON(input []byte) error {
 	if result.Cycles != nil {
 		r.Cycles = (*uint64)(result.Cycles)
 	}
+
+	if result.TimeAddedToPool != nil {
+		r.TimeAddedToPool = (*uint64)(result.TimeAddedToPool)
+	}
+
 	return nil
 }
 
