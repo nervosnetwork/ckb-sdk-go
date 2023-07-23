@@ -10,13 +10,13 @@ const SearchLimit uint64 = 1000
 
 type Client interface {
 	// GetCells returns the live cells collection by the lock or type script.
-	GetCells(ctx context.Context, searchKey *SearchKey, order SearchOrder, limit uint64, afterCursor string) (*LiveCells, error)
+	GetCells(ctx context.Context, searchKey *SearchKey, order SearchOrder, limit uint32, afterCursor string) (*LiveCells, error)
 
 	// GetTransactions returns the transactions collection by the lock or type script.
-	GetTransactions(ctx context.Context, searchKey *SearchKey, order SearchOrder, limit uint64, afterCursor string) (*TxsWithCell, error)
+	GetTransactions(ctx context.Context, searchKey *SearchKey, order SearchOrder, limit uint32, afterCursor string) (*TxsWithCell, error)
 
 	// GetTransactionsGrouped returns the grouped transactions collection by the lock or type script.
-	GetTransactionsGrouped(ctx context.Context, searchKey *SearchKey, order SearchOrder, limit uint64, afterCursor string) (*TxsWithCells, error)
+	GetTransactionsGrouped(ctx context.Context, searchKey *SearchKey, order SearchOrder, limit uint32, afterCursor string) (*TxsWithCells, error)
 
 	//GetTip returns the latest height processed by indexer
 	GetTip(ctx context.Context) (*TipHeader, error)
@@ -52,13 +52,13 @@ func (cli *client) Close() {
 	cli.c.Close()
 }
 
-func (cli *client) GetCells(ctx context.Context, searchKey *SearchKey, order SearchOrder, limit uint64, afterCursor string) (*LiveCells, error) {
+func (cli *client) GetCells(ctx context.Context, searchKey *SearchKey, order SearchOrder, limit uint32, afterCursor string) (*LiveCells, error) {
 	var result LiveCells
 	var err error
 	if afterCursor == "" {
-		err = cli.c.CallContext(ctx, &result, "get_cells", searchKey, order, hexutil.Uint64(limit))
+		err = cli.c.CallContext(ctx, &result, "get_cells", searchKey, order, hexutil.Uint(limit))
 	} else {
-		err = cli.c.CallContext(ctx, &result, "get_cells", searchKey, order, hexutil.Uint64(limit), afterCursor)
+		err = cli.c.CallContext(ctx, &result, "get_cells", searchKey, order, hexutil.Uint(limit), afterCursor)
 	}
 	if err != nil {
 		return nil, err
@@ -66,13 +66,13 @@ func (cli *client) GetCells(ctx context.Context, searchKey *SearchKey, order Sea
 	return &result, err
 }
 
-func (cli *client) GetTransactions(ctx context.Context, searchKey *SearchKey, order SearchOrder, limit uint64, afterCursor string) (*TxsWithCell, error) {
+func (cli *client) GetTransactions(ctx context.Context, searchKey *SearchKey, order SearchOrder, limit uint32, afterCursor string) (*TxsWithCell, error) {
 	var result TxsWithCell
 	var err error
 	if afterCursor == "" {
-		err = cli.c.CallContext(ctx, &result, "get_transactions", searchKey, order, hexutil.Uint64(limit))
+		err = cli.c.CallContext(ctx, &result, "get_transactions", searchKey, order, hexutil.Uint(limit))
 	} else {
-		err = cli.c.CallContext(ctx, &result, "get_transactions", searchKey, order, hexutil.Uint64(limit), afterCursor)
+		err = cli.c.CallContext(ctx, &result, "get_transactions", searchKey, order, hexutil.Uint(limit), afterCursor)
 	}
 	if err != nil {
 		return nil, err
@@ -80,7 +80,7 @@ func (cli *client) GetTransactions(ctx context.Context, searchKey *SearchKey, or
 	return &result, err
 }
 
-func (cli *client) GetTransactionsGrouped(ctx context.Context, searchKey *SearchKey, order SearchOrder, limit uint64, afterCursor string) (*TxsWithCells, error) {
+func (cli *client) GetTransactionsGrouped(ctx context.Context, searchKey *SearchKey, order SearchOrder, limit uint32, afterCursor string) (*TxsWithCells, error) {
 	payload := &struct {
 		SearchKey
 		GroupByTransaction bool `json:"group_by_transaction"`
@@ -91,9 +91,9 @@ func (cli *client) GetTransactionsGrouped(ctx context.Context, searchKey *Search
 	var result TxsWithCells
 	var err error
 	if afterCursor == "" {
-		err = cli.c.CallContext(ctx, &result, "get_transactions", payload, order, hexutil.Uint64(limit))
+		err = cli.c.CallContext(ctx, &result, "get_transactions", payload, order, hexutil.Uint(limit))
 	} else {
-		err = cli.c.CallContext(ctx, &result, "get_transactions", payload, order, hexutil.Uint64(limit), afterCursor)
+		err = cli.c.CallContext(ctx, &result, "get_transactions", payload, order, hexutil.Uint(limit), afterCursor)
 	}
 	if err != nil {
 		return nil, err
