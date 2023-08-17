@@ -55,7 +55,7 @@ For more details about JSON-RPC APIs, please check:
 
 ### Build transaction manually
 
-Ckb-sdk-go provides [a signer mechanism](#Sign-and-send-transaction) to sign transaction. The only thing you need to provide is an instance of `TransactionWithScriptGroups` and transaction signer will do all signing jobs for you. Here is the code to construct a `TransactionWithScriptGroups` by manual.
+Ckb-sdk-go provides [a signer mechanism](#sign-and-send-transaction) to sign transaction. The only thing you need to provide is an instance of `TransactionWithScriptGroups` and transaction signer will do all signing jobs for you. Here is the code to construct a `TransactionWithScriptGroups` by manual.
 
 ```go
 tx := &types.Transaction{
