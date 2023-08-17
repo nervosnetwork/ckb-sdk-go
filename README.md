@@ -122,7 +122,7 @@ txWithScriptGroups := &transaction.TransactionWithScriptGroups{
 }
 ```
 
-Refer [here](#Sign-and-send-transaction) to see how to sign and send transaction once you have the instance of `TransactionWithScriptGroups`.
+Refer [here](#sign-and-send-transaction) to see how to sign and send transaction once you have the instance of `TransactionWithScriptGroups`.
 
 
 ### Build transaction with Mercury
