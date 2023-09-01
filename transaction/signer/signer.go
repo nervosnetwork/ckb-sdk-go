@@ -1,12 +1,29 @@
+// Package signer implements a CKB transaction signing framework.
+//
+// It adopts an extension mechanism that new script can implement
+// [ScriptSigner] and register the signing logic via
+// [TransactionSigner.RegisterSigner].
 package signer
 
 import (
 	"fmt"
+
 	"github.com/nervosnetwork/ckb-sdk-go/v2/crypto/blake2b"
 	"github.com/nervosnetwork/ckb-sdk-go/v2/transaction"
 	"github.com/nervosnetwork/ckb-sdk-go/v2/types"
 )
 
+// The interface ScriptSigner is for scripts to register their signing logic.
+//
+// The function SignTransaction is the callback called by [TransactionSigner]
+// on matched ScriptSigners, for each context passed in
+// [TransactionSigner.SignTransaction].
+//
+// The [transaction.Context] provides extra data for the signer. For example,
+// [Secp256k1Blake160SighashAllSigner.SignTransaction] requires user to pass
+// the private keys as contexts.
+//
+// Returns bool indicating whether the transaction has been modified.
 type ScriptSigner interface {
 	SignTransaction(transaction *types.Transaction, group *transaction.ScriptGroup, ctx *transaction.Context) (bool, error)
 }
@@ -19,8 +36,10 @@ func NewTransactionSigner() *TransactionSigner {
 	return &TransactionSigner{signers: make(map[types.Hash]ScriptSigner)}
 }
 
-var testInstance = NewTransactionSigner()
-var mainInstance = NewTransactionSigner()
+var (
+	testInstance = NewTransactionSigner()
+	mainInstance = NewTransactionSigner()
+)
 
 func GetTransactionSignerInstance(network types.Network) *TransactionSigner {
 	if network == types.NetworkTest {

@@ -1,10 +1,15 @@
 package transaction
 
 import (
-	"github.com/nervosnetwork/ckb-sdk-go/v2/crypto/secp256k1"
 	"github.com/pkg/errors"
+
+	"github.com/nervosnetwork/ckb-sdk-go/v2/crypto/secp256k1"
 )
 
+// Context is user provided information for
+// `signer.TransactionSigner.SignTransaction`. In turn the context is passed to `signer.ScriptSigner.SignTransaction`.
+//
+// See more in github.com/nervosnetwork/ckb-sdk-go/v2/transaction/signer
 type Context struct {
 	Key     *secp256k1.Secp256k1Key
 	Payload interface{}
