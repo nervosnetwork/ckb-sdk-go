@@ -18,6 +18,20 @@ type TransactionBuilder interface {
 	Build(contexts ...interface{}) (*transaction.TransactionWithScriptGroups, error)
 }
 
+// The interface ScriptHandler is for scripts to register their building logic.
+//
+// The function BuildTransaction is the callback called by [TransactionBuilder]
+// for each script group and each context passed in
+// TransactionBuilder.Build. The context provides extra data for the script.
+//
+// Be calfully on when to run the logic for the script. TransactionBuilder will
+// not check whether the script group matches the script.
+//
+// The callback often does two things:
+//   - Fill witness placeholder to make fee calculation correct.
+//   - Add cell deps for the script.
+//
+// Returns bool indicating whether the transaction has been modified.
 type ScriptHandler interface {
 	BuildTransaction(builder TransactionBuilder, group *transaction.ScriptGroup, context interface{}) (bool, error)
 }

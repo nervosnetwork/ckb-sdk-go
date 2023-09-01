@@ -1,14 +1,16 @@
+// Package builder implements CKB transaction builder.
 package builder
 
 import (
 	"errors"
+	"reflect"
+	"strconv"
+
 	"github.com/nervosnetwork/ckb-sdk-go/v2/address"
 	"github.com/nervosnetwork/ckb-sdk-go/v2/collector"
 	"github.com/nervosnetwork/ckb-sdk-go/v2/collector/handler"
 	"github.com/nervosnetwork/ckb-sdk-go/v2/transaction"
 	"github.com/nervosnetwork/ckb-sdk-go/v2/types"
-	"reflect"
-	"strconv"
 )
 
 type SimpleTransactionBuilder struct {
@@ -24,6 +26,9 @@ type SimpleTransactionBuilder struct {
 	ScriptHandlers []collector.ScriptHandler
 }
 
+// NewSimpleTransactionBuilder creates a new transaction builder and register the [collector.ScriptHandler] of popular scripts for the specific network.
+//
+// To create an empty builder without script handlers, just uses '&SimpleTransactionBuilder{}'.
 func NewSimpleTransactionBuilder(network types.Network) *SimpleTransactionBuilder {
 	if network == types.NetworkMain || network == types.NetworkTest {
 		s := SimpleTransactionBuilder{}
