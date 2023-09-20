@@ -377,6 +377,8 @@ func (t ScriptHashType) Pack() *molecule.Byte {
 		b = 0x01
 	case HashTypeData1:
 		b = 0x02
+	case HashTypeData2:
+		b = 0x04
 	default:
 		return nil
 	}

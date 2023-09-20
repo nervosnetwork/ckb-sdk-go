@@ -14,6 +14,7 @@ type TransactionStatus string
 const (
 	HashTypeData  ScriptHashType = "data"
 	HashTypeData1 ScriptHashType = "data1"
+	HashTypeData2 ScriptHashType = "data2"
 	HashTypeType  ScriptHashType = "type"
 
 	DepTypeCode     DepType = "code"

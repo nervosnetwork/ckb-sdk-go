@@ -66,6 +66,8 @@ func SerializeHashTypeByte(hashType ScriptHashType) (byte, error) {
 		return 0x01, nil
 	case HashTypeData1:
 		return 0x02, nil
+	case HashTypeData2:
+		return 0x04, nil
 	default:
 		return 0, errors.New(string("unknown hash type " + hashType))
 	}
@@ -79,6 +81,8 @@ func DeserializeHashTypeByte(hashType byte) (ScriptHashType, error) {
 		return HashTypeType, nil
 	case 0x02:
 		return HashTypeData1, nil
+	case 0x04:
+		return HashTypeData2, nil
 	default:
 		return "", errors.New(fmt.Sprintf("invalid script hash_type: %x", hashType))
 	}
