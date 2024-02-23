@@ -119,9 +119,10 @@ func (r *OffChainInputIterator) isTransactionInputForSearchKey(transactionInputW
 		if filter.Script != nil {
 			switch searchKey.ScriptType {
 			case "lock":
-				if !cellOutput.Type.Equals(filter.Script) {
+				if cellOutput.Type == nil || !cellOutput.Type.Equals(filter.Script) {
 					return false
 				}
+
 				break
 			case "type":
 				if !cellOutput.Lock.Equals(filter.Script) {
