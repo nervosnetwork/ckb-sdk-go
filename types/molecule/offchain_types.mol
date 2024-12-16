@@ -1,0 +1,8 @@
+import blockchain;
+import perun_types;
+
+table OffChainParticipant {
+    pub_key: SEC1EncodedPubKey,
+    payment_script: Script,
+    unlock_script: Script,
+}
