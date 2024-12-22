@@ -1,7 +1,10 @@
 package types
 
-import "math/big"
-import "encoding/json"
+import (
+	"encoding/json"
+	"fmt"
+	"math/big"
+)
 
 //	pub struct Alert {
 //	    /// The identifier of the alert. Clients use id to filter duplicated alerts.
@@ -77,6 +80,28 @@ const (
 	// LightClient represents the light client protocol deployment.
 	LightClient
 )
+
+// convert DeploymentPos to string
+func (d DeploymentPos) String() string {
+	switch d {
+	case Testdummy:
+		return "Testdummy"
+	case LightClient:
+		return "LightClient"
+	}
+	return "Unknown"
+}
+
+// convert string to DeploymentPos
+func DeploymentPosFromString(s string) (DeploymentPos, error) {
+	switch s {
+	case "Testdummy":
+		return Testdummy, nil
+	case "LightClient":
+		return LightClient, nil
+	}
+	return -1, fmt.Errorf("invalid DeploymentPos: %s", s)
+}
 
 // DeploymentInfo represents information about a deployment.
 type DeploymentInfo struct {

@@ -80,6 +80,22 @@ type RawTxPool struct {
 	Proposed []Hash `json:"proposed"`
 }
 
+type RawTxPoolVerbose struct {
+	Pending     map[Hash]TxPoolEntry `json:"pending"`
+	Proposed    map[Hash]TxPoolEntry `json:"proposed"`
+	Confilicted []Hash               `json:"conflicted"`
+}
+
+type TxPoolEntry struct {
+	Cycles          uint64 `json:"cycles"`
+	Size            uint64 `json:"size"`
+	Fee             uint64 `json:"fee"`
+	AncestorsSize   uint64 `json:"ancestors_size"`
+	AncestorsCycles uint64 `json:"ancestors_cycles"`
+	AncestorsCount  uint64 `json:"ancestors_count"`
+	Timestamp       uint64 `json:"timestamp"`
+}
+
 type AncestorsScoreSortKey struct {
 	AncestorsFee    uint64 `json:"ancestors_fee"`
 	AncestorsWeight uint64 `json:"ancestors_weight"`
