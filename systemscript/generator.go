@@ -32,13 +32,24 @@ func Secp256K1Blake160SignhashAllByPublicKey(compressedPubKey []byte) (*types.Sc
 }
 
 // Secp256k1Blake160Multisig generates scep256k1_blake160_multisig script.
-func Secp256k1Blake160Multisig(config *MultisigConfig) (*types.Script, error) {
+func Secp256k1Blake160Multisig(config *MultisigConfig, multisigVersion MultisigVersion) (*types.Script, error) {
 	args := config.Hash160()
 	// secp256k1_blake160_multisig_all share the same code hash in network main and test
-	codeHash := GetCodeHash(types.NetworkTest, Secp256k1Blake160MultisigAll)
+	var codeHash types.Hash
+	var hashType types.ScriptHashType
+	if multisigVersion == MultisigLegacy {
+		codeHash = GetCodeHash(types.NetworkTest, Secp256k1Blake160MultisigAllLegacy)
+		hashType = types.HashTypeType
+	} else if multisigVersion == MultisigV2 {
+		codeHash = GetCodeHash(types.NetworkTest, Secp256k1Blake160MultisigAllV2)
+		hashType = types.HashTypeData1
+	} else {
+		return nil, nil
+	}
+
 	return &types.Script{
 		CodeHash: codeHash,
-		HashType: types.HashTypeType,
+		HashType: hashType,
 		Args:     args,
 	}, nil
 }

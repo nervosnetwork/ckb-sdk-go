@@ -62,7 +62,7 @@ func decodeShort(payload []byte, network types.Network) (*Address, error) {
 		if argsLen != 20 {
 			return nil, fmt.Errorf("invalid args length %d", argsLen)
 		}
-		scriptType = systemscript.Secp256k1Blake160MultisigAll
+		scriptType = systemscript.Secp256k1Blake160MultisigAllLegacy
 	case 0x02: // anyone_can_pay
 		if argsLen < 20 || argsLen > 22 {
 			return nil, fmt.Errorf("invalid args length %d", argsLen)
@@ -138,7 +138,7 @@ func (a Address) EncodeShort() (string, error) {
 	payload = append(payload, 0x01)
 	if a.Script.CodeHash == systemscript.GetCodeHash(a.Network, systemscript.Secp256k1Blake160SighashAll) {
 		payload = append(payload, 0x00)
-	} else if a.Script.CodeHash == systemscript.GetCodeHash(a.Network, systemscript.Secp256k1Blake160MultisigAll) {
+	} else if a.Script.CodeHash == systemscript.GetCodeHash(a.Network, systemscript.Secp256k1Blake160MultisigAllLegacy) {
 		payload = append(payload, 0x01)
 	} else if a.Script.CodeHash == systemscript.GetCodeHash(a.Network, systemscript.AnyoneCanPay) {
 		payload = append(payload, 0x02)
