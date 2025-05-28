@@ -15,13 +15,27 @@ type SystemScript uint
 
 const (
 	Secp256k1Blake160SighashAll SystemScript = iota
-	Secp256k1Blake160MultisigAll
+	Secp256k1Blake160MultisigAllLegacy
 	AnyoneCanPay
 	Dao
 	Sudt
 	Cheque
 	PwLock
 	Omnilock
+	Secp256k1Blake160MultisigAllV2
+)
+
+type MultisigVersion uint
+
+const (
+	// Multisig Script deployed on Genesis Block
+	// https://explorer.nervos.org/script/0x5c5069eb0857efc65e1bca0c07df34c31663b3622fd3876c876320fc9634e2a8/type
+	MultisigLegacy MultisigVersion = iota
+
+	// Latest multisig script, Enhance multisig handling for optional since value
+	// https://github.com/nervosnetwork/ckb-system-scripts/pull/99
+	// https://explorer.nervos.org/script/0x36c971b8d41fbd94aabca77dc75e826729ac98447b46f91e00796155dddb0d29/data1
+	MultisigV2
 )
 
 var mainnetContracts = make(map[SystemScript]*Info)
@@ -42,12 +56,21 @@ func initMainnetSystemScript() {
 		},
 		DepType: types.DepTypeDepGroup,
 	}
-	mainnetContracts[Secp256k1Blake160MultisigAll] = &Info{
+	mainnetContracts[Secp256k1Blake160MultisigAllLegacy] = &Info{
 		CodeHash: types.HexToHash("0x5c5069eb0857efc65e1bca0c07df34c31663b3622fd3876c876320fc9634e2a8"),
 		HashType: types.HashTypeType,
 		OutPoint: &types.OutPoint{
 			TxHash: types.HexToHash("0x71a7ba8fc96349fea0ed3a5c47992e3b4084b031a42264a018e0072e8172e46c"),
 			Index:  1,
+		},
+		DepType: types.DepTypeDepGroup,
+	}
+	mainnetContracts[Secp256k1Blake160MultisigAllV2] = &Info{
+		CodeHash: types.HexToHash("0x36c971b8d41fbd94aabca77dc75e826729ac98447b46f91e00796155dddb0d29"),
+		HashType: types.HashTypeData1,
+		OutPoint: &types.OutPoint{
+			TxHash: types.HexToHash("0x6888aa39ab30c570c2c30d9d5684d3769bf77265a7973211a3c087fe8efbf738"),
+			Index:  0,
 		},
 		DepType: types.DepTypeDepGroup,
 	}
@@ -117,12 +140,21 @@ func initTestnetSystemScript() {
 		},
 		DepType: types.DepTypeDepGroup,
 	}
-	testnetContracts[Secp256k1Blake160MultisigAll] = &Info{
+	testnetContracts[Secp256k1Blake160MultisigAllLegacy] = &Info{
 		CodeHash: types.HexToHash("0x5c5069eb0857efc65e1bca0c07df34c31663b3622fd3876c876320fc9634e2a8"),
 		HashType: types.HashTypeType,
 		OutPoint: &types.OutPoint{
 			TxHash: types.HexToHash("0xf8de3bb47d055cdf460d93a2a6e1b05f7432f9777c8c474abf4eec1d4aee5d37"),
 			Index:  1,
+		},
+		DepType: types.DepTypeDepGroup,
+	}
+	testnetContracts[Secp256k1Blake160MultisigAllV2] = &Info{
+		CodeHash: types.HexToHash("0x36c971b8d41fbd94aabca77dc75e826729ac98447b46f91e00796155dddb0d29"),
+		HashType: types.HashTypeData1,
+		OutPoint: &types.OutPoint{
+			TxHash: types.HexToHash("0x2eefdeb21f3a3edf697c28a52601b4419806ed60bb427420455cc29a090b26d5"),
+			Index:  0,
 		},
 		DepType: types.DepTypeDepGroup,
 	}

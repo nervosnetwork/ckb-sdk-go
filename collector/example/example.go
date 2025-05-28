@@ -122,7 +122,7 @@ func SendCkbFromMultisigAddressExample() error {
 	// ckt1qpw9q60tppt7l3j7r09qcp7lxnp3vcanvgha8pmvsa3jplykxn32sqdunqvd3g2felqv6qer8pkydws8jg9qxlca0st5v
 	sender, _ := address.Address{
 		Script: &types.Script{
-			CodeHash: systemscript.GetCodeHash(network, systemscript.Secp256k1Blake160MultisigAll),
+			CodeHash: systemscript.GetCodeHash(network, systemscript.Secp256k1Blake160MultisigAllLegacy),
 			HashType: types.HashTypeType,
 			Args:     args,
 		},

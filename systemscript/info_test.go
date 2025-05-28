@@ -9,8 +9,12 @@ import (
 func TestGetSystemScriptInfo(t *testing.T) {
 	script := GetInfo(types.NetworkMain, Secp256k1Blake160SighashAll)
 	assert.NotNil(t, script)
-	script = GetInfo(types.NetworkMain, Secp256k1Blake160MultisigAll)
+	script = GetInfo(types.NetworkMain, Secp256k1Blake160MultisigAllLegacy)
 	assert.NotNil(t, script)
-	script = GetInfo(types.NetworkTest, Secp256k1Blake160MultisigAll)
+	script = GetInfo(types.NetworkMain, Secp256k1Blake160MultisigAllV2)
+	assert.NotNil(t, script)
+	script = GetInfo(types.NetworkTest, Secp256k1Blake160MultisigAllLegacy)
+	assert.NotNil(t, script)
+	script = GetInfo(types.NetworkTest, Secp256k1Blake160MultisigAllV2)
 	assert.NotNil(t, script)
 }

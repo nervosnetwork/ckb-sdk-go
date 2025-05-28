@@ -9,6 +9,7 @@ import (
 	"github.com/nervosnetwork/ckb-sdk-go/v2/address"
 	"github.com/nervosnetwork/ckb-sdk-go/v2/collector"
 	"github.com/nervosnetwork/ckb-sdk-go/v2/collector/handler"
+	"github.com/nervosnetwork/ckb-sdk-go/v2/systemscript"
 	"github.com/nervosnetwork/ckb-sdk-go/v2/transaction"
 	"github.com/nervosnetwork/ckb-sdk-go/v2/types"
 )
@@ -33,7 +34,8 @@ func NewSimpleTransactionBuilder(network types.Network) *SimpleTransactionBuilde
 	if network == types.NetworkMain || network == types.NetworkTest || network == types.NetworkPreview {
 		s := SimpleTransactionBuilder{}
 		s.Register(handler.NewSecp256k1Blake160SighashAllScriptHandler(network))
-		s.Register(handler.NewSecp256k1Blake160MultisigAllScriptHandler(network))
+		s.Register(handler.NewSecp256k1Blake160MultisigAllScriptHandler(network, systemscript.MultisigLegacy))
+		s.Register(handler.NewSecp256k1Blake160MultisigAllScriptHandler(network, systemscript.MultisigV2))
 		s.Register(handler.NewSudtScriptHandler(network))
 		s.Register(handler.NewDaoScriptHandler(network))
 		s.Register(handler.NewOmnilockScriptHandler(network))

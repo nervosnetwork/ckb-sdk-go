@@ -57,7 +57,7 @@ func TestSecp256k1Blake160Multisig(t *testing.T) {
 		}
 		multisigConfig.AddKeyHash(blake2b.Blake256(key))
 	}
-	s, err := Secp256k1Blake160Multisig(multisigConfig)
+	s, err := Secp256k1Blake160Multisig(multisigConfig, MultisigLegacy)
 	if err != nil {
 		t.Error(t, err)
 	}

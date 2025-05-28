@@ -12,7 +12,9 @@ func init() {
 		instance.RegisterLockSigner(
 			systemscript.GetCodeHash(network, systemscript.Secp256k1Blake160SighashAll), &Secp256k1Blake160SighashAllSigner{})
 		instance.RegisterLockSigner(
-			systemscript.GetCodeHash(network, systemscript.Secp256k1Blake160MultisigAll), &Secp256k1Blake160MultisigAllSigner{})
+			systemscript.GetCodeHash(network, systemscript.Secp256k1Blake160MultisigAllLegacy), &Secp256k1Blake160MultisigAllSigner{})
+		instance.RegisterLockSigner(
+			systemscript.GetCodeHash(network, systemscript.Secp256k1Blake160MultisigAllV2), &Secp256k1Blake160MultisigAllSigner{})
 		instance.RegisterLockSigner(
 			systemscript.GetCodeHash(network, systemscript.AnyoneCanPay), &AnyCanPaySigner{})
 		instance.RegisterLockSigner(

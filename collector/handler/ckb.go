@@ -58,27 +58,46 @@ func (r *Secp256k1Blake160SighashAllScriptHandler) BuildTransaction(builder coll
 }
 
 type Secp256k1Blake160MultisigAllScriptHandler struct {
-	cellDep *types.CellDep
-	network types.Network
+	multisigVersion systemscript.MultisigVersion
+	cellDep         *types.CellDep
+	network         types.Network
 }
 
-func NewSecp256k1Blake160MultisigAllScriptHandler(network types.Network) *Secp256k1Blake160MultisigAllScriptHandler {
+func NewSecp256k1Blake160MultisigAllScriptHandler(network types.Network, multisigVersion systemscript.MultisigVersion) *Secp256k1Blake160MultisigAllScriptHandler {
 	var txHash types.Hash
-	if network == types.NetworkMain {
-		txHash = types.HexToHash("0x71a7ba8fc96349fea0ed3a5c47992e3b4084b031a42264a018e0072e8172e46c")
-	} else if network == types.NetworkTest {
-		txHash = types.HexToHash("0xf8de3bb47d055cdf460d93a2a6e1b05f7432f9777c8c474abf4eec1d4aee5d37")
-	} else if network == types.NetworkPreview {
-		txHash = types.HexToHash("0x0fab65924f2784f17ad7f86d6aef4b04ca1ca237102a68961594acebc5c77816")
+	var index uint32
+	if multisigVersion == systemscript.MultisigLegacy {
+		if network == types.NetworkMain {
+			txHash = types.HexToHash("0x71a7ba8fc96349fea0ed3a5c47992e3b4084b031a42264a018e0072e8172e46c")
+		} else if network == types.NetworkTest {
+			txHash = types.HexToHash("0xf8de3bb47d055cdf460d93a2a6e1b05f7432f9777c8c474abf4eec1d4aee5d37")
+			index = 1
+		} else if network == types.NetworkPreview {
+			txHash = types.HexToHash("0x0fab65924f2784f17ad7f86d6aef4b04ca1ca237102a68961594acebc5c77816")
+			index = 1
+		} else {
+			return nil
+		}
+	} else if multisigVersion == systemscript.MultisigV2 {
+		if network == types.NetworkMain {
+			txHash = types.HexToHash("0x6888aa39ab30c570c2c30d9d5684d3769bf77265a7973211a3c087fe8efbf738")
+			index = 0
+		} else if network == types.NetworkTest {
+			txHash = types.HexToHash("0x2eefdeb21f3a3edf697c28a52601b4419806ed60bb427420455cc29a090b26d5")
+			index = 0
+		} else {
+			return nil
+		}
 	} else {
 		return nil
 	}
 
 	return &Secp256k1Blake160MultisigAllScriptHandler{
+		multisigVersion: multisigVersion,
 		cellDep: &types.CellDep{
 			OutPoint: &types.OutPoint{
 				TxHash: txHash,
-				Index:  1,
+				Index:  index,
 			},
 			DepType: types.DepTypeDepGroup,
 		},
@@ -90,8 +109,19 @@ func (r *Secp256k1Blake160MultisigAllScriptHandler) isMatched(script *types.Scri
 	if script == nil {
 		return false
 	}
-	codeHash := systemscript.GetCodeHash(r.network, systemscript.Secp256k1Blake160MultisigAll)
-	return reflect.DeepEqual(script.CodeHash, codeHash)
+
+	var codeHash types.Hash
+	var scriptHashType types.ScriptHashType
+	if r.multisigVersion == systemscript.MultisigLegacy {
+		codeHash = systemscript.GetCodeHash(r.network, systemscript.Secp256k1Blake160MultisigAllLegacy)
+		scriptHashType = types.HashTypeType
+	} else if r.multisigVersion == systemscript.MultisigV2 {
+		codeHash = systemscript.GetCodeHash(r.network, systemscript.Secp256k1Blake160MultisigAllV2)
+		scriptHashType = types.HashTypeData1
+	} else {
+		return false
+	}
+	return reflect.DeepEqual(script.CodeHash, codeHash) && reflect.DeepEqual(script.HashType, scriptHashType)
 }
 
 func (r *Secp256k1Blake160MultisigAllScriptHandler) BuildTransaction(builder collector.TransactionBuilder, group *transaction.ScriptGroup, context interface{}) (bool, error) {
