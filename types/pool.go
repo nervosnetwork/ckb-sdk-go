@@ -100,7 +100,7 @@ type PoolTxDetailInfo struct {
 
 type EntryCompleted struct {
 	// Cached tx cycles
-	cycles uint64 `json:"cycles"`
+	Cycles uint64 `json:"cycles"`
 	// Cached tx fee
-	fee uint64 `json:"fee"`
+	Fee uint64 `json:"fee"`
 }
