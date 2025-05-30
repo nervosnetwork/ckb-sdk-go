@@ -4,9 +4,9 @@ import (
 	"context"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/rpc"
-	"github.com/nervosnetwork/ckb-sdk-go/v2/indexer"
-	"github.com/nervosnetwork/ckb-sdk-go/v2/mocking"
-	"github.com/nervosnetwork/ckb-sdk-go/v2/types"
+	"github.com/nervosnetwork/ckb-sdk-go/v3/indexer"
+	"github.com/nervosnetwork/ckb-sdk-go/v3/mocking"
+	"github.com/nervosnetwork/ckb-sdk-go/v3/types"
 )
 
 type Client interface {

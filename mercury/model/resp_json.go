@@ -3,7 +3,7 @@ package model
 import (
 	"encoding/json"
 	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/nervosnetwork/ckb-sdk-go/v2/types"
+	"github.com/nervosnetwork/ckb-sdk-go/v3/types"
 	"github.com/pkg/errors"
 	"math/big"
 	"reflect"

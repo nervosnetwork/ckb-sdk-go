@@ -6,8 +6,8 @@ import (
 
 	ethcommon "github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/nervosnetwork/ckb-sdk-go/v2/indexer"
-	"github.com/nervosnetwork/ckb-sdk-go/v2/types"
+	"github.com/nervosnetwork/ckb-sdk-go/v3/indexer"
+	"github.com/nervosnetwork/ckb-sdk-go/v3/types"
 	"github.com/stretchr/testify/assert"
 )
 

@@ -3,13 +3,13 @@ package signer
 import (
 	"bytes"
 	"fmt"
-	"github.com/nervosnetwork/ckb-sdk-go/v2/crypto"
-	"github.com/nervosnetwork/ckb-sdk-go/v2/crypto/blake2b"
-	"github.com/nervosnetwork/ckb-sdk-go/v2/crypto/secp256k1"
-	"github.com/nervosnetwork/ckb-sdk-go/v2/systemscript"
-	"github.com/nervosnetwork/ckb-sdk-go/v2/transaction"
-	"github.com/nervosnetwork/ckb-sdk-go/v2/transaction/signer/omnilock"
-	"github.com/nervosnetwork/ckb-sdk-go/v2/types"
+	"github.com/nervosnetwork/ckb-sdk-go/v3/crypto"
+	"github.com/nervosnetwork/ckb-sdk-go/v3/crypto/blake2b"
+	"github.com/nervosnetwork/ckb-sdk-go/v3/crypto/secp256k1"
+	"github.com/nervosnetwork/ckb-sdk-go/v3/systemscript"
+	"github.com/nervosnetwork/ckb-sdk-go/v3/transaction"
+	"github.com/nervosnetwork/ckb-sdk-go/v3/transaction/signer/omnilock"
+	"github.com/nervosnetwork/ckb-sdk-go/v3/types"
 )
 
 type OmnilockSigner struct {

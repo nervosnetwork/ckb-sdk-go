@@ -2,11 +2,11 @@ package mercury
 
 import (
 	"context"
-	"github.com/nervosnetwork/ckb-sdk-go/v2/transaction"
-	"github.com/nervosnetwork/ckb-sdk-go/v2/types"
+	"github.com/nervosnetwork/ckb-sdk-go/v3/transaction"
+	"github.com/nervosnetwork/ckb-sdk-go/v3/types"
 
 	"github.com/ethereum/go-ethereum/rpc"
-	"github.com/nervosnetwork/ckb-sdk-go/v2/mercury/model"
+	"github.com/nervosnetwork/ckb-sdk-go/v3/mercury/model"
 )
 
 type Client interface {

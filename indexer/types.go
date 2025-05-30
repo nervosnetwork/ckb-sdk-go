@@ -3,7 +3,7 @@ package indexer
 import (
 	"encoding/json"
 
-	"github.com/nervosnetwork/ckb-sdk-go/v2/types"
+	"github.com/nervosnetwork/ckb-sdk-go/v3/types"
 )
 
 type SearchOrder string

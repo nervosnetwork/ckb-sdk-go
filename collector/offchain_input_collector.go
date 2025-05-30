@@ -2,8 +2,8 @@ package collector
 
 import (
 	"container/list"
-	"github.com/nervosnetwork/ckb-sdk-go/v2/rpc"
-	"github.com/nervosnetwork/ckb-sdk-go/v2/types"
+	"github.com/nervosnetwork/ckb-sdk-go/v3/rpc"
+	"github.com/nervosnetwork/ckb-sdk-go/v3/types"
 )
 
 type OffChainInputCollector struct {

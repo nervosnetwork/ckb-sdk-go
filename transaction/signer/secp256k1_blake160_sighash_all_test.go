@@ -2,8 +2,8 @@ package signer
 
 import (
 	"github.com/ethereum/go-ethereum/common"
-	s "github.com/nervosnetwork/ckb-sdk-go/v2/crypto/secp256k1"
-	"github.com/nervosnetwork/ckb-sdk-go/v2/types"
+	s "github.com/nervosnetwork/ckb-sdk-go/v3/crypto/secp256k1"
+	"github.com/nervosnetwork/ckb-sdk-go/v3/types"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )

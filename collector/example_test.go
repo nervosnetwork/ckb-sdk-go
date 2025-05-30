@@ -3,10 +3,10 @@ package collector_test
 import (
 	"reflect"
 
-	"github.com/nervosnetwork/ckb-sdk-go/v2/collector"
-	"github.com/nervosnetwork/ckb-sdk-go/v2/collector/builder"
-	"github.com/nervosnetwork/ckb-sdk-go/v2/transaction"
-	"github.com/nervosnetwork/ckb-sdk-go/v2/types"
+	"github.com/nervosnetwork/ckb-sdk-go/v3/collector"
+	"github.com/nervosnetwork/ckb-sdk-go/v3/collector/builder"
+	"github.com/nervosnetwork/ckb-sdk-go/v3/transaction"
+	"github.com/nervosnetwork/ckb-sdk-go/v3/types"
 )
 
 // SimpleLockScriptHandler is an example script handler to add specified cell dep and prefill the witness.

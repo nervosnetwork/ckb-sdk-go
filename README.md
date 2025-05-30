@@ -20,7 +20,7 @@ structure and RPC before using it.
 ### Install
 
 ```bash
-go get -v github.com/nervosnetwork/ckb-sdk-go/v2
+go get -v github.com/nervosnetwork/ckb-sdk-go/v3
 ```
 
 ## Quick start

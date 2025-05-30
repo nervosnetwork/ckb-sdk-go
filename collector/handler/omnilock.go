@@ -2,12 +2,12 @@ package handler
 
 import (
 	"fmt"
-	"github.com/nervosnetwork/ckb-sdk-go/v2/collector"
-	"github.com/nervosnetwork/ckb-sdk-go/v2/systemscript"
-	"github.com/nervosnetwork/ckb-sdk-go/v2/transaction"
-	"github.com/nervosnetwork/ckb-sdk-go/v2/transaction/signer"
-	"github.com/nervosnetwork/ckb-sdk-go/v2/transaction/signer/omnilock"
-	"github.com/nervosnetwork/ckb-sdk-go/v2/types"
+	"github.com/nervosnetwork/ckb-sdk-go/v3/collector"
+	"github.com/nervosnetwork/ckb-sdk-go/v3/systemscript"
+	"github.com/nervosnetwork/ckb-sdk-go/v3/transaction"
+	"github.com/nervosnetwork/ckb-sdk-go/v3/transaction/signer"
+	"github.com/nervosnetwork/ckb-sdk-go/v3/transaction/signer/omnilock"
+	"github.com/nervosnetwork/ckb-sdk-go/v3/types"
 	"reflect"
 )
 

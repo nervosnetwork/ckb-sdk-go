@@ -3,9 +3,9 @@ package utils
 import (
 	"context"
 	"errors"
-	"github.com/nervosnetwork/ckb-sdk-go/v2/indexer"
-	"github.com/nervosnetwork/ckb-sdk-go/v2/rpc"
-	"github.com/nervosnetwork/ckb-sdk-go/v2/types"
+	"github.com/nervosnetwork/ckb-sdk-go/v3/indexer"
+	"github.com/nervosnetwork/ckb-sdk-go/v3/rpc"
+	"github.com/nervosnetwork/ckb-sdk-go/v3/types"
 	"math/big"
 	"regexp"
 	"strconv"

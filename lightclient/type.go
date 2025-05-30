@@ -1,8 +1,8 @@
 package lightclient
 
 import (
-	"github.com/nervosnetwork/ckb-sdk-go/v2/indexer"
-	"github.com/nervosnetwork/ckb-sdk-go/v2/types"
+	"github.com/nervosnetwork/ckb-sdk-go/v3/indexer"
+	"github.com/nervosnetwork/ckb-sdk-go/v3/types"
 )
 
 type ScriptDetail struct {

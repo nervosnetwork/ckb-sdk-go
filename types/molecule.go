@@ -6,8 +6,8 @@ import (
 	"math/big"
 
 	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/nervosnetwork/ckb-sdk-go/v2/crypto/blake2b"
-	"github.com/nervosnetwork/ckb-sdk-go/v2/types/molecule"
+	"github.com/nervosnetwork/ckb-sdk-go/v3/crypto/blake2b"
+	"github.com/nervosnetwork/ckb-sdk-go/v3/types/molecule"
 )
 
 func (r *WitnessArgs) Pack() *molecule.WitnessArgs {

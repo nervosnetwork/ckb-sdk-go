@@ -1,7 +1,7 @@
 package systemscript
 
 import (
-	"github.com/nervosnetwork/ckb-sdk-go/v2/types"
+	"github.com/nervosnetwork/ckb-sdk-go/v3/types"
 )
 
 type Info struct {

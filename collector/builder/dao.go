@@ -5,11 +5,11 @@ import (
 	"context"
 	"encoding/binary"
 	"errors"
-	"github.com/nervosnetwork/ckb-sdk-go/v2/address"
-	"github.com/nervosnetwork/ckb-sdk-go/v2/collector"
-	"github.com/nervosnetwork/ckb-sdk-go/v2/collector/handler"
-	"github.com/nervosnetwork/ckb-sdk-go/v2/rpc"
-	"github.com/nervosnetwork/ckb-sdk-go/v2/types"
+	"github.com/nervosnetwork/ckb-sdk-go/v3/address"
+	"github.com/nervosnetwork/ckb-sdk-go/v3/collector"
+	"github.com/nervosnetwork/ckb-sdk-go/v3/collector/handler"
+	"github.com/nervosnetwork/ckb-sdk-go/v3/rpc"
+	"github.com/nervosnetwork/ckb-sdk-go/v3/types"
 	"math/big"
 )
 
