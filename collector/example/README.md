@@ -10,7 +10,7 @@ The [example.go](./example.go) provides some examples shows how to use this sdk 
 These examples show how to transfer CKB, in different situations.
 
 - `SendCkbExample`: sign and send CKB from single-sig address.
-- `SendCkbByLightClientExample`: similiar to `SendCkbExample` but interact with [`ckb-light-client`](https://github.com/nervosnetwork/ckb-light-client)
+- `SendCkbByLightClientExample`: similar to `SendCkbExample` but interact with [`ckb-light-client`](https://github.com/nervosnetwork/ckb-light-client)
 - `SendCkbFromMultisigAddressExample`: sign and send CKB from multi-sig address with multiple private keys.
 - `SendChainedTransactionExample`: sign and send offchain transaction
 
