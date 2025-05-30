@@ -3,9 +3,10 @@ package types
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/ethereum/go-ethereum/common/hexutil"
 	"math/big"
 	"strings"
+
+	"github.com/ethereum/go-ethereum/common/hexutil"
 )
 
 func (r *ScriptType) UnmarshalJSON(input []byte) error {
@@ -862,4 +863,435 @@ func (r *PackedBlock) UnmarshalJSON(input []byte) error {
 		return err
 	}
 	return nil
+}
+
+type jsonCellbaseTemplate struct {
+	Hash   Hash            `json:"hash"`
+	Cycles *hexutil.Uint64 `json:"cycles"`
+	Data   Transaction     `json:"data"`
+}
+
+var _ json.Marshaler = new(CellbaseTemplate)
+var _ json.Unmarshaler = new(CellbaseTemplate)
+
+func (r *CellbaseTemplate) MarshalJSON() ([]byte, error) {
+	jsonObj := &jsonCellbaseTemplate{
+		Hash: r.Hash,
+		Data: r.Data,
+	}
+	if r.Cycles != nil {
+		jsonObj.Cycles = (*hexutil.Uint64)(r.Cycles)
+	}
+	return json.Marshal(jsonObj)
+}
+
+func (r *CellbaseTemplate) UnmarshalJSON(input []byte) error {
+	var jsonObj jsonCellbaseTemplate
+	if err := json.Unmarshal(input, &jsonObj); err != nil {
+		return err
+	}
+	*r = CellbaseTemplate{
+		Hash: jsonObj.Hash,
+		Data: jsonObj.Data,
+	}
+	if jsonObj.Cycles != nil {
+		r.Cycles = (*uint64)(jsonObj.Cycles)
+	}
+	return nil
+}
+
+type jsonBlockTemplate struct {
+	Version          hexutil.Uint          `json:"version"`
+	CompactTarget    hexutil.Uint          `json:"compact_target"`
+	CurrentTime      hexutil.Uint64        `json:"current_time"`
+	Number           hexutil.Uint64        `json:"number"`
+	Epoch            hexutil.Uint64        `json:"epoch"`
+	ParentHash       Hash                  `json:"parent_hash"`
+	CyclesLimit      hexutil.Uint64        `json:"cycles_limit"`
+	BytesLimit       uint64                `json:"bytes_limit"`
+	UnclesCountLimit hexutil.Uint64        `json:"uncles_count_limit"`
+	Uncles           []UncleTemplate       `json:"uncles"`
+	Transactions     []TransactionTemplate `json:"transactions"`
+	Proposals        []string              `json:"proposals"`
+	Cellbase         CellbaseTemplate      `json:"cellbase"`
+	WorkId           hexutil.Uint64        `json:"work_id"`
+	Dao              Hash                  `json:"dao"`
+	Extension        *json.RawMessage      `json:"extension"`
+}
+
+var _ json.Marshaler = new(BlockTemplate)
+var _ json.Unmarshaler = new(BlockTemplate)
+
+func (r *BlockTemplate) MarshalJSON() ([]byte, error) {
+	jsonObj := &jsonBlockTemplate{
+		Version:          hexutil.Uint(r.Version),
+		CompactTarget:    hexutil.Uint(r.CompactTarget),
+		CurrentTime:      hexutil.Uint64(r.CurrentTime),
+		Number:           hexutil.Uint64(r.Number),
+		Epoch:            hexutil.Uint64(r.Epoch),
+		ParentHash:       r.ParentHash,
+		CyclesLimit:      hexutil.Uint64(r.CyclesLimit),
+		BytesLimit:       r.BytesLimit,
+		UnclesCountLimit: hexutil.Uint64(r.UnclesCountLimit),
+		Uncles:           r.Uncles,
+		Transactions:     r.Transactions,
+		Proposals:        r.Proposals,
+		Cellbase:         r.Cellbase,
+		WorkId:           hexutil.Uint64(r.WorkId),
+		Dao:              r.Dao,
+	}
+	if r.Extension != nil {
+		jsonObj.Extension = r.Extension
+	}
+	return json.Marshal(jsonObj)
+}
+
+func (r *BlockTemplate) UnmarshalJSON(input []byte) error {
+	var jsonObj jsonBlockTemplate
+	if err := json.Unmarshal(input, &jsonObj); err != nil {
+		return err
+	}
+	*r = BlockTemplate{
+		Version:          uint32(jsonObj.Version),
+		CompactTarget:    uint32(jsonObj.CompactTarget),
+		CurrentTime:      uint64(jsonObj.CurrentTime),
+		Number:           uint64(jsonObj.Number),
+		Epoch:            uint64(jsonObj.Epoch),
+		ParentHash:       jsonObj.ParentHash,
+		CyclesLimit:      uint64(jsonObj.CyclesLimit),
+		BytesLimit:       jsonObj.BytesLimit,
+		UnclesCountLimit: uint64(jsonObj.UnclesCountLimit),
+		Uncles:           jsonObj.Uncles,
+		Transactions:     jsonObj.Transactions,
+		Proposals:        jsonObj.Proposals,
+		Cellbase:         jsonObj.Cellbase,
+		WorkId:           uint64(jsonObj.WorkId),
+		Dao:              jsonObj.Dao,
+	}
+	if jsonObj.Extension != nil {
+		r.Extension = jsonObj.Extension
+	}
+	return nil
+}
+
+type jsonAncestorsScoreSortKey struct {
+	AncestorsFee    hexutil.Uint64 `json:"ancestors_fee"`
+	AncestorsWeight hexutil.Uint64 `json:"ancestors_weight"`
+	Fee             hexutil.Uint64 `json:"fee"`
+	Weight          hexutil.Uint64 `json:"weight"`
+}
+
+var _ json.Marshaler = new(AncestorsScoreSortKey)
+var _ json.Unmarshaler = new(AncestorsScoreSortKey)
+
+func (r AncestorsScoreSortKey) MarshalJSON() ([]byte, error) {
+	jsonObj := &jsonAncestorsScoreSortKey{
+		AncestorsFee:    hexutil.Uint64(r.AncestorsFee),
+		AncestorsWeight: hexutil.Uint64(r.AncestorsWeight),
+		Fee:             hexutil.Uint64(r.Fee),
+		Weight:          hexutil.Uint64(r.Weight),
+	}
+	return json.Marshal(jsonObj)
+}
+
+func (r *AncestorsScoreSortKey) UnmarshalJSON(input []byte) error {
+	var jsonObj jsonAncestorsScoreSortKey
+	if err := json.Unmarshal(input, &jsonObj); err != nil {
+		return err
+	}
+	*r = AncestorsScoreSortKey{
+		AncestorsFee:    uint64(jsonObj.AncestorsFee),
+		AncestorsWeight: uint64(jsonObj.AncestorsWeight),
+		Fee:             uint64(jsonObj.Fee),
+		Weight:          uint64(jsonObj.Weight),
+	}
+	return nil
+}
+
+type jsonPoolTxDetailInfo struct {
+	AncestorsCount   hexutil.Uint64        `json:"ancestors_count"`
+	DescendantsCount hexutil.Uint64        `json:"descendants_count"`
+	EntryStatus      string                `json:"entry_status"`
+	PendingCount     hexutil.Uint64        `json:"pending_count"`
+	ProposedCount    hexutil.Uint64        `json:"proposed_count"`
+	RankInPending    hexutil.Uint64        `json:"rank_in_pending"`
+	ScoreSortKey     AncestorsScoreSortKey `json:"score_sortkey"`
+	Timestamp        hexutil.Uint64        `json:"timestamp"`
+}
+
+var _ json.Marshaler = new(PoolTxDetailInfo)
+var _ json.Unmarshaler = new(PoolTxDetailInfo)
+
+func (r PoolTxDetailInfo) MarshalJSON() ([]byte, error) {
+	jsonObj := &jsonPoolTxDetailInfo{
+		AncestorsCount:   hexutil.Uint64(r.AncestorsCount),
+		DescendantsCount: hexutil.Uint64(r.DescendantsCount),
+		EntryStatus:      r.EntryStatus,
+		PendingCount:     hexutil.Uint64(r.PendingCount),
+		ProposedCount:    hexutil.Uint64(r.ProposedCount),
+		RankInPending:    hexutil.Uint64(r.RankInPending),
+		ScoreSortKey:     r.ScoreSortKey,
+		Timestamp:        hexutil.Uint64(r.Timestamp),
+	}
+	return json.Marshal(jsonObj)
+}
+
+func (r *PoolTxDetailInfo) UnmarshalJSON(input []byte) error {
+	var jsonObj jsonPoolTxDetailInfo
+	if err := json.Unmarshal(input, &jsonObj); err != nil {
+		return err
+	}
+	*r = PoolTxDetailInfo{
+		AncestorsCount:   uint64(jsonObj.AncestorsCount),
+		DescendantsCount: uint64(jsonObj.DescendantsCount),
+		EntryStatus:      jsonObj.EntryStatus,
+		PendingCount:     uint64(jsonObj.PendingCount),
+		ProposedCount:    uint64(jsonObj.ProposedCount),
+		RankInPending:    uint64(jsonObj.RankInPending),
+		ScoreSortKey:     jsonObj.ScoreSortKey,
+		Timestamp:        uint64(jsonObj.Timestamp),
+	}
+	return nil
+}
+
+type jsonAlert struct {
+	Id          hexutil.Uint      `json:"id"`
+	Cancel      hexutil.Uint      `json:"cancel"`
+	MinVersion  *string           `json:"min_version"`
+	MaxVersion  *string           `json:"max_version"`
+	Priority    hexutil.Uint      `json:"priority"`
+	NoticeUntil hexutil.Uint64    `json:"notice_until"`
+	Message     string            `json:"message"`
+	Signatures  []json.RawMessage `json:"signatures"`
+}
+
+var _ json.Marshaler = new(Alert)
+var _ json.Unmarshaler = new(Alert)
+
+func (r Alert) MarshalJSON() ([]byte, error) {
+	jsonObj := &jsonAlert{
+		Id:          hexutil.Uint(r.Id),
+		Cancel:      hexutil.Uint(r.Cancel),
+		Priority:    hexutil.Uint(r.Priority),
+		NoticeUntil: hexutil.Uint64(r.NoticeUntil),
+		Message:     r.Message,
+		Signatures:  r.Signatures,
+	}
+	if r.MinVersion != nil {
+		jsonObj.MinVersion = r.MinVersion
+	}
+	if r.MaxVersion != nil {
+		jsonObj.MaxVersion = r.MaxVersion
+	}
+	return json.Marshal(jsonObj)
+}
+
+func (r *Alert) UnmarshalJSON(input []byte) error {
+	var jsonObj jsonAlert
+	if err := json.Unmarshal(input, &jsonObj); err != nil {
+		return err
+	}
+	*r = Alert{
+		Id:          uint32(jsonObj.Id),
+		Cancel:      uint32(jsonObj.Cancel),
+		Priority:    uint32(jsonObj.Priority),
+		NoticeUntil: uint64(jsonObj.NoticeUntil),
+		Message:     jsonObj.Message,
+		Signatures:  jsonObj.Signatures,
+	}
+	if jsonObj.MinVersion != nil {
+		r.MinVersion = jsonObj.MinVersion
+	}
+	if jsonObj.MaxVersion != nil {
+		r.MaxVersion = jsonObj.MaxVersion
+	}
+	return nil
+}
+
+type jsonAlertMessage struct {
+	Id          hexutil.Uint   `json:"id"`
+	Message     string         `json:"message"`
+	NoticeUntil hexutil.Uint64 `json:"notice_until"`
+	Priority    hexutil.Uint   `json:"priority"`
+}
+
+func (r AlertMessage) MarshalJSON() ([]byte, error) {
+	jsonObj := &jsonAlertMessage{
+		Id:          hexutil.Uint(r.Id),
+		Message:     r.Message,
+		NoticeUntil: hexutil.Uint64(r.NoticeUntil),
+		Priority:    hexutil.Uint(r.Priority),
+	}
+	return json.Marshal(jsonObj)
+}
+
+func (r *AlertMessage) UnmarshalJSON(input []byte) error {
+	var jsonObj jsonAlertMessage
+	if err := json.Unmarshal(input, &jsonObj); err != nil {
+		return err
+	}
+	*r = AlertMessage{
+		Id:          uint32(jsonObj.Id),
+		Message:     jsonObj.Message,
+		NoticeUntil: uint64(jsonObj.NoticeUntil),
+		Priority:    uint32(jsonObj.Priority),
+	}
+	return nil
+}
+
+type jsonDeploymentInfo struct {
+	Bit                hexutil.Uint     `json:"bit"`
+	Start              hexutil.Uint64   `json:"start"`
+	Timeout            hexutil.Uint64   `json:"timeout"`
+	MinActivationEpoch hexutil.Uint64   `json:"min_activation_epoch"`
+	Period             hexutil.Uint64   `json:"period"`
+	Threshold          jsonRationalU256 `json:"threshold"`
+	Since              hexutil.Uint64   `json:"since"`
+	State              DeploymentState  `json:"state"`
+}
+
+var _ json.Marshaler = new(DeploymentInfo)
+var _ json.Unmarshaler = new(DeploymentInfo)
+
+func (r DeploymentInfo) MarshalJSON() ([]byte, error) {
+	jsonObj := &jsonDeploymentInfo{
+		Bit:                hexutil.Uint(r.Bit),
+		Start:              hexutil.Uint64(r.Start),
+		Timeout:            hexutil.Uint64(r.Timeout),
+		MinActivationEpoch: hexutil.Uint64(r.MinActivationEpoch),
+		Period:             hexutil.Uint64(r.Period),
+		Threshold:          r.Threshold,
+		Since:              hexutil.Uint64(r.Since),
+		State:              r.State,
+	}
+	return json.Marshal(jsonObj)
+}
+func (r *DeploymentInfo) UnmarshalJSON(input []byte) error {
+	var jsonObj jsonDeploymentInfo
+	if err := json.Unmarshal(input, &jsonObj); err != nil {
+		return err
+	}
+	*r = DeploymentInfo{
+		Bit:                uint8(jsonObj.Bit),
+		Start:              uint64(jsonObj.Start),
+		Timeout:            uint64(jsonObj.Timeout),
+		MinActivationEpoch: uint64(jsonObj.MinActivationEpoch),
+		Period:             uint64(jsonObj.Period),
+		Threshold:          jsonObj.Threshold,
+		Since:              uint64(jsonObj.Since),
+		State:              jsonObj.State,
+	}
+	return nil
+}
+
+type jsonDeploymentsInfo struct {
+	Hash        Hash                      `json:"hash"`
+	Epoch       hexutil.Uint64            `json:"epoch"`
+	Deployments map[string]DeploymentInfo `json:"deployments"`
+}
+
+var _ json.Marshaler = new(DeploymentsInfo)
+var _ json.Unmarshaler = new(DeploymentsInfo)
+
+func (r DeploymentsInfo) MarshalJSON() ([]byte, error) {
+	deployments := make(map[string]DeploymentInfo)
+	for k, v := range r.Deployments {
+		deployments[k.String()] = v
+	}
+	jsonObj := &jsonDeploymentsInfo{
+		Hash:        r.Hash,
+		Epoch:       hexutil.Uint64(r.Epoch),
+		Deployments: deployments,
+	}
+	return json.Marshal(jsonObj)
+}
+func (r *DeploymentsInfo) UnmarshalJSON(input []byte) error {
+	var jsonObj jsonDeploymentsInfo
+	if err := json.Unmarshal(input, &jsonObj); err != nil {
+		return err
+	}
+	deployments := make(map[DeploymentPos]DeploymentInfo)
+	for k, v := range jsonObj.Deployments {
+		pos, err := DeploymentPosFromString(k)
+		if err != nil {
+			return err
+		}
+		deployments[pos] = v
+	}
+	*r = DeploymentsInfo{
+		Hash:        jsonObj.Hash,
+		Epoch:       uint64(jsonObj.Epoch),
+		Deployments: deployments,
+	}
+	return nil
+}
+
+type jsonTxPoolEntry struct {
+	Cycles          hexutil.Uint64 `json:"cycles"`
+	Size            hexutil.Uint64 `json:"size"`
+	Fee             hexutil.Uint64 `json:"fee"`
+	AncestorsSize   hexutil.Uint64 `json:"ancestors_size"`
+	AncestorsCycles hexutil.Uint64 `json:"ancestors_cycles"`
+	AncestorsCount  hexutil.Uint64 `json:"ancestors_count"`
+	Timestamp       hexutil.Uint64 `json:"timestamp"`
+}
+
+var _ json.Marshaler = new(TxPoolEntry)
+var _ json.Unmarshaler = new(TxPoolEntry)
+
+func (r TxPoolEntry) MarshalJSON() ([]byte, error) {
+	jsonObj := &jsonTxPoolEntry{
+		Cycles:          hexutil.Uint64(r.Cycles),
+		Size:            hexutil.Uint64(r.Size),
+		Fee:             hexutil.Uint64(r.Fee),
+		AncestorsSize:   hexutil.Uint64(r.AncestorsSize),
+		AncestorsCycles: hexutil.Uint64(r.AncestorsCycles),
+		AncestorsCount:  hexutil.Uint64(r.AncestorsCount),
+		Timestamp:       hexutil.Uint64(r.Timestamp),
+	}
+	return json.Marshal(jsonObj)
+}
+func (r *TxPoolEntry) UnmarshalJSON(input []byte) error {
+	var jsonObj jsonTxPoolEntry
+	if err := json.Unmarshal(input, &jsonObj); err != nil {
+		return err
+	}
+	*r = TxPoolEntry{
+		Cycles:          uint64(jsonObj.Cycles),
+		Size:            uint64(jsonObj.Size),
+		Fee:             uint64(jsonObj.Fee),
+		AncestorsSize:   uint64(jsonObj.AncestorsSize),
+		AncestorsCycles: uint64(jsonObj.AncestorsCycles),
+		AncestorsCount:  uint64(jsonObj.AncestorsCount),
+		Timestamp:       uint64(jsonObj.Timestamp),
+	}
+	return nil
+}
+
+type jsonEntryCompleted struct {
+	Cycles hexutil.Uint64 `json:"cycles"`
+	Fee    hexutil.Uint64 `json:"fee"`
+}
+
+var _ json.Marshaler = new(EntryCompleted)
+var _ json.Unmarshaler = new(EntryCompleted)
+
+func (r *EntryCompleted) UnmarshalJSON(input []byte) error {
+	var result jsonEntryCompleted
+	if err := json.Unmarshal(input, &result); err != nil {
+		return err
+	}
+	*r = EntryCompleted{
+		Cycles: uint64(result.Cycles),
+		Fee:    uint64(result.Fee),
+	}
+	return nil
+}
+
+func (r *EntryCompleted) MarshalJSON() ([]byte, error) {
+	jsonObj := &jsonEntryCompleted{
+		Cycles: hexutil.Uint64(r.Cycles),
+		Fee:    hexutil.Uint64(r.Fee),
+	}
+	return json.Marshal(jsonObj)
 }

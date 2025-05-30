@@ -375,11 +375,19 @@ func TestClient_ClearTxPool(t *testing.T) {
 }
 
 func TestClient_GetRawTxPool(t *testing.T) {
-	rawTxPool, err := testClient.GetRawTxPool(ctx, nil)
+	rawTxPool, err := testClient.GetRawTxPool(ctx)
 	if err != nil {
 		t.Fatal(err)
 	}
 	assert.NotNil(t, rawTxPool)
+}
+
+func TestClient_GetRawTxPoolVerbose(t *testing.T) {
+	rawTxPoolVerbose, err := testClient.GetRawTxPoolVerbose(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.NotNil(t, rawTxPoolVerbose)
 }
 
 func TestClient_GetBlockchainInfo(t *testing.T) {
@@ -556,4 +564,12 @@ func TestClient_GetTransactions_ExactMode(t *testing.T) {
 	assert.True(t, len(resp2.Objects) >= 1)
 	assert.NotEqual(t, 0, resp2.Objects[0].BlockNumber)
 	assert.NotEqual(t, "", resp2.Objects[0].IoType)
+}
+
+func TestClient_GetPoolTxDetailInfo(t *testing.T) {
+	info, err := testClient.GetPoolTxDetailInfo(ctx, types.HexToHash("0x8277d74d33850581f8d843613ded0c2a1722dec0e87e748f45c115dfb14210f1"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.NotNil(t, info)
 }

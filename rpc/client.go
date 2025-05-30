@@ -172,14 +172,16 @@ type Client interface {
 
 	RemoveTransaction(ctx context.Context, tx_hash types.Hash) (bool, error)
 
-	SendAlert(ctx context.Context, alert types.AlertMessage) error
+	SendAlert(ctx context.Context, alert types.Alert) error
 
 	GetBlockTemplate(ctx context.Context) (types.BlockTemplate, error)
 
 	TxPoolReady(ctx context.Context) (bool, error)
 
 	// GetRawTxPool Returns all transaction ids in tx pool as a json array of string transaction ids.
-	GetRawTxPool(ctx context.Context, verbose *bool) (*types.RawTxPool, error)
+	GetRawTxPool(ctx context.Context) (*types.RawTxPool, error)
+	// GetRawTxPool Returns all transaction ids in tx pool as a json array of string transaction ids.
+	GetRawTxPoolVerbose(ctx context.Context) (*types.RawTxPoolVerbose, error)
 
 	// ClearTxPool Removes all transactions from the transaction pool.
 	ClearTxPool(ctx context.Context) error
@@ -774,14 +776,21 @@ func (cli *client) TxPoolInfo(ctx context.Context) (*types.TxPoolInfo, error) {
 	return &result, nil
 }
 
-func (cli *client) GetRawTxPool(ctx context.Context, verbose *bool) (*types.RawTxPool, error) {
+func (cli *client) GetRawTxPool(ctx context.Context) (*types.RawTxPool, error) {
 	var txPool types.RawTxPool
 
-	if verbose == nil {
-		defaultVerbose := false
-		verbose = &defaultVerbose
+	err := cli.c.CallContext(ctx, &txPool, "get_raw_tx_pool")
+	if err != nil {
+		return nil, err
 	}
-	err := cli.c.CallContext(ctx, &txPool, "get_raw_tx_pool", verbose)
+
+	return &txPool, err
+}
+
+func (cli *client) GetRawTxPoolVerbose(ctx context.Context) (*types.RawTxPoolVerbose, error) {
+	var txPool types.RawTxPoolVerbose
+
+	err := cli.c.CallContext(ctx, &txPool, "get_raw_tx_pool", true)
 	if err != nil {
 		return nil, err
 	}
@@ -996,7 +1005,7 @@ func (cli *client) RemoveTransaction(ctx context.Context, tx_hash types.Hash) (b
 	return result, nil
 }
 
-func (cli *client) SendAlert(ctx context.Context, alert types.AlertMessage) error {
+func (cli *client) SendAlert(ctx context.Context, alert types.Alert) error {
 	return cli.c.CallContext(ctx, nil, "send_alert", alert)
 }
 
