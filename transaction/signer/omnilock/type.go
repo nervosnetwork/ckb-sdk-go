@@ -22,6 +22,7 @@ const (
 	AuthFlagLockScriptHash       AuthFlag = 0xFC
 	AuthFlagExec                 AuthFlag = 0xFD
 	AuthFlagDynamicLinking       AuthFlag = 0xFE
+	AuthFlagEVM                  AuthFlag = 0x12
 )
 
 type Authentication struct {

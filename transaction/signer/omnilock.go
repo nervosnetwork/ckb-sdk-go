@@ -2,7 +2,12 @@ package signer
 
 import (
 	"bytes"
+	"encoding/binary"
+	"encoding/hex"
+	"errors"
 	"fmt"
+
+	ethcrypto "github.com/ethereum/go-ethereum/crypto"
 	"github.com/nervosnetwork/ckb-sdk-go/v2/crypto"
 	"github.com/nervosnetwork/ckb-sdk-go/v2/crypto/blake2b"
 	"github.com/nervosnetwork/ckb-sdk-go/v2/crypto/secp256k1"
@@ -75,7 +80,29 @@ func signForAuthMode(tx *types.Transaction, group *transaction.ScriptGroup, key 
 		}
 		omnilockWitnessLock.Signature = signature
 	case omnilock.AuthFlagEthereum:
-		return nil, fmt.Errorf("unsupported flag Ethereum")
+		if len(authArgs) != 20 {
+			return nil, fmt.Errorf("invalid Ethereum address length: expected 20 bytes, got %d", len(authArgs))
+		}
+		omnilockWitnessLock.Signature = make([]byte, 65)
+		witnessArgs.Lock = make([]byte, len(omnilockWitnessLock.Serialize()))
+		witnessPlaceholder := witnessArgs.Serialize()
+		signature, err := SignEVMTransaction(tx, uint32ArrayToIntArray(group.InputIndices), key, witnessPlaceholder, false)
+		if err != nil {
+			return nil, err
+		}
+		omnilockWitnessLock.Signature = signature
+	case omnilock.AuthFlagEVM:
+		if len(authArgs) != 20 {
+			return nil, fmt.Errorf("invalid Ethereum address length: expected 20 bytes, got %d", len(authArgs))
+		}
+		omnilockWitnessLock.Signature = make([]byte, 65)
+		witnessArgs.Lock = make([]byte, len(omnilockWitnessLock.Serialize()))
+		witnessPlaceholder := witnessArgs.Serialize()
+		signature, err := SignEVMTransaction(tx, uint32ArrayToIntArray(group.InputIndices), key, witnessPlaceholder, true)
+		if err != nil {
+			return nil, err
+		}
+		omnilockWitnessLock.Signature = signature
 	case omnilock.AuthFlagEOS:
 		return nil, fmt.Errorf("unsupported flag EOS")
 	case omnilock.AuthFlagTRON:
@@ -164,3 +191,55 @@ const (
 	OmnolockModeAuth          OmnilockMode = 0
 	OmnolockModeAdministrator OmnilockMode = 1
 )
+
+func SignEVMTransaction(tx *types.Transaction, group []int, key crypto.Key, witnessPlaceholder []byte, walletview bool) ([]byte, error) {
+	if tx.Outputs == nil || tx.OutputsData == nil {
+		return nil, errors.New("tx is nil")
+	}
+	if len(tx.Outputs) != len(tx.OutputsData) {
+		return nil, fmt.Errorf("outputs and OutputsData length mismatch: %d vs %d", len(tx.Outputs), len(tx.OutputsData))
+	}
+	txHash := tx.ComputeHash()
+	inputsLen := len(tx.Inputs)
+	msg := txHash.Bytes()
+	bytesLen := make([]byte, 8)
+	binary.LittleEndian.PutUint64(bytesLen, uint64(len(witnessPlaceholder)))
+	msg = append(msg, bytesLen...)
+	msg = append(msg, witnessPlaceholder...)
+
+	var indexes []int
+	for i := 1; i < len(group); i++ {
+		indexes = append(indexes, group[i])
+	}
+	for i := inputsLen; i < len(tx.Witnesses); i++ {
+		indexes = append(indexes, i)
+	}
+	for _, i := range indexes {
+		bytes := tx.Witnesses[i]
+		bytesLen := make([]byte, 8)
+		binary.LittleEndian.PutUint64(bytesLen, uint64(len(bytes)))
+		msg = append(msg, bytesLen...)
+		msg = append(msg, bytes...)
+	}
+
+	msgDigest := blake2b.Blake256(msg)
+	var message []byte
+	if walletview {
+		message = []byte("CKB transaction: 0x" + hex.EncodeToString(msgDigest))
+	} else {
+		message = msgDigest
+	}
+	prefix := fmt.Sprintf("\x19Ethereum Signed Message:\n%d", len(message))
+	prefixed := append([]byte(prefix), message...)
+	msgToSign := ethcrypto.Keccak256(prefixed)
+	sig, err := key.Sign(msgToSign)
+	if err != nil {
+		return nil, fmt.Errorf("failed to sign transaction: %w", err)
+	}
+
+	if sig[64] >= 27 {
+		sig[64] -= 27
+	}
+
+	return sig, nil
+}

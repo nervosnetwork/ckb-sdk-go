@@ -2,13 +2,14 @@ package handler
 
 import (
 	"fmt"
+	"reflect"
+
 	"github.com/nervosnetwork/ckb-sdk-go/v2/collector"
 	"github.com/nervosnetwork/ckb-sdk-go/v2/systemscript"
 	"github.com/nervosnetwork/ckb-sdk-go/v2/transaction"
 	"github.com/nervosnetwork/ckb-sdk-go/v2/transaction/signer"
 	"github.com/nervosnetwork/ckb-sdk-go/v2/transaction/signer/omnilock"
 	"github.com/nervosnetwork/ckb-sdk-go/v2/types"
-	"reflect"
 )
 
 type OmnilockScriptHandler struct {
@@ -118,7 +119,11 @@ func (o *OmnilockScriptHandler) buildTransactionForAuthMode(builder collector.Tr
 		builder.AddCellDep(o.SingleSignCellDep)
 		omnilockWitnessLock.Signature = make([]byte, 65)
 	case omnilock.AuthFlagEthereum:
-		return false, fmt.Errorf("unsupported flag Ethereum")
+		builder.AddCellDep(o.CellDep)
+		omnilockWitnessLock.Signature = make([]byte, 65)
+	case omnilock.AuthFlagEVM:
+		builder.AddCellDep(o.CellDep)
+		omnilockWitnessLock.Signature = make([]byte, 65)
 	case omnilock.AuthFlagEOS:
 		return false, fmt.Errorf("unsupported flag EOS")
 	case omnilock.AuthFlagTRON:
