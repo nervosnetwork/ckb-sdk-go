@@ -64,7 +64,7 @@ func getCellbaseMaturity(client rpc.Client, ctx context.Context, cellbaseMaturit
 	return cellbaseMaturity, nil
 }
 
-// startNumber is maxMatureEpoch.StartNumber, length is maxMatureEpoch.Length
+// calcMaxMatureBlockNumber is maxMatureEpoch.StartNumber, length is maxMatureEpoch.Length
 func calcMaxMatureBlockNumber(tipEpoch *types.EpochParams, startNumber, length uint64, cellbaseMaturity *types.EpochParams) (uint64, error) {
 	tipEpochR := big.NewRat(
 		int64(tipEpoch.Number*tipEpoch.Length+tipEpoch.Index),
