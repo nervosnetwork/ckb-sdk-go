@@ -4,6 +4,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"os"
+	"runtime/debug"
+	"testing"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/nervosnetwork/ckb-sdk-go/v2/crypto/secp256k1"
@@ -13,9 +17,6 @@ import (
 	"github.com/nervosnetwork/ckb-sdk-go/v2/transaction/signer/omnilock"
 	"github.com/nervosnetwork/ckb-sdk-go/v2/types"
 	"github.com/stretchr/testify/assert"
-	"os"
-	"runtime/debug"
-	"testing"
 )
 
 func TestIsSingleSigMatched(t *testing.T) {

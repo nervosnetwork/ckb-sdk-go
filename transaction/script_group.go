@@ -2,6 +2,7 @@ package transaction
 
 import (
 	"encoding/json"
+
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/nervosnetwork/ckb-sdk-go/v2/types"
 )
@@ -42,4 +43,27 @@ func (r *ScriptGroup) UnmarshalJSON(input []byte) error {
 		OutputIndices: toUint32Array(jsonObj.OutputIndices),
 	}
 	return nil
+}
+
+func (r *ScriptGroup) MarshalJSON() ([]byte, error) {
+	toHexutilArray := func(in []uint32) []hexutil.Uint {
+		out := make([]hexutil.Uint, len(in))
+		for i, data := range in {
+			out[i] = hexutil.Uint(data)
+		}
+		return out
+	}
+
+	jsonObj := struct {
+		Script        *types.Script    `json:"script"`
+		GroupType     types.ScriptType `json:"group_type"`
+		InputIndices  []hexutil.Uint   `json:"input_indices"`
+		OutputIndices []hexutil.Uint   `json:"output_indices"`
+	}{
+		Script:        r.Script,
+		GroupType:     r.GroupType,
+		InputIndices:  toHexutilArray(r.InputIndices),
+		OutputIndices: toHexutilArray(r.OutputIndices),
+	}
+	return json.Marshal(jsonObj)
 }
